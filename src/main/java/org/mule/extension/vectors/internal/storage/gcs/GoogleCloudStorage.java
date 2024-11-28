@@ -7,8 +7,10 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.gcs.GoogleCloudStorageDocumentLoader;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.util.MetadatatUtils;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,10 @@ public class GoogleCloudStorage extends BaseStorage {
                         .credentials(GoogleCredentials.fromStream(keyFileStream))
                         .build();
             } catch (Exception e) {
-                throw new IllegalStateException("Error initializing GCS Document Loader ", e);
+                throw new ModuleException(
+                        String.format("Error initializing GCS Document Loader"),
+                        MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
+                        e);
             }
         }
         return loader;
@@ -76,7 +81,10 @@ public class GoogleCloudStorage extends BaseStorage {
                         .build()
                         .getService();
             } catch (Exception e) {
-                throw new IllegalStateException("Error initializing GCS Storage Service Client ", e);
+                throw new ModuleException(
+                        String.format("Error initializing GCS Storage Service Client"),
+                        MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
+                        e);
             }
         }
         return storageServiceClient;
