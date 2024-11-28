@@ -1,13 +1,11 @@
 package org.mule.extension.vectors.internal.config;
 
-import org.mule.extension.vectors.internal.model.BaseModelConfiguration;
+import org.mule.extension.vectors.internal.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.operation.DocumentOperations;
 import org.mule.extension.vectors.internal.operation.EmbeddingOperations;
 import org.mule.extension.vectors.internal.storage.BaseStorageConfiguration;
 import org.mule.extension.vectors.internal.store.BaseStoreConfiguration;
-import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Alias;
-import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
@@ -24,17 +22,10 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 public class Configuration {
 
   @Parameter
-  @Alias("embeddingModelService")
-  @DisplayName("Embedding Model Service")
-  @Summary("The embedding model service.")
-  @Placement(order = 1, tab = Placement.DEFAULT_TAB)
-  private BaseModelConfiguration modelConfiguration;
-
-  @Parameter
   @Alias("vectorStore")
   @DisplayName("Vector Store")
   @Summary("The vector store.")
-  @Placement(order = 2, tab = Placement.DEFAULT_TAB)
+  @Placement(order = 1, tab = Placement.DEFAULT_TAB)
   private BaseStoreConfiguration storeConfiguration;
 
   @Parameter
@@ -42,12 +33,8 @@ public class Configuration {
   @DisplayName("Storage")
   @Summary("The storage type.")
   @Optional
-  @Placement(order = 3, tab = Placement.DEFAULT_TAB)
+  @Placement(order = 2, tab = Placement.DEFAULT_TAB)
   private BaseStorageConfiguration storageConfiguration;
-
-  public BaseModelConfiguration getModelConfiguration() {
-    return modelConfiguration;
-  }
 
   public BaseStoreConfiguration getStoreConfiguration() {
     return storeConfiguration;

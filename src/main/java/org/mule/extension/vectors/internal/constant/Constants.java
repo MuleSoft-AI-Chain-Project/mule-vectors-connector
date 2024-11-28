@@ -92,4 +92,8 @@ public class Constants {
   public static final String OPERATION_STATUS_DELETED = "deleted";
 
   public static final String PARAM_DISPLAY_NAME_STORAGE_OVERRIDE = "Storage (Override Module Configuration)";
+
+  public static final String URI_HTTPS_PREFIX = "https://";
+
+  public static final String HTTP_METHOD_POST = "POST";
 }

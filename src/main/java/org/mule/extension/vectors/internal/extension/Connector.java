@@ -2,13 +2,14 @@ package org.mule.extension.vectors.internal.extension;
 
 import org.mule.extension.vectors.internal.config.Configuration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.model.BaseModelConfiguration;
-import org.mule.extension.vectors.internal.model.azureopenai.AzureOpenAIModelConfiguration;
-import org.mule.extension.vectors.internal.model.einstein.EinsteinModelConfiguration;
-import org.mule.extension.vectors.internal.model.huggingface.HuggingFaceModelConfiguration;
-import org.mule.extension.vectors.internal.model.mistralai.MistralAIModelConfiguration;
-import org.mule.extension.vectors.internal.model.nomic.NomicModelConfiguration;
-import org.mule.extension.vectors.internal.model.openai.OpenAIModelConfiguration;
+import org.mule.extension.vectors.internal.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.model.BaseModelConnectionProvider;
+import org.mule.extension.vectors.internal.model.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.model.einstein.EinsteinModelConnection;
+import org.mule.extension.vectors.internal.model.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.model.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.model.nomic.NomicModelConnection;
+import org.mule.extension.vectors.internal.model.openai.OpenAIModelConnection;
 import org.mule.extension.vectors.internal.storage.BaseStorageConfiguration;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorageConfiguration;
 import org.mule.extension.vectors.internal.storage.local.LocalStorageConfiguration;
@@ -26,10 +27,12 @@ import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
+import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.runtime.extension.api.annotation.license.RequiresEnterpriseLicense;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
+
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_11;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
@@ -51,19 +54,20 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
         PGVectorStoreConfiguration.class,
         PineconeStoreConfiguration.class,
         QdrantStoreConfiguration.class})
-@SubTypeMapping(baseType = BaseModelConfiguration.class,
+@SubTypeMapping(baseType = BaseModelConnection.class,
     subTypes = {
-        AzureOpenAIModelConfiguration.class,
-        EinsteinModelConfiguration.class,
-        HuggingFaceModelConfiguration.class,
-        MistralAIModelConfiguration.class,
-        NomicModelConfiguration.class,
-        OpenAIModelConfiguration.class})
+        AzureOpenAIModelConnection.class,
+        EinsteinModelConnection.class,
+        HuggingFaceModelConnection.class,
+        MistralAIModelConnection.class,
+        NomicModelConnection.class,
+        OpenAIModelConnection.class})
 @SubTypeMapping(baseType = BaseStorageConfiguration.class,
     subTypes = {
         LocalStorageConfiguration.class,
         AWSS3StorageConfiguration.class,
         AzureBlobStorageConfiguration.class})
+@ConnectionProviders(BaseModelConnectionProvider.class)
 @RequiresEnterpriseLicense(allowEvaluationLicense = true)
 @ErrorTypes(MuleVectorsErrorType.class)
 @JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})

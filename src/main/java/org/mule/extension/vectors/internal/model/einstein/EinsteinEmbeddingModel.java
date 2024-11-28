@@ -41,17 +41,15 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
    * Private constructor used by the builder pattern.
    * Initializes the embedding model with Salesforce credentials and model configuration.
    *
-   * @param salesforceOrgUrl The Salesforce organization identifier
-   * @param clientId OAuth client ID for authentication
-   * @param clientSecret OAuth client secret for authentication
+   * @param einsteinModelConnection The Einstein connection
    * @param modelName Name of the Einstein embedding model to use
    * @param dimensions Number of dimensions for the embeddings
    */
-  private EinsteinEmbeddingModel(String salesforceOrgUrl, String clientId, String clientSecret, String modelName, Integer dimensions) {
+  private EinsteinEmbeddingModel(EinsteinModelConnection einsteinModelConnection, String modelName, Integer dimensions) {
     // Default to SFDC text embedding model if none specified
     this.modelName = Utils.getOrDefault(modelName, Constants.EMBEDDING_MODEL_NAME_SFDC_TEXT_EMBEDDING_ADA_002);
     this.dimensions = dimensions;
-    this.accessToken = getAccessToken(salesforceOrgUrl, clientId, clientSecret);
+    this.accessToken = getAccessToken(einsteinModelConnection);
   }
 
   /**
@@ -133,15 +131,13 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
   /**
    * Authenticates with Salesforce and obtains an access token.
    *
-   * @param salesforceOrg Salesforce organization identifier
-   * @param clientId OAuth client ID
-   * @param clientSecret OAuth client secret
+   * @param einsteinModelConnection Salesforce einstein connection
    * @return Access token for API calls
    * @throws ModuleException if authentication fails
    */
-  private String getAccessToken(String salesforceOrg, String clientId, String clientSecret) {
-    String urlString = salesforceOrg + "/services/oauth2/token";
-    String params = "grant_type=client_credentials&client_id=" + clientId + "&client_secret=" + clientSecret;
+  private String getAccessToken(EinsteinModelConnection einsteinModelConnection) {
+    String urlString = einsteinModelConnection.getOAuthURL();
+    String params = einsteinModelConnection.getOAuthParams();
 
     try {
       URL url = new URL(urlString);
@@ -299,9 +295,7 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
    * Implements the Builder pattern for constructing EinsteinEmbeddingModel instances.
    */
   public static class EinsteinEmbeddingModelBuilder {
-    private String salesforceOrgUrl;
-    private String clientId;
-    private String clientSecret;
+    private EinsteinModelConnection modelConnection;
     private String modelName;
     private Integer dimensions;
     private Tokenizer tokenizer;
@@ -310,18 +304,8 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
     public EinsteinEmbeddingModelBuilder() {
     }
 
-    public EinsteinEmbeddingModel.EinsteinEmbeddingModelBuilder salesforceOrgUrl(String salesforceOrg) {
-      this.salesforceOrgUrl = salesforceOrg;
-      return this;
-    }
-
-    public EinsteinEmbeddingModel.EinsteinEmbeddingModelBuilder clientId(String clientId) {
-      this.clientId = clientId;
-      return this;
-    }
-
-    public EinsteinEmbeddingModel.EinsteinEmbeddingModelBuilder clientSecret(String clientSecret) {
-      this.clientSecret = clientSecret;
+    public EinsteinEmbeddingModel.EinsteinEmbeddingModelBuilder modelConnection(EinsteinModelConnection modelConnection) {
+      this.modelConnection = modelConnection;
       return this;
     }
 
@@ -346,7 +330,7 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
      * @return A new EinsteinEmbeddingModel configured with the builder's parameters
      */
     public EinsteinEmbeddingModel build() {
-      return new EinsteinEmbeddingModel(this.salesforceOrgUrl, this.clientId, this.clientSecret, this.modelName, this.dimensions);
+      return new EinsteinEmbeddingModel(this.modelConnection, this.modelName, this.dimensions);
     }
   }
 }

@@ -23,6 +23,7 @@ import dev.langchain4j.store.embedding.filter.Filter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.model.BaseModel;
+import org.mule.extension.vectors.internal.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.storage.BaseStorageConfiguration;
 import org.mule.extension.vectors.internal.store.BaseStore;
@@ -61,7 +62,9 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingAddToStoreResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      addTextToStore( @Config Configuration configuration,
+      addTextToStore(
+                      @Connection BaseModelConnection modelConnection,
+                      @Config Configuration configuration,
                       @Alias("text") @DisplayName("Text") String text,
                       @Alias("storeName") @DisplayName("Store Name")  String storeName,
                       @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters,
@@ -72,7 +75,7 @@ public class EmbeddingOperations {
       LOGGER.debug(String.format("Adding text %s to store %s", text, storeName));
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
@@ -125,7 +128,8 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingGenerateFromTextResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      generateEmbedding(@Config Configuration configuration,
+      generateEmbedding(@Connection BaseModelConnection modelConnection,
+                        @Config Configuration configuration,
                         @Alias("text") @DisplayName("Text")  String text,
                         @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters,
                         @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters){
@@ -133,7 +137,7 @@ public class EmbeddingOperations {
     try {
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
@@ -192,7 +196,8 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingAddToStoreResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      addFolderToStore( @Config Configuration configuration,
+      addFolderToStore( @Connection BaseModelConnection modelConnection,
+                        @Config Configuration configuration,
                         @Alias("storeName") @DisplayName("Store Name") String storeName,
                         @ConfigOverride @Alias("storage") @DisplayName(Constants.PARAM_DISPLAY_NAME_STORAGE_OVERRIDE)
                         BaseStorageConfiguration storageConfiguration,
@@ -206,7 +211,7 @@ public class EmbeddingOperations {
               Constants.EMBEDDING_OPERATION_TYPE_STORE_METADATA,configuration.getStoreConfiguration().getVectorStore());
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
@@ -273,7 +278,8 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingAddToStoreResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      addFileEmbedding( @Config Configuration configuration,
+      addFileEmbedding( @Connection BaseModelConnection modelConnection,
+                        @Config Configuration configuration,
                         @Alias("storeName") @DisplayName("Store Name") String storeName,
                         @ConfigOverride @Alias("storage") @DisplayName(Constants.PARAM_DISPLAY_NAME_STORAGE_OVERRIDE)
                             BaseStorageConfiguration storageConfiguration,
@@ -287,7 +293,7 @@ public class EmbeddingOperations {
               Constants.EMBEDDING_OPERATION_TYPE_STORE_METADATA,configuration.getStoreConfiguration().getVectorStore());
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
@@ -347,7 +353,8 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingQueryResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      queryFromEmbedding( @Config Configuration configuration,
+      queryFromEmbedding( @Connection BaseModelConnection modelConnection,
+                          @Config Configuration configuration,
                           @Alias("storeName") @DisplayName("Store Name") String storeName,
                           String question,
                           Number maxResults,
@@ -361,7 +368,7 @@ public class EmbeddingOperations {
       }
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
@@ -444,7 +451,8 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingQueryResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      queryByFilterFromEmbedding( String storeName,
+      queryByFilterFromEmbedding( @Connection BaseModelConnection modelConnection,
+                                  String storeName,
                                   String question,
                                   Number maxResults,
                                   Double minScore,
@@ -463,7 +471,7 @@ public class EmbeddingOperations {
       }
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
@@ -613,7 +621,8 @@ public class EmbeddingOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/response/EmbeddingRemoveFromStoreResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-      removeEmbeddingsByFilter( String storeName,
+      removeEmbeddingsByFilter( @Connection BaseModelConnection modelConnection,
+                                String storeName,
                                 @Config Configuration configuration,
                                 @ParameterGroup(name = "Filter") MetadataFilterParameters.RemoveFilterParameters removeFilterParams,
                                 @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
@@ -625,7 +634,7 @@ public class EmbeddingOperations {
               Constants.EMBEDDING_OPERATION_TYPE_FILTER_BY_METADATA,configuration.getStoreConfiguration().getVectorStore());
 
       BaseModel baseModel = BaseModel.builder()
-          .configuration(configuration)
+          .modelConnection(modelConnection)
           .embeddingModelParameters(embeddingModelParameters)
           .build();
 
