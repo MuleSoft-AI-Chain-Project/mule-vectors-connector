@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mulesoft.connectors</groupId>
     <artifactId>mule4-vectors-connector</artifactId>
-    <version>0.2.50</version>
+    <version>0.2.51</version>
     <packaging>mule-extension</packaging>
     <name>MuleSoft Vectors Connector - Mule 4</name>
     <description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -114,6 +114,12 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-amazon-s3</artifactId>
+			<version>${langchain4jVersion}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-loader-google-cloud-storage</artifactId>
 			<version>${langchain4jVersion}</version>
 		</dependency>
 
