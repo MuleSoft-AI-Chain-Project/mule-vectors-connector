@@ -15,6 +15,8 @@ public class Constants {
   public static final String STORAGE_TYPE_LOCAL = "Local";
   public static final String STORAGE_TYPE_AWS_S3 = "S3";
   public static final String STORAGE_TYPE_AZURE_BLOB = "AZURE_BLOB";
+  public static final String STORAGE_TYPE_GCS = "GCS";
+  public static final String STORAGE_TYPE_GCS_PREFIX = "gcs://";
 
   public static final String EMBEDDING_MODEL_SERVICE_OPENAI = "OPENAI";
   public static final String EMBEDDING_MODEL_SERVICE_AZURE_OPENAI = "AZURE_OPENAI";

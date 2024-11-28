@@ -8,6 +8,8 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorageConfiguration;
+import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
+import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorageConfiguration;
 import org.mule.extension.vectors.internal.storage.local.LocalStorage;
 import org.mule.extension.vectors.internal.storage.local.LocalStorageConfiguration;
 import org.mule.extension.vectors.internal.storage.s3.AWSS3Storage;
@@ -127,6 +129,11 @@ public abstract class BaseStorage implements Iterator<Document> {
           case Constants.STORAGE_TYPE_AZURE_BLOB:
 
             baseStorage = new AzureBlobStorage((AzureBlobStorageConfiguration) storageConfiguration, contextPath, fileType);
+            break;
+
+          case Constants.STORAGE_TYPE_GCS:
+
+            baseStorage = new GoogleCloudStorage((GoogleCloudStorageConfiguration) storageConfiguration, contextPath, fileType);
             break;
 
           default:
