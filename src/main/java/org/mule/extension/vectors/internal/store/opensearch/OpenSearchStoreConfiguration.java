@@ -7,6 +7,7 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
@@ -17,17 +18,20 @@ public class OpenSearchStoreConfiguration implements BaseStoreConfiguration {
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 1)
+  @Example("https://search-mydomain-xyz123456.us-west-1.es.amazonaws.com")
   private String url;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 2)
+  @Example("<your-username>")
   private String userName;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 3)
+  @Example("<your-password>")
   private String password;
 
   @Override

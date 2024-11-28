@@ -22,7 +22,7 @@ MAC Vectors provides access to a broad number of external Vector Stores and Data
 <dependency>
    <groupId>cloud.anypoint</groupId>
    <artifactId>mule-vectors-connector</artifactId>
-   <version>0.2.0</version>
+   <version>0.2.50</version>
    <classifier>mule-plugin</classifier>
 </dependency>
 ```
@@ -36,7 +36,7 @@ Then add the following dependency to your application's `pom.xml`:
 <dependency>
     <groupId>com.mulesoft.connectors</groupId>
     <artifactId>mule4-vectors-connector</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.50</version>
     <classifier>mule-plugin</classifier>
 </dependency>
 ```

@@ -7,6 +7,7 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
@@ -19,12 +20,14 @@ public class AISearchStoreConfiguration implements BaseStoreConfiguration {
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 1)
+  @Example("https://<resource-name>.search.windows.net")
   private String url;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 2)
+  @Example("<your-api-key>")
   private String apiKey;
 
   @Override

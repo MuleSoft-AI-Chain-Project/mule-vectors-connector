@@ -355,7 +355,7 @@ public class EmbeddingOperations {
                           @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
     try {
 
-      int maximumResults = (int) maxResults;
+      int maximumResults = maxResults.intValue();
       if (minScore == null) { //|| minScore == 0) {
         minScore = Constants.EMBEDDING_SEARCH_REQUEST_DEFAULT_MIN_SCORE;
       }
@@ -457,7 +457,7 @@ public class EmbeddingOperations {
       EmbeddingOperationValidator.validateOperationType(
               Constants.EMBEDDING_OPERATION_TYPE_FILTER_BY_METADATA,configuration.getStoreConfiguration().getVectorStore());
 
-      int maximumResults = (int) maxResults;
+      int maximumResults = maxResults.intValue();
       if (minScore == null) { //|| minScore == 0) {
         minScore = Constants.EMBEDDING_SEARCH_REQUEST_DEFAULT_MIN_SCORE;
       }

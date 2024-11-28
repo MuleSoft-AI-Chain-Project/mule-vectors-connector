@@ -7,10 +7,7 @@ import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Password;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.annotation.param.display.*;
 
 @Alias("einstein")
 @DisplayName("Einstein")
@@ -22,17 +19,20 @@ public class EinsteinModelConfiguration implements BaseModelConfiguration {
   @Summary("The salesforce org base URL.")
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 1)
+  @Example("https://<my-domain>.my.salesforce.com")
   private String salesforceOrgUrl;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 2)
+  @Example("<your-connected-app-client-id>")
   private String clientId;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 3)
+  @Example("<your-connected-app-client-secret>")
   private String clientSecret;
 
   @Override

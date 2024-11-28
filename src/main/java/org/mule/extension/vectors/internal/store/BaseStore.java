@@ -258,6 +258,7 @@ public class BaseStore {
 
       BaseStore baseStore;
 
+      LOGGER.debug("Vector Store: " + configuration.getStoreConfiguration().getVectorStore());
       switch (configuration.getStoreConfiguration().getVectorStore()) {
 
         case Constants.VECTOR_STORE_MILVUS:

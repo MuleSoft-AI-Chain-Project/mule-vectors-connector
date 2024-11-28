@@ -7,6 +7,7 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
@@ -18,6 +19,7 @@ public class HuggingFaceModelConfiguration implements BaseModelConfiguration {
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 1)
+  @Example("<your-api-key>")
   private String apiKey;
 
   @Override
