@@ -6,11 +6,14 @@ import org.mule.extension.vectors.internal.operation.EmbeddingOperations;
 import org.mule.extension.vectors.internal.storage.BaseStorageConfiguration;
 import org.mule.extension.vectors.internal.store.BaseStoreConfiguration;
 import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.api.meta.ExternalLibraryType;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
@@ -21,6 +24,27 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
  */
 @org.mule.runtime.extension.api.annotation.Configuration(name = "config")
 @Operations({EmbeddingOperations.class, DocumentOperations.class})
+
+@ExternalLib(name = "Vector Store",
+    description = "The vector store dependency to enable support for one of the available stores.",
+    type = ExternalLibraryType.DEPENDENCY,
+    coordinates = "dev.langchain4j:langchain4j-(qdrant|milvus|chroma|elasticsearch|opensearch|pgvector|pinecone|azure-ai-search):0.35.0",
+    optional=true)
+
+@ExternalLib(name = "Embedding Model Service",
+    description = "The embedding model service dependency to enable support for one of the available models.",
+    type = ExternalLibraryType.DEPENDENCY,
+    coordinates = "dev.langchain4j:langchain4j-(azure-open-ai|open-ai|mistral-ai|nomic|hugging-face):0.35.0",
+    optional=true)
+
+@ExternalLib(name = "Storage",
+    description = "The storage dependency to enable Amazon S3 (langchain4j-document-loader-amazon-s3) and " +
+        "Azure Blob Storage (langchain4j-document-loader-azure-storage-blob) support. You can add multiple storage " +
+        "dependencies to your pom.xml file if you want to use more than one.",
+    type = ExternalLibraryType.DEPENDENCY,
+    coordinates = "dev.langchain4j:langchain4j-document-loader-(amazon-s3|azure-storage-blob):0.35.0",
+    optional=true)
+
 public class Configuration {
 
   @Parameter
