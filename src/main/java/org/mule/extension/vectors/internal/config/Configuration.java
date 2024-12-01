@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.config;
 
+import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.model.BaseModelConfiguration;
 import org.mule.extension.vectors.internal.operation.DocumentOperations;
 import org.mule.extension.vectors.internal.operation.EmbeddingOperations;
@@ -28,13 +29,13 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 @ExternalLib(name = "Vector Store",
     description = "The vector store dependency to enable support for one of the available stores.",
     type = ExternalLibraryType.DEPENDENCY,
-    coordinates = "dev.langchain4j:langchain4j-(qdrant|milvus|chroma|elasticsearch|opensearch|pgvector|pinecone|azure-ai-search):0.35.0",
+    coordinates = "dev.langchain4j:langchain4j-(qdrant|milvus|chroma|elasticsearch|opensearch|pgvector|pinecone|azure-ai-search):" + Constants.LANG_CHAIN_4J_VERSION,
     optional=true)
 
 @ExternalLib(name = "Embedding Model Service",
     description = "The embedding model service dependency to enable support for one of the available models.",
     type = ExternalLibraryType.DEPENDENCY,
-    coordinates = "dev.langchain4j:langchain4j-(azure-open-ai|open-ai|mistral-ai|nomic|hugging-face):0.35.0",
+    coordinates = "dev.langchain4j:langchain4j-(azure-open-ai|open-ai|mistral-ai|nomic|hugging-face):" + Constants.LANG_CHAIN_4J_VERSION,
     optional=true)
 
 @ExternalLib(name = "Storage",
@@ -42,7 +43,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
         "Azure Blob Storage (langchain4j-document-loader-azure-storage-blob) support. You can add multiple storage " +
         "dependencies to your pom.xml file if you want to use more than one.",
     type = ExternalLibraryType.DEPENDENCY,
-    coordinates = "dev.langchain4j:langchain4j-document-loader-(amazon-s3|azure-storage-blob):0.35.0",
+    coordinates = "dev.langchain4j:langchain4j-document-loader-(amazon-s3|azure-storage-blob):" + Constants.LANG_CHAIN_4J_VERSION,
     optional=true)
 
 public class Configuration {

@@ -7,6 +7,8 @@ public class Constants {
 
   private Constants() {}
 
+  public static final String LANG_CHAIN_4J_VERSION = "0.35.0";
+
   public static final String FILE_TYPE_ANY = "any";
   public static final String FILE_TYPE_TEXT = "text";
   public static final String FILE_TYPE_CRAWL = "crawl";
