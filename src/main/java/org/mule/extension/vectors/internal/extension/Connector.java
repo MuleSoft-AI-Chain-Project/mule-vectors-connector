@@ -5,11 +5,17 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.model.BaseModelConnectionProvider;
 import org.mule.extension.vectors.internal.model.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.model.azureopenai.AzureOpenAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.model.einstein.EinsteinModelConnection;
+import org.mule.extension.vectors.internal.model.einstein.EinsteinModelConnectionProvider;
 import org.mule.extension.vectors.internal.model.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.model.huggingface.HuggingFaceModelConnectionProvider;
 import org.mule.extension.vectors.internal.model.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.model.mistralai.MistralAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.model.nomic.NomicModelConnection;
+import org.mule.extension.vectors.internal.model.nomic.NomicModelConnectionProvider;
 import org.mule.extension.vectors.internal.model.openai.OpenAIModelConnection;
+import org.mule.extension.vectors.internal.model.openai.OpenAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.storage.BaseStorageConfiguration;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorageConfiguration;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorageConfiguration;
@@ -20,6 +26,7 @@ import org.mule.extension.vectors.internal.store.aisearch.AISearchStoreConfigura
 import org.mule.extension.vectors.internal.store.chroma.ChromaStoreConfiguration;
 import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStoreConfiguration;
 import org.mule.extension.vectors.internal.store.milvus.MilvusStoreConfiguration;
+import org.mule.extension.vectors.internal.store.milvus.MilvusStoreConnectionProvider;
 import org.mule.extension.vectors.internal.store.opensearch.OpenSearchStoreConfiguration;
 import org.mule.extension.vectors.internal.store.pgvector.PGVectorStoreConfiguration;
 import org.mule.extension.vectors.internal.store.pinecone.PineconeStoreConfiguration;
@@ -55,21 +62,12 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
         PGVectorStoreConfiguration.class,
         PineconeStoreConfiguration.class,
         QdrantStoreConfiguration.class})
-@SubTypeMapping(baseType = BaseModelConnection.class,
-    subTypes = {
-        AzureOpenAIModelConnection.class,
-        EinsteinModelConnection.class,
-        HuggingFaceModelConnection.class,
-        MistralAIModelConnection.class,
-        NomicModelConnection.class,
-        OpenAIModelConnection.class})
 @SubTypeMapping(baseType = BaseStorageConfiguration.class,
     subTypes = {
         LocalStorageConfiguration.class,
         AWSS3StorageConfiguration.class,
         AzureBlobStorageConfiguration.class,
         GoogleCloudStorageConfiguration.class})
-@ConnectionProviders(BaseModelConnectionProvider.class)
 @RequiresEnterpriseLicense(allowEvaluationLicense = true)
 @ErrorTypes(MuleVectorsErrorType.class)
 @JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})

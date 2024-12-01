@@ -17,20 +17,12 @@ import org.slf4j.LoggerFactory;
 
 @Alias("huggingFace")
 @DisplayName("Hugging Face")
-public class HuggingFaceModelConnection extends BaseModelConnection {
+public class HuggingFaceModelConnection implements BaseModelConnection {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceModelConnection.class);
-
-  @Parameter
-  @Password
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
-  @Example("<your-api-key>")
   private String apiKey;
 
-  @Override
-  public String getEmbeddingModelService() {
-    return Constants.EMBEDDING_MODEL_SERVICE_HUGGING_FACE;
+  public HuggingFaceModelConnection(String apiKey) {
+    this.apiKey = apiKey;
   }
 
   public String getApiKey() {
@@ -38,19 +30,7 @@ public class HuggingFaceModelConnection extends BaseModelConnection {
   }
 
   @Override
-  public HuggingFaceModelConnection connect()  throws ConnectionException {
-
-    return this;
-  }
-
-  @Override
-  public void disconnect(BaseModelConnection connection) {
-
-  }
-
-  @Override
-  public ConnectionValidationResult validate(BaseModelConnection connection) {
-
-    return ConnectionValidationResult.success();
+  public String getEmbeddingModelService() {
+    return Constants.EMBEDDING_MODEL_SERVICE_HUGGING_FACE;
   }
 }

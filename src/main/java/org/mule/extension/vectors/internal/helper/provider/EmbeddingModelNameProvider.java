@@ -16,8 +16,6 @@ import org.mule.runtime.extension.api.values.ValueResolvingException;
 
 public class EmbeddingModelNameProvider implements ValueProvider {
 
-  @Connection
-  @Alias("modelConnection")
   private BaseModelConnection modelConnection;
 
   private static final Set<Value> VALUES_FOR_AZURE_OPENAI = ValueBuilder.getValuesFor(

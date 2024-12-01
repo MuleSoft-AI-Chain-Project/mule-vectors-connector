@@ -1,12 +1,20 @@
 package org.mule.extension.vectors.internal.config;
 
 import org.mule.extension.vectors.internal.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.model.azureopenai.AzureOpenAIModelConnectionProvider;
+import org.mule.extension.vectors.internal.model.einstein.EinsteinModelConnectionProvider;
+import org.mule.extension.vectors.internal.model.huggingface.HuggingFaceModelConnectionProvider;
+import org.mule.extension.vectors.internal.model.mistralai.MistralAIModelConnectionProvider;
+import org.mule.extension.vectors.internal.model.nomic.NomicModelConnectionProvider;
+import org.mule.extension.vectors.internal.model.openai.OpenAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.operation.DocumentOperations;
 import org.mule.extension.vectors.internal.operation.EmbeddingOperations;
 import org.mule.extension.vectors.internal.storage.BaseStorageConfiguration;
 import org.mule.extension.vectors.internal.store.BaseStoreConfiguration;
+import org.mule.extension.vectors.internal.store.milvus.MilvusStoreConnectionProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Operations;
+import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
@@ -19,6 +27,13 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
  */
 @org.mule.runtime.extension.api.annotation.Configuration(name = "config")
 @Operations({EmbeddingOperations.class, DocumentOperations.class})
+@ConnectionProviders({
+    AzureOpenAIModelConnectionProvider.class,
+    EinsteinModelConnectionProvider.class,
+    HuggingFaceModelConnectionProvider.class,
+    MistralAIModelConnectionProvider.class,
+    NomicModelConnectionProvider.class,
+    OpenAIModelConnectionProvider.class})
 public class Configuration {
 
   @Parameter

@@ -136,8 +136,9 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
    * @throws ModuleException if authentication fails
    */
   private String getAccessToken(EinsteinModelConnection einsteinModelConnection) {
-    String urlString = einsteinModelConnection.getOAuthURL();
-    String params = einsteinModelConnection.getOAuthParams();
+
+    String urlString = EinsteinModelConnectionProvider.getOAuthURL(einsteinModelConnection.getSalesforceOrg());
+    String params = EinsteinModelConnectionProvider.getOAuthParams(einsteinModelConnection.getClientId(), einsteinModelConnection.getClientSecret());
 
     try {
       URL url = new URL(urlString);

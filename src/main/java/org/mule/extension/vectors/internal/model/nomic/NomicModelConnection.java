@@ -17,20 +17,12 @@ import org.slf4j.LoggerFactory;
 
 @Alias("nomic")
 @DisplayName("Nomic")
-public class NomicModelConnection extends BaseModelConnection {
+public class NomicModelConnection implements BaseModelConnection {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NomicModelConnection.class);
-
-  @Parameter
-  @Password
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
-  @Example("<your-api-key>")
   private String apiKey;
 
-  @Override
-  public String getEmbeddingModelService() {
-    return Constants.EMBEDDING_MODEL_SERVICE_NOMIC;
+  public NomicModelConnection(String apiKey) {
+    this.apiKey = apiKey;
   }
 
   public String getApiKey() {
@@ -38,19 +30,7 @@ public class NomicModelConnection extends BaseModelConnection {
   }
 
   @Override
-  public NomicModelConnection connect()  throws ConnectionException {
-
-    return this;
-  }
-
-  @Override
-  public void disconnect(BaseModelConnection connection) {
-
-  }
-
-  @Override
-  public ConnectionValidationResult validate(BaseModelConnection connection) {
-
-    return ConnectionValidationResult.success();
+  public String getEmbeddingModelService() {
+    return Constants.EMBEDDING_MODEL_SERVICE_NOMIC;
   }
 }
