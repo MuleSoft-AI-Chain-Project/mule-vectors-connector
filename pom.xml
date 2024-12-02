@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mulesoft.connectors</groupId>
     <artifactId>mule4-vectors-connector</artifactId>
-    <version>0.2.149-SNAPSHOT</version>
+    <version>0.2.178</version>
     <packaging>mule-extension</packaging>
     <name>MuleSoft Vectors Connector - Mule 4</name>
     <description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -18,36 +18,6 @@
             <url>https://www.opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
-
-    <developers>
-        <developer>
-            <name>Amir Khan</name>
-            <email>amir.khan@salesforce.com</email>
-            <organization>Salesforce</organization>
-            <organizationUrl>https://www.salesforce.com</organizationUrl>
-        </developer>
-		<developer>
-			<name>Tommaso Bolis</name>
-			<email>tbolis-at-salesforce-dot-com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-		</developer>
-        <developer>
-            <name>Suraj Kamal</name>
-        </developer>
-        <developer>
-            <name>Laura de Paz</name>
-			<email>laura.depaz@salesforce.com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Ryan Hoegg</name>
-            <email>ryan@hoegg.software</email>
-            <organization>Hoegg Software, Co.</organization>
-            <organizationUrl>https://hoegg.software</organizationUrl>
-        </developer>
-    </developers>
 
     <parent>
         <groupId>org.mule.extensions</groupId>
@@ -64,6 +34,9 @@
 		<langchain4jVersion>0.35.0</langchain4jVersion>
 		<slf4jApi.version>2.0.7</slf4jApi.version>
 		<mule.sdk.api.version>0.9.0-rc1</mule.sdk.api.version>
+
+		<muleExtensionsShadeVersion>1.0.4</muleExtensionsShadeVersion>
+
     </properties>
 
 	<build>
@@ -82,6 +55,42 @@
 					</execution>
 				</executions>
 			</plugin>
+
+<!--			<plugin>-->
+<!--				<groupId>org.mule.runtime.plugins</groupId>-->
+<!--				<artifactId>mule-extensions-shade-plugin</artifactId>-->
+<!--				<version>${muleExtensionsShadeVersion}</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>package</phase>-->
+<!--						<goals>-->
+<!--							<goal>shade</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--				<configuration>-->
+<!--					<artifactSet>-->
+<!--						<includes>-->
+<!--							&lt;!&ndash; Include only artifacts that need shading &ndash;&gt;-->
+<!--							<include>dev.langchain4j:langchain4j-core</include>-->
+<!--						</includes>-->
+<!--					</artifactSet>-->
+<!--					<relocations>-->
+<!--						<relocation>-->
+<!--							<pattern>dev.langchain4j.data.document</pattern>-->
+<!--							<shadedPattern>org.mule.shaded.dev.langchain4j.data.document</shadedPattern>-->
+<!--							<excludes>-->
+<!--								&lt;!&ndash; Exclude subpackages &ndash;&gt;-->
+<!--								<exclude>dev.langchain4j.data.document.parser.**</exclude>-->
+<!--								<exclude>dev.langchain4j.data.document.transformer.**</exclude>-->
+<!--								<exclude>dev.langchain4j.data.document.splitter.**</exclude>-->
+<!--								<exclude>dev.langchain4j.data.document.loader.**</exclude>-->
+<!--							</excludes>-->
+<!--						</relocation>-->
+<!--					</relocations>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+
 		</plugins>
 	</build>
 
@@ -94,18 +103,118 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-			<dependency>
-				<groupId>dev.langchain4j</groupId>
-				<artifactId>langchain4j-bom</artifactId>
-				<version>${langchain4jVersion}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 		</dependencies>
     </dependencyManagement>
 
     <dependencies>
 
+		<dependency>
+			<groupId>org.mule.sdk</groupId>
+			<artifactId>mule-sdk-api</artifactId>
+			<version>${mule.sdk.api.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.14.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4jApi.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20240303</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.reactivex.rxjava2</groupId>
+			<artifactId>rxjava</artifactId>
+			<version>2.2.21</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-protobuf</artifactId>
+			<version>1.65.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<version>1.65.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java-util</artifactId>
+			<version>3.25.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.16.1</version>
+		</dependency>
+
+		<!-- LangChain Required Dependencies -->
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j</artifactId>
+			<version>${langchain4jVersion}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jsoup</artifactId>
+					<groupId>org.jsoup</groupId>
+				</exclusion>
+<!--				<exclusion>-->
+<!--					<groupId>dev.langchain4j</groupId>-->
+<!--					<artifactId>langchain4j-core</artifactId>-->
+<!--				</exclusion>-->
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-core</artifactId>
+			<version>0.35.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+			<version>${langchain4jVersion}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>log4j-api</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+				</exclusion>
+<!--				<exclusion>-->
+<!--					<groupId>dev.langchain4j</groupId>-->
+<!--					<artifactId>langchain4j-core</artifactId>-->
+<!--				</exclusion>-->
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<version>${langchain4jVersion}</version>
+			<exclusions>
+<!--				<exclusion>-->
+<!--					<groupId>dev.langchain4j</groupId>-->
+<!--					<artifactId>langchain4j-core</artifactId>-->
+<!--				</exclusion>-->
+			</exclusions>
+		</dependency>
+
+		<!-- Storage Dependencies -->
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-azure-storage-blob</artifactId>
@@ -120,65 +229,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.mule.sdk</groupId>
-			<artifactId>mule-sdk-api</artifactId>
-			<version>${mule.sdk.api.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j</artifactId>
-			<version>${langchain4jVersion}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jsoup</artifactId>
-					<groupId>org.jsoup</groupId>
-				</exclusion>
-			</exclusions>
-        </dependency>
-
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.14.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4jApi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20240303</version>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-parser-apache-tika</artifactId>
-			<version>${langchain4jVersion}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>log4j-api</artifactId>
-					<groupId>org.apache.logging.log4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-easy-rag</artifactId>
-			<version>${langchain4jVersion}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.reactivex.rxjava2</groupId>
-			<artifactId>rxjava</artifactId>
-			<version>2.2.21</version>
-		</dependency>
-
+		<!-- Embedding Model Service Dependencies -->
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-azure-open-ai</artifactId>
@@ -221,6 +272,7 @@
 			<scope>provided</scope>
         </dependency>
 
+		<!-- Vector Store Dependencies -->
 		<dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-milvus</artifactId>
@@ -249,12 +301,6 @@
 			<scope>provided</scope>
         </dependency>
 
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
-			<version>${langchain4jVersion}</version>
-		</dependency>
-
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-pinecone</artifactId>
@@ -275,30 +321,6 @@
 			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
-            <version>1.65.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty-shaded</artifactId>
-            <version>1.65.1</version>
-        </dependency>
-
-		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java-util</artifactId>
-			<version>3.25.5</version>
-		</dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.16.1</version>
-        </dependency>
 
 	</dependencies>
 
