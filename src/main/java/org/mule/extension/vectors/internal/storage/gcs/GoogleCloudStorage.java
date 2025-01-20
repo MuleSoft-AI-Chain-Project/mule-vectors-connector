@@ -5,9 +5,9 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.loader.gcs.GoogleCloudStorageDocumentLoader;
+
+import org.springframework.ai.document.Document;
+
 import org.mule.extension.vectors.internal.config.DocumentConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
@@ -17,9 +17,13 @@ import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
@@ -37,7 +41,6 @@ public class GoogleCloudStorage extends BaseStorage {
     private final String bucket;
     private final String objectKey;
 
-    private GoogleCloudStorageDocumentLoader documentLoader;
     private Storage storageService;
     private Iterator<Blob> blobIterator;
     private Page<Blob> blobPage;
@@ -93,23 +96,6 @@ public class GoogleCloudStorage extends BaseStorage {
                     .append("\"universe_domain\": \"googleapis.com\"")
                     .append("}")
                     .toString();
-    }
-
-    private GoogleCloudStorageDocumentLoader getDocumentLoader() {
-        if (this.documentLoader == null) {
-            try {
-                ServiceAccountCredentials serviceAccountCredentials = ServiceAccountCredentials.fromStream(new ByteArrayInputStream(buildJsonCredentials().getBytes()));
-                this.documentLoader = GoogleCloudStorageDocumentLoader.builder()
-                        .credentials(serviceAccountCredentials)
-                        .build();
-            } catch (Exception e) {
-                throw new ModuleException(
-                        String.format("Error initializing GCS Document Loader."),
-                        MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
-                        e);
-            }
-        }
-        return this.documentLoader;
     }
 
     private Storage getStorageService() {
@@ -168,10 +154,9 @@ public class GoogleCloudStorage extends BaseStorage {
         LOGGER.debug("Processing GCS object key: " + blob.getName());
         Document document;
         try {
-            document = getDocumentLoader().loadDocument(this.bucket, blob.getName(), documentParser);
-        } catch(BlankDocumentException bde) {
-            LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
-            throw bde;
+            Resource gcsResource = getResource(this.bucket, blob.getName());
+            document = getDocument(gcsResource);
+
         } catch (Exception e) {
             throw new ModuleException(
                     String.format("Error while parsing document %s.", contextPath),
@@ -195,9 +180,33 @@ public class GoogleCloudStorage extends BaseStorage {
                 String.format("GCS path must contain a bucket and object path: '%s'", contextPath),
                 MuleVectorsErrorType.INVALID_PARAMETERS_ERROR);
         }
-        Document document = getDocumentLoader().loadDocument(this.bucket, this.objectKey, documentParser);
+        Resource gcsResource = getResource(this.bucket, this.objectKey);
+        Document document = getDocument(gcsResource);
         MetadataUtils.addMetadataToDocument(document, fileType, this.objectKey);
         return document;
     }
 
+    /**
+     * Fetches a blob from GCS as an InputStreamResource for streaming large files.
+     *
+     * @param bucketName Name of the bucket
+     * @param blobName   Name of the blob (object key)
+     * @return InputStreamResource
+     */
+    public Resource getResource(String bucketName, String blobName) {
+
+        // Get the blob
+        Blob blob = getStorageService().get(bucketName, blobName);
+
+        // Check if the blob exists
+        if (blob == null) {
+            throw new IllegalArgumentException("Blob not found: " + blobName + " in bucket: " + bucketName);
+        }
+
+        // Get the InputStream using blob.reader()
+        InputStream inputStream = Channels.newInputStream(blob.reader());
+
+        // Wrap it in InputStreamResource
+        return new InputStreamResource(inputStream);
+    }
 }

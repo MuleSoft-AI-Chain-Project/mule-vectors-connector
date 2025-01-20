@@ -22,8 +22,8 @@ import org.mule.extension.vectors.internal.helper.EmbeddingOperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.MetadataFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
-import org.mule.extension.vectors.internal.util.JsonUtils;
-import org.mule.extension.vectors.internal.util.MetadataUtils;
+import org.mule.extension.vectors.internal.util.LangChain4JJsonUtils;
+import org.mule.extension.vectors.internal.util.LangChain4JMetadataUtils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.InputJsonType;
@@ -99,7 +99,7 @@ public class StoreOperations {
         String contentString = IOUtils.toString(content, StandardCharsets.UTF_8);
         JSONObject jsonContent = new JSONObject(contentString);
 
-        HashMap<String, Object> ingestionMetadataMap = MetadataUtils.getIngestionMetadata();
+        HashMap<String, Object> ingestionMetadataMap = LangChain4JMetadataUtils.getIngestionMetadata();
 
         JSONArray jsonTextSegments = jsonContent.getJSONArray(Constants.JSON_KEY_TEXT_SEGMENTS);
         IntStream.range(0, jsonTextSegments.length())
@@ -252,7 +252,7 @@ public class StoreOperations {
 
       JSONObject jsonContent = new JSONObject(contentString);
 
-      HashMap<String, Object> ingestionMetadataMap = MetadataUtils.getIngestionMetadata();
+      HashMap<String, Object> ingestionMetadataMap = LangChain4JMetadataUtils.getIngestionMetadata();
 
       JSONArray jsonTextSegments = jsonContent.getJSONArray(Constants.JSON_KEY_TEXT_SEGMENTS);
       List<TextSegment> textSegments = new LinkedList<>();
@@ -295,7 +295,7 @@ public class StoreOperations {
         embeddingStore.addAll(embeddings, textSegments);
         LOGGER.info(String.format("Ingested into %s  >> %s",
                                   storeName,
-                                  MetadataUtils.getSourceDisplayName(textSegments.get(0).metadata())));
+                                  LangChain4JMetadataUtils.getSourceDisplayName(textSegments.get(0).metadata())));
 
       } catch(Exception e) {
 
@@ -305,7 +305,7 @@ public class StoreOperations {
             e);
       }
 
-      JSONObject jsonObject = JsonUtils.createIngestionStatusObject(storeName);
+      JSONObject jsonObject = LangChain4JJsonUtils.createIngestionStatusObject(storeName);
 
       return createStoreResponse(
           jsonObject.toString(),

@@ -1,16 +1,17 @@
 package org.mule.extension.vectors.internal.storage.azureblob;
 
+import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.common.StorageSharedKeyCredential;
-import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.loader.azure.storage.blob.AzureBlobStorageDocumentLoader;
 
+import org.springframework.ai.document.Document;
+
+import java.io.InputStream;
 import java.util.Iterator;
 
-import dev.langchain4j.data.document.Document;
 import org.mule.extension.vectors.internal.config.DocumentConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -19,6 +20,8 @@ import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
 public class AzureBlobStorage extends BaseStorage {
 
@@ -44,17 +47,6 @@ public class AzureBlobStorage extends BaseStorage {
                 .buildClient();
         }
         return this.blobServiceClient;
-    }
-
-    private AzureBlobStorageDocumentLoader loader;
-
-    private AzureBlobStorageDocumentLoader getLoader() {
-
-        if(this.loader == null) {
-
-            this.loader = new AzureBlobStorageDocumentLoader(getBlobServiceClient());
-        }
-        return this.loader;
     }
 
     private Iterator<BlobItem> blobIterator;
@@ -92,11 +84,10 @@ public class AzureBlobStorage extends BaseStorage {
         LOGGER.debug("Blob name: " + blobItem.getName());
         Document document;
         try {
-            document = getLoader().loadDocument(contextPath, blobItem.getName(), documentParser);
-        } catch(BlankDocumentException bde) {
 
-            LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
-            throw bde;
+            Resource azureBlobResource = getResource(contextPath, blobItem.getName());
+            document = getDocument(azureBlobResource);
+
         } catch (Exception e) {
             throw new ModuleException(
                 String.format("Error while parsing document %s.", contextPath),
@@ -113,8 +104,23 @@ public class AzureBlobStorage extends BaseStorage {
         String containerName = parts[0];
         String blobName = parts[1];
         LOGGER.debug("Blob name: " + blobName);
-        Document document = getLoader().loadDocument(containerName, blobName, documentParser);
+        Resource azureBlobResource = getResource(containerName, blobName);
+        Document document = getDocument(azureBlobResource);
         MetadataUtils.addMetadataToDocument(document, fileType, blobName);
         return document;
+    }
+
+    public Resource getResource(String containerName, String blobName) {
+
+        // Get BlobClient
+        BlobClient blobClient = getBlobServiceClient()
+            .getBlobContainerClient(containerName)
+            .getBlobClient(blobName);
+
+        // Open the blob as an InputStream
+        InputStream inputStream = blobClient.openInputStream();
+
+        // Return as a Spring InputStreamResource
+        return new InputStreamResource(inputStream);
     }
 }

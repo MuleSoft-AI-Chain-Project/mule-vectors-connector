@@ -1,9 +1,11 @@
 package org.mule.extension.vectors.internal.storage;
 
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.DocumentParser;
-import dev.langchain4j.data.document.parser.TextDocumentParser;
-import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.document.DocumentReader;
+import org.springframework.ai.reader.TextReader;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
+import org.springframework.core.io.Resource;
+
 import org.mule.extension.vectors.internal.config.DocumentConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
+import java.util.List;
 
 public abstract class BaseStorage implements Iterator<Document> {
 
@@ -30,7 +33,6 @@ public abstract class BaseStorage implements Iterator<Document> {
   protected BaseStorageConnection storageConnection;
   protected String contextPath;
   protected String fileType;
-  protected DocumentParser documentParser;
 
   public BaseStorage(DocumentConfiguration documentConfiguration, BaseStorageConnection storageConnection, String contextPath, String fileType) {
 
@@ -38,7 +40,6 @@ public abstract class BaseStorage implements Iterator<Document> {
     this.storageConnection = storageConnection;
     this.contextPath = contextPath;
     this.fileType = fileType;
-    this.documentParser = getDocumentParser(fileType);
   }
 
   public BaseStorage(DocumentConfiguration documentConfiguration, String contextPath, String fileType) {
@@ -46,7 +47,6 @@ public abstract class BaseStorage implements Iterator<Document> {
     this.documentConfiguration = documentConfiguration;
     this.contextPath = contextPath;
     this.fileType = fileType;
-    this.documentParser = getDocumentParser(fileType);
   }
 
   @Override
@@ -68,23 +68,23 @@ public abstract class BaseStorage implements Iterator<Document> {
     return storageConnection == null ? Constants.STORAGE_TYPE_LOCAL : storageConnection.getStorageType();
   }
 
-  protected DocumentParser getDocumentParser(String fileType) {
+  protected Document getDocument(Resource resource) {
 
-    DocumentParser documentParser = null;
+    DocumentReader documentReader = null;
     switch (fileType){
 
       case Constants.FILE_TYPE_TEXT:
       case Constants.FILE_TYPE_CRAWL:
       case Constants.FILE_TYPE_URL:
-        documentParser = new TextDocumentParser();
+        documentReader = new TextReader(resource);
         break;
       case Constants.FILE_TYPE_ANY:
-        documentParser = new ApacheTikaDocumentParser();
+        documentReader = new TikaDocumentReader(resource);
         break;
       default:
         throw new IllegalArgumentException("Unsupported File Type: " + fileType);
     }
-    return documentParser;
+    return documentReader.get().get(0);
   }
 
   public static BaseStorage.Builder builder() {
