@@ -10,7 +10,7 @@ import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorSto
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
-import org.mule.extension.vectors.internal.util.JsonUtils;
+import org.mule.extension.vectors.internal.util.LangChain4JJsonUtils;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +112,7 @@ public class PGVectorStore extends BaseStore {
       LOGGER.error("Error while listing sources", e);
     }
 
-    jsonObject.put(Constants.JSON_KEY_SOURCES, JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
+    jsonObject.put(Constants.JSON_KEY_SOURCES, LangChain4JJsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
     jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
 
     return jsonObject;

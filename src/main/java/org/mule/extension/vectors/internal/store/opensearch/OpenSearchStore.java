@@ -4,9 +4,6 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.internal.Utils;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.opensearch.OpenSearchEmbeddingStore;
-import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
@@ -16,11 +13,10 @@ import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearc
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
-import org.mule.extension.vectors.internal.util.JsonUtils;
+import org.mule.extension.vectors.internal.util.LangChain4JJsonUtils;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.Time;
-import org.opensearch.client.opensearch._types.query_dsl.FieldAndFormat;
 import org.opensearch.client.opensearch.core.ScrollRequest;
 import org.opensearch.client.opensearch.core.ScrollResponse;
 import org.opensearch.client.opensearch.core.SearchRequest;
@@ -149,7 +145,7 @@ public class OpenSearchStore extends BaseStore {
       LOGGER.error("Error while listing sources", e);
     }
 
-    jsonObject.put(Constants.JSON_KEY_SOURCES, JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
+    jsonObject.put(Constants.JSON_KEY_SOURCES, LangChain4JJsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
     jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
 
     return jsonObject;

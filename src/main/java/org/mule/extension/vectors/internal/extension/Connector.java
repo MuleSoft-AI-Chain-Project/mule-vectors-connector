@@ -24,7 +24,7 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
 @Configurations({DocumentConfiguration.class, EmbeddingConfiguration.class, StoreConfiguration.class})
 @RequiresEnterpriseLicense(allowEvaluationLicense = true)
 @ErrorTypes(MuleVectorsErrorType.class)
-@JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
+@JavaVersionSupport({JAVA_17})
 public class Connector {
 
 }

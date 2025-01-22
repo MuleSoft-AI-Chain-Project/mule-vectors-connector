@@ -1,7 +1,8 @@
 package org.mule.extension.vectors.internal.pagination;
 
-import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.Document;
+import org.mule.extension.vectors.internal.util.JsonUtils;
+import org.springframework.ai.document.Document;
+
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.internal.config.DocumentConfiguration;
@@ -10,7 +11,7 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
-import org.mule.extension.vectors.internal.util.JsonUtils;
+import org.mule.extension.vectors.internal.util.LangChain4JJsonUtils;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -18,7 +19,6 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.apache.commons.io.IOUtils.toInputStream;
@@ -75,11 +75,10 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
               streamingHelper
           );
 
-        } catch (BlankDocumentException bde) {
+        } catch (Exception e) { // TODO: Check blank exception scenario
 
           // Look for next page if any on error
         }
-
       }
 
       return Collections.emptyList();

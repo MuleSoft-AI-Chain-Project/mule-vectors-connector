@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.internal.operation;
 
-import dev.langchain4j.data.document.Document;
+import org.mule.extension.vectors.internal.util.JsonUtils;
+import org.springframework.ai.document.Document;
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.internal.config.DocumentConfiguration;
@@ -12,7 +13,6 @@ import org.mule.extension.vectors.internal.helper.parameter.SegmentationParamete
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.pagination.DocumentPagingProvider;
 import org.mule.extension.vectors.internal.metadata.DocumentsOutputTypeMetadataResolver;
-import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;

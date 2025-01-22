@@ -7,16 +7,18 @@ package org.mule.extension.vectors.internal.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.runtime.api.exception.MuleRuntimeException;
-import org.mule.runtime.extension.api.exception.ModuleException;
-import org.springframework.ai.document.Document;
+
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.internal.ValidationUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -28,11 +30,11 @@ import java.util.stream.IntStream;
  * Utility class for JSON operations, providing methods to convert strings to JSON nodes,
  * convert collections of JSON objects to JSON arrays, and handle document segmentation.
  */
-public final class JsonUtils {
+public final class LangChain4JJsonUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LangChain4JJsonUtils.class);
 
-  private JsonUtils() {}
+  private LangChain4JJsonUtils() {}
 
   /**
    * Converts a string to a JsonNode object.
@@ -83,28 +85,28 @@ public final class JsonUtils {
    */
   public static JSONObject docToTextSegmentsJson(Document document, int maxSegmentSizeInChars, int maxOverlapSizeInChars) {
 
-    List<Document> documentChunks;
+    List<TextSegment> textSegments;
 
     if (maxSegmentSizeInChars != 0 || maxOverlapSizeInChars != 0) {
 
       // Ensure segment and overlap sizes are positive
-      if(maxSegmentSizeInChars <= 0) throw new ModuleException("maxSegmentSizeInChars must be greater than zero", MuleVectorsErrorType.DOCUMENT_OPERATIONS_FAILURE);
-      if(maxOverlapSizeInChars <= 0) throw new ModuleException("maxOverlapSizeInChars must be greater than zero", MuleVectorsErrorType.DOCUMENT_OPERATIONS_FAILURE);
+      ValidationUtils.ensureGreaterThanZero(maxSegmentSizeInChars, "maxSegmentSizeInChars");
+      ValidationUtils.ensureGreaterThanZero(maxOverlapSizeInChars, "maxOverlapSizeInChars");
 
-      TokenTextSplitter splitter = new TokenTextSplitter(maxSegmentSizeInChars, 10, 10, 5000, true);
-      documentChunks = splitter.split(document);
-
+      // Split document into segments with specified parameters
+      DocumentSplitter splitter = DocumentSplitters.recursive(maxSegmentSizeInChars, maxOverlapSizeInChars);
+      textSegments = splitter.split(document);
     } else {
       // Use the document as a single text segment if no size constraints are provided
-      documentChunks = Collections.singletonList(document);
+      textSegments = Collections.singletonList(document.toTextSegment());
     }
 
     // Use Streams to populate a JSONArray with segment details
-    JSONArray jsonTextSegments = IntStream.range(0, documentChunks.size())
+    JSONArray jsonTextSegments = IntStream.range(0, textSegments.size())
         .mapToObj(i -> {
           JSONObject jsonTextSegment = new JSONObject();
-          jsonTextSegment.put(Constants.JSON_KEY_TEXT, documentChunks.get(i).getText());
-          jsonTextSegment.put(Constants.JSON_KEY_METADATA, new JSONObject(documentChunks.get(i).getMetadata()));
+          jsonTextSegment.put(Constants.JSON_KEY_TEXT, textSegments.get(i).text());
+          jsonTextSegment.put(Constants.JSON_KEY_METADATA, new JSONObject(textSegments.get(i).metadata().toMap()));
           return jsonTextSegment;
         })
         .collect(JSONArray::new, JSONArray::put, JSONArray::putAll);

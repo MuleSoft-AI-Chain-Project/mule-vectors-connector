@@ -4,6 +4,7 @@ import com.azure.ai.openai.OpenAIClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
 import com.azure.ai.openai.OpenAIServiceVersion;
 import com.azure.core.credential.AzureKeyCredential;
+import com.azure.core.credential.KeyCredential;
 import com.azure.core.http.HttpClient;
 import com.azure.core.http.netty.NettyAsyncHttpClientProvider;
 import com.azure.core.http.policy.ExponentialBackoffOptions;
@@ -11,7 +12,6 @@ import com.azure.core.http.policy.HttpLogOptions;
 import com.azure.core.http.policy.RetryOptions;
 import com.azure.core.util.Header;
 import com.azure.core.util.HttpClientOptions;
-import dev.langchain4j.internal.ValidationUtils;
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -73,9 +73,10 @@ public class AzureOpenAIModelConnection implements BaseModelConnection {
     ExponentialBackoffOptions exponentialBackoffOptions = new ExponentialBackoffOptions();
     exponentialBackoffOptions.setMaxRetries(3);
     RetryOptions retryOptions = new RetryOptions(exponentialBackoffOptions);
+    AzureKeyCredential credential = new AzureKeyCredential(apiKey);
     OpenAIClientBuilder openAIClientBuilder = (new OpenAIClientBuilder())
-        .credential(new AzureKeyCredential(apiKey))
-        .endpoint(ValidationUtils.ensureNotBlank(endpoint, "endpoint"))
+        .endpoint(endpoint)
+        .credential(credential)
         .serviceVersion(OpenAIServiceVersion.getLatest())
         .httpClient(httpClient).clientOptions(clientOptions)
         .httpLogOptions(httpLogOptions)
@@ -99,7 +100,7 @@ public class AzureOpenAIModelConnection implements BaseModelConnection {
   @Override
   public boolean isValid() {
 
-    openAIClient.listBatches();;
+    openAIClient.listBatches();
     LOGGER.debug("Azure Open AI connection is valid.");
     return true;
   }

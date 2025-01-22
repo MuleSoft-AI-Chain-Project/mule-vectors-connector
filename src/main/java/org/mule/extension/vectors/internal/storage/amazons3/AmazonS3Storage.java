@@ -1,27 +1,27 @@
 package org.mule.extension.vectors.internal.storage.amazons3;
 
-import dev.langchain4j.data.document.BlankDocumentException;
 import org.mule.extension.vectors.internal.config.DocumentConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import software.amazon.awssdk.regions.Region;
-import dev.langchain4j.data.document.loader.amazon.s3.AmazonS3DocumentLoader;
-import dev.langchain4j.data.document.loader.amazon.s3.AwsCredentials;
 
+import org.springframework.ai.document.Document;
+
+import java.io.InputStream;
 import java.util.Iterator;
 
-import dev.langchain4j.data.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
+
 
 public class AmazonS3Storage extends BaseStorage {
 
@@ -33,19 +33,8 @@ public class AmazonS3Storage extends BaseStorage {
 
     private String continuationToken = null;
 
-    private AwsCredentials getCredentials() {
-        return new AwsCredentials(awsAccessKeyId, awsSecretAccessKey);
-    }
-
-    private AmazonS3DocumentLoader loader;
-
-    private AmazonS3DocumentLoader getLoader() {
-
-        if(loader == null) {
-
-            loader = new AmazonS3DocumentLoader(s3Client);
-        }
-        return loader;
+    private AwsBasicCredentials getCredentials() {
+        return AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey);
     }
 
     private S3Client s3Client;
@@ -115,11 +104,10 @@ public class AmazonS3Storage extends BaseStorage {
         LOGGER.debug("AWS S3 Object Key: " + object.key());
         Document document;
         try {
-            document = getLoader().loadDocument(getAWSS3Bucket(), object.key(), documentParser);
-        } catch(BlankDocumentException bde) {
 
-            LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
-            throw bde;
+            Resource s3Resource = getResource(getAWSS3Bucket(), object.key());
+            document = getDocument(s3Resource);
+
         } catch (Exception e) {
 
             throw new ModuleException(
@@ -134,9 +122,23 @@ public class AmazonS3Storage extends BaseStorage {
     public Document getSingleDocument() {
 
         LOGGER.debug("S3 URL: " + contextPath);
-        Document document = getLoader().loadDocument(getAWSS3Bucket(), getAWSS3ObjectKey(), documentParser);
+        Resource s3Resource = getResource(getAWSS3Bucket(), getAWSS3ObjectKey());
+        Document document = getDocument(s3Resource);
         MetadataUtils.addMetadataToDocument(document, fileType, getAWSS3ObjectKey());
         return document;
+    }
+
+    public Resource getResource(String bucketName, String objectKey) {
+
+        // Create a GetObjectRequest
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+            .bucket(bucketName)
+            .key(objectKey)
+            .build();
+        // Fetch the object as a stream
+        InputStream inputStream = getS3Client().getObject(getObjectRequest);
+        // Wrap it in a Spring InputStreamResource
+        return new InputStreamResource(inputStream);
     }
 
     private String getAWSS3Bucket() {
