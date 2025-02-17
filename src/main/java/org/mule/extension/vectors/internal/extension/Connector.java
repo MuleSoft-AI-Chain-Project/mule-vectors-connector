@@ -25,7 +25,6 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_8;
 @Xml(prefix = "ms-vectors")
 @Extension(name = "MuleSoft Vectors Connector", category = Category.SELECT)
 @Configurations({StorageConfiguration.class, EmbeddingConfiguration.class, StoreConfiguration.class})
-@RequiresEnterpriseLicense(allowEvaluationLicense = true)
 @ErrorTypes(MuleVectorsErrorType.class)
 @JavaVersionSupport({JAVA_8, JAVA_11, JAVA_17})
 @SubTypeMapping(baseType = MediaProcessorParameters.class,
