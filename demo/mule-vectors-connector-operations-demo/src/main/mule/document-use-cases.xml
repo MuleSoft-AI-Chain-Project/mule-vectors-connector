@@ -16,9 +16,18 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="03497871-8337-43e9-8934-02a4e871c130" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>
 	<flow name="query-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
+		<set-variable value="#[payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody"/>
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0">
 			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
 		</ms-vectors:embedding-generate-from-text>
-		<ms-vectors:query doc:name="[Store] Query" doc:id="40ee5ee9-ce0d-427f-b023-9ff703e947c6" config-ref="PGVector_Store_config" storeName="demo" maxResults="5" minScore="0.5"/>
+		<ms-vectors:query doc:name="[Store] Query" doc:id="40ee5ee9-ce0d-427f-b023-9ff703e947c6" config-ref="PGVector_Store_config" storeName="demo" maxResults="5" minScore="0.5">
+			<ms-vectors:text-segment-and-embedding><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
+			<ms-vectors:condition><![CDATA[#[vars.requestBody.filter default ""]]]></ms-vectors:condition>
+		</ms-vectors:query>
+	</flow>
+	<flow name="remove-from-store" doc:id="cba3c450-fbd9-4964-96b7-34a2bf892909">
+		<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="05a235cb-158d-416e-927e-d13f9ce8db06" config-ref="PGVector_Store_config" storeName="demo">
+			<ms-vectors:condition ><![CDATA[#[payload.filter]]]></ms-vectors:condition>
+		</ms-vectors:store-remove>
 	</flow>
 </mule>

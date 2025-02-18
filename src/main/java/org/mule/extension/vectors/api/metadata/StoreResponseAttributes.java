@@ -30,7 +30,7 @@ public class StoreResponseAttributes implements Serializable {
   /**
    * The filter attribute associated with the store response.
    */
-  private FilterAttribute filter;
+  private String filterCondition;
 
   /**
    * Additional attributes not explicitly defined as fields in this class.
@@ -55,7 +55,7 @@ public class StoreResponseAttributes implements Serializable {
             : null;
 
     if (filterParams != null) {
-      this.filter = new FilterAttribute(filterParams.getMetadataKey(), filterParams.getFilterMethod(), filterParams.getMetadataValue());
+      this.filterCondition = filterParams.getCondition();
     }
 
     this.otherAttributes = requestAttributes;
@@ -71,12 +71,12 @@ public class StoreResponseAttributes implements Serializable {
   }
 
   /**
-   * Gets the filter attribute associated with the store response.
+   * Retrieves the filter condition.
    *
-   * @return the filter attribute, or {@code null} if not available.
+   * @return the current filter condition.
    */
-  public FilterAttribute getFilter() {
-    return filter;
+  public String getFilterCondition() {
+    return filterCondition;
   }
 
   /**
@@ -89,68 +89,5 @@ public class StoreResponseAttributes implements Serializable {
   @MediaType(value = APPLICATION_JSON, strict = false)
   public Map<String, Object> getOtherAttributes() {
     return otherAttributes;
-  }
-
-  /**
-   * Represents the filter attribute of a store response.
-   * <p>
-   * A filter is defined by a metadata key, a filter method, and a metadata value.
-   */
-  static class FilterAttribute {
-
-    /**
-     * The key of the metadata used in the filter.
-     */
-    private String metadataKey;
-
-    /**
-     * The method applied to filter the metadata.
-     */
-    private String filterMethod;
-
-    /**
-     * The value of the metadata used in the filter.
-     */
-    private Object metadataValue;
-
-    /**
-     * Constructs a {@code FilterAttribute} instance.
-     *
-     * @param metadataKey    the key of the metadata used in the filter.
-     * @param filterMethod   the filter method applied.
-     * @param metadataValue  the value of the metadata used in the filter.
-     */
-    public FilterAttribute(String metadataKey, String filterMethod, Object metadataValue) {
-      this.metadataKey = metadataKey;
-      this.filterMethod = filterMethod;
-      this.metadataValue = metadataValue;
-    }
-
-    /**
-     * Gets the metadata key.
-     *
-     * @return the metadata key.
-     */
-    public String getMetadataKey() {
-      return metadataKey;
-    }
-
-    /**
-     * Gets the filter method.
-     *
-     * @return the filter method.
-     */
-    public String getFilterMethod() {
-      return filterMethod;
-    }
-
-    /**
-     * Gets the metadata value.
-     *
-     * @return the metadata value.
-     */
-    public Object getMetadataValue() {
-      return metadataValue;
-    }
   }
 }
