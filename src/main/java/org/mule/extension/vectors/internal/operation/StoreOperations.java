@@ -265,7 +265,7 @@ public class StoreOperations {
           .forEach(jsonTextSegment -> {
             HashMap<String, Object> metadataMap = (HashMap<String, Object>)jsonTextSegment.getJSONObject(Constants.JSON_KEY_METADATA).toMap();
             metadataMap.putAll(ingestionMetadataMap);
-            if(customMetadata != null) metadataMap.putAll(customMetadata.getMetadataEntries());
+            if(customMetadata != null && customMetadata.getMetadataEntries() != null) metadataMap.putAll(customMetadata.getMetadataEntries());
             Metadata metadata = Metadata.from(metadataMap);
             textSegments.add(new TextSegment(jsonTextSegment.getString(Constants.JSON_KEY_TEXT), metadata));
           });
