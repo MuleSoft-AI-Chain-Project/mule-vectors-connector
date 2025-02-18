@@ -84,7 +84,7 @@ public class StoreOperations {
           @Content InputStream content,
       @Alias("maxResults") @Summary("Maximum number of results (text segments) retrieved.") Number maxResults,
       @Alias("minScore") @Summary("Minimum score used to filter retrieved results (text segments).") Double minScore,
-      @ParameterGroup(name = "Filter") MetadataFilterParameters.SearchFilterParameters searchFilterParams) {
+      @ParameterGroup(name = "Metadata Filter") MetadataFilterParameters.SearchFilterParameters searchFilterParams) {
 
     List<TextSegment> textSegments = new LinkedList<>();
     List<Embedding> embeddings = new LinkedList<>();
@@ -166,7 +166,7 @@ public class StoreOperations {
 
       JSONObject jsonObject = new JSONObject();
 
-      if(searchFilterParams.areFilterParamsSet()) {
+      if(searchFilterParams != null && searchFilterParams.isConditionSet()) {
 
         EmbeddingOperationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
@@ -405,7 +405,7 @@ public class StoreOperations {
       @Config StoreConfiguration storeConfiguration,
       @Connection BaseStoreConnection storeConnection,
       String storeName,
-      @ParameterGroup(name = "Filter") MetadataFilterParameters.RemoveFilterParameters removeFilterParams) {
+      @ParameterGroup(name = "Metadata Filter") MetadataFilterParameters.RemoveFilterParameters removeFilterParams) {
 
     try {
       EmbeddingOperationValidator.validateOperationType(

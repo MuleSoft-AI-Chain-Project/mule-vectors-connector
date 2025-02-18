@@ -181,9 +181,14 @@ types:
             type: string
             description: The query prompt.
             required: true
+          filter:
+            type: string
+            description: The query filter.
+            required: false
         example:
           {
-            "prompt": "What is the invoice number?"
+            "prompt": "What is the invoice number?",
+              "filter": "index==1 AND (file_name == 'example.pdf' OR file_type == 'any')"          
           }
     responses:
       200:
