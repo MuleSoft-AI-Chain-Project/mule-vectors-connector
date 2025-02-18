@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	
-	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="d2badd91-4980-4ada-82d2-e47f261aca02" name="Router" api="api/vectors-connector-operations-api.raml" parser="RAML"/>
+	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="d2badd91-4980-4ada-82d2-e47f261aca02" name="vectors-connector-operations-api-config" api="api/vectors-connector-operations-api.raml"/>
 	
 	<configuration-properties doc:name="Configuration properties" doc:id="bf18f817-85e2-4ca2-9de7-16c6597b3cbb" file="config.properties" />
 	
