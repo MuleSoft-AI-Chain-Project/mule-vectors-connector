@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	<flow name="load-single-document-operation" doc:id="4bc1532b-bb2d-452c-8f1a-81c9a696816b" >
+		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="9e0f2c9c-cc1e-4c1e-8447-34a179a3f091" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
+	</flow>
+	<flow name="load-list-of-documents-operation" doc:id="a7a0965f-91a0-43ca-94ef-7e2790c71010" >
+		<ms-vectors:document-load-list doc:name="[Document] Load list" doc:id="7e830099-1d02-4215-bda8-4f85dbe500e0" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
+		<ee:transform doc:name="Transform Message" doc:id="f2fac866-8bdd-4749-86c3-eca56dc9d573" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

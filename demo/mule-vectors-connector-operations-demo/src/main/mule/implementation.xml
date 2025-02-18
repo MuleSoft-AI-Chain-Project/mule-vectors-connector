@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+	<flow name="vectors-connector-operations-api-main" doc:id="e396e028-832d-4a9b-b1f5-92adf1e13000" >
+		<http:listener doc:name="Listener" doc:id="40b75fa4-a347-46cb-b0b2-10fe9b2e22fb" config-ref="HTTP_Listener_config" path="/api/*" allowedMethods="OPTIONS, GET, POST, PUT, DELETE">
+			<http:response statusCode="200" />
+		</http:listener>
+		<apikit:router doc:name="APIkit Router" doc:id="342ed399-ba2a-40c3-9be7-145dba0b9a5d" config-ref="Router"/>
+	</flow>
+	<flow name="vectors-connector-operations-api-console" doc:id="7c83bb4d-2fe5-46e0-8421-1aaf828dfb67" >
+		<http:listener doc:name="Listener" doc:id="6893f502-607f-4a22-a58c-18653b35f992" config-ref="HTTP_Listener_config" path="/console/*" allowedMethods="OPTIONS, GET, POST, PUT, DELETE">
+			<http:response statusCode="200" />
+		</http:listener>
+		<apikit:console doc:name="APIkit Console" doc:id="9541a084-aab4-4c96-bc93-645494eb5d00" config-ref="Router"/>
+	</flow>
+	<flow name="post:\load-document:application\json" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e" >
+		<flow-ref doc:name="load-single-document-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-single-document-operation"/>
+	</flow>
+	<flow name="post:\load-documents:application\json" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed" >
+		<flow-ref doc:name="load-list-of-documents-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-list-of-documents-operation" />
+	</flow>
+	<flow name="post:\add-text:application\json" doc:id="a1dc1dc4-86c0-4489-b89a-8c68883416e6" >
+		<flow-ref doc:name="add-text-to-store-use-case" doc:id="219e02f2-c0c3-4ae4-912b-51e63289b1cb" name="add-text-to-store-use-case"/>
+	</flow>
+	<flow name="post:\add-document:application\json" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d" >
+		<flow-ref doc:name="add-doc-to-store-use-case" doc:id="46b55205-337c-41bb-8033-e15fd7656e07" name="add-doc-to-store-use-case"/>
+	</flow>
+	<flow name="post:\query:application\json" doc:id="b1cb7923-f517-458b-8eba-5166052905d3" >
+		<flow-ref doc:name="query-from-store-use-case" doc:id="c6946da2-9869-4555-b07e-fd53db538a1a" name="query-from-store-use-case"/>
+	</flow>
+</mule>

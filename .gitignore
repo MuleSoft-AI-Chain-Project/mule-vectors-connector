@@ -7,6 +7,16 @@
 # VSCode
 .vscode
 
+# Anypoint Studio
+.metadata/
+.mule/
+.sfdx/
+.tooling*/
+weave/
+/demo/*/src/test/
+/demo/**/*.bin
+/demo/**/config.properties
+
 # Maven
 target/
 pom.xml.tag
@@ -19,7 +29,6 @@ dependency-reduced-pom.xml
 # MuleSoft
 .mule/
 .mule/plugins/
-mule-artifact.json
 exchange-docs/
 
 # Logs
@@ -50,4 +59,5 @@ generated-test-sources/
 *.tmp
 *.sh
 
+.java-version
 
