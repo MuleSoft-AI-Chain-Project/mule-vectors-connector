@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	<flow name="remove-from-store" doc:id="c14ed118-102d-481f-889c-3046e4da656a">
+		<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="92cd207f-0084-4b40-ba41-f07296f8ce98" config-ref="PGVector_Store_config" storeName="demo">
+			<ms-vectors:condition ><![CDATA[#[payload.filter]]]></ms-vectors:condition>
+		</ms-vectors:store-remove>
+	</flow>
+</mule>
