@@ -27,7 +27,7 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
 
     try {
 
-      MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(milvusStoreConnectionParameters.getUrl());
+      MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(milvusStoreConnectionParameters.getUrl(), milvusStoreConnectionParameters.getToken());
       milvusStoreConnection.connect();
       return milvusStoreConnection;
 
@@ -47,7 +47,6 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
   public ConnectionValidationResult validate(BaseStoreConnection connection) {
 
     try {
-
       if (connection.isValid()) {
         return ConnectionValidationResult.success();
       } else {

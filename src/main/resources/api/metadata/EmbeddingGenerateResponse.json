@@ -16,6 +16,12 @@
               "index": {
                 "type": "integer"
               },
+              "media_type": {
+                "type": "string"
+              },
+              "mime_type": {
+                "type": "string"
+              },
               "file_type": {
                 "type": "string"
               },

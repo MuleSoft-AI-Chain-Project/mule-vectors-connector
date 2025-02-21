@@ -3,7 +3,7 @@ package org.mule.extension.vectors.internal.operation;
 import dev.langchain4j.data.document.Document;
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
-import org.mule.extension.vectors.internal.config.DocumentConfiguration;
+import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.DocumentErrorTypeProvider;
@@ -42,7 +42,7 @@ public class DocumentOperations {
    * Loads a single document from the storage specified by the {@code contextPath} and returns its content
    * in JSON format. The document is processed into segments based on the provided segmentation parameters.
    *
-   * @param documentConfiguration the configuration for accessing the document.
+   * @param storageConfiguration the configuration for accessing the document.
    * @param storageConnection      the connection to the document storage.
    * @param documentParameters     parameters for specifying the document location and type.
    * @param segmentationParameters parameters for segmenting the document content into smaller parts.
@@ -56,14 +56,14 @@ public class DocumentOperations {
   @Throws(DocumentErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/DocumentLoadSingleResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
-  loadSingleDocument(@Config DocumentConfiguration documentConfiguration,
+  loadSingleDocument(@Config StorageConfiguration storageConfiguration,
                      @Connection BaseStorageConnection storageConnection,
                      @ParameterGroup(name = "Document") DocumentParameters documentParameters,
                      @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
 
     try {
       BaseStorage baseStorage = BaseStorage.builder()
-          .configuration(documentConfiguration)
+          .configuration(storageConfiguration)
           .connection(storageConnection)
           .contextPath(documentParameters.getContextPath())
           .fileType(documentParameters.getFileType())
@@ -97,7 +97,7 @@ public class DocumentOperations {
    * paginated access to the documents. The documents are segmented into smaller parts
    * according to the provided segmentation parameters.
    *
-   * @param documentConfiguration the configuration for accessing the documents.
+   * @param storageConfiguration the configuration for accessing the documents.
    * @param documentParameters     parameters for specifying the documents' location and type.
    * @param segmentationParameters parameters for segmenting the documents into smaller parts.
    * @param streamingHelper        helper for managing the streaming of paginated results.
@@ -111,13 +111,13 @@ public class DocumentOperations {
   @Throws(DocumentErrorTypeProvider.class)
   @OutputResolver(output = DocumentsOutputTypeMetadataResolver.class)
   public PagingProvider<BaseStorageConnection, Result<CursorProvider, DocumentResponseAttributes>>
-  loadDocumentList(@Config DocumentConfiguration documentConfiguration,
+  loadDocumentList(@Config StorageConfiguration storageConfiguration,
                    @ParameterGroup(name = "Document") DocumentParameters documentParameters,
                    @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters,
                    StreamingHelper streamingHelper) {
 
     try {
-      return new DocumentPagingProvider(documentConfiguration,
+      return new DocumentPagingProvider(storageConfiguration,
                                         documentParameters,
                                         segmentationParameters,
                                         streamingHelper);

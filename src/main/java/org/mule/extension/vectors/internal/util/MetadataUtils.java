@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.Media;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
@@ -59,18 +63,6 @@ public class MetadataUtils {
   }
 
   /**
-   * Adds ingestion metadata to a given document.
-   *
-   * @param document the Document to which ingestion metadata will be added.
-   */
-  public static void addIngestionMetadataToDocument(Document document) {
-
-    document.metadata().put(Constants.METADATA_KEY_SOURCE_ID, dev.langchain4j.internal.Utils.randomUUID());
-    document.metadata().put(Constants.METADATA_KEY_INGESTION_DATETIME, Utils.getCurrentISO8601Timestamp());
-    document.metadata().put(Constants.METADATA_KEY_INGESTION_TIMESTAMP, Utils.getCurrentTimeMillis());
-  }
-
-  /**
    * Adds metadata to a document based on the specified file type.
    *
    * @param document the Document to which metadata is added.
@@ -107,5 +99,57 @@ public class MetadataUtils {
 
     addMetadataToDocument(document, fileType);
     if(!fileName.isEmpty()) document.metadata().put(Constants.METADATA_KEY_FILE_NAME, fileName);
+  }
+
+  /**
+   * Adds metadata to a Media object based on its type and image properties.
+   *
+   * @param media     The Media object to which metadata is added.
+   * @param mediaType The type of the media, such as "image", "video", etc. If this value is not empty, it will be added to the
+   *                  metadata.
+   *
+   *                  The method performs the following: - If media type is provided, it is added to the metadata under the key
+   *                  {@code METADATA_KEY_MEDIA_TYPE}. - If the media has an image and the mime type is not null or empty, it adds
+   *                  the mime type to the metadata under the key {@code METADATA_KEY_MIME_TYPE} and extracts the file type from
+   *                  the mime type. - If the media has an image and a non-empty URL, it adds the image URL to the metadata under
+   *                  the key {@code METADATA_KEY_SOURCE}. If the URL uses the "file" scheme, it extracts metadata including the
+   *                  absolute directory path, filename, and file type from the file name.
+   */
+  public static void addImageMetadataToMedia(Media media, String mediaType) {
+
+    if (!mediaType.isEmpty())
+      media.metadata().put(Constants.METADATA_KEY_MEDIA_TYPE, mediaType);
+
+    if (media.hasImage() && media.image().mimeType() != null && !media.image().mimeType().toString().isEmpty()) {
+
+      String mimeType = media.image().mimeType().toString();
+      media.metadata().put(Constants.METADATA_KEY_MIME_TYPE, mimeType);
+      // Extract file type from mime type
+      String fileTypeFromMime = mimeType.contains("/") ? mimeType.substring(mimeType.indexOf("/") + 1) : null;
+      if (fileTypeFromMime != null) {
+        media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromMime);
+      }
+    }
+
+    if (media.hasImage() && !media.image().url().toString().isEmpty()) {
+
+      URI uri = media.image().url();
+      media.metadata().put(Constants.METADATA_KEY_SOURCE, media.image().url().toString());
+      switch (uri.getScheme().toLowerCase()) {
+
+        case "file":
+          Path path = Paths.get(uri);
+          media.metadata().put(Constants.METADATA_KEY_ABSOLUTE_DIRECTORY_PATH, path.getParent().toString());
+          media.metadata().put(Constants.METADATA_KEY_FILE_NAME, path.getFileName().toString());
+
+          // Extract file type from file name
+          String fileName = path.getFileName().toString();
+          String fileTypeFromName = fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".") + 1) : null;
+          if (fileTypeFromName != null) {
+            media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromName);
+          }
+
+      }
+    }
   }
 }

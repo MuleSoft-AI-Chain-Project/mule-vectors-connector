@@ -24,13 +24,23 @@ public class NomicModelConnection implements BaseModelConnection {
 
   private String apiKey;
 
-  public NomicModelConnection(String apiKey) {
+  private int maxAttempts;
+  private long timeout;
+
+  public NomicModelConnection(String apiKey, int maxAttempts, long timeout) {
+
     this.apiKey = apiKey;
+    this.maxAttempts = maxAttempts;
+    this.timeout = timeout;
   }
 
   public String getApiKey() {
     return apiKey;
   }
+
+  public int getMaxAttempts() { return maxAttempts;}
+
+  public long getTimeout() { return timeout; }
 
   @Override
   public String getEmbeddingModelService() {

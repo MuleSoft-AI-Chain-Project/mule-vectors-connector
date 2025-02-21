@@ -20,7 +20,7 @@ MuleSoft Vectors provides access to a broad number of external Vector Stores and
 <dependency>
    <groupId>io.github.mulesoft-ai-chain-project</groupId>
    <artifactId>mule4-vectors-connector</artifactId>
-   <version>0.3.10</version>
+   <version>{version}</version>
    <classifier>mule-plugin</classifier>
 </dependency>
 ```
@@ -34,7 +34,7 @@ Then add the following dependency to your application's `pom.xml`:
 <dependency>
     <groupId>com.mulesoft.connectors</groupId>
     <artifactId>mule4-vectors-connector</artifactId>
-    <version>0.3.10</version>
+    <version>{version}</version>
     <classifier>mule-plugin</classifier>
 </dependency>
 ```
@@ -47,6 +47,9 @@ This process will require you to build the connector as above, but additionally 
 to make some changes to the `pom.xml`.  For this reason, we recommend you fork the repository.
 
 Then, follow the MuleSoft [documentation](https://docs.mulesoft.com/exchange/to-publish-assets-maven) to modify and publish the asset.
+
+### Contribution
+[How to contribute](https://mac-project.ai/docs/contribute)
 
 ### Documentation 
 - Check out the complete documentation in [mac-project.ai](https://mac-project.ai/docs/ms-vectors)

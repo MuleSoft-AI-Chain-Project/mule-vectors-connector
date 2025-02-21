@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.metadata;
 
-import org.mule.extension.vectors.internal.config.DocumentConfiguration;
+import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.json.api.JsonTypeLoader;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import java.io.InputStream;
 
-public class DocumentsOutputTypeMetadataResolver  implements OutputTypeResolver<DocumentConfiguration> {
+public class DocumentsOutputTypeMetadataResolver  implements OutputTypeResolver<StorageConfiguration> {
 
   @Override
   public String getCategoryName() {
@@ -20,7 +20,7 @@ public class DocumentsOutputTypeMetadataResolver  implements OutputTypeResolver<
   }
 
   @Override
-  public MetadataType getOutputType(MetadataContext metadataContext, DocumentConfiguration documentConfiguration)
+  public MetadataType getOutputType(MetadataContext metadataContext, StorageConfiguration storageConfiguration)
       throws MetadataResolvingException, ConnectionException {
 
     InputStream resourceAsStream = Thread.currentThread()

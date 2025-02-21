@@ -26,6 +26,7 @@ import java.util.List;
 public class MilvusStore extends BaseStore {
 
   private final String uri;
+  private final String token;
   private MilvusServiceClient client;
 
   private MilvusServiceClient getClient() {
@@ -36,6 +37,7 @@ public class MilvusStore extends BaseStore {
       this.client = new MilvusServiceClient(
           ConnectParam.newBuilder()
               .withUri(this.uri)
+              .withToken(token)
               .build()
       );
     }
@@ -47,6 +49,7 @@ public class MilvusStore extends BaseStore {
     super(storeConfiguration, milvusStoreConnection, storeName, queryParams, dimension, true);
 
     this.uri = milvusStoreConnection.getUrl();
+    this.token = milvusStoreConnection.getToken();
     this.client = milvusStoreConnection.getClient();
   }
 
@@ -54,6 +57,7 @@ public class MilvusStore extends BaseStore {
 
     return MilvusEmbeddingStore.builder()
         .uri(uri)
+        .token(token)
         .collectionName(storeName)
         .dimension(dimension)
         .build();

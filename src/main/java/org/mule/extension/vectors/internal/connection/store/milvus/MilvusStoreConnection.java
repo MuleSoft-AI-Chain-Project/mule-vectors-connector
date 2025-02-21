@@ -9,15 +9,19 @@ import org.mule.runtime.api.connection.ConnectionException;
 public class MilvusStoreConnection implements BaseStoreConnection {
 
   private String url;
+  private String token;
   private MilvusServiceClient client;
 
-  public MilvusStoreConnection(String url) {
+  public MilvusStoreConnection(String url, String token) {
     this.url = url;
+    this.token = token;
   }
 
   public String getUrl() {
     return url;
   }
+
+  public String getToken() { return token; }
 
   public MilvusServiceClient getClient() {
     return client;
@@ -25,7 +29,6 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
   @Override
   public String getVectorStore() {
-
     return Constants.VECTOR_STORE_MILVUS;
   }
 
@@ -34,6 +37,7 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
     ConnectParam connectParam = ConnectParam.newBuilder()
         .withUri(url)
+        .withToken(token)
         .build();
     client = new MilvusServiceClient(connectParam);
   }
@@ -49,7 +53,6 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
   @Override
   public boolean isValid() {
-
     return client.checkHealth().getStatus() == 0;
   }
 }

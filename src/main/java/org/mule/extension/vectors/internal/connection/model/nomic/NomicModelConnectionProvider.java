@@ -26,8 +26,10 @@ public class NomicModelConnectionProvider  extends BaseModelConnectionProvider {
 
     try {
 
-      NomicModelConnection nomicModelConnection =
-          new NomicModelConnection(nomicModelConnectionParameters.getApiKey());
+      NomicModelConnection nomicModelConnection = new NomicModelConnection(
+          nomicModelConnectionParameters.getApiKey(),
+          nomicModelConnectionParameters.getMaxAttempts(),
+          nomicModelConnectionParameters.getTotalTimeout());
       nomicModelConnection.connect();
       return nomicModelConnection;
 

@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.internal.util;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -106,6 +107,46 @@ public class Utils {
           }
         }
       }
+    }
+  }
+
+  /**
+   * Retrieves the file extension from the given file path.
+   *
+   * @param filePath The complete path of the file, including its name and extension.
+   * @return The file extension if present; otherwise, an empty string.
+   */
+  public static String getFileExtension(String filePath) {
+
+    int lastDotIndex = filePath.lastIndexOf('.');
+    if (lastDotIndex > 0 && lastDotIndex < filePath.length() - 1) {
+      return filePath.substring(lastDotIndex + 1);
+    }
+    return "";
+  }
+
+  /**
+   * Determines the MIME type of a given file based on its extension.
+   *
+   * @param path The {@code Path} object representing the file.
+   * @return A {@code String} representing the MIME type of the file. If the file extension is not recognized, it returns
+   * "application/octet-stream" as a fallback.
+   */
+  public static String getMimeTypeFallback(Path path) {
+    String fileName = path.getFileName().toString().toLowerCase();
+
+    if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+      return "image/jpeg";
+    } else if (fileName.endsWith(".png")) {
+      return "image/png";
+    } else if (fileName.endsWith(".gif")) {
+      return "image/gif";
+    } else if (fileName.endsWith(".bmp")) {
+      return "image/bmp";
+    } else if (fileName.endsWith(".webp")) {
+      return "image/webp";
+    } else {
+      return "application/octet-stream"; // Fallback if extension is unknown
     }
   }
 }

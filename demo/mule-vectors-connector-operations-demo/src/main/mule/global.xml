@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d6ed4043-3dff-4ddd-884b-93d50d56fb74" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	
+	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="d2badd91-4980-4ada-82d2-e47f261aca02" name="vectors-connector-operations-api-config" api="api/vectors-connector-operations-api.raml"/>
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="bf18f817-85e2-4ca2-9de7-16c6597b3cbb" file="config.properties" />
+	
+	<ms-vectors:storage-config name="Local_Storage_config" doc:name="MuleSoft Vectors Connector Storage config" doc:id="797690a3-f01b-4246-a1c4-789e31833a16" >
+		<ms-vectors:local-connection />
+	</ms-vectors:storage-config>
+	
+	<ms-vectors:embedding-config name="Einstein_Embedding_config" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="4acc0b1b-222c-4320-8dd8-bbaa907c92a7" >
+		<ms-vectors:einstein-connection salesforceOrg="${einstein.sfdcOrg}" clientId="${einstein.clientId}" clientSecret="${einstein.clientSecret}">
+		</ms-vectors:einstein-connection>
+	</ms-vectors:embedding-config>
+	
+	<ms-vectors:embedding-config name="Azure_AI_Vision_Embedding_Config" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="60cc96d4-4201-407e-bfbd-923cb49e2eae" >
+		<ms-vectors:azure-ai-vision-connection endpoint="${azureAIVision.endpoint}" apiKey="${azureAIVision.key}" apiVersion="${azureAIVision.apiVersion}"/>
+	</ms-vectors:embedding-config>
+	
+	<ms-vectors:store-config name="PGVector_Store_config" doc:name="MuleSoft Vectors Connector Store config" doc:id="9b0cf438-1ad0-4fcd-a5d7-34e84ca80bf8" >
+		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
+	</ms-vectors:store-config>
+	
+</mule>

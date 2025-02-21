@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.Media;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,17 @@ public final class JsonUtils {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put(Constants.JSON_KEY_TEXT_SEGMENTS, jsonTextSegments);
 
+    return jsonObject;
+  }
+
+  public static JSONObject mediaToJson(Media media) {
+
+    JSONObject jsonObject = new JSONObject();
+    if(media.hasImage()) {
+
+      jsonObject.put(Constants.JSON_KEY_BASE64DATA, media.image().base64Data());
+      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(media.metadata().toMap()));
+    }
     return jsonObject;
   }
 }

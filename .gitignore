@@ -7,6 +7,17 @@
 # VSCode
 .vscode
 
+# Anypoint Studio
+.metadata/
+.mule/
+.sfdx/
+.tooling*/
+weave/
+/demo/*/src/test/
+/demo/**/*.bin
+/demo/**/config.properties
+/demo/**/application-types.xml
+
 # Maven
 target/
 pom.xml.tag
@@ -19,7 +30,6 @@ dependency-reduced-pom.xml
 # MuleSoft
 .mule/
 .mule/plugins/
-mule-artifact.json
 exchange-docs/
 
 # Logs
@@ -27,6 +37,9 @@ exchange-docs/
 
 # OS-specific files
 .DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
 Thumbs.db
 
 # Compiled class files
@@ -47,4 +60,14 @@ generated-test-sources/
 *.tmp
 *.sh
 
+.java-version
 
+
+# Added by Illuminated Cloud
+.localdev/
+/IlluminatedCloud/
+/out/
+node_modules/
+/.illuminatedCloud/
+**/tsconfig*.json
+**/*.tsbuildinfo

@@ -11,6 +11,13 @@ public class Constants {
   public static final String FILE_TYPE_TEXT = "text";
   public static final String FILE_TYPE_CRAWL = "crawl";
   public static final String FILE_TYPE_URL = "url";
+  public static final String FILE_TYPE_PNG = "png";
+  public static final String FILE_TYPE_BMP = "bmp";
+  public static final String FILE_TYPE_JPEG = "jpeg";
+  public static final String FILE_TYPE_GIF = "gif";
+
+  public static final String MEDIA_TYPE_IMAGE = "image";
+  public static final String MEDIA_TYPE_VIDEO = "video";
 
   public static final String STORAGE_TYPE_LOCAL = "Local";
   public static final String STORAGE_TYPE_AWS_S3 = "S3";
@@ -18,28 +25,21 @@ public class Constants {
   public static final String STORAGE_TYPE_GCS = "GCS";
 
   public static final String GCS_PREFIX = "gs://";
-  public static final String GCS_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
-  public static final String GCS_TOKEN_URI = "https://oauth2.googleapis.com/token";
-  public static final String GCS_AUTH_PROVIDER_X509_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs";
-  public static final String GCS_CLIENT_X509_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/";
+
+  public static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
+  public static final String GCP_TOKEN_URI = "https://oauth2.googleapis.com/token";
+  public static final String GCP_AUTH_PROVIDER_X509_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs";
+  public static final String GCP_CLIENT_X509_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/";
 
   public static final String EMBEDDING_MODEL_SERVICE_OPENAI = "OPENAI";
+  public static final String EMBEDDING_MODEL_SERVICE_AZURE_AI_VISION = "AZURE_AI_VISION";
   public static final String EMBEDDING_MODEL_SERVICE_AZURE_OPENAI = "AZURE_OPENAI";
   public static final String EMBEDDING_MODEL_SERVICE_MISTRAL_AI = "MISTRAL_AI";
   public static final String EMBEDDING_MODEL_SERVICE_NOMIC = "NOMIC";
+  public static final String EMBEDDING_MODEL_SERVICE_OLLAMA = "OLLAMA";
   public static final String EMBEDDING_MODEL_SERVICE_HUGGING_FACE = "HUGGING_FACE";
   public static final String EMBEDDING_MODEL_SERVICE_EINSTEIN = "EINSTEIN";
-
-  public static final String EMBEDDING_MODEL_NAME_TEXT_EMBEDDING_3_SMALL = "text-embedding-3-small";
-  public static final String EMBEDDING_MODEL_NAME_TEXT_EMBEDDING_3_LARGE = "text-embedding-3-large";
-  public static final String EMBEDDING_MODEL_NAME_TEXT_EMBEDDING_ADA_002 = "text-embedding-ada-002";
-  public static final String EMBEDDING_MODEL_NAME_MISTRAL_EMBED = "mistral-embed";
-  public static final String EMBEDDING_MODEL_NAME_NOMIC_EMBED_TEXT = "nomic-embed-text";
-  public static final String EMBEDDING_MODEL_NAME_FALCON_7B_INSTRUCT = "tiiuae/falcon-7b-instruct";
-  public static final String EMBEDDING_MODEL_NAME_MINI_LM_L6_V2 = "sentence-transformers/all-MiniLM-L6-v2";
-  public static final String EMBEDDING_MODEL_NAME_SFDC_TEXT_EMBEDDING_ADA_002 = "sfdc_ai__DefaultTextEmbeddingAda_002";
-  public static final String EMBEDDING_MODEL_NAME_SFDC_AZURE_TEXT_EMBEDDING_ADA_002 = "sfdc_ai__DefaultAzureOpenAITextEmbeddingAda_002";
-  public static final String EMBEDDING_MODEL_NAME_SFDC_OPENAI_TEXT_EMBEDDING_ADA_002 = "sfdc_ai__DefaultOpenAITextEmbeddingAda_002";
+  public static final String EMBEDDING_MODEL_SERVICE_VERTEX_AI = "VERTEX_AI";
 
   public static final String VECTOR_STORE_PGVECTOR = "PGVECTOR";
   public static final String VECTOR_STORE_ELASTICSEARCH = "ELASTICSEARCH";
@@ -58,6 +58,8 @@ public class Constants {
   public static final String METADATA_KEY_INDEX = "index";
   public static final String METADATA_KEY_FILE_NAME = "file_name";
   public static final String METADATA_KEY_FILE_TYPE = "file_type";
+  public static final String METADATA_KEY_MEDIA_TYPE = "media_type";
+  public static final String METADATA_KEY_MIME_TYPE = "mime_type";
   public static final String METADATA_KEY_ABSOLUTE_DIRECTORY_PATH = "absolute_directory_path";
   public static final String METADATA_KEY_URL = "url";
   public static final String METADATA_KEY_SOURCE = "source";
@@ -68,7 +70,9 @@ public class Constants {
   public static final String METADATA_FILTER_METHOD_IS_EQUAL_TO = "isEqualTo";
   public static final String METADATA_FILTER_METHOD_IS_NOT_EQUAL_TO = "isNotEqualTo";
   public static final String METADATA_FILTER_METHOD_IS_GREATER_THAN = "isGreaterThan";
+  public static final String METADATA_FILTER_METHOD_IS_GREATER_THAN_OR_EQUAL_TO = "isGreaterThanOrEqualTo";
   public static final String METADATA_FILTER_METHOD_IS_LESS_THAN = "isLessThan";
+  public static final String METADATA_FILTER_METHOD_IS_LESS_THAN_OR_EQUAL_TO = "isLessThanOrEqualTo";
 
   public static final Double EMBEDDING_SEARCH_REQUEST_DEFAULT_MIN_SCORE = 0.7;
 
@@ -78,14 +82,12 @@ public class Constants {
   public static final String STORE_OPERATION_TYPE_QUERY_ALL = "QUERY_ALL";
 
   public static final String JSON_KEY_SOURCES = "sources";
-  public static final String JSON_KEY_SEGMENTS = "segments";
   public static final String JSON_KEY_TEXT_SEGMENTS = "text-segments";
   public static final String JSON_KEY_SEGMENT_COUNT = "segmentCount";
   public static final String JSON_KEY_SOURCE_COUNT = "sourceCount";
   public static final String JSON_KEY_STORE_NAME = "storeName";
   public static final String JSON_KEY_TEXT = "text";
   public static final String JSON_KEY_STATUS = "status";
-  public static final String JSON_KEY_EMBEDDING = "embedding";
   public static final String JSON_KEY_EMBEDDINGS = "embeddings";
   public static final String JSON_KEY_DIMENSION = "dimension";
   public static final String JSON_KEY_RESPONSE = "response";
@@ -96,6 +98,7 @@ public class Constants {
   public static final String JSON_KEY_SCORE = "score";
   public static final String JSON_KEY_METADATA = "metadata";
   public static final String JSON_KEY_INDEX = "index";
+  public static final String JSON_KEY_BASE64DATA = "base64Data";
 
   public static final String OPERATION_STATUS_UPDATED = "updated";
   public static final String OPERATION_STATUS_DELETED = "deleted";

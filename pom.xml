@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.3.10</version>
+    <version>0.4.0</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -18,11 +18,11 @@
 	</scm>
 
 	<licenses>
-        <license>
-            <name>MIT License</name>
-            <url>https://www.opensource.org/licenses/mit-license.php</url>
-        </license>
-    </licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
 
 	<developers>
 		<developer>
@@ -69,11 +69,11 @@
 		</developer>
 	</developers>
 
-    <parent>
-        <groupId>org.mule.extensions</groupId>
-        <artifactId>mule-modules-parent</artifactId>
-        <version>1.5.1</version>
-    </parent>
+	<parent>
+		<groupId>org.mule.extensions</groupId>
+		<artifactId>mule-modules-parent</artifactId>
+		<version>1.6.9</version>
+	</parent>
 
     <properties>
 		<skipVerifications>false</skipVerifications>
@@ -82,7 +82,6 @@
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
 		<langchain4jVersion>0.35.0</langchain4jVersion>
-		<slf4jApi.version>2.0.7</slf4jApi.version>
 		<mule.sdk.api.version>0.10.3</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
@@ -189,7 +188,13 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>${slf4jApi.version}</version>
+			<version>2.0.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>2.20.0</version>
 		</dependency>
 
 		<dependency>
@@ -226,6 +231,25 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.16.1</version>
+		</dependency>
+
+		<!-- Imgscalr for resizing images (scaling) -->
+		<dependency>
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>4.2</version>
+		</dependency>
+
+		<!-- TwelveMonkeys ImageIO for enhanced image compression and format support -->
+		<dependency>
+			<groupId>com.twelvemonkeys.imageio</groupId>
+			<artifactId>imageio-core</artifactId>
+			<version>3.9.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.twelvemonkeys.imageio</groupId>
+			<artifactId>imageio-jpeg</artifactId>
+			<version>3.9.4</version>
 		</dependency>
 
 		<!-- LangChain Required Dependencies -->
@@ -320,12 +344,26 @@
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-chroma</artifactId>
+			<artifactId>langchain4j-vertex-ai</artifactId>
+			<version>${langchain4jVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-ollama</artifactId>
 			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- Vector Store Dependencies (Optionals) -->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-chroma</artifactId>
+			<version>${langchain4jVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-milvus</artifactId>
@@ -382,6 +420,10 @@
 			<id>mule-releases</id>
 			<name>Nexus Public Releases</name>
 			<url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
 	</repositories>
 

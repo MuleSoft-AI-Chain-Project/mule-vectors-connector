@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+	<flow name="vectors-connector-operations-api-main" doc:id="e396e028-832d-4a9b-b1f5-92adf1e13000" >
+		<http:listener doc:name="Listener" doc:id="40b75fa4-a347-46cb-b0b2-10fe9b2e22fb" config-ref="HTTP_Listener_config" path="/api/*" allowedMethods="OPTIONS, GET, POST, PUT, DELETE">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+		</http:listener>
+		<apikit:router doc:name="APIkit Router" doc:id="342ed399-ba2a-40c3-9be7-145dba0b9a5d" config-ref="vectors-connector-operations-api-config"/>
+		<error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+	</flow>
+	<flow name="vectors-connector-operations-api-console" doc:id="7c83bb4d-2fe5-46e0-8421-1aaf828dfb67" >
+		<http:listener doc:name="Listener" doc:id="6893f502-607f-4a22-a58c-18653b35f992" config-ref="HTTP_Listener_config" path="/console/*" allowedMethods="OPTIONS, GET, POST, PUT, DELETE">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+		</http:listener>
+		<apikit:console doc:name="APIkit Console" doc:id="9541a084-aab4-4c96-bc93-645494eb5d00" config-ref="vectors-connector-operations-api-config"/>
+		<error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+	</flow>
+	<flow name="post:\load-document:vectors-connector-operations-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e" >
+		<flow-ref doc:name="load-single-document-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-single-document-operation"/>
+	</flow>
+	<flow name="post:\load-documents:vectors-connector-operations-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed" >
+		<flow-ref doc:name="load-list-of-documents-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-list-of-documents-operation" />
+	</flow>
+	<flow name="post:\load-media:vectors-connector-operations-api-config" doc:id="fddc79ae-2ce0-4c75-a519-a34a68f51bb8">
+		<flow-ref doc:name="load-single-media-operation" doc:id="6c289829-2348-45a8-a697-931924327d24" name="load-single-media-operation" />
+	</flow>
+	<flow name="post:\load-medias:vectors-connector-operations-api-config" doc:id="dcdadc46-f36c-4b2a-b84e-115518c2fc11">
+		<flow-ref doc:name="load-list-of-medias-operation" doc:id="3ddf7f44-ad24-4b21-a684-cf2eee7fc3fb" name="load-list-of-medias-operation" />
+	</flow>
+	<flow name="post:\add-text:application\json:vectors-connector-operations-api-config" doc:id="a1dc1dc4-86c0-4489-b89a-8c68883416e6" >
+		<flow-ref doc:name="add-text-to-store-use-case" doc:id="219e02f2-c0c3-4ae4-912b-51e63289b1cb" name="add-text-to-store-use-case"/>
+	</flow>
+	<flow name="post:\add-document:vectors-connector-operations-api-config" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d" >
+		<flow-ref doc:name="add-doc-to-store-use-case" doc:id="46b55205-337c-41bb-8033-e15fd7656e07" name="add-doc-to-store-use-case"/>
+	</flow>
+	<flow name="post:\add-binary:multipart\form-data:vectors-connector-operations-api-config" doc:id="0da49e81-0c1e-48c8-9c48-81171f001d8c">
+		<flow-ref doc:name="add-binary-to-store" doc:id="c074eb60-8ed0-4401-8ed9-6a67542c158e" name="add-binary-to-store" />
+	</flow>
+	<flow name="post:\add-media:vectors-connector-operations-api-config" doc:id="e8959939-dac3-4d67-8490-06578ccfc849">
+		<flow-ref doc:name="add-media-to-store" doc:id="b84d7f63-2697-4f01-a5e7-60e9f59f27a8" name="add-media-to-store" />
+	</flow>
+	<flow name="post:\query-by-text:application\json:vectors-connector-operations-api-config" doc:id="b1cb7923-f517-458b-8eba-5166052905d3" >
+		<flow-ref doc:name="query-by-text-from-store-use-case" doc:id="c6946da2-9869-4555-b07e-fd53db538a1a" name="query-by-text-from-store-use-case"/>
+	</flow>
+	<flow name="post:\query-by-binary:multipart\form-data:vectors-connector-operations-api-config" doc:id="d54b2d1f-2350-40b0-b775-4384128209c4">
+		<flow-ref doc:name="query-by-binary-from-store-use-case" doc:id="d6a498c7-b5e4-4668-9c24-10a6e7a24e56" name="query-by-binary-from-store-use-case" />
+	</flow>
+	<flow name="delete:\remove:application\json:vectors-connector-operations-api-config" doc:id="b772a9f5-3ed7-4993-b126-eb203bfdc09e" >
+		<flow-ref doc:name="remove-from-store" doc:id="7d133da0-8c1c-4f25-834e-c48290ef6491" name="remove-from-store"/>
+	</flow>
+	<flow name="get:\list-sources:vectors-connector-operations-api-config" doc:id="f0a80505-9c06-4037-a3d8-21edfea9c62d" >
+		<flow-ref doc:name="Flow Reference" doc:id="581e06d1-869e-4efb-bca4-db34554b1bcb" name="list-sources"/>
+	</flow>
+</mule>
