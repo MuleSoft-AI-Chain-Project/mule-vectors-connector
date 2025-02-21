@@ -285,7 +285,98 @@ types:
         body:
           application/json:
             type: ErrorResponse
-
+            
+/add-media:
+  post:
+    description: Loads a single media from the file system and add it to the store.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the media file.
+        required: true
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Media added successfully.
+      400:
+        description: Bad Request (e.g., invalid media path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/add-binary:
+  post:
+    description: Add media binary to the store.
+    body:
+      multipart/form-data:
+        properties:
+          imageBinary:
+            description: The image file to upload.
+            type: file
+            required: true
+          imageLabel:
+            description: A label or tag for the uploaded image.
+            type: string
+            required: false
+    queryParameters:
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Media binary added successfully.
+      400:
+        description: Bad Request (e.g., invalid media path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
 /query-by-text:  # New resource for querying the store
   post:
     description: Queries the vector store for similar items.
@@ -306,6 +397,60 @@ types:
             "prompt": "What is the invoice number?",
              "filter": "index=1 AND (file_name = 'example.pdf' OR file_type = 'any')"          
           }
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/query-by-binary:  # New resource for querying the store
+  post:
+    description: Queries the vector store for similar items.
+    body:
+      multipart/form-data:
+        properties:
+          imageBinary:
+            description: The image file to upload.
+            type: file
+            required: true
+          imageLabel:
+            description: A label or tag for the uploaded image.
+            type: string
+            required: false
+    queryParameters:
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
     responses:
       200:
         description: Query completed successfully.
@@ -350,6 +495,28 @@ types:
             type: ErrorResponse
       404:
         description: No documents found matching the specified filter.
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/list-sources:
+  get:
+    description: List all sources from store.
+    responses:
+      200:
+        description: Sources from store.
+      400:
+        description: Bad Request (e.g., missing or invalid filter).
+        body:
+          application/json:
+            type: ErrorResponse
+      404:
+        description: No sources found.
         body:
           application/json:
             type: ErrorResponse

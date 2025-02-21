@@ -47,5 +47,7 @@ payload.payload]]></ee:set-payload>
 			<ms-vectors:condition ><![CDATA[#[payload.filter]]]></ms-vectors:condition>
 		</ms-vectors:store-remove>
 	</flow>
-	<flow name="list-sources" doc:id="21110984-0f92-46d3-b4af-30200146bab3" />
+	<flow name="list-sources" doc:id="21110984-0f92-46d3-b4af-30200146bab3" >
+		<ms-vectors:store-list-sources doc:name="[Store] List sources" doc:id="2c838403-5f05-4833-a3e9-806b3e85bc70" config-ref="PGVector_Store_config" storeName="demo"/>
+	</flow>
 </mule>

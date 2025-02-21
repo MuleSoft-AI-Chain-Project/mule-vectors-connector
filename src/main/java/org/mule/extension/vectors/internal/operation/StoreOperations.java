@@ -185,7 +185,10 @@ public class StoreOperations {
 
       jsonObject.put(Constants.JSON_KEY_RESPONSE, information);
       jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-      if(textSegments.size() == 1) jsonObject.put(Constants.JSON_KEY_QUESTION, textSegments.get(0).text());
+      if(textSegments.size() == 1 && textSegments.get(0).text() != null && !textSegments.get(0).text().isEmpty()) {
+
+        jsonObject.put(Constants.JSON_KEY_QUESTION, textSegments.get(0).text());
+      }
       jsonObject.put(Constants.JSON_KEY_MAX_RESULTS, maxResults);
       jsonObject.put(Constants.JSON_KEY_MIN_SCORE, minScore);
 

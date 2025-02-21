@@ -24,6 +24,10 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		</ms-vectors:einstein-connection>
 	</ms-vectors:embedding-config>
 	
+	<ms-vectors:embedding-config name="Azure_AI_Vision_Embedding_Config" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="60cc96d4-4201-407e-bfbd-923cb49e2eae" >
+		<ms-vectors:azure-ai-vision-connection endpoint="${azureAIVision.endpoint}" apiKey="${azureAIVision.key}" apiVersion="${azureAIVision.apiVersion}"/>
+	</ms-vectors:embedding-config>
+	
 	<ms-vectors:store-config name="PGVector_Store_config" doc:name="MuleSoft Vectors Connector Store config" doc:id="9b0cf438-1ad0-4fcd-a5d7-34e84ca80bf8" >
 		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
 	</ms-vectors:store-config>

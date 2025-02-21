@@ -16,8 +16,27 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="03497871-8337-43e9-8934-02a4e871c130" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>
 	<flow name="add-media-to-store" doc:id="d5848981-d9a7-44bc-b56b-386984fb2a73">
+		<ms-vectors:media-load-single doc:name="[Media] Load single" doc:id="4eb68934-b314-4e39-92f2-3dce2ffe57ff" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]" >
+			<ms-vectors:media-processor-parameters >
+				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
+			</ms-vectors:media-processor-parameters>
+		</ms-vectors:media-load-single>
+		<ms-vectors:embedding-generate-from-media doc:name="[Embedding] Generate from media" doc:id="5280a1fb-f92e-4271-a9ba-6b8f988070e9" config-ref="Azure_AI_Vision_Embedding_Config" embeddingModelName="2023-04-15">
+			<ms-vectors:media ><![CDATA[#[payload]]]></ms-vectors:media>
+			<ms-vectors:label ><![CDATA[An image]]></ms-vectors:label>
+		</ms-vectors:embedding-generate-from-media>
+		<ms-vectors:store-add doc:name="[Store] Add" doc:id="7669e276-e484-453b-ae97-55c2d12fe380" config-ref="PGVector_Store_config" storeName="demo_multimodal"/>
 	</flow>
-	<flow name="add-binary-to-store" doc:id="a54f174c-17ee-472f-90cd-63bec46831f2" />
+	<flow name="add-binary-to-store" doc:id="a54f174c-17ee-472f-90cd-63bec46831f2" >
+		<ms-vectors:embedding-generate-from-binary doc:name="[Embedding] Generate from binary" doc:id="80059599-7954-4ea5-82b6-8fdaae8db9bb" config-ref="Azure_AI_Vision_Embedding_Config" embeddingModelName="2023-04-15">
+			<ms-vectors:binary ><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
+			<ms-vectors:label ><![CDATA[#[payload.parts.imageLabel.content default "An image"]]]></ms-vectors:label>
+			<ms-vectors:media-processor-parameters >
+				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
+			</ms-vectors:media-processor-parameters>
+		</ms-vectors:embedding-generate-from-binary>
+		<ms-vectors:store-add doc:name="[Store] Add" doc:id="c8decaa7-086d-4fca-9763-4e5604435616" config-ref="PGVector_Store_config" storeName="demo_multimodal" />
+	</flow>
 	<flow name="query-by-text-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
 		<set-variable value="#[payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0">
@@ -28,5 +47,16 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 			<ms-vectors:condition ><![CDATA[#[vars.requestBody.filter]]]></ms-vectors:condition>
 		</ms-vectors:query>
 	</flow>
-	<flow name="query-by-media-from-store-use-case" doc:id="ddd93b08-af85-402b-b94a-3dee3b7b2ce2" />
+	<flow name="query-by-binary-from-store-use-case" doc:id="ddd93b08-af85-402b-b94a-3dee3b7b2ce2" >
+		<ms-vectors:embedding-generate-from-binary embeddingModelName="2023-04-15" doc:name="[Embedding] Generate from binary" doc:id="64959300-9cf2-47a0-8dfd-6e94a4e4a2df" config-ref="Azure_AI_Vision_Embedding_Config" >
+			<ms-vectors:binary ><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
+			<ms-vectors:label ><![CDATA[#[payload.parts.imageLabel.content default ""]]]></ms-vectors:label>
+			<ms-vectors:media-processor-parameters >
+				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
+			</ms-vectors:media-processor-parameters>
+		</ms-vectors:embedding-generate-from-binary>
+		<ms-vectors:query doc:name="[Store] Query" doc:id="90c8f975-b5b2-48ee-b99c-6615e1d41e07" config-ref="PGVector_Store_config" storeName="demo_multimodal" maxResults="5" minScore="0.5" >
+			<ms-vectors:text-segment-and-embedding ><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
+		</ms-vectors:query>
+	</flow>
 </mule>
