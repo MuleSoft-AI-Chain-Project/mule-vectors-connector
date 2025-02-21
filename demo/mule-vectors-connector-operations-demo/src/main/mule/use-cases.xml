@@ -15,7 +15,10 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="03497871-8337-43e9-8934-02a4e871c130" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>
-	<flow name="query-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
+	<flow name="add-media-to-store" doc:id="d5848981-d9a7-44bc-b56b-386984fb2a73">
+	</flow>
+	<flow name="add-binary-to-store" doc:id="a54f174c-17ee-472f-90cd-63bec46831f2" />
+	<flow name="query-by-text-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
 		<set-variable value="#[payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0">
 			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
@@ -25,4 +28,5 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 			<ms-vectors:condition ><![CDATA[#[vars.requestBody.filter]]]></ms-vectors:condition>
 		</ms-vectors:query>
 	</flow>
+	<flow name="query-by-media-from-store-use-case" doc:id="ddd93b08-af85-402b-b94a-3dee3b7b2ce2" />
 </mule>

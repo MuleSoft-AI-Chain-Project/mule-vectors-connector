@@ -126,20 +126,26 @@ output application/json
             </on-error-propagate>
         </error-handler>
 	</flow>
-	<flow name="post:\load-document:application\json:vectors-connector-operations-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e" >
+	<flow name="post:\load-document:vectors-connector-operations-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e" >
 		<flow-ref doc:name="load-single-document-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-single-document-operation"/>
 	</flow>
-	<flow name="post:\load-documents:application\json:vectors-connector-operations-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed" >
+	<flow name="post:\load-documents:vectors-connector-operations-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed" >
 		<flow-ref doc:name="load-list-of-documents-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-list-of-documents-operation" />
+	</flow>
+	<flow name="post:\load-media:vectors-connector-operations-api-config" doc:id="fddc79ae-2ce0-4c75-a519-a34a68f51bb8">
+		<flow-ref doc:name="load-single-media-operation" doc:id="6c289829-2348-45a8-a697-931924327d24" name="load-single-media-operation" />
+	</flow>
+	<flow name="post:\load-medias:vectors-connector-operations-api-config" doc:id="dcdadc46-f36c-4b2a-b84e-115518c2fc11">
+		<flow-ref doc:name="load-list-of-medias-operation" doc:id="3ddf7f44-ad24-4b21-a684-cf2eee7fc3fb" name="load-list-of-medias-operation" />
 	</flow>
 	<flow name="post:\add-text:application\json:vectors-connector-operations-api-config" doc:id="a1dc1dc4-86c0-4489-b89a-8c68883416e6" >
 		<flow-ref doc:name="add-text-to-store-use-case" doc:id="219e02f2-c0c3-4ae4-912b-51e63289b1cb" name="add-text-to-store-use-case"/>
 	</flow>
-	<flow name="post:\add-document:application\json:vectors-connector-operations-api-config" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d" >
+	<flow name="post:\add-document:vectors-connector-operations-api-config" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d" >
 		<flow-ref doc:name="add-doc-to-store-use-case" doc:id="46b55205-337c-41bb-8033-e15fd7656e07" name="add-doc-to-store-use-case"/>
 	</flow>
-	<flow name="post:\query:application\json:vectors-connector-operations-api-config" doc:id="b1cb7923-f517-458b-8eba-5166052905d3" >
-		<flow-ref doc:name="query-from-store-use-case" doc:id="c6946da2-9869-4555-b07e-fd53db538a1a" name="query-from-store-use-case"/>
+	<flow name="post:\query-by-text:application\json:vectors-connector-operations-api-config" doc:id="b1cb7923-f517-458b-8eba-5166052905d3" >
+		<flow-ref doc:name="query-by-text-from-store-use-case" doc:id="c6946da2-9869-4555-b07e-fd53db538a1a" name="query-by-text-from-store-use-case"/>
 	</flow>
 	<flow name="delete:\remove:application\json:vectors-connector-operations-api-config" doc:id="b772a9f5-3ed7-4993-b126-eb203bfdc09e" >
 		<flow-ref doc:name="remove-from-store" doc:id="7d133da0-8c1c-4f25-834e-c48290ef6491" name="remove-from-store"/>
