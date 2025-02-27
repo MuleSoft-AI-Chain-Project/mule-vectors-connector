@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>io.github.mulesoft-ai-chain-project</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.4.1</version>
+			<version>0.4.10</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
