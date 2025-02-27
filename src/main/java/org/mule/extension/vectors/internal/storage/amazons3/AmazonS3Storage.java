@@ -80,7 +80,6 @@ public class AmazonS3Storage extends BaseStorage {
 
     private Iterator<S3Object> getS3ObjectIterator() {
 
-
         if(s3ObjectIterator != null && !s3ObjectIterator.hasNext() && continuationToken != null) {
             // Get the continuation token for pagination
             continuationToken = response.nextContinuationToken();
@@ -88,12 +87,15 @@ public class AmazonS3Storage extends BaseStorage {
 
         if(s3ObjectIterator == null || (!s3ObjectIterator.hasNext() && continuationToken != null)) {
 
+            LOGGER.debug(String.format("Fetching objects from AWS S3 bucket %s with prefix %s",
+                                       getAWSS3Bucket(), getAWSS3ObjectKey()));
             // Build the request
             ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
                 .bucket(getAWSS3Bucket());
             String prefix = getAWSS3ObjectKey();
             if (!prefix.isEmpty()) {
                 requestBuilder.prefix(prefix); // Add prefix filter only if it is not empty
+                requestBuilder.delimiter("/");
             }
             if (continuationToken != null) {
                 requestBuilder.continuationToken(continuationToken); // Set continuation token
@@ -231,6 +233,13 @@ public class AmazonS3Storage extends BaseStorage {
         public Document next() {
 
             S3Object object = getS3ObjectIterator().next();
+            // Skip objects that represent folders based on size
+            if (object.size() == 0) {
+
+                LOGGER.info("Skipping virtual folder: " + object.key());
+                return null;
+            }
+
             LOGGER.debug("AWS S3 Object Key: " + object.key());
             Document document;
             try {
@@ -263,6 +272,14 @@ public class AmazonS3Storage extends BaseStorage {
         public Media next() {
 
             S3Object object = getS3ObjectIterator().next();
+
+            // Skip objects that represent folders based on size
+            if (object.size() == 0) {
+
+                LOGGER.info("Skipping virtual folder: " + object.key());
+                return null;
+            }
+
             LOGGER.debug("AWS S3 Object Key: " + object.key());
             Media media;
             try {

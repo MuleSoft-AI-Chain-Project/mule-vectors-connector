@@ -63,6 +63,8 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
 
           Document document = documentIterator.next();
 
+          if(document == null) continue; // Skip null document
+
           JSONObject jsonObject =
               JsonUtils.docToTextSegmentsJson(document,
                                               segmentationParameters.getMaxSegmentSizeInChars(),

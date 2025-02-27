@@ -1,18 +1,13 @@
 package org.mule.extension.vectors.internal.pagination;
 
-import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.Document;
 import org.json.JSONObject;
-import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.api.metadata.MediaResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.data.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParameters;
 import org.mule.extension.vectors.internal.helper.parameter.MediaParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.exception.MuleException;
@@ -21,6 +16,8 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -28,6 +25,8 @@ import static org.mule.extension.vectors.internal.constant.Constants.*;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
 
 public class MediaPagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, MediaResponseAttributes>> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MediaPagingProvider.class);
 
   private StreamingHelper streamingHelper;
   private BaseStorage baseStorage;
@@ -68,6 +67,8 @@ public class MediaPagingProvider implements PagingProvider<BaseStorageConnection
 
           Media media = mediaIterator.next();
 
+          if(media == null) continue; // Skip null media
+
           JSONObject jsonObject = JsonUtils.mediaToJson(media);
 
           return createPageMediaResponse(
@@ -81,9 +82,10 @@ public class MediaPagingProvider implements PagingProvider<BaseStorageConnection
               }},
               streamingHelper);
 
-        } catch (BlankDocumentException bde) {
+        } catch (Exception e) {
 
           // Look for next page if any on error
+          LOGGER.warn("Error while getting media from {}. Trying next page.", mediaParameters.getContextPath());
         }
 
       }
