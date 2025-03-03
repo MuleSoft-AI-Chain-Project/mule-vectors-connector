@@ -47,6 +47,17 @@ payload.payload]]></ee:set-payload>
 			<ms-vectors:condition ><![CDATA[#[payload.filter]]]></ms-vectors:condition>
 		</ms-vectors:store-remove>
 	</flow>
+	<flow name="query-all" doc:id="29674354-cab0-4cb9-8c98-6294ef79ef0e" >
+		<ms-vectors:query-all doc:name="[Store] Query all" doc:id="c5042047-0c0d-4486-b9b8-3314aa57157f" config-ref="PGVector_Store_config" storeName="demo"/>
+		<ee:transform doc:name="Transform Message" doc:id="675afdc7-f754-4bf5-beb9-b730f80935e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 	<flow name="list-sources" doc:id="21110984-0f92-46d3-b4af-30200146bab3" >
 		<ms-vectors:store-list-sources doc:name="[Store] List sources" doc:id="2c838403-5f05-4833-a3e9-806b3e85bc70" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>

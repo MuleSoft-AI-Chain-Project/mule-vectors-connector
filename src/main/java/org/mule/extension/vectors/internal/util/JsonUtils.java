@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.store.BaseStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,4 +136,14 @@ public final class JsonUtils {
     }
     return jsonObject;
   }
+
+    public static JSONObject rowToJson(BaseStore.Row<?> row) {
+
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
+      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment)row.getEmbedded()).metadata().toMap()));
+      jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment)row.getEmbedded()).text());
+      jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());
+      return jsonObject;
+    }
 }

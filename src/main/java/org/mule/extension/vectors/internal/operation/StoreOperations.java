@@ -12,8 +12,10 @@ import dev.langchain4j.store.embedding.filter.Filter;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
+import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -22,11 +24,17 @@ import org.mule.extension.vectors.internal.helper.model.EmbeddingOperationValida
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.MetadataFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.metadata.MediasOutputTypeMetadataResolver;
+import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
+import org.mule.extension.vectors.internal.pagination.DocumentPagingProvider;
+import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
 import org.mule.extension.vectors.internal.store.BaseStore;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
+import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
+import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.InputJsonType;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.*;
@@ -34,6 +42,8 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
+import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
+import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +57,7 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.joining;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import static org.mule.sdk.api.annotation.param.MediaType.ANY;
 
 /**
  * Class providing operations for embedding store management including querying, adding, removing, and listing sources.
@@ -229,6 +240,45 @@ public class StoreOperations {
   }
 
   /**
+   * Lists all sources in the specified embedding store.
+   *
+   * @param storeConfiguration the configuration of the store
+   * @param storeName          the name of the store
+   * @param queryParams        the query parameters for listing sources
+   * @return a result containing the store response with metadata of sources
+   * @throws ModuleException if an error occurs during the operation
+   */
+  @MediaType(value = ANY, strict = false)
+  @Alias("Query-all")
+  @DisplayName("[Store] Query all")
+  @Throws(StoreErrorTypeProvider.class)
+  @OutputResolver(output = RowsOutputTypeMetadataResolver.class)
+  public PagingProvider<BaseStoreConnection, Result<CursorProvider, StoreResponseAttributes>> queryAll(
+      @Config StoreConfiguration storeConfiguration,
+      String storeName,
+      @ParameterGroup(name = "Querying Strategy") QueryParameters queryParams,
+      StreamingHelper streamingHelper) {
+
+    try {
+
+      return new RowPagingProvider(storeConfiguration,
+                                   storeName,
+                                   queryParams,
+                                   streamingHelper);
+
+    } catch (ModuleException me) {
+      throw me;
+
+    } catch (Exception e) {
+
+      throw new ModuleException(
+          String.format("Error while listing sources from the store %s", storeName),
+          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
+          e);
+    }
+  }
+
+  /**
    * Adds embeddings and text segments to the store.
    *
    * @param storeConfiguration the configuration of the store
@@ -347,9 +397,10 @@ public class StoreOperations {
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
   @Alias("Store-list-sources")
-  @DisplayName("[Store] List sources")
+  @DisplayName("[Store] List sources (Deprecated)")
   @Throws(StoreErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/StoreListSourcesResponse.json")
+  @Deprecated
   public Result<InputStream, StoreResponseAttributes> listSources(
       @Config StoreConfiguration storeConfiguration,
       @Connection BaseStoreConnection storeConnection,

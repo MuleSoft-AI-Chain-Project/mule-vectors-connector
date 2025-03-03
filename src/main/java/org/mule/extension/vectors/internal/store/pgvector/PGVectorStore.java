@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.store.pgvector;
 
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.internal.ValidationUtils;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -104,7 +106,8 @@ public class PGVectorStore extends BaseStore {
     try (PgVectorMetadataIterator iterator = new PgVectorMetadataIterator(user, password, host, port, database, storeName, (int)queryParams.embeddingPageSize())) {
       while (iterator.hasNext()) {
 
-        JSONObject metadataObject = new JSONObject(iterator.next());
+        ResultSet resultSet = iterator.next();
+        JSONObject metadataObject = new JSONObject(resultSet.getString(Constants.STORE_SCHEMA_METADATA_FIELD_NAME));
         JSONObject sourceObject = getSourceObject(metadataObject);
         addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
       }
@@ -121,7 +124,7 @@ public class PGVectorStore extends BaseStore {
   /**
    * Iterator to handle metadata pagination from the PostgreSQL database.
    */
-  private class PgVectorMetadataIterator implements Iterator<String>, AutoCloseable {
+  private class PgVectorMetadataIterator implements Iterator<ResultSet>, AutoCloseable {
 
     private int offset = 0; // Current offset for pagination
     private ResultSet resultSet;
@@ -170,7 +173,12 @@ public class PGVectorStore extends BaseStore {
         pstmt.close();
       }
 
-      String query = "SELECT " + Constants.STORE_SCHEMA_METADATA_FIELD_NAME  + " FROM " + table + " LIMIT ? OFFSET ?";
+      String query = "SELECT " +
+          Constants.STORE_SCHEMA_EMBEDDING_ID_FIELD_NAME + ", " +
+          Constants.STORE_SCHEMA_TEXT_FIELD_NAME + ", " +
+          Constants.STORE_SCHEMA_VECTOR_FIELD_NAME  + ", " +
+          Constants.STORE_SCHEMA_METADATA_FIELD_NAME  +
+          " FROM " + table + " LIMIT ? OFFSET ?";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, this.pageSize);
       pstmt.setInt(2, offset);
@@ -206,16 +214,11 @@ public class PGVectorStore extends BaseStore {
      * @throws NoSuchElementException If no more elements are available.
      */
     @Override
-    public String next() {
-      try {
-        if (resultSet == null) {
-          throw new NoSuchElementException("No more elements available");
-        }
-        return resultSet.getString(Constants.STORE_SCHEMA_METADATA_FIELD_NAME);
-      } catch (SQLException e) {
-        LOGGER.error("Error retrieving next element", e);
-        throw new NoSuchElementException("Error retrieving next element");
+    public ResultSet next() {
+      if (resultSet == null) {
+        throw new NoSuchElementException("No more elements available");
       }
+      return resultSet;
     }
 
     /**
@@ -231,6 +234,56 @@ public class PGVectorStore extends BaseStore {
           connection.close();
       } catch (SQLException e) {
         LOGGER.error("Error closing resources", e);
+      }
+    }
+  }
+
+  @Override
+  public RowIterator rowIterator() {
+    try {
+      return new RowIterator();
+    } catch (SQLException e) {
+        LOGGER.error("Error while creating row iterator", e);
+        throw new RuntimeException(e);
+    }
+  }
+
+  public class RowIterator extends BaseStore.RowIterator {
+
+    private PgVectorMetadataIterator iterator;
+
+    public RowIterator() throws SQLException {
+
+      super();
+      this.iterator = new PgVectorMetadataIterator(
+          user, password, host, port, database, storeName, (int)queryParams.embeddingPageSize());
+    }
+
+    @Override
+    public boolean hasNext() {
+      return iterator.hasNext();
+    }
+
+    @Override
+    public Row<?> next() {
+      try {
+
+        ResultSet resultSet = iterator.next();
+        String embeddingId = resultSet.getString(Constants.STORE_SCHEMA_EMBEDDING_ID_FIELD_NAME);
+        String vectorString = resultSet.getString(Constants.STORE_SCHEMA_VECTOR_FIELD_NAME);
+        String[] vectorStringArray = vectorString.replace("{", "").replace("}", "").replace("[", "").replace("]", "").split(",");
+        float[] vector = new float[vectorStringArray.length];
+        for (int i = 0; i < vectorStringArray.length; i++) {
+           vector[i] = Float.parseFloat(vectorStringArray[i].trim());
+        }
+        String text = resultSet.getString(Constants.STORE_SCHEMA_TEXT_FIELD_NAME);
+        JSONObject metadataObject = new JSONObject(resultSet.getString(Constants.STORE_SCHEMA_METADATA_FIELD_NAME));
+
+        return new Row<TextSegment>(embeddingId, new Embedding(vector), new TextSegment(text, Metadata.from(metadataObject.toMap())));
+
+      } catch (SQLException e) {
+        LOGGER.error("Error while fetching next row", e);
+        return null;
       }
     }
   }
