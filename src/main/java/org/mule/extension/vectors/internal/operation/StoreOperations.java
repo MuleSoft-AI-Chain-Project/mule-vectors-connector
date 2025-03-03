@@ -299,8 +299,9 @@ public class StoreOperations {
 
       EmbeddingStore<TextSegment> embeddingStore = baseStore.buildEmbeddingStore();
 
+      List<String> embeddingIds = new LinkedList<>();
       try {
-        embeddingStore.addAll(embeddings, textSegments);
+        embeddingIds = embeddingStore.addAll(embeddings, textSegments);
         LOGGER.info(String.format("Ingested into %s  >> %s",
                                   storeName,
                                   MetadataUtils.getSourceDisplayName(textSegments.get(0).metadata())));
@@ -313,7 +314,8 @@ public class StoreOperations {
             e);
       }
 
-      JSONObject jsonObject = JsonUtils.createIngestionStatusObject(storeName);
+      JSONObject jsonObject = JsonUtils.createIngestionStatusObject(
+          ingestionMetadataMap.get(Constants.METADATA_KEY_SOURCE_ID).toString(), embeddingIds);
 
       return createStoreResponse(
           jsonObject.toString(),

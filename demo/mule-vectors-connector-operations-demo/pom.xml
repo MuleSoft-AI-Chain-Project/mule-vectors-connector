@@ -32,7 +32,7 @@
 				<configuration>
 					<additionalPluginDependencies>
 						<plugin>
-							<groupId>io.github.mulesoft-ai-chain-project</groupId>
+							<groupId>com.mulesoft.connectors</groupId>
 							<artifactId>mule4-vectors-connector</artifactId>
 							<additionalDependencies>
 							
@@ -88,9 +88,9 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>io.github.mulesoft-ai-chain-project</groupId>
+			<groupId>com.mulesoft.connectors</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.4.10</version>
+			<version>0.4.11-SNAPSHOT</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>

@@ -264,6 +264,17 @@ types:
 /add-text:  # New resource for adding text to the store
   post:
     description: Adds text content to the vector store.
+    queryParameters:
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
     body:
       application/json:
         type: object
