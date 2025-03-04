@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.store.chroma;
 
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore;
@@ -17,7 +19,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * ChromaStore is a specialized implementation of {@link BaseStore} designed to interact with
@@ -25,10 +30,10 @@ import java.util.HashMap;
  */
 public class ChromaStore extends BaseStore {
 
-  static final String ID_DEFAULT_FIELD_NAME = "id";
-  static final String TEXT_DEFAULT_FIELD_NAME = "text";
-  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
-  static final String VECTOR_DEFAULT_FIELD_NAME = "vector";
+  static final String ID_DEFAULT_FIELD_NAME = "ids";
+  static final String TEXT_DEFAULT_FIELD_NAME = "documents";
+  static final String METADATA_DEFAULT_FIELD_NAME = "metadatas";
+  static final String VECTOR_DEFAULT_FIELD_NAME = "embeddings";
 
   private final String url;
 
@@ -76,7 +81,7 @@ public class ChromaStore extends BaseStore {
 
       while(offset < segmentCount) {
 
-        JSONArray metadataObjects = getMetadataObjects(collectionId, offset, queryParams.embeddingPageSize());
+        JSONArray metadataObjects = getJsonResponse(collectionId, offset, queryParams.embeddingPageSize()).getJSONArray("metadatas");
         for(int i = 0; i< metadataObjects.length(); i++) {
 
           JSONObject metadataObject = metadataObjects.getJSONObject(i);
@@ -98,9 +103,9 @@ public class ChromaStore extends BaseStore {
     return jsonObject;
   }
 
-  private JSONArray getMetadataObjects(String collectionId, long offset, long limit) {
+  private JSONObject getJsonResponse(String collectionId, long offset, long limit) {
 
-    JSONArray metadataObjects = new JSONArray();
+    JSONObject jsonResponse = new JSONObject();
     try {
 
       String urlString = url + "/api/v1/collections/" + collectionId + "/get";
@@ -117,7 +122,9 @@ public class ChromaStore extends BaseStore {
       jsonRequest.put("offset", offset);
 
       JSONArray jsonInclude = new JSONArray();
-      jsonInclude.put("metadatas");
+      jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
+      jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
+      jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
 
       jsonRequest.put("include", jsonInclude);
 
@@ -141,8 +148,7 @@ public class ChromaStore extends BaseStore {
         in.close();
 
         // Parse JSON response
-        JSONObject jsonResponse = new JSONObject(responseBuilder.toString());
-        metadataObjects = jsonResponse.getJSONArray("metadatas");
+        jsonResponse = new JSONObject(responseBuilder.toString());
 
       } else {
 
@@ -155,7 +161,7 @@ public class ChromaStore extends BaseStore {
       // Handle any exceptions that occur during the process
       LOGGER.error("Error getting collection segments", e);
     }
-    return metadataObjects;
+    return jsonResponse;
   }
 
   /**
@@ -269,27 +275,71 @@ public class ChromaStore extends BaseStore {
 
   public class RowIterator extends BaseStore.RowIterator {
 
+    private List<String> idsObjects;
+    private List<JSONObject> metadataObjects;
+    private List<String> documentsObjects;
+    private List<JSONArray> embeddingsObjects;
+    private int currentIndex;
 
     public RowIterator() throws Exception {
-
       super();
+      this.idsObjects = new ArrayList<>();
+      this.metadataObjects = new ArrayList<>();
+      this.documentsObjects = new ArrayList<>();
+      this.embeddingsObjects = new ArrayList<>();
+      this.currentIndex = 0;
+      loadObjects();
+    }
+
+    private void loadObjects() throws Exception {
+      String collectionId = getCollectionId(storeName);
+      long segmentCount = getSegmentCount(collectionId);
+      long offset = 0;
+
+      while (offset < segmentCount) {
+        JSONObject jsonResponse = getJsonResponse(collectionId, offset, queryParams.embeddingPageSize());
+        JSONArray jsonArrayIds = jsonResponse.getJSONArray(ID_DEFAULT_FIELD_NAME); 
+        JSONArray jsonArrayMetadatas = jsonResponse.getJSONArray(METADATA_DEFAULT_FIELD_NAME);
+        JSONArray jsonArrayDocuments = jsonResponse.getJSONArray(TEXT_DEFAULT_FIELD_NAME);
+        JSONArray jsonArrayEmbeddings = jsonResponse.getJSONArray(VECTOR_DEFAULT_FIELD_NAME);
+        for (int i = 0; i < jsonArrayIds.length(); i++) {
+          idsObjects.add(jsonArrayIds.getString(i));
+          metadataObjects.add(jsonArrayMetadatas.getJSONObject(i));
+          documentsObjects.add(jsonArrayDocuments.getString(i));
+          embeddingsObjects.add(jsonArrayEmbeddings.getJSONArray(i));
+        }
+        offset += jsonArrayIds.length();
+      }
     }
 
     @Override
     public boolean hasNext() {
-
-      return true;
+      return currentIndex < metadataObjects.size();
     }
 
     @Override
     public Row<?> next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
       try {
 
-        return null;
+        String embeddingId = idsObjects.get(currentIndex);
+        JSONObject metadataObject = metadataObjects.get(currentIndex);
+        String text = documentsObjects.get(currentIndex);
 
+        JSONArray vectorArray = embeddingsObjects.get(currentIndex);
+        float[] vector = new float[vectorArray.length()];
+        for (int j = 0; j < vectorArray.length(); j++) {
+            vector[j] = vectorArray.getFloat(j);
+        }
+
+        currentIndex++;
+
+        return new Row<>(embeddingId, new Embedding(vector), new TextSegment(text, Metadata.from(metadataObject.toMap())));
       } catch (Exception e) {
         LOGGER.error("Error while fetching next row", e);
-        return null;
+        throw new NoSuchElementException("No more elements available");
       }
     }
   }
