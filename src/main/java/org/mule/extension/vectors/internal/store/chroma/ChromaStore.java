@@ -25,8 +25,12 @@ import java.util.HashMap;
  */
 public class ChromaStore extends BaseStore {
 
-  private final String url;
+  static final String ID_DEFAULT_FIELD_NAME = "id";
+  static final String TEXT_DEFAULT_FIELD_NAME = "text";
+  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
+  static final String VECTOR_DEFAULT_FIELD_NAME = "vector";
 
+  private final String url;
 
   /**
    * Initializes a new instance of ChromaStore.
@@ -251,5 +255,42 @@ public class ChromaStore extends BaseStore {
     }
     LOGGER.debug("collectionId: " + collectionId);
     return collectionId;
+  }
+
+  @Override
+  public ChromaStore.RowIterator rowIterator() {
+    try {
+      return new ChromaStore.RowIterator();
+    } catch (Exception e) {
+      LOGGER.error("Error while creating row iterator", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  public class RowIterator extends BaseStore.RowIterator {
+
+
+    public RowIterator() throws Exception {
+
+      super();
+    }
+
+    @Override
+    public boolean hasNext() {
+
+      return true;
+    }
+
+    @Override
+    public Row<?> next() {
+      try {
+
+        return null;
+
+      } catch (Exception e) {
+        LOGGER.error("Error while fetching next row", e);
+        return null;
+      }
+    }
   }
 }

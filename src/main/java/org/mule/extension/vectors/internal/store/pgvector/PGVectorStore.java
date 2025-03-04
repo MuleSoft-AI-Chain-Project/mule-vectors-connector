@@ -32,6 +32,11 @@ import java.util.NoSuchElementException;
  */
 public class PGVectorStore extends BaseStore {
 
+  static final String ID_DEFAULT_FIELD_NAME = "embedding_id";
+  static final String TEXT_DEFAULT_FIELD_NAME = "text";
+  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
+  static final String VECTOR_DEFAULT_FIELD_NAME = "embedding";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(PGVectorStore.class);
 
   private String user;
@@ -174,10 +179,10 @@ public class PGVectorStore extends BaseStore {
       }
 
       String query = "SELECT " +
-          Constants.STORE_SCHEMA_EMBEDDING_ID_FIELD_NAME + ", " +
-          Constants.STORE_SCHEMA_TEXT_FIELD_NAME + ", " +
-          Constants.STORE_SCHEMA_VECTOR_FIELD_NAME  + ", " +
-          Constants.STORE_SCHEMA_METADATA_FIELD_NAME  +
+          ID_DEFAULT_FIELD_NAME + ", " +
+          TEXT_DEFAULT_FIELD_NAME + ", " +
+          VECTOR_DEFAULT_FIELD_NAME  + ", " +
+          METADATA_DEFAULT_FIELD_NAME  +
           " FROM " + table + " LIMIT ? OFFSET ?";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, this.pageSize);
@@ -243,8 +248,8 @@ public class PGVectorStore extends BaseStore {
     try {
       return new RowIterator();
     } catch (SQLException e) {
-        LOGGER.error("Error while creating row iterator", e);
-        throw new RuntimeException(e);
+      LOGGER.error("Error while creating row iterator", e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -269,15 +274,15 @@ public class PGVectorStore extends BaseStore {
       try {
 
         ResultSet resultSet = iterator.next();
-        String embeddingId = resultSet.getString(Constants.STORE_SCHEMA_EMBEDDING_ID_FIELD_NAME);
-        String vectorString = resultSet.getString(Constants.STORE_SCHEMA_VECTOR_FIELD_NAME);
+        String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
+        String vectorString = resultSet.getString(VECTOR_DEFAULT_FIELD_NAME);
         String[] vectorStringArray = vectorString.replace("{", "").replace("}", "").replace("[", "").replace("]", "").split(",");
         float[] vector = new float[vectorStringArray.length];
         for (int i = 0; i < vectorStringArray.length; i++) {
            vector[i] = Float.parseFloat(vectorStringArray[i].trim());
         }
-        String text = resultSet.getString(Constants.STORE_SCHEMA_TEXT_FIELD_NAME);
-        JSONObject metadataObject = new JSONObject(resultSet.getString(Constants.STORE_SCHEMA_METADATA_FIELD_NAME));
+        String text = resultSet.getString(TEXT_DEFAULT_FIELD_NAME);
+        JSONObject metadataObject = new JSONObject(resultSet.getString(METADATA_DEFAULT_FIELD_NAME));
 
         return new Row<TextSegment>(embeddingId, new Embedding(vector), new TextSegment(text, Metadata.from(metadataObject.toMap())));
 

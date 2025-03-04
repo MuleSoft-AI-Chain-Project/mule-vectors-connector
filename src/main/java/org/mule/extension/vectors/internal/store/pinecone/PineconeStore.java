@@ -45,4 +45,41 @@ public class PineconeStore extends BaseStore {
             .nameSpace("ns0mc_" + storeName)
             .build();
   }
+
+  @Override
+  public PineconeStore.RowIterator rowIterator() {
+    try {
+      return new PineconeStore.RowIterator();
+    } catch (Exception e) {
+      LOGGER.error("Error while creating row iterator", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  public class RowIterator extends BaseStore.RowIterator {
+
+
+    public RowIterator() throws Exception {
+
+      super();
+    }
+
+    @Override
+    public boolean hasNext() {
+
+      return true;
+    }
+
+    @Override
+    public Row<?> next() {
+      try {
+
+        return null;
+
+      } catch (Exception e) {
+        LOGGER.error("Error while fetching next row", e);
+        return null;
+      }
+    }
+  }
 }

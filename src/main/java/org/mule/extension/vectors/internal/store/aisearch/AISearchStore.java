@@ -10,6 +10,7 @@ import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchSto
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.store.milvus.MilvusStore;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 
 import java.io.BufferedReader;
@@ -19,6 +20,11 @@ import java.net.URL;
 import java.util.HashMap;
 
 public class AISearchStore extends BaseStore {
+
+  static final String ID_DEFAULT_FIELD_NAME = "id";
+  static final String TEXT_DEFAULT_FIELD_NAME = "content";
+  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
+  static final String VECTOR_DEFAULT_FIELD_NAME = "content_vector";
 
   private static final String API_VERSION = "2024-07-01";
 
@@ -154,5 +160,42 @@ public class AISearchStore extends BaseStore {
     jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
 
     return jsonObject;
+  }
+
+  @Override
+  public AISearchStore.RowIterator rowIterator() {
+    try {
+      return new AISearchStore.RowIterator();
+    } catch (Exception e) {
+      LOGGER.error("Error while creating row iterator", e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  public class RowIterator extends BaseStore.RowIterator {
+
+
+    public RowIterator() throws Exception {
+
+      super();
+    }
+
+    @Override
+    public boolean hasNext() {
+
+      return true;
+    }
+
+    @Override
+    public Row<?> next() {
+      try {
+
+        return null;
+
+      } catch (Exception e) {
+        LOGGER.error("Error while fetching next row", e);
+        return null;
+      }
+    }
   }
 }
