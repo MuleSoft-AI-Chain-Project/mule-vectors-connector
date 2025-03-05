@@ -108,7 +108,7 @@ public class PGVectorStore extends BaseStore {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
 
-    try (PgVectorMetadataIterator iterator = new PgVectorMetadataIterator(user, password, host, port, database, storeName, (int)queryParams.embeddingPageSize())) {
+    try (PgVectorMetadataIterator iterator = new PgVectorMetadataIterator(user, password, host, port, database, storeName, (int)queryParams.pageSize())) {
       while (iterator.hasNext()) {
 
         ResultSet resultSet = iterator.next();
@@ -181,7 +181,7 @@ public class PGVectorStore extends BaseStore {
       String query = "SELECT " +
           ID_DEFAULT_FIELD_NAME + ", " +
           TEXT_DEFAULT_FIELD_NAME + ", " +
-          VECTOR_DEFAULT_FIELD_NAME  + ", " +
+          (queryParams.retrieveEmbeddings() ? (VECTOR_DEFAULT_FIELD_NAME  + ", ") : "") +
           METADATA_DEFAULT_FIELD_NAME  +
           " FROM " + table + " LIMIT ? OFFSET ?";
       pstmt = connection.prepareStatement(query);
@@ -261,7 +261,7 @@ public class PGVectorStore extends BaseStore {
 
       super();
       this.iterator = new PgVectorMetadataIterator(
-          user, password, host, port, database, storeName, (int)queryParams.embeddingPageSize());
+          user, password, host, port, database, storeName, (int)queryParams.pageSize());
     }
 
     @Override
@@ -275,16 +275,22 @@ public class PGVectorStore extends BaseStore {
 
         ResultSet resultSet = iterator.next();
         String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
-        String vectorString = resultSet.getString(VECTOR_DEFAULT_FIELD_NAME);
-        String[] vectorStringArray = vectorString.replace("{", "").replace("}", "").replace("[", "").replace("]", "").split(",");
-        float[] vector = new float[vectorStringArray.length];
-        for (int i = 0; i < vectorStringArray.length; i++) {
-           vector[i] = Float.parseFloat(vectorStringArray[i].trim());
+        float[] vector = null;
+        if(queryParams.retrieveEmbeddings()) {
+          String vectorString = resultSet.getString(VECTOR_DEFAULT_FIELD_NAME);
+          String[] vectorStringArray =
+              vectorString.replace("{", "").replace("}", "").replace("[", "").replace("]", "").split(",");
+          vector = new float[vectorStringArray.length];
+          for (int i = 0; i < vectorStringArray.length; i++) {
+            vector[i] = Float.parseFloat(vectorStringArray[i].trim());
+          }
         }
         String text = resultSet.getString(TEXT_DEFAULT_FIELD_NAME);
         JSONObject metadataObject = new JSONObject(resultSet.getString(METADATA_DEFAULT_FIELD_NAME));
 
-        return new Row<TextSegment>(embeddingId, new Embedding(vector), new TextSegment(text, Metadata.from(metadataObject.toMap())));
+        return new Row<TextSegment>(embeddingId,
+                                    vector != null ? new Embedding(vector) : null,
+                                    new TextSegment(text, Metadata.from(metadataObject.toMap())));
 
       } catch (SQLException e) {
         LOGGER.error("Error while fetching next row", e);

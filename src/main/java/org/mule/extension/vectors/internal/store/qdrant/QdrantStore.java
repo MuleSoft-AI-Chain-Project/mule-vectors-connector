@@ -85,7 +85,7 @@ public class QdrantStore extends BaseStore {
             while (keepScrolling && points.size() < MAX_POINTS) {
                 Points.ScrollPoints.Builder request = Points.ScrollPoints.newBuilder()
                         .setCollectionName(storeName)
-                        .setLimit(Math.min(queryParams.embeddingPageSize(), MAX_POINTS - points.size()));
+                        .setLimit(Math.min(queryParams.pageSize(), MAX_POINTS - points.size()));
                 if (nextOffset != null) {
                     request.setOffset(nextOffset);
                 }

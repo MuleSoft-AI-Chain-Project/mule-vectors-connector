@@ -109,7 +109,7 @@ public class OpenSearchStore extends BaseStore {
         SearchRequest searchRequest = new SearchRequest.Builder()
             .index(storeName)
             .source(source -> source.filter(filter -> filter.includes("metadata"))) // Filter to include only metadata
-            .size(queryParams.embeddingPageSize())
+            .size(queryParams.pageSize())
             .scroll(Time.of(t -> t.time("1m")))
             .build();
 

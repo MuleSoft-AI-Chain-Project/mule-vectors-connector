@@ -256,7 +256,7 @@ public class StoreOperations {
   public PagingProvider<BaseStoreConnection, Result<CursorProvider, StoreResponseAttributes>> queryAll(
       @Config StoreConfiguration storeConfiguration,
       String storeName,
-      @ParameterGroup(name = "Querying Strategy") QueryParameters queryParams,
+      @ParameterGroup(name = "Query Parameters") QueryParameters queryParams,
       StreamingHelper streamingHelper) {
 
     try {
@@ -405,7 +405,7 @@ public class StoreOperations {
       @Config StoreConfiguration storeConfiguration,
       @Connection BaseStoreConnection storeConnection,
       String storeName,
-      @ParameterGroup(name = "Querying Strategy") QueryParameters queryParams) {
+      @ParameterGroup(name = "Query Parameters") QueryParameters queryParams) {
 
     try {
 

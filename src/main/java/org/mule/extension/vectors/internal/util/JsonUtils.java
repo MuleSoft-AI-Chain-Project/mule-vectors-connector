@@ -140,7 +140,7 @@ public final class JsonUtils {
     public static JSONObject rowToJson(BaseStore.Row<?> row) {
 
       JSONObject jsonObject = new JSONObject();
-      jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
+      if(row.getEmbedding() != null) jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
       jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment)row.getEmbedded()).metadata().toMap()));
       jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment)row.getEmbedded()).text());
       jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());

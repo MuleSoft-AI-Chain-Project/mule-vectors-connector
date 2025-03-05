@@ -81,7 +81,7 @@ public class ChromaStore extends BaseStore {
 
       while(offset < segmentCount) {
 
-        JSONArray metadataObjects = getJsonResponse(collectionId, offset, queryParams.embeddingPageSize()).getJSONArray("metadatas");
+        JSONArray metadataObjects = getJsonResponse(collectionId, offset, queryParams.pageSize()).getJSONArray("metadatas");
         for(int i = 0; i< metadataObjects.length(); i++) {
 
           JSONObject metadataObject = metadataObjects.getJSONObject(i);
@@ -124,7 +124,7 @@ public class ChromaStore extends BaseStore {
       JSONArray jsonInclude = new JSONArray();
       jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
       jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
-      jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
+      if(queryParams.retrieveEmbeddings()) jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
 
       jsonRequest.put("include", jsonInclude);
 
@@ -297,16 +297,16 @@ public class ChromaStore extends BaseStore {
       long offset = 0;
 
       while (offset < segmentCount) {
-        JSONObject jsonResponse = getJsonResponse(collectionId, offset, queryParams.embeddingPageSize());
+        JSONObject jsonResponse = getJsonResponse(collectionId, offset, queryParams.pageSize());
         JSONArray jsonArrayIds = jsonResponse.getJSONArray(ID_DEFAULT_FIELD_NAME); 
         JSONArray jsonArrayMetadatas = jsonResponse.getJSONArray(METADATA_DEFAULT_FIELD_NAME);
         JSONArray jsonArrayDocuments = jsonResponse.getJSONArray(TEXT_DEFAULT_FIELD_NAME);
-        JSONArray jsonArrayEmbeddings = jsonResponse.getJSONArray(VECTOR_DEFAULT_FIELD_NAME);
+        JSONArray jsonArrayEmbeddings = queryParams.retrieveEmbeddings() ? jsonResponse.getJSONArray(VECTOR_DEFAULT_FIELD_NAME) : null;
         for (int i = 0; i < jsonArrayIds.length(); i++) {
           idsObjects.add(jsonArrayIds.getString(i));
           metadataObjects.add(jsonArrayMetadatas.getJSONObject(i));
           documentsObjects.add(jsonArrayDocuments.getString(i));
-          embeddingsObjects.add(jsonArrayEmbeddings.getJSONArray(i));
+          if(queryParams.retrieveEmbeddings()) embeddingsObjects.add(jsonArrayEmbeddings.getJSONArray(i));
         }
         offset += jsonArrayIds.length();
       }
@@ -328,15 +328,21 @@ public class ChromaStore extends BaseStore {
         JSONObject metadataObject = metadataObjects.get(currentIndex);
         String text = documentsObjects.get(currentIndex);
 
-        JSONArray vectorArray = embeddingsObjects.get(currentIndex);
-        float[] vector = new float[vectorArray.length()];
-        for (int j = 0; j < vectorArray.length(); j++) {
+        float[] vector = null;
+        if(queryParams.retrieveEmbeddings()) {
+
+          JSONArray vectorArray = embeddingsObjects.get(currentIndex);
+          vector = new float[vectorArray.length()];
+          for (int j = 0; j < vectorArray.length(); j++) {
             vector[j] = vectorArray.getFloat(j);
+          }
         }
 
         currentIndex++;
 
-        return new Row<>(embeddingId, new Embedding(vector), new TextSegment(text, Metadata.from(metadataObject.toMap())));
+        return new Row<>(embeddingId,
+                         vector != null ? new Embedding(vector) : null,
+                         new TextSegment(text, Metadata.from(metadataObject.toMap())));
       } catch (Exception e) {
         LOGGER.error("Error while fetching next row", e);
         throw new NoSuchElementException("No more elements available");

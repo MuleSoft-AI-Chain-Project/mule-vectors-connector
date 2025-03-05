@@ -368,7 +368,7 @@ public class BaseStore {
 
     public Row(String id, Embedding embedding, Embedded embedded) {
       this.id = ValidationUtils.ensureNotBlank(id, "id");
-      this.embedding = (Embedding)ValidationUtils.ensureNotNull(embedding, "embedding");
+      this.embedding = embedding;
       this.embedded = embedded;
     }
 

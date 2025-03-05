@@ -81,7 +81,7 @@ public class MilvusStore extends BaseStore {
       // Build the query with iterator
       QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
           .withCollectionName(storeName)
-          .withBatchSize((long)queryParams.embeddingPageSize())
+          .withBatchSize((long)queryParams.pageSize())
           .withOutFields(Arrays.asList(Constants.STORE_SCHEMA_METADATA_FIELD_NAME))
           .build();
 
@@ -135,68 +135,80 @@ public class MilvusStore extends BaseStore {
 
   public class RowIterator extends BaseStore.RowIterator {
 
-      private QueryIterator queryIterator;
-      private List<QueryResultsWrapper.RowRecord> currentBatch;
-      private int currentIndex;
+    private QueryIterator queryIterator;
+    private List<QueryResultsWrapper.RowRecord> currentBatch;
+    private int currentIndex;
 
-      public RowIterator() throws Exception {
-          super();
-          QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
-              .withCollectionName(storeName)
-              .withBatchSize((long) queryParams.embeddingPageSize())
-              .withOutFields(Arrays.asList(ID_DEFAULT_FIELD_NAME,
-                                           VECTOR_DEFAULT_FIELD_NAME,
-                                           TEXT_DEFAULT_FIELD_NAME,
-                                           METADATA_DEFAULT_FIELD_NAME))
-              .build();
+    public RowIterator() throws Exception {
+        super();
 
-          R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
-          if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
-              throw new RuntimeException(queryIteratorRes.getMessage());
-          }
+      List<String> outFields = queryParams.retrieveEmbeddings() ?
+          Arrays.asList(ID_DEFAULT_FIELD_NAME,
+                        VECTOR_DEFAULT_FIELD_NAME,
+                        TEXT_DEFAULT_FIELD_NAME,
+                        METADATA_DEFAULT_FIELD_NAME) :
+          Arrays.asList(ID_DEFAULT_FIELD_NAME,
+                        TEXT_DEFAULT_FIELD_NAME,
+                        METADATA_DEFAULT_FIELD_NAME);
 
-          this.queryIterator = queryIteratorRes.getData();
-          this.currentBatch = new ArrayList<>();
-          this.currentIndex = 0;
-          fetchNextBatch();
+        QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
+            .withCollectionName(storeName)
+            .withBatchSize((long) queryParams.pageSize())
+            .withOutFields(outFields)
+            .build();
+
+        R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
+        if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
+            throw new RuntimeException(queryIteratorRes.getMessage());
+        }
+
+        this.queryIterator = queryIteratorRes.getData();
+        this.currentBatch = new ArrayList<>();
+        this.currentIndex = 0;
+        fetchNextBatch();
+    }
+
+    @Override
+    public boolean hasNext() {
+      return currentIndex < currentBatch.size() || fetchNextBatch();
+    }
+
+    @Override
+    public Row<?> next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
       }
-
-      @Override
-      public boolean hasNext() {
-          return currentIndex < currentBatch.size() || fetchNextBatch();
+      QueryResultsWrapper.RowRecord rowRecord = currentBatch.get(currentIndex++);
+      String embeddingId = (String)rowRecord.getFieldValues().get(ID_DEFAULT_FIELD_NAME);
+      float[] vector = null;
+      if(queryParams.retrieveEmbeddings()) {
+        List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(VECTOR_DEFAULT_FIELD_NAME);
+        vector = new float[vectorList.size()];
+        for (int i = 0; i < vectorList.size(); i++) {
+          vector[i] = vectorList.get(i).floatValue();
+        }
       }
+      String text = (String)rowRecord.getFieldValues().get(TEXT_DEFAULT_FIELD_NAME);
+      JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(METADATA_DEFAULT_FIELD_NAME);
+      JSONObject metadataObject = new JSONObject(gsonObject.toString());
 
-      @Override
-      public Row<?> next() {
-          if (!hasNext()) {
-              throw new NoSuchElementException();
-          }
-          QueryResultsWrapper.RowRecord rowRecord = currentBatch.get(currentIndex++);
-          String embeddingId = (String)rowRecord.getFieldValues().get(ID_DEFAULT_FIELD_NAME);
-          List<Float> vectorList = (List<Float>)rowRecord.getFieldValues().get(VECTOR_DEFAULT_FIELD_NAME);
-          float[] vector = new float[vectorList.size()];
-          for (int i = 0; i < vectorList.size(); i++) {
-              vector[i] = vectorList.get(i).floatValue();
-          }
-          String text = (String)rowRecord.getFieldValues().get(TEXT_DEFAULT_FIELD_NAME);
-          JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(METADATA_DEFAULT_FIELD_NAME);
-          JSONObject metadataObject = new JSONObject(gsonObject.toString());
+      return new Row<TextSegment>(embeddingId,
+                                  vector != null ? new Embedding(vector) : null,
+                                  new TextSegment(text, Metadata.from(metadataObject.toMap())));
+    }
 
-          return new Row<TextSegment>(embeddingId, new Embedding(vector), new TextSegment(text, Metadata.from(metadataObject.toMap())));
+    private boolean fetchNextBatch() {
+      if (queryIterator == null) {
+        return false;
       }
-
-      private boolean fetchNextBatch() {
-          if (queryIterator == null) {
-              return false;
-          }
-          currentBatch = queryIterator.next();
-          currentIndex = 0;
-          if (currentBatch.isEmpty()) {
-              queryIterator.close();
-              queryIterator = null;
-              return false;
-          }
-          return true;
+      currentBatch = queryIterator.next();
+      currentIndex = 0;
+      if (currentBatch.isEmpty()) {
+        queryIterator.close();
+        queryIterator = null;
+        return false;
       }
+      return true;
+    }
   }
 }
