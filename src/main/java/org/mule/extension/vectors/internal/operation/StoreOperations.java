@@ -250,7 +250,7 @@ public class StoreOperations {
    */
   @MediaType(value = ANY, strict = false)
   @Alias("Query-all")
-  @DisplayName("[Store] Query all")
+  @DisplayName("[Store] Query all (Streaming)")
   @Throws(StoreErrorTypeProvider.class)
   @OutputResolver(output = RowsOutputTypeMetadataResolver.class)
   public PagingProvider<BaseStoreConnection, Result<CursorProvider, StoreResponseAttributes>> queryAll(
