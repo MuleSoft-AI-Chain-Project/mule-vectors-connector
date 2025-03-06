@@ -43,37 +43,6 @@ public class ElasticsearchStore extends BaseStore {
 
   private RestClient restClient;
 
-  private RestClient getRestClient() {
-
-    if(this.restClient == null) {
-
-      if (!Utils.isNullOrBlank(user)) {
-
-        BasicCredentialsProvider credsProv = new BasicCredentialsProvider();
-        credsProv.setCredentials(
-            AuthScope.ANY, new UsernamePasswordCredentials(user, password)
-        );
-
-        this.restClient = RestClient
-            .builder(HttpHost.create(url))
-            .setHttpClientConfigCallback(hc -> hc
-                .setDefaultCredentialsProvider(credsProv)
-            )
-            .build();
-
-      } else if (!Utils.isNullOrBlank(apiKey)) {
-
-        this.restClient = RestClient
-            .builder(HttpHost.create(url))
-            .setDefaultHeaders(new Header[]{
-                new BasicHeader("Authorization", "ApiKey " + apiKey)
-            })
-            .build();
-      }
-    }
-    return restClient;
-  }
-
   public ElasticsearchStore(StoreConfiguration storeConfiguration, ElasticsearchStoreConnection elasticsearchStoreConnection, String storeName, QueryParameters queryParams) {
 
     super(storeConfiguration, elasticsearchStoreConnection, storeName, queryParams, 0, true);
@@ -88,47 +57,9 @@ public class ElasticsearchStore extends BaseStore {
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return ElasticsearchEmbeddingStore.builder()
-        .restClient(getRestClient())
+        .restClient(restClient)
         .indexName(storeName)
         .build();
-  }
-
-  private void processHits(List<Hit<Map>> hits, HashMap<String, JSONObject> sourceObjectMap) {
-
-    for (Hit<Map> hit : hits) {
-
-      // Convert the source map to a JSONObject
-      Map<String, Object> sourceMap = hit.source();
-      if (sourceMap != null) {
-        JSONObject jsonObject = new JSONObject(sourceMap);
-        JSONObject metadataObject = jsonObject.optJSONObject("metadata");
-        if (metadataObject != null) {
-
-          JSONObject sourceObject = getSourceObject(metadataObject);
-          addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
-        }
-      }
-    }
-  }
-
-  private void cleanup(ElasticsearchClient client, String scrollId) {
-
-    if (scrollId != null) {
-
-      try {
-
-        ClearScrollRequest clearScrollRequest = new ClearScrollRequest.Builder()
-            .scrollId(scrollId)
-            .build();
-        ClearScrollResponse clearScrollResponse = client.clearScroll(clearScrollRequest);
-        if (!clearScrollResponse.succeeded()) {
-          LOGGER.warn("Failed to clear scroll context");
-        }
-      } catch (IOException e) {
-
-        LOGGER.error("Failed to clear scroll context");
-      }
-    }
   }
 
   @Override
@@ -150,7 +81,7 @@ public class ElasticsearchStore extends BaseStore {
 
     public RowIterator() throws IOException {
       super();
-      this.client = new ElasticsearchClient(new RestClientTransport(getRestClient(), new JacksonJsonpMapper()));
+      this.client = new ElasticsearchClient(new RestClientTransport(restClient, new JacksonJsonpMapper()));
       this.currentBatch = new ArrayList<>();
       this.currentIndex = 0;
       fetchNextBatch();
