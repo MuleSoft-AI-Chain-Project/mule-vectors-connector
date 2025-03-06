@@ -386,63 +386,6 @@ public class StoreOperations {
   }
 
   /**
-   * Lists all sources in the specified embedding store.
-   *
-   * @param storeConfiguration the configuration of the store
-   * @param storeConnection    the connection to the store
-   * @param storeName          the name of the store
-   * @param queryParams        the query parameters for listing sources
-   * @return a result containing the store response with metadata of sources
-   * @throws ModuleException if an error occurs during the operation
-   */
-  @MediaType(value = APPLICATION_JSON, strict = false)
-  @Alias("Store-list-sources")
-  @DisplayName("[Store] List sources (Deprecated)")
-  @Throws(StoreErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/StoreListSourcesResponse.json")
-  @Deprecated
-  public Result<InputStream, StoreResponseAttributes> listSources(
-      @Config StoreConfiguration storeConfiguration,
-      @Connection BaseStoreConnection storeConnection,
-      String storeName,
-      @ParameterGroup(name = "Query Parameters") QueryParameters queryParams) {
-
-    try {
-
-      EmbeddingOperationValidator.validateOperationType(
-          Constants.STORE_OPERATION_TYPE_QUERY_ALL, storeConnection.getVectorStore());
-      EmbeddingOperationValidator.validateOperationType(
-          Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
-
-      BaseStore baseStore = BaseStore.builder()
-          .storeName(storeName)
-          .configuration(storeConfiguration)
-          .connection(storeConnection)
-          .queryParams(queryParams)
-          .createStore(false)
-          .build();
-
-      JSONObject jsonObject = baseStore.listSources();
-
-      return createStoreResponse(
-          jsonObject.toString(),
-          new HashMap<String, Object>() {{
-            put("storeName", storeName);
-          }});
-
-    } catch (ModuleException me) {
-      throw me;
-
-    } catch (Exception e) {
-
-      throw new ModuleException(
-          String.format("Error while listing sources from the store %s", storeName),
-          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
-          e);
-    }
-  }
-
-  /**
    * Removes embeddings from the store based on the provided filter.
    *
    * @param storeConfiguration the configuration of the store

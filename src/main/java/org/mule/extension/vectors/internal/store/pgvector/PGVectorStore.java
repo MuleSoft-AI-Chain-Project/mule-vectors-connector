@@ -97,36 +97,6 @@ public class PGVectorStore extends BaseStore {
   }
 
   /**
-   * Lists the sources stored in the PostgreSQL database.
-   *
-   * @return A {@link JSONObject} containing the sources and their metadata.
-   */
-  public JSONObject listSources() {
-
-    HashMap<String, JSONObject> sourceObjectMap = new HashMap<>();
-
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-
-    try (PgVectorMetadataIterator iterator = new PgVectorMetadataIterator(user, password, host, port, database, storeName, (int)queryParams.pageSize())) {
-      while (iterator.hasNext()) {
-
-        ResultSet resultSet = iterator.next();
-        JSONObject metadataObject = new JSONObject(resultSet.getString(Constants.STORE_SCHEMA_METADATA_FIELD_NAME));
-        JSONObject sourceObject = getSourceObject(metadataObject);
-        addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
-      }
-    } catch (SQLException e) {
-      LOGGER.error("Error while listing sources", e);
-    }
-
-    jsonObject.put(Constants.JSON_KEY_SOURCES, JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
-    jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
-
-    return jsonObject;
-  }
-
-  /**
    * Iterator to handle metadata pagination from the PostgreSQL database.
    */
   private class PgVectorMetadataIterator implements Iterator<ResultSet>, AutoCloseable {

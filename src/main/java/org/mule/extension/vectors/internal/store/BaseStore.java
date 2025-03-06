@@ -83,16 +83,6 @@ public class BaseStore {
   }
 
   /**
-   * Retrieves a JSON object listing sources available in the vector store, including metadata for each source.
-   *
-   * @return a JSON object containing a list of sources and their metadata
-   */
-  public JSONObject listSources() {
-
-    throw new UnsupportedOperationException("This method should be overridden by subclasses");
-  }
-
-  /**
    * Retrieves a unique key for a given source object by checking specific metadata fields.
    * <p>
    * The method first attempts to retrieve a unique identifier using the source ID (if available).

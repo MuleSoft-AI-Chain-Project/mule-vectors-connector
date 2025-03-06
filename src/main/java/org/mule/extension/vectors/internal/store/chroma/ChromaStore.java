@@ -59,50 +59,6 @@ public class ChromaStore extends BaseStore {
         .build();
   }
 
-  /**
-   * Retrieves a JSON object listing all sources associated with the store.
-   *
-   * @return a {@link JSONObject} containing details of all sources.
-   */
-  public JSONObject listSources() {
-
-    HashMap<String, JSONObject> sourceObjectMap = new HashMap<String, JSONObject>();
-
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-
-    long segmentCount = 0; // Counter to track the number of segments processed
-    long offset = 0; // Initialize offset for pagination
-
-    try {
-
-      String collectionId = getCollectionId(storeName);
-      segmentCount = getSegmentCount(collectionId);
-
-      while(offset < segmentCount) {
-
-        JSONArray metadataObjects = getJsonResponse(collectionId, offset, queryParams.pageSize()).getJSONArray("metadatas");
-        for(int i = 0; i< metadataObjects.length(); i++) {
-
-          JSONObject metadataObject = metadataObjects.getJSONObject(i);
-          JSONObject sourceObject = getSourceObject(metadataObject);
-          addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
-        }
-        offset = offset + metadataObjects.length();
-      }
-
-    } catch (Exception e) {
-
-      // Handle any exceptions that occur during the process
-      LOGGER.error("Error while listing sources", e);
-    }
-
-    jsonObject.put(Constants.JSON_KEY_SOURCES, JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
-    jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
-
-    return jsonObject;
-  }
-
   private JSONObject getJsonResponse(String collectionId, long offset, long limit) {
 
     JSONObject jsonResponse = new JSONObject();

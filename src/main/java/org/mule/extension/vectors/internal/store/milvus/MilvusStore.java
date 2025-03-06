@@ -67,62 +67,6 @@ public class MilvusStore extends BaseStore {
         .build();
   }
 
-  public JSONObject listSources() {
-
-    HashMap<String, JSONObject> sourceObjectMap = new HashMap<String, JSONObject>();
-    
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-
-    try {
-
-      boolean hasMore = true;
-
-      // Build the query with iterator
-      QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
-          .withCollectionName(storeName)
-          .withBatchSize((long)queryParams.pageSize())
-          .withOutFields(Arrays.asList(Constants.STORE_SCHEMA_METADATA_FIELD_NAME))
-          .build();
-
-      R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
-
-      if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
-        System.err.println(queryIteratorRes.getMessage());
-      }
-
-      QueryIterator queryIterator = queryIteratorRes.getData();
-      List<QueryResultsWrapper.RowRecord> results = new ArrayList<>();
-
-      while (hasMore) {
-
-        List<QueryResultsWrapper.RowRecord> batchResults = queryIterator.next();
-
-        if (batchResults.isEmpty()) {
-
-          queryIterator.close();
-          hasMore = false;
-        } else {
-
-          for (QueryResultsWrapper.RowRecord rowRecord : batchResults) {
-
-            JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(Constants.STORE_SCHEMA_METADATA_FIELD_NAME);
-            JSONObject metadataObject = new JSONObject(gsonObject.toString());
-            JSONObject sourceObject = getSourceObject(metadataObject);
-            addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
-          }
-        }
-      }
-    } finally {
-      getClient().close();
-    }
-
-    jsonObject.put(Constants.JSON_KEY_SOURCES, JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
-    jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
-
-    return jsonObject;
-  }
-
   @Override
   public MilvusStore.RowIterator rowIterator() {
     try {

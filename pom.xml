@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.4.20-SNAPSHOT</version>
+    <version>0.4.21-SNAPSHOT</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
