@@ -12,21 +12,17 @@ import dev.langchain4j.store.embedding.filter.Filter;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StoreErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.model.EmbeddingOperationValidator;
+import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.MetadataFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.metadata.MediasOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
-import org.mule.extension.vectors.internal.pagination.DocumentPagingProvider;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
 import org.mule.extension.vectors.internal.store.BaseStore;
 import org.mule.extension.vectors.internal.util.JsonUtils;
@@ -179,7 +175,7 @@ public class StoreOperations {
 
       if(searchFilterParams != null && searchFilterParams.isConditionSet()) {
 
-        EmbeddingOperationValidator.validateOperationType(
+        OperationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
         Filter filter = searchFilterParams.buildMetadataFilter();
         searchRequestBuilder.filter(filter);
@@ -407,9 +403,9 @@ public class StoreOperations {
       @ParameterGroup(name = "Metadata Filter") MetadataFilterParameters.RemoveFilterParameters removeFilterParams) {
 
     try {
-      EmbeddingOperationValidator.validateOperationType(
+      OperationValidator.validateOperationType(
           Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS, storeConnection.getVectorStore());
-      EmbeddingOperationValidator.validateOperationType(
+      OperationValidator.validateOperationType(
           Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
 
       BaseStore baseStore = BaseStore.builder()
