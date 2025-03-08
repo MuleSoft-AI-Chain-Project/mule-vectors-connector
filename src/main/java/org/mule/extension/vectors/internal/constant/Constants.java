@@ -52,7 +52,6 @@ public class Constants {
   public static final String VECTOR_STORE_QDRANT = "QDRANT";
 
   public static final String STORE_SCHEMA_METADATA_FIELD_NAME = "metadata";
-  public static final String STORE_SCHEMA_VECTOR_FIELD_NAME = "vector";
 
   public static final String METADATA_KEY_SOURCE_ID = "source_id";
   public static final String METADATA_KEY_INDEX = "index";

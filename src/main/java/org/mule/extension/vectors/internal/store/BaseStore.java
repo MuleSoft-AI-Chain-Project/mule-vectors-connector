@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.store;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.internal.ValidationUtils;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
@@ -17,6 +18,7 @@ import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreCo
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.store.aisearch.AISearchStore;
 import org.mule.extension.vectors.internal.store.chroma.ChromaStore;
 import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStore;
@@ -30,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * The {@code VectorStore} class provides a framework for interacting with various types of vector stores,
@@ -76,16 +80,6 @@ public class BaseStore {
       queryVector[i]=0.0f;  // Zero vector
     }
     return new Embedding(queryVector);
-  }
-
-  /**
-   * Retrieves a JSON object listing sources available in the vector store, including metadata for each source.
-   *
-   * @return a JSON object containing a list of sources and their metadata
-   */
-  public JSONObject listSources() {
-
-    throw new UnsupportedOperationException("This method should be overridden by subclasses");
   }
 
   /**
@@ -332,6 +326,67 @@ public class BaseStore {
               MuleVectorsErrorType.STORE_SERVICES_FAILURE);
       }
       return baseStore;
+    }
+  }
+
+  public BaseStore.RowIterator rowIterator() {
+    return new BaseStore.RowIterator();
+  }
+
+  public class RowIterator implements Iterator<Row<?>> {
+
+    @Override
+    public boolean hasNext() {
+      throw new UnsupportedOperationException("This method should be overridden by subclasses");
+    }
+
+    @Override
+    public Row<?> next() {
+      throw new UnsupportedOperationException("This method should be overridden by subclasses");
+    }
+  }
+
+  public static class Row<Embedded> {
+
+    String id;
+    Embedding embedding;
+    Embedded embedded;
+
+    public Row(String id, Embedding embedding) {
+      this(id, embedding, (Embedded)null);
+    }
+
+    public Row(String id, Embedding embedding, Embedded embedded) {
+      this.id = ValidationUtils.ensureNotBlank(id, "id");
+      this.embedding = embedding;
+      this.embedded = embedded;
+    }
+
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      } else if (o != null && this.getClass() == o.getClass()) {
+        Row<?> that = (Row)o;
+        return Objects.equals(this.id, that.id) && Objects.equals(this.embedding, that.embedding) && Objects.equals(this.embedded, that.embedded);
+      } else {
+        return false;
+      }
+    }
+
+    public int hashCode() {
+      return Objects.hash(new Object[]{this.id, this.embedding, this.embedded});
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public Embedding getEmbedding() {
+      return embedding;
+    }
+
+    public Embedded getEmbedded() {
+      return embedded;
     }
   }
 }

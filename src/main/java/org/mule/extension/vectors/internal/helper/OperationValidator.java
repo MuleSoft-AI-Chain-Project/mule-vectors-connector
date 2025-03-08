@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.helper.model;
+package org.mule.extension.vectors.internal.helper;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 
@@ -31,7 +31,7 @@ import java.util.*;
  *
  * @see Constants
  */
-public class EmbeddingOperationValidator {
+public class OperationValidator {
 
   private static final Map<String, Set<String>> EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES =
           new HashMap<>();
@@ -57,7 +57,7 @@ public class EmbeddingOperationValidator {
               Constants.VECTOR_STORE_OPENSEARCH,
               Constants.VECTOR_STORE_MILVUS,
               Constants.VECTOR_STORE_CHROMA,
-              Constants.VECTOR_STORE_PINECONE,
+              Constants.VECTOR_STORE_PINECONE, // Do not support GTE with strings.
               Constants.VECTOR_STORE_AI_SEARCH,
               Constants.VECTOR_STORE_QDRANT
             )));
@@ -80,7 +80,7 @@ public class EmbeddingOperationValidator {
               Constants.VECTOR_STORE_OPENSEARCH,
               Constants.VECTOR_STORE_MILVUS,
               Constants.VECTOR_STORE_CHROMA,
-              // Constants.VECTOR_STORE_PINECONE, // Do not support GTE with strings.
+              Constants.VECTOR_STORE_PINECONE,
               Constants.VECTOR_STORE_AI_SEARCH,
               Constants.VECTOR_STORE_QDRANT
             )));
