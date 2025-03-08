@@ -536,25 +536,3 @@ types:
         body:
           application/json:
             type: ErrorResponse
-
-/list-sources:
-  get:
-    description: List all sources from store.
-    responses:
-      200:
-        description: Sources from store.
-      400:
-        description: Bad Request (e.g., missing or invalid filter).
-        body:
-          application/json:
-            type: ErrorResponse
-      404:
-        description: No sources found.
-        body:
-          application/json:
-            type: ErrorResponse
-      500:
-        description: Internal Server Error.
-        body:
-          application/json:
-            type: ErrorResponse

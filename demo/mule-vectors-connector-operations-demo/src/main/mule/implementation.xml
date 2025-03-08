@@ -162,9 +162,6 @@ output application/json
 	<flow name="delete:\remove:vectors-connector-operations-api-config" doc:id="b772a9f5-3ed7-4993-b126-eb203bfdc09e">
         <flow-ref doc:name="remove-from-store" doc:id="7d133da0-8c1c-4f25-834e-c48290ef6491" name="remove-from-store" />
     </flow>
-    <flow name="get:\list-sources:vectors-connector-operations-api-config" doc:id="f0a80505-9c06-4037-a3d8-21edfea9c62d">
-        <flow-ref doc:name="Flow Reference" doc:id="581e06d1-869e-4efb-bca4-db34554b1bcb" name="list-sources" />
-    </flow>
     <flow name="delete:\remove:application\json:vectors-connector-operations-api-config">
         <logger level="INFO" message="delete:\remove:application\json:vectors-connector-operations-api-config" />
     </flow>
