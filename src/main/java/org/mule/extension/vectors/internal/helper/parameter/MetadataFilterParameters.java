@@ -44,35 +44,4 @@ public abstract class MetadataFilterParameters {
 
     return filter;
   }
-
-  public static class SearchFilterParameters extends MetadataFilterParameters {
-
-    @Parameter
-    @Alias("condition")
-    @DisplayName("Condition")
-    @Example("file_name = 'example.pdf' AND (file_type = 'any' OR file_name = 'txt')")
-    @Optional
-    @Content
-    String condition;
-
-    @Override
-    public String getCondition() {
-      return condition;
-    }
-  }
-
-  public static class RemoveFilterParameters extends MetadataFilterParameters {
-
-    @Parameter
-    @Alias("condition")
-    @DisplayName("Condition")
-    @Example("file_name = 'example.pdf' AND (file_type = 'any' OR file_name = 'txt')")
-    @Content
-    String condition;
-
-    @Override
-    public String getCondition() {
-      return condition;
-    }
-  }
 }

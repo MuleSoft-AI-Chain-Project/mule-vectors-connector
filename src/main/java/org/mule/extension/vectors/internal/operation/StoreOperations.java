@@ -19,9 +19,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StoreErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.OperationValidator;
-import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
-import org.mule.extension.vectors.internal.helper.parameter.MetadataFilterParameters;
-import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
 import org.mule.extension.vectors.internal.store.BaseStore;
@@ -91,7 +89,7 @@ public class StoreOperations {
           @Content InputStream content,
       @Alias("maxResults") @Summary("Maximum number of results (text segments) retrieved.") Number maxResults,
       @Alias("minScore") @Summary("Minimum score used to filter retrieved results (text segments).") Double minScore,
-      @ParameterGroup(name = "Metadata Filter") MetadataFilterParameters.SearchFilterParameters searchFilterParams) {
+      @ParameterGroup(name = "Filter") SearchFilterParameters searchFilterParams) {
 
     List<TextSegment> textSegments = new LinkedList<>();
     List<Embedding> embeddings = new LinkedList<>();
@@ -396,17 +394,19 @@ public class StoreOperations {
   @DisplayName("[Store] Remove")
   @Throws(StoreErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/StoreRemoveFromStoreResponse.json")
-  public Result<InputStream, StoreResponseAttributes> removeEmbeddings(
+  public Result<InputStream, StoreResponseAttributes> remove(
       @Config StoreConfiguration storeConfiguration,
       @Connection BaseStoreConnection storeConnection,
       String storeName,
-      @ParameterGroup(name = "Metadata Filter") MetadataFilterParameters.RemoveFilterParameters removeFilterParams) {
+      @ParameterGroup(name = "Filter") RemoveFilterParameters removeFilterParams) {
 
     try {
       OperationValidator.validateOperationType(
           Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS, storeConnection.getVectorStore());
       OperationValidator.validateOperationType(
           Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
+
+      removeFilterParams.validate();
 
       BaseStore baseStore = BaseStore.builder()
           .storeName(storeName)
@@ -417,9 +417,20 @@ public class StoreOperations {
 
       EmbeddingStore<TextSegment> embeddingStore = baseStore.buildEmbeddingStore();
 
-      Filter filter = removeFilterParams.buildMetadataFilter();
+      if(removeFilterParams.isIdsSet()) {
 
-      embeddingStore.removeAll(filter);
+        LOGGER.info(String.format("Remove by ids %s from store/collection %s", removeFilterParams.getIds(), storeName));
+        embeddingStore.removeAll(removeFilterParams.getIds());
+      } else if(removeFilterParams.isConditionSet()) {
+
+        LOGGER.info(String.format("Remove by metadata condition %s from store/collection %s", removeFilterParams.getCondition(), storeName));
+        Filter filter = removeFilterParams.buildMetadataFilter();
+        embeddingStore.removeAll(filter);
+      } else {
+
+        LOGGER.info(String.format("Remove all from store/collection %s", storeName));
+        embeddingStore.removeAll();
+      }
 
       JSONObject jsonObject = new JSONObject();
       jsonObject.put(Constants.JSON_KEY_STATUS, Constants.OPERATION_STATUS_DELETED);
