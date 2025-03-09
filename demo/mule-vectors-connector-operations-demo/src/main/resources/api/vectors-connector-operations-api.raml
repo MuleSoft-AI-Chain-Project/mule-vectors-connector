@@ -510,13 +510,20 @@ types:
       application/json:
         type: object
         properties:
-          filter:
+          ids:
+            type: array
+            description: The filter used to select documents for removal.
+            items:
+              type: string
+            required: false
+          metadataCondition:
             type: string
             description: The filter used to select documents for removal.
-            required: true
+            required: false
         example:
           {
-            "filter": "file_name = 'example.pdf' OR file_type = 'invoice'"
+            "ids": ["", ""],
+            "metadataCondition": "file_name = 'example.pdf' OR file_type = 'invoice'"
           }
     responses:
       200:
