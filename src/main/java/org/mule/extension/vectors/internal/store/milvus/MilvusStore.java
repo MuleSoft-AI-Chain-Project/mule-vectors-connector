@@ -1,6 +1,8 @@
 package org.mule.extension.vectors.internal.store.milvus;
 
 import com.google.gson.JsonObject;
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
@@ -18,13 +20,15 @@ import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class MilvusStore extends BaseStore {
 
+  static final String ID_DEFAULT_FIELD_NAME = "id";
+  static final String TEXT_DEFAULT_FIELD_NAME = "text";
+  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
+  static final String VECTOR_DEFAULT_FIELD_NAME = "vector";
+  
   private final String uri;
   private final String token;
   private MilvusServiceClient client;
@@ -63,59 +67,92 @@ public class MilvusStore extends BaseStore {
         .build();
   }
 
-  public JSONObject listSources() {
-
-    HashMap<String, JSONObject> sourceObjectMap = new HashMap<String, JSONObject>();
-    
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-
+  @Override
+  public MilvusStore.RowIterator rowIterator() {
     try {
+      return new MilvusStore.RowIterator();
+    } catch (Exception e) {
+      LOGGER.error("Error while creating row iterator", e);
+      throw new RuntimeException(e);
+    }
+  }
 
-      boolean hasMore = true;
+  public class RowIterator extends BaseStore.RowIterator {
 
-      // Build the query with iterator
-      QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
-          .withCollectionName(storeName)
-          .withBatchSize((long)queryParams.embeddingPageSize())
-          .withOutFields(Arrays.asList(Constants.STORE_SCHEMA_METADATA_FIELD_NAME))
-          .build();
+    private QueryIterator queryIterator;
+    private List<QueryResultsWrapper.RowRecord> currentBatch;
+    private int currentIndex;
 
-      R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
+    public RowIterator() throws Exception {
+        super();
 
-      if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
-        System.err.println(queryIteratorRes.getMessage());
-      }
+      List<String> outFields = queryParams.retrieveEmbeddings() ?
+          Arrays.asList(ID_DEFAULT_FIELD_NAME,
+                        VECTOR_DEFAULT_FIELD_NAME,
+                        TEXT_DEFAULT_FIELD_NAME,
+                        METADATA_DEFAULT_FIELD_NAME) :
+          Arrays.asList(ID_DEFAULT_FIELD_NAME,
+                        TEXT_DEFAULT_FIELD_NAME,
+                        METADATA_DEFAULT_FIELD_NAME);
 
-      QueryIterator queryIterator = queryIteratorRes.getData();
-      List<QueryResultsWrapper.RowRecord> results = new ArrayList<>();
+        QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
+            .withCollectionName(storeName)
+            .withBatchSize((long) queryParams.pageSize())
+            .withOutFields(outFields)
+            .build();
 
-      while (hasMore) {
-
-        List<QueryResultsWrapper.RowRecord> batchResults = queryIterator.next();
-
-        if (batchResults.isEmpty()) {
-
-          queryIterator.close();
-          hasMore = false;
-        } else {
-
-          for (QueryResultsWrapper.RowRecord rowRecord : batchResults) {
-
-            JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(Constants.STORE_SCHEMA_METADATA_FIELD_NAME);
-            JSONObject metadataObject = new JSONObject(gsonObject.toString());
-            JSONObject sourceObject = getSourceObject(metadataObject);
-            addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
-          }
+        R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
+        if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
+            throw new RuntimeException(queryIteratorRes.getMessage());
         }
-      }
-    } finally {
-      getClient().close();
+
+        this.queryIterator = queryIteratorRes.getData();
+        this.currentBatch = new ArrayList<>();
+        this.currentIndex = 0;
+        fetchNextBatch();
     }
 
-    jsonObject.put(Constants.JSON_KEY_SOURCES, JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
-    jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
+    @Override
+    public boolean hasNext() {
+      return currentIndex < currentBatch.size() || fetchNextBatch();
+    }
 
-    return jsonObject;
+    @Override
+    public Row<?> next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      QueryResultsWrapper.RowRecord rowRecord = currentBatch.get(currentIndex++);
+      String embeddingId = (String)rowRecord.getFieldValues().get(ID_DEFAULT_FIELD_NAME);
+      float[] vector = null;
+      if(queryParams.retrieveEmbeddings()) {
+        List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(VECTOR_DEFAULT_FIELD_NAME);
+        vector = new float[vectorList.size()];
+        for (int i = 0; i < vectorList.size(); i++) {
+          vector[i] = vectorList.get(i).floatValue();
+        }
+      }
+      String text = (String)rowRecord.getFieldValues().get(TEXT_DEFAULT_FIELD_NAME);
+      JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(METADATA_DEFAULT_FIELD_NAME);
+      JSONObject metadataObject = new JSONObject(gsonObject.toString());
+
+      return new Row<TextSegment>(embeddingId,
+                                  vector != null ? new Embedding(vector) : null,
+                                  new TextSegment(text, Metadata.from(metadataObject.toMap())));
+    }
+
+    private boolean fetchNextBatch() {
+      if (queryIterator == null) {
+        return false;
+      }
+      currentBatch = queryIterator.next();
+      currentIndex = 0;
+      if (currentBatch.isEmpty()) {
+        queryIterator.close();
+        queryIterator = null;
+        return false;
+      }
+      return true;
+    }
   }
 }

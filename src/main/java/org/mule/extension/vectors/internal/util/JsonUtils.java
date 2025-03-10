@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.store.BaseStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,14 +68,17 @@ public final class JsonUtils {
   }
 
   /**
-   * Creates a JSONObject representing the ingestion status of a folder or set of files.
+   * Creates a JSONObject representing the ingestion status of a data source.
    *
-   * @param storeName the name of the store associated with the ingestion status.
-   * @return a JSONObject containing the ingestion status, including the store name and status.
+   * @param sourceId     the unique identifier of the data source associated with the ingestion status.
+   * @param embeddingIds a list of embedding identifiers related to the ingestion process.
+   * @return a JSONObject containing the ingestion status, including the source ID and status.
    */
-  public static JSONObject createIngestionStatusObject(String storeName) {
+  public static JSONObject createIngestionStatusObject(String sourceId, List<String> embeddingIds) {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put(Constants.JSON_KEY_STATUS, Constants.OPERATION_STATUS_UPDATED);
+    jsonObject.put(Constants.JSON_KEY_SOURCE_ID, sourceId);
+    jsonObject.put(Constants.JSON_KEY_EMBEDDING_IDS, embeddingIds);
     return jsonObject;
   }
 
@@ -132,4 +136,14 @@ public final class JsonUtils {
     }
     return jsonObject;
   }
+
+    public static JSONObject rowToJson(BaseStore.Row<?> row) {
+
+      JSONObject jsonObject = new JSONObject();
+      if(row.getEmbedding() != null) jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
+      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment)row.getEmbedded()).metadata().toMap()));
+      jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment)row.getEmbedded()).text());
+      jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());
+      return jsonObject;
+    }
 }

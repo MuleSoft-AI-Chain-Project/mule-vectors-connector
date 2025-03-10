@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.mule.extension.vectors.internal.helper.parameter.MetadataFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -27,10 +30,15 @@ public class StoreResponseAttributes implements Serializable {
    */
   private final String storeName;
 
-  /**
-   * The filter attribute associated with the store response.
-   */
-  private String filterCondition;
+/**
+ * The list of IDs associated with the store response.
+ */
+private List<String> ids;
+
+/**
+ * The metadata condition associated with the store response.
+ */
+private String metadataCondition;
 
   /**
    * Additional attributes not explicitly defined as fields in this class.
@@ -48,14 +56,16 @@ public class StoreResponseAttributes implements Serializable {
   public StoreResponseAttributes(HashMap<String, Object> requestAttributes) {
     this.storeName = requestAttributes.containsKey("storeName") ? (String) requestAttributes.remove("storeName") : null;
 
-    MetadataFilterParameters filterParams = requestAttributes.containsKey("searchFilter")
-        ? (MetadataFilterParameters.SearchFilterParameters) requestAttributes.remove("searchFilter")
-        : requestAttributes.containsKey("removeFilter")
-            ? (MetadataFilterParameters.RemoveFilterParameters) requestAttributes.remove("removeFilter")
-            : null;
+    if(requestAttributes.containsKey("searchFilter")) {
 
-    if (filterParams != null) {
-      this.filterCondition = filterParams.getCondition();
+      SearchFilterParameters filterParams = (SearchFilterParameters) requestAttributes.remove("searchFilter");
+      if(filterParams.isConditionSet())this.metadataCondition = filterParams.getCondition();
+
+    } if (requestAttributes.containsKey("removeFilter")) {
+
+      RemoveFilterParameters filterParams = (RemoveFilterParameters) requestAttributes.remove("removeFilter");
+      if(filterParams.isConditionSet()) this.metadataCondition = filterParams.getCondition();
+      if(filterParams.isIdsSet()) this.ids = filterParams.getIds();
     }
 
     this.otherAttributes = requestAttributes;
@@ -71,12 +81,21 @@ public class StoreResponseAttributes implements Serializable {
   }
 
   /**
-   * Retrieves the filter condition.
+   * Retrieves the metadata condition.
    *
-   * @return the current filter condition.
+   * @return the current metadata condition.
    */
-  public String getFilterCondition() {
-    return filterCondition;
+  public String getMetadataCondition() {
+    return metadataCondition;
+  }
+
+  /**
+   * Retrieves the list of IDs.
+   *
+   * @return the list of IDs, or {@code null} if not available.
+   */
+  public List<String> getIds() {
+    return ids;
   }
 
   /**

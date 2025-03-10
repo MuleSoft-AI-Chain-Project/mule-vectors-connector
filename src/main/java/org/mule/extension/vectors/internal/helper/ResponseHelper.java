@@ -32,6 +32,23 @@ public final class ResponseHelper {
         .build();
   }
 
+  public static List<Result<CursorProvider, StoreResponseAttributes>> createPageStoreResponse(
+      String response,
+      Map<String, Object> storeAttributes,
+      StreamingHelper streamingHelper) {
+
+    List<Result<CursorProvider, StoreResponseAttributes>> page =  new LinkedList();
+
+    page.add(Result.<CursorProvider, StoreResponseAttributes>builder()
+                 .attributes(new StoreResponseAttributes((HashMap<String, Object>) storeAttributes))
+                 .output((CursorProvider) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
+                 .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
+                 .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
+                 .build());
+
+    return page;
+  }
+
   public static Result<InputStream, EmbeddingResponseAttributes> createEmbeddingResponse(
       String response,
       Map<String, Object> embeddingAttributes) {

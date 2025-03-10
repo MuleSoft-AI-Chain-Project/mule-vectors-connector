@@ -52,7 +52,6 @@ public class Constants {
   public static final String VECTOR_STORE_QDRANT = "QDRANT";
 
   public static final String STORE_SCHEMA_METADATA_FIELD_NAME = "metadata";
-  public static final String STORE_SCHEMA_VECTOR_FIELD_NAME = "vector";
 
   public static final String METADATA_KEY_SOURCE_ID = "source_id";
   public static final String METADATA_KEY_INDEX = "index";
@@ -95,10 +94,12 @@ public class Constants {
   public static final String JSON_KEY_MAX_RESULTS = "maxResults";
   public static final String JSON_KEY_MIN_SCORE = "minScore";
   public static final String JSON_KEY_EMBEDDING_ID = "embeddingId";
+  public static final String JSON_KEY_EMBEDDING_IDS = "embeddingIds";
   public static final String JSON_KEY_SCORE = "score";
   public static final String JSON_KEY_METADATA = "metadata";
   public static final String JSON_KEY_INDEX = "index";
   public static final String JSON_KEY_BASE64DATA = "base64Data";
+  public static final String JSON_KEY_SOURCE_ID = "sourceId";
 
   public static final String OPERATION_STATUS_UPDATED = "updated";
   public static final String OPERATION_STATUS_DELETED = "deleted";

@@ -43,11 +43,31 @@ payload.payload]]></ee:set-payload>
 		</ee:transform>
 	</flow>
 	<flow name="remove-from-store" doc:id="1162301b-2e97-4183-804c-4a2f6f27c0b3" >
-		<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="156137d3-b051-4e93-86b6-83ff2d69788b" config-ref="PGVector_Store_config" storeName="demo" >
-			<ms-vectors:condition ><![CDATA[#[payload.filter]]]></ms-vectors:condition>
+		<choice doc:name="Choice" doc:id="d409615a-3189-4ca9-996c-a0c33635211e" >
+			<when expression="#[payload.ids != null]">
+				<ms-vectors:store-remove doc:name="[Store] Remove by Ids" doc:id="156137d3-b051-4e93-86b6-83ff2d69788b" config-ref="PGVector_Store_config" storeName="demo" ids="#[payload.ids]">
 		</ms-vectors:store-remove>
+			</when>
+			<when expression="#[payload.metadataCondition != null]">
+				<ms-vectors:store-remove doc:name="[Store] Remove by Metadata Condition" doc:id="cdfc7aa3-9d52-4ec1-82b1-ab2a3a479f03" config-ref="PGVector_Store_config" storeName="demo">
+					<ms-vectors:condition><![CDATA[#[payload.metadataCondition]]]></ms-vectors:condition>
+				</ms-vectors:store-remove>
+			</when>
+			<otherwise >
+				<ms-vectors:store-remove doc:name="[Store] Remove All" doc:id="fa355f2e-23b0-44c3-835c-a77e754f0abd" config-ref="PGVector_Store_config" storeName="demo">
+				</ms-vectors:store-remove>
+			</otherwise>
+		</choice>
 	</flow>
-	<flow name="list-sources" doc:id="21110984-0f92-46d3-b4af-30200146bab3" >
-		<ms-vectors:store-list-sources doc:name="[Store] List sources" doc:id="2c838403-5f05-4833-a3e9-806b3e85bc70" config-ref="PGVector_Store_config" storeName="demo"/>
+	<flow name="query-all" doc:id="29674354-cab0-4cb9-8c98-6294ef79ef0e" >
+		<ms-vectors:query-all doc:name="[Store] Query all" doc:id="c5042047-0c0d-4486-b9b8-3314aa57157f" config-ref="PGVector_Store_config" storeName="demo" retrieveEmbeddings="true"/>
+		<ee:transform doc:name="Transform Message" doc:id="675afdc7-f754-4bf5-beb9-b730f80935e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>

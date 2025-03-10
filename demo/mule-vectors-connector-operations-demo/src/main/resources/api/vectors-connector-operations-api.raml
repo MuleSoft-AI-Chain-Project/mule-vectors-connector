@@ -264,6 +264,17 @@ types:
 /add-text:  # New resource for adding text to the store
   post:
     description: Adds text content to the vector store.
+    queryParameters:
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
     body:
       application/json:
         type: object
@@ -470,6 +481,28 @@ types:
           application/json:
             type: ErrorResponse
             
+/query-all:
+  post:
+    description: Queries all rows from the vector store.
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
 /remove:
   delete:
     description: Removes one or more documents from the vector store based on a filter.
@@ -477,13 +510,20 @@ types:
       application/json:
         type: object
         properties:
-          filter:
+          ids:
+            type: array
+            description: The filter used to select documents for removal.
+            items:
+              type: string
+            required: false
+          metadataCondition:
             type: string
             description: The filter used to select documents for removal.
-            required: true
+            required: false
         example:
           {
-            "filter": "file_name = 'example.pdf' OR file_type = 'invoice'"
+            "ids": ["", ""],
+            "metadataCondition": "file_name = 'example.pdf' OR file_type = 'invoice'"
           }
     responses:
       200:
@@ -495,28 +535,6 @@ types:
             type: ErrorResponse
       404:
         description: No documents found matching the specified filter.
-        body:
-          application/json:
-            type: ErrorResponse
-      500:
-        description: Internal Server Error.
-        body:
-          application/json:
-            type: ErrorResponse
-
-/list-sources:
-  get:
-    description: List all sources from store.
-    responses:
-      200:
-        description: Sources from store.
-      400:
-        description: Bad Request (e.g., missing or invalid filter).
-        body:
-          application/json:
-            type: ErrorResponse
-      404:
-        description: No sources found.
         body:
           application/json:
             type: ErrorResponse
