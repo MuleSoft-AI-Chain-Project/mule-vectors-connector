@@ -32,7 +32,7 @@
 				<configuration>
 					<additionalPluginDependencies>
 						<plugin>
-							<groupId>com.mulesoft.connectors</groupId>
+							<groupId>io.github.mulesoft-ai-chain-project</groupId>
 							<artifactId>mule4-vectors-connector</artifactId>
 							<additionalDependencies>
 							
