@@ -38,7 +38,7 @@ public class PineconeStore extends BaseStore {
 
     super(storeConfiguration, pineconeStoreConnection, storeName, queryParams, dimension, createStore);
 
-    ValidationUtils.ensureBetween(queryParams.pageSize(), 0, 100, "pageSize");
+    if(queryParams != null) ValidationUtils.ensureBetween(queryParams.pageSize(), 0, 100, "pageSize");
     this.apiKey = pineconeStoreConnection.getApiKey();
     this.cloud = pineconeStoreConnection.getCloud();
     this.region = pineconeStoreConnection.getRegion();
