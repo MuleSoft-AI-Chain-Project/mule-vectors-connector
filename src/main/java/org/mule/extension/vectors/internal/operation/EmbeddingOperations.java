@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DefaultDocument;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.model.output.Response;
@@ -129,7 +129,7 @@ public class EmbeddingOperations {
 
               DocumentSplitter documentSplitter = DocumentSplitters.recursive(segmentationParameters.getMaxSegmentSizeInChars(),
                                                                               segmentationParameters.getMaxOverlapSizeInChars());
-              textSegments = documentSplitter.split(new Document(text));
+              textSegments = documentSplitter.split(new DefaultDocument(text));
             } else {
 
               textSegments.add(TextSegment.from(text));
