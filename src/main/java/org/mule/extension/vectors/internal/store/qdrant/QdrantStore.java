@@ -179,7 +179,7 @@ public class QdrantStore extends BaseStore {
         float[] vector = null;
         if (queryParams.retrieveEmbeddings()) {
 
-          Points.Vectors vectors = currentPoint.getVectors();
+          Points.VectorsOutput vectors = currentPoint.getVectors();
           if (vectors != null && vectors.getSerializedSize() > 0) {
             vector = new float[vectors.getVector().getDataCount()];
             for (int i = 0; i < vectors.getVector().getDataCount(); i++) {

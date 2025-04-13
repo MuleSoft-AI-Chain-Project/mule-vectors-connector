@@ -12,9 +12,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<app.runtime>4.6.9</app.runtime>
+		<app.runtime>4.9.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
-		<langchain4jVersion>0.35.0</langchain4jVersion>
+		<langchain4jVersion>1.0.0-beta3</langchain4jVersion>
 	</properties>
 
 	<build>
@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>com.mulesoft.connectors</groupId>
 	  		<artifactId>mule4-vectors-connector</artifactId>
-    		<version>0.4.32-SNAPSHOT</version>
+    		<version>0.4.33-SNAPSHOT</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>

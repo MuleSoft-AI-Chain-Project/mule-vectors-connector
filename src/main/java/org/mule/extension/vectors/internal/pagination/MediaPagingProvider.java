@@ -76,9 +76,9 @@ public class MediaPagingProvider implements PagingProvider<BaseStorageConnection
               new HashMap<String, Object>() {{
                 put("mediaType", mediaParameters.getMediaType());
                 put("contextPath", mediaParameters.getContextPath());
-                put("fileType", media.metadata().get(METADATA_KEY_FILE_TYPE));
-                put("mimeType", media.metadata().get(METADATA_KEY_MIME_TYPE));
-                put("source", media.metadata().get(METADATA_KEY_SOURCE));
+                put("fileType", media.metadata().getString(METADATA_KEY_FILE_TYPE));
+                put("mimeType", media.metadata().getString(METADATA_KEY_MIME_TYPE));
+                put("source", media.metadata().getString(METADATA_KEY_SOURCE));
               }},
               streamingHelper);
 
