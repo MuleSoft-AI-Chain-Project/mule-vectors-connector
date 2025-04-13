@@ -2,8 +2,6 @@ package org.mule.extension.vectors.internal.connection.model.vertexai;
 
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -25,6 +23,7 @@ public class VertexAIModelConnectionProvider extends BaseModelConnectionProvider
     @Override
     public BaseModelConnection connect() throws ConnectionException {
         try {
+            LOGGER.info("Connecting to Google Vertex AI with parameters: {}", vertexAIModelConnectionParameters);
             VertexAIModelConnection vertexAIModelConnection = new VertexAIModelConnection(
                 vertexAIModelConnectionParameters.getProjectId(),
                 vertexAIModelConnectionParameters.getLocation(),

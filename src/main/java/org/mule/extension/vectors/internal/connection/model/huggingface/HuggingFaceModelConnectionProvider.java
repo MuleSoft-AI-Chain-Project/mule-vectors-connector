@@ -2,7 +2,6 @@ package org.mule.extension.vectors.internal.connection.model.huggingface;
 
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.mistralai.MistralAIModelConnection;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;

@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.connection.model.mistralai;
 
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
-import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 

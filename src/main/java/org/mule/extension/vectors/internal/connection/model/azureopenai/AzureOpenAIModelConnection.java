@@ -63,7 +63,7 @@ public class AzureOpenAIModelConnection implements BaseModelConnection {
     clientOptions.setWriteTimeout(timeout);
     String userAgent = "langchain4j-azure-openai";
 
-    List<Header> headers = new ArrayList();
+    List<Header> headers = new ArrayList<>();
     headers.add(new Header("User-Agent", userAgent));
     clientOptions.setHeaders(headers);
 

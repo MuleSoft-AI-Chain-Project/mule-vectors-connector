@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.connection.storage.azureblob;
 
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnectionParameters;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Parameter;

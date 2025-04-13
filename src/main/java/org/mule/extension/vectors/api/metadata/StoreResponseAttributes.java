@@ -3,7 +3,6 @@ package org.mule.extension.vectors.api.metadata;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import org.mule.extension.vectors.internal.helper.parameter.MetadataFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.runtime.extension.api.annotation.param.MediaType;

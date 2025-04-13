@@ -8,14 +8,10 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Alias("googleCloudStorage")
 @DisplayName("Google Cloud Storage")
 public class GoogleCloudStorageConnectionProvider extends BaseStorageConnectionProvider {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GoogleCloudStorageConnectionProvider.class);
 
     @ParameterGroup(name = Placement.CONNECTION_TAB)
     private GoogleCloudStorageConnectionParameters googleCloudStorageConnectionParameters;

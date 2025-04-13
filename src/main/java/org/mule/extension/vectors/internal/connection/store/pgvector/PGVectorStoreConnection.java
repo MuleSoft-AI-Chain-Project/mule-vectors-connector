@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.connection.store.pgvector;
 
 import dev.langchain4j.internal.ValidationUtils;
-import org.mule.extension.vectors.internal.connection.model.mistralai.MistralAIModelConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -9,7 +8,6 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;

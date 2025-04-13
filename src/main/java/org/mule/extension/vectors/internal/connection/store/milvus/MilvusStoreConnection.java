@@ -4,7 +4,6 @@ import io.milvus.client.MilvusServiceClient;
 import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.api.connection.ConnectionException;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
 

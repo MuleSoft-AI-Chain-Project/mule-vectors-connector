@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.connection.model.vertexai;
 
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnectionParameters;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -10,7 +9,6 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.threeten.bp.Duration;
 
 public class VertexAIModelConnectionParameters extends BaseModelConnectionParameters {
 
@@ -135,5 +133,22 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
 
     public long getTotalTimeout() {
         return totalTimeout;
+    }
+
+    @Override
+    public String toString() {
+        return "VertexAIModelConnectionParameters{" +
+                "projectId='" + projectId + '\'' +
+                ", location='" + location + '\'' +
+                ", clientEmail='" + clientEmail + '\'' +
+                ", clientId='" + clientId + '\'' +
+                ", privateKeyId='" + privateKeyId + '\'' +
+                ", privateKey='" + privateKey + '\'' +
+                ", maxAttempts=" + maxAttempts +
+                ", initialRetryDelay=" + initialRetryDelay +
+                ", retryDelayMultiplier=" + retryDelayMultiplier +
+                ", maxRetryDelay=" + maxRetryDelay +
+                ", totalTimeout=" + totalTimeout +
+                '}';
     }
 }

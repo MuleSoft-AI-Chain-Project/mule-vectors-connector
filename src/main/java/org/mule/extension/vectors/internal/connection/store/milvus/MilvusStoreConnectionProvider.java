@@ -1,7 +1,5 @@
 package org.mule.extension.vectors.internal.connection.store.milvus;
 
-import io.milvus.client.MilvusServiceClient;
-import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;

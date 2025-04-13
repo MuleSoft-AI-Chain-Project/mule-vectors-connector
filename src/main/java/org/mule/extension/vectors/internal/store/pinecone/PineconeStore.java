@@ -20,8 +20,6 @@ import org.mule.extension.vectors.internal.store.BaseStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;

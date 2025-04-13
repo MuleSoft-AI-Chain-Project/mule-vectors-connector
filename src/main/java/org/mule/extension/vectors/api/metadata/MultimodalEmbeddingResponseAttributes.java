@@ -1,12 +1,6 @@
 package org.mule.extension.vectors.api.metadata;
 
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-
-import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
-
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
  * Represents the attributes of an embedding operation response.
@@ -30,5 +24,26 @@ public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttr
   public MultimodalEmbeddingResponseAttributes(HashMap<String, Object> requestAttributes) {
 
     super(requestAttributes);
+    this.filename = requestAttributes.containsKey("filename") ? (String) requestAttributes.remove("filename") : null;
+    this.mimeType = requestAttributes.containsKey("mimeType") ? (String) requestAttributes.remove("mimeType") : null;
+    otherAttributes = requestAttributes;
+  }
+
+  /**
+   * Gets the name of the embedding model.
+   *
+   * @return the embedding model name, or {@code null} if not available.
+   */
+  public String getFilename() {
+    return filename;  
+  }
+
+  /**
+   * Gets the mime type of the embedding model.
+   *
+   * @return the mime type, or {@code null} if not available.
+   */
+  public String getMimeType() {
+    return mimeType;
   }
 }
