@@ -22,6 +22,7 @@ public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel 
   private static final Logger LOGGER = LoggerFactory.getLogger(NomicEmbeddingMultimodalModel.class);
 
   private static final String DEFAULT_BASE_URL = "https://api-atlas.nomic.ai/v1/";
+  private static final Integer DEFAULT_MAX_RETRIES = 3;
   private final NomicClient client;
   private final String modelName;
   private final Integer maxRetries;
@@ -29,13 +30,13 @@ public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel 
   public NomicEmbeddingMultimodalModel(String baseUrl, String apiKey, String modelName, Duration timeout, Integer maxRetries) {
 
     this.client = NomicClient.builder()
-        .baseUrl((String) Utils.getOrDefault(baseUrl, "https://api-atlas.nomic.ai/v1/"))
+        .baseUrl((String) Utils.getOrDefault(baseUrl, DEFAULT_BASE_URL))
         .apiKey(ValidationUtils.ensureNotBlank(apiKey, "apiKey"))
         .timeout((Duration)Utils.getOrDefault(timeout, Duration.ofSeconds(60L)))
         .build();
 
     this.modelName = (String)Utils.getOrDefault(modelName, "nomic-embed-vision-v1.5");
-    this.maxRetries = (Integer)Utils.getOrDefault(maxRetries, 3);
+    this.maxRetries = (Integer)Utils.getOrDefault(maxRetries, DEFAULT_MAX_RETRIES);
   }
 
   @Override

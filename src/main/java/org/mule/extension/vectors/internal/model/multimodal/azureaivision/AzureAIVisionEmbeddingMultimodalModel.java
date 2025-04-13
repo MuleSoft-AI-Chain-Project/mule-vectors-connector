@@ -2,7 +2,6 @@ package org.mule.extension.vectors.internal.model.multimodal.azureaivision;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.output.Response;
-import dev.langchain4j.model.output.TokenUsage;
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
 import org.slf4j.Logger;

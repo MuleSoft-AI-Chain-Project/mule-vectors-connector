@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.helper.media;
 
 import org.imgscalr.Scalr;
-import org.mule.extension.vectors.internal.operation.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Iterator;
-
-import static org.mule.extension.vectors.internal.constant.Constants.FILE_TYPE_PNG;
 
 public class ImageProcessor implements MediaProcessor {
 

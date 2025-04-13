@@ -13,7 +13,6 @@ import org.mule.extension.vectors.internal.connection.storage.local.LocalStorage
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;

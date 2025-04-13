@@ -9,7 +9,6 @@ import dev.langchain4j.internal.Utils;
 import dev.langchain4j.internal.ValidationUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;

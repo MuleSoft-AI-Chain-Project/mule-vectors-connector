@@ -17,7 +17,6 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.model.EmbeddingModelHelper;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
-import org.mule.extension.vectors.internal.model.multimodal.azureaivision.AzureAIVisionEmbeddingMultimodalModel;
 import org.mule.extension.vectors.internal.model.multimodal.azureaivision.AzureAIVisionMultimodalModel;
 import org.mule.extension.vectors.internal.model.multimodal.nomic.NomicMultimodalModel;
 import org.mule.extension.vectors.internal.model.multimodal.vertexai.VertexAIMultimodalModel;

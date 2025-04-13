@@ -1,8 +1,6 @@
 package org.mule.extension.vectors.internal.connection.store.pinecone;
 
 import io.pinecone.clients.Pinecone;
-import io.qdrant.client.QdrantClient;
-import io.qdrant.client.QdrantGrpcClient;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;

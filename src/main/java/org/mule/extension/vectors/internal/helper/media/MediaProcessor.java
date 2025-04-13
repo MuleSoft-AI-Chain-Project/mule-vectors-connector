@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.helper.media;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public interface MediaProcessor {

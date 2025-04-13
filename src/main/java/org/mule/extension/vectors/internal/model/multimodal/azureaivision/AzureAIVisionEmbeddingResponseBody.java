@@ -1,7 +1,5 @@
 package org.mule.extension.vectors.internal.model.multimodal.azureaivision;
 
-import java.util.List;
-
 public class AzureAIVisionEmbeddingResponseBody {
 
   private float[] vector;

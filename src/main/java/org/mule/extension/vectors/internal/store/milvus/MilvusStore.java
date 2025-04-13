@@ -15,10 +15,8 @@ import io.milvus.response.QueryResultsWrapper;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
-import org.mule.extension.vectors.internal.util.JsonUtils;
 
 import java.util.*;
 

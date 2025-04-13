@@ -1,11 +1,8 @@
 package org.mule.extension.vectors.internal.model.text.ollama;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.model.nomic.NomicEmbeddingModel;
 import dev.langchain4j.model.ollama.OllamaEmbeddingModel;
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
-import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnection;
 import org.mule.extension.vectors.internal.connection.model.ollama.OllamaModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.model.BaseModel;

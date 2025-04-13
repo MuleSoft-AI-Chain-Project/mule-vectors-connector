@@ -16,13 +16,7 @@ import software.amazon.awssdk.regions.Region;
 import dev.langchain4j.data.document.loader.amazon.s3.AmazonS3DocumentLoader;
 import dev.langchain4j.data.document.loader.amazon.s3.AwsCredentials;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Iterator;
 
