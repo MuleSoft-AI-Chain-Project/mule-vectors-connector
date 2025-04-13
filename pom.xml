@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.4.31-SNAPSHOT</version>
+    <version>0.4.32-SNAPSHOT</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -72,12 +72,12 @@
 	<parent>
 		<groupId>org.mule.extensions</groupId>
 		<artifactId>mule-modules-parent</artifactId>
-		<version>1.6.9</version>
+		<version>1.9.0</version>
 	</parent>
 
     <properties>
 		<skipVerifications>false</skipVerifications>
-        <muleJavaEeBomVersion>4.6.9</muleJavaEeBomVersion>
+        <muleJavaEeBomVersion>4.9.0</muleJavaEeBomVersion>
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
