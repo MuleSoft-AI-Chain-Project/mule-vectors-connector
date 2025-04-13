@@ -14,7 +14,7 @@ public enum VertexAiEmbeddingModelName {
 
   private final String stringValue;
   private final Integer dimension;
-  private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap(values().length);
+  private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap<>(values().length);
 
   private VertexAiEmbeddingModelName(String stringValue, Integer dimension) {
     this.stringValue = stringValue;

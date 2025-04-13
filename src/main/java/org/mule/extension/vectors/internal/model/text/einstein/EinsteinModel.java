@@ -5,12 +5,8 @@ import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.connection.model.einstein.EinsteinModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.model.BaseModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EinsteinModel  extends BaseModel {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(EinsteinModel.class);
 
   private final String modelName;
   private final EinsteinModelConnection einsteinModelConnection;

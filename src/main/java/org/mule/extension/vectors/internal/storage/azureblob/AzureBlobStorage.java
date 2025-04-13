@@ -172,9 +172,6 @@ public class AzureBlobStorage extends BaseStorage {
             blobClient.download(outputStream);
             byte[] imageBytes = outputStream.toByteArray();
 
-            // Get the blob URL (public or signed)
-            String blobUrl = String.format("https://%s.blob.core.windows.net/%s/%s", azureName, containerName, blobName);
-
             String format = mimeType.contains("/") ? mimeType.substring(mimeType.indexOf("/") + 1) : null;
             if(mediaProcessor!= null) imageBytes = mediaProcessor.process(imageBytes, format);
             String base64Data = Base64.getEncoder().encodeToString(imageBytes);
