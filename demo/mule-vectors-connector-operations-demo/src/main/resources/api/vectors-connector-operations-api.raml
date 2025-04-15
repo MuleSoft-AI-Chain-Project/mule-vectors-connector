@@ -426,6 +426,40 @@ types:
         body:
           application/json:
             type: ErrorResponse
+            
+/query-media-by-text:  # New resource for querying the store
+  post:
+    description: Queries the vector store for similar items.
+    body:
+      application/json:
+        type: object
+        properties:
+          prompt:
+            type: string
+            description: The query prompt.
+            required: true
+        example:
+          {
+            "prompt": "Logo image",      
+          }
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
 
 /query-by-binary:  # New resource for querying the store
   post:

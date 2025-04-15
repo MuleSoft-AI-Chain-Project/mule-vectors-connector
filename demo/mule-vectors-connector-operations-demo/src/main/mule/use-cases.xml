@@ -38,7 +38,7 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="c8decaa7-086d-4fca-9763-4e5604435616" config-ref="PGVector_Store_config" storeName="demo_multimodal" />
 	</flow>
 	<flow name="query-by-text-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
-		<set-variable value="#[payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0">
 			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
 		</ms-vectors:embedding-generate-from-text>
@@ -56,6 +56,15 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 			</ms-vectors:media-processor-parameters>
 		</ms-vectors:embedding-generate-from-binary>
 		<ms-vectors:query doc:name="[Store] Query" doc:id="90c8f975-b5b2-48ee-b99c-6615e1d41e07" config-ref="PGVector_Store_config" storeName="demo_multimodal" maxResults="5" minScore="0.5" >
+			<ms-vectors:text-segment-and-embedding ><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
+		</ms-vectors:query>
+	</flow>
+	<flow name="query-media-by-text-from-store-use-case" doc:id="f4a5fa27-e6ef-4c78-a80c-8a4884c105c1" >
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload as Object default {}]" doc:name="requestBody" doc:id="c8ce99dd-334e-4308-a9b6-78b2b5660255" variableName="requestBody" />
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="5656ac10-5243-4fa5-94bf-93aa116bc605" config-ref="Azure_AI_Vision_Embedding_Config" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0" embeddingModelName="2023-04-15">
+			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
+		</ms-vectors:embedding-generate-from-text>
+		<ms-vectors:query doc:name="[Store] Query" doc:id="ca6ffde2-129f-4926-b278-967890873a57" config-ref="PGVector_Store_config" storeName="demo_multimodal" maxResults="5" minScore="0.5" >
 			<ms-vectors:text-segment-and-embedding ><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
 		</ms-vectors:query>
 	</flow>
