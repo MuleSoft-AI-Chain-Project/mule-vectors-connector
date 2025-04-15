@@ -138,6 +138,9 @@ output application/json
     <flow name="post:\load-medias:vectors-connector-operations-api-config" doc:id="dcdadc46-f36c-4b2a-b84e-115518c2fc11">
         <flow-ref doc:name="load-list-of-medias-operation" doc:id="3ddf7f44-ad24-4b21-a684-cf2eee7fc3fb" name="load-list-of-medias-operation" />
     </flow>
+    <flow name="post:\embed-text:application\json:vectors-connector-operations-api-config" doc:id="9887f590-1a00-4325-9616-e86e57b4df08">
+        <flow-ref doc:name="embed-text-operation" doc:id="4f01684f-2a54-4e18-ba86-780696a5a85b" name="embed-text-operation" />
+    </flow>
     <flow name="post:\add-text:application\json:vectors-connector-operations-api-config" doc:id="a1dc1dc4-86c0-4489-b89a-8c68883416e6">
         <flow-ref doc:name="add-text-to-store-use-case" doc:id="219e02f2-c0c3-4ae4-912b-51e63289b1cb" name="add-text-to-store-use-case" />
     </flow>
