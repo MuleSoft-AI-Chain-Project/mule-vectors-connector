@@ -1,6 +1,9 @@
 package org.mule.extension.vectors.internal.extension;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
+import org.mule.extension.vectors.api.request.proxy.DefaultNtlmProxyConfig;
+import org.mule.extension.vectors.api.request.proxy.DefaultProxyConfig;
+import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -9,6 +12,7 @@ import org.mule.extension.vectors.internal.helper.parameter.MediaProcessorParame
 import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
+import org.mule.runtime.extension.api.annotation.Export;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
@@ -26,6 +30,8 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 @JavaVersionSupport({JAVA_17})
 @SubTypeMapping(baseType = MediaProcessorParameters.class,
     subTypes = {ImageProcessorParameters.class})
+@SubTypeMapping(baseType = HttpProxyConfig.class, subTypes = {DefaultProxyConfig.class, DefaultNtlmProxyConfig.class})
+@Export(classes = {HttpProxyConfig.class})
 public class Connector {
 
 }
