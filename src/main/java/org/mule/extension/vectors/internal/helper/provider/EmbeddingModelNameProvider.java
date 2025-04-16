@@ -19,8 +19,12 @@ public class EmbeddingModelNameProvider implements ValueProvider {
 
   private static final Set<Value> VALUES_FOR_AZURE_OPENAI = ValueBuilder.getValuesFor(
       EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_3_SMALL.getModelName(),
+      EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_3_SMALL_1.getModelName(),
       EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_3_LARGE.getModelName(),
-      EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_ADA_002.getModelName()
+      EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_3_LARGE_1.getModelName(),
+      EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_ADA_002.getModelName(),
+      EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_ADA_002_1.getModelName(),
+      EmbeddingModelHelper.TextEmbeddingModelNames.TEXT_EMBEDDING_ADA_002_2.getModelName()
   );
 
   private static final Set<Value> VALUES_FOR_AZURE_VISION_AI = ValueBuilder.getValuesFor(

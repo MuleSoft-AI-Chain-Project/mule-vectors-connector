@@ -38,8 +38,6 @@
 							
 								<!-- Storage Dependencies (Optionals) -->
 								
-								<!-- Embedding Model Service Dependencies (Optionals) -->
-								
 								<!-- Vector Store Dependencies (Optionals) -->
 								<!-- BEGIN: PGVector Dependency -->
 								<dependency> 
@@ -73,7 +71,7 @@
 		<dependency>
 			<groupId>com.mulesoft.connectors</groupId>
 	  		<artifactId>mule4-vectors-connector</artifactId>
-    		<version>0.4.44-SNAPSHOT</version>
+    		<version>0.4.46-SNAPSHOT</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
