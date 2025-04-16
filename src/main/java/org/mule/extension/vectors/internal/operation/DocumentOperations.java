@@ -24,8 +24,6 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.*;
@@ -35,8 +33,6 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 public class DocumentOperations {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentOperations.class);
 
   /**
    * Loads a single document from the storage specified by the {@code contextPath} and returns its content

@@ -82,7 +82,7 @@ public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel 
                                                             .model(this.modelName)
                                                             .images(imageBytesList)
                                                             .build());
-    List<Embedding> embeddings = (List)response.getEmbeddings().stream().map(Embedding::from).collect(Collectors.toList());
+    List<Embedding> embeddings = (List<Embedding>)response.getEmbeddings().stream().map(Embedding::from).collect(Collectors.toList());
     TokenUsage tokenUsage = new TokenUsage(response.getUsage().getTotalTokens(), 0);
     return Response.from(embeddings, tokenUsage);
   }

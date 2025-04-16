@@ -9,7 +9,7 @@ public enum VertexAiEmbeddingMultimodalModelName {
 
   private final String stringValue;
   private final Integer dimension;
-  private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap(values().length);
+  private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap<String, Integer>(values().length);
 
   private VertexAiEmbeddingMultimodalModelName(String stringValue, Integer dimension) {
     this.stringValue = stringValue;
