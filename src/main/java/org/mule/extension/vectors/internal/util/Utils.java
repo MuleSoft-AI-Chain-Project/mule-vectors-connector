@@ -149,4 +149,30 @@ public class Utils {
       return "application/octet-stream"; // Fallback if extension is unknown
     }
   }
+
+  /**
+   * Returns the given object's {@code toString()} surrounded by quotes.
+   *
+   * <p>If the given object is {@code null}, the string {@code "null"} is returned.
+   *
+   * @param object The object to quote.
+   * @return The given object surrounded by quotes.
+   */
+  public static String quoted(Object object) {
+    if (object == null) {
+      return "null";
+    }
+    return "\"" + object + "\"";
+  }
+
+  /**
+   * Returns the given value if it is not {@code null}, otherwise returns the given default value.
+   * @param value The value to return if it is not {@code null}.
+   * @param defaultValue The value to return if the value is {@code null}.
+   * @return the given value if it is not {@code null}, otherwise returns the given default value.
+   * @param <T> The type of the value.
+   */
+  public static <T> T getOrDefault(T value, T defaultValue) {
+    return value != null ? value : defaultValue;
+  }
 }
