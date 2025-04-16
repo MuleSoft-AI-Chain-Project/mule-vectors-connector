@@ -35,7 +35,6 @@ public class EmbeddingModelHelper {
     OLLAMA_GRANITE_EMBEDDING("granite-embedding"),
     FALCON_7B_INSTRUCT("tiiuae/falcon-7b-instruct"),
     MINI_LM_L6_V2("sentence-transformers/all-MiniLM-L6-v2"),
-    SFDC_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultTextEmbeddingAda_002"),
     SFDC_AZURE_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultAzureOpenAITextEmbeddingAda_002"),
     SFDC_OPENAI_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultOpenAITextEmbeddingAda_002"),
     VERTEX_TEXT_EMBEDDING_GECKO_003("textembedding-gecko@003"),

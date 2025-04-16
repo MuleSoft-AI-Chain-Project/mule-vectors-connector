@@ -147,11 +147,11 @@ public class EinsteinModelConnection implements BaseModelConnection {
     return jsonObject.toString();
   }
 
-  public String generateEmbeddings(List<String> inputs, String modelName) {
+  public Object generateEmbeddings(List<String> inputs, String modelName) {
     return generateEmbeddings(inputs, modelName, false);
   }
 
-  private String generateEmbeddings(List<String> inputs, String modelName, Boolean tokenExpired) {
+  private Object generateEmbeddings(List<String> inputs, String modelName, Boolean tokenExpired) {
     String payload = buildEmbeddingsPayload(inputs);
 
     try {

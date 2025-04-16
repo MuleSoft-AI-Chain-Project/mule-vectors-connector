@@ -38,7 +38,7 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
    */
   private EinsteinEmbeddingModel(EinsteinModelConnection einsteinModelConnection, String modelName, Integer dimensions) {
     // Default to SFDC text embedding model if none specified
-    this.modelName = Utils.getOrDefault(modelName, EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_TEXT_EMBEDDING_ADA_002.getModelName());
+    this.modelName = Utils.getOrDefault(modelName, EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_OPENAI_TEXT_EMBEDDING_ADA_002.getModelName());
     this.dimensions = dimensions;
     this.einsteinModelConnection = einsteinModelConnection;
   }
@@ -90,7 +90,7 @@ public class EinsteinEmbeddingModel extends DimensionAwareEmbeddingModel {
       List<String> batch = texts.subList(x, Math.min(x + 16, texts.size()));
 
       // Generate embeddings for current batch
-      String response = einsteinModelConnection.generateEmbeddings(batch, modelName);
+      String response = (String)einsteinModelConnection.generateEmbeddings(batch, modelName);
       JSONObject jsonResponse = new JSONObject(response);
 
       // Accumulate token usage

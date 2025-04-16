@@ -10,6 +10,7 @@ import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import dev.langchain4j.data.document.BlankDocumentException;
 import dev.langchain4j.data.document.loader.azure.storage.blob.AzureBlobStorageDocumentLoader;
+import dev.langchain4j.data.image.Image;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
@@ -20,7 +21,6 @@ import dev.langchain4j.data.document.Document;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.media.Image;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;

@@ -63,7 +63,6 @@ public class EmbeddingModelNameProvider implements ValueProvider {
   );
 
   private static final Set<Value> VALUES_FOR_EINSTEIN = ValueBuilder.getValuesFor(
-      EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_TEXT_EMBEDDING_ADA_002.getModelName(),
       EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_AZURE_TEXT_EMBEDDING_ADA_002.getModelName(),
       EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_OPENAI_TEXT_EMBEDDING_ADA_002.getModelName()
   );

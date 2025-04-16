@@ -5,7 +5,6 @@ import dev.langchain4j.data.document.BlankDocumentException;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.media.Image;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
@@ -16,6 +15,7 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.regions.Region;
 import dev.langchain4j.data.document.loader.amazon.s3.AmazonS3DocumentLoader;
 import dev.langchain4j.data.document.loader.amazon.s3.AwsCredentials;
+import dev.langchain4j.data.image.Image;
 
 import java.net.URLEncoder;
 import java.util.Base64;
