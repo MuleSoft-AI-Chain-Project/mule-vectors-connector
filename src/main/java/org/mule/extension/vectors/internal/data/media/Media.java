@@ -1,12 +1,11 @@
-package org.mule.extension.vectors.internal.data;
+package org.mule.extension.vectors.internal.data.media;
 
 import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.image.Image;
-import dev.langchain4j.data.video.Video;
 import dev.langchain4j.internal.Utils;
-import dev.langchain4j.internal.ValidationUtils;
 
 import java.util.Objects;
+
+import org.mule.extension.vectors.internal.util.ValidationUtils;
 
 /**
  * Represents a segment of multimodal data that can include text, image, video, and audio data, along with metadata.

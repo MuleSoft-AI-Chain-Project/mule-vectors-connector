@@ -2,7 +2,7 @@ package org.mule.extension.vectors.internal.connection.model;
 
 import java.util.List;
 
-import org.mule.extension.vectors.internal.data.Embedding;
+import org.mule.extension.vectors.internal.data.embedding.Embedding;
 import org.mule.extension.vectors.internal.data.segment.TextSegment;
 import org.mule.extension.vectors.internal.model.output.Response;
 import org.mule.extension.vectors.internal.util.ValidationUtils;

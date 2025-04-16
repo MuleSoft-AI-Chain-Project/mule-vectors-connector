@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.data;
+package org.mule.extension.vectors.internal.data.document;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;

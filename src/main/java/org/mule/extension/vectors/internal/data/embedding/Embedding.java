@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.data;
+package org.mule.extension.vectors.internal.data.embedding;
 
 import java.util.ArrayList;
 import java.util.Arrays;

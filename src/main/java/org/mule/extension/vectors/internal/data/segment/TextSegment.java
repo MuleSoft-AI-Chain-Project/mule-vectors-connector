@@ -2,7 +2,7 @@ package org.mule.extension.vectors.internal.data.segment;
 
 import java.util.Objects;
 
-import org.mule.extension.vectors.internal.data.Metadata;
+import org.mule.extension.vectors.internal.data.document.Metadata;
 
 import static org.mule.extension.vectors.internal.util.ValidationUtils.ensureNotNull;
 import static org.mule.extension.vectors.internal.util.ValidationUtils.ensureNotBlank;

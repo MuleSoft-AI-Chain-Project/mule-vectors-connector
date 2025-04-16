@@ -11,7 +11,7 @@ import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlo
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
