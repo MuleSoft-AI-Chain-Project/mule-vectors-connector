@@ -19,8 +19,12 @@ public class EmbeddingModelHelper {
 
   public enum TextEmbeddingModelNames {
     TEXT_EMBEDDING_3_SMALL("text-embedding-3-small"),
+    TEXT_EMBEDDING_3_SMALL_1("text-embedding-3-small-1"),
     TEXT_EMBEDDING_3_LARGE("text-embedding-3-large"),
+    TEXT_EMBEDDING_3_LARGE_1("text-embedding-3-large-1"),
     TEXT_EMBEDDING_ADA_002("text-embedding-ada-002"),
+    TEXT_EMBEDDING_ADA_002_1("text-embedding-ada-002-1"),
+    TEXT_EMBEDDING_ADA_002_2("text-embedding-ada-002-2"),
     MISTRAL_EMBED("mistral-embed"),
     NOMIC_EMBED_TEXT_V1("nomic-embed-text-v1"),
     NOMIC_EMBED_TEXT_V1_5("nomic-embed-text-v1.5"),
@@ -35,7 +39,6 @@ public class EmbeddingModelHelper {
     OLLAMA_GRANITE_EMBEDDING("granite-embedding"),
     FALCON_7B_INSTRUCT("tiiuae/falcon-7b-instruct"),
     MINI_LM_L6_V2("sentence-transformers/all-MiniLM-L6-v2"),
-    SFDC_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultTextEmbeddingAda_002"),
     SFDC_AZURE_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultAzureOpenAITextEmbeddingAda_002"),
     SFDC_OPENAI_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultOpenAITextEmbeddingAda_002"),
     VERTEX_TEXT_EMBEDDING_GECKO_003("textembedding-gecko@003"),

@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.data;
+package org.mule.extension.vectors.internal.data.media;
 
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.image.Image;

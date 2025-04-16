@@ -10,10 +10,11 @@ import dev.langchain4j.data.document.BlankDocumentException;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.loader.gcs.GoogleCloudStorageDocumentLoader;
 import dev.langchain4j.data.image.Image;
+
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.BaseStorage;

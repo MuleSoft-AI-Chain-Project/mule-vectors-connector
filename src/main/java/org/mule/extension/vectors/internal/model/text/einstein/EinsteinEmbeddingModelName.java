@@ -7,13 +7,12 @@ import java.util.Map;
 
 public enum EinsteinEmbeddingModelName {
 
-  DEFAULT_ADA_002(EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_TEXT_EMBEDDING_ADA_002.getModelName(), 1536),
   AZURE_OPENAI_ADA_002(EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_AZURE_TEXT_EMBEDDING_ADA_002.getModelName(), 1536),
   OPENAI_ADA_002(EmbeddingModelHelper.TextEmbeddingModelNames.SFDC_OPENAI_TEXT_EMBEDDING_ADA_002.getModelName(), 1536);
 
   private final String stringValue;
   private final Integer dimension;
-  private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap(values().length);
+  private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap<String, Integer>(values().length);
 
   private EinsteinEmbeddingModelName(String stringValue, Integer dimension) {
     this.stringValue = stringValue;
