@@ -17,7 +17,7 @@ public class MetadataFilterHelper {
   protected static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterHelper.class);
 
   private static final Pattern CONDITION_PATTERN =
-      Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)\\s*([=!><]+)\\s*(.+)");
+      Pattern.compile("(?:([a-zA-Z_][a-zA-Z0-9_]*)\\s*([=!><]+)\\s*(.+)|CONTAINS\\s*\\(\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*(.+?)\\s*\\))");
 
   private static final Pattern NUMBER_PATTERN =
       Pattern.compile("^-?\\d+(\\.\\d+)?$");
@@ -64,9 +64,18 @@ public class MetadataFilterHelper {
       throw new IllegalArgumentException("Invalid condition format: " + expression);
     }
 
-    String field = matcher.group(1);
-    String operator = matcher.group(2);
-    String valueStr = matcher.group(3).trim();
+    String field, operator, valueStr;
+    
+    // Check if this is a function call (CONTAINS)
+    if (matcher.group(4) != null) {
+      field = matcher.group(4);
+      operator = "CONTAINS";
+      valueStr = matcher.group(5).trim();
+    } else {
+      field = matcher.group(1);
+      operator = matcher.group(2);
+      valueStr = matcher.group(3).trim();
+    }
 
     // Handle quoted strings
     if (valueStr.startsWith("'") && valueStr.endsWith("'") ||
@@ -96,48 +105,31 @@ public class MetadataFilterHelper {
   }
 
   private static Filter createFilter(String field, String operator, Object value) {
-
-    Filter filter;
-
     try {
-      // Initialize the filter builder with metadataKey
       MetadataFilterBuilder filterBuilder = metadataKey(field);
-      // Get the method name to call (e.g., "isGreaterThan")
+      
+      // Handle CONTAINS operator specially
+      if ("CONTAINS".equals(operator)) {
+        String stringValue = value.toString();
+        // Remove quotes if present
+        if ((stringValue.startsWith("'") && stringValue.endsWith("'")) || 
+            (stringValue.startsWith("\"") && stringValue.endsWith("\""))) {
+          stringValue = stringValue.substring(1, stringValue.length() - 1);
+        }
+        return filterBuilder.containsString(stringValue);
+      }
+
       String methodName = getFilterMethod(operator);
-
-      Class<?> parameterType = value.getClass();
-
-      // Log the metadata value type for debugging
-      LOGGER.debug("Metadata value type: " + parameterType.getName());
-
-      // Get the method with the correct name and parameter type
       Method method = filterBuilder.getClass().getMethod(methodName, Utils.getPrimitiveTypeClass(value));
-
-      // Dynamically invoke the method with the metadata value as an argument
-      filter = (Filter) method.invoke(filterBuilder, value);
-
-    } catch (NoSuchMethodException nsme) {
-
-      LOGGER.error(nsme.getMessage() + " " + Arrays.toString(nsme.getStackTrace()));
-      throw new IllegalArgumentException("Filter method doesn't exist.");
-
-    } catch (IllegalArgumentException iae) {
-
-      LOGGER.error(iae.getMessage() + " " + Arrays.toString(iae.getStackTrace()));
-      throw iae;
+      return (Filter) method.invoke(filterBuilder, value);
 
     } catch (Exception e) {
-
-      LOGGER.error(e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
-      throw new IllegalArgumentException("IllegalArgumentException. Impossible to define the filter");
+      LOGGER.error("Error creating filter: " + e.getMessage(), e);
+      throw new IllegalArgumentException("Failed to create filter: " + e.getMessage());
     }
-
-
-    return filter;
   }
 
   private static String getFilterMethod(String operator) {
-
     switch (operator) {
       case "=":
         return Constants.METADATA_FILTER_METHOD_IS_EQUAL_TO;
