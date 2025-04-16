@@ -2,7 +2,7 @@ package org.mule.extension.vectors.internal.connection.model.einstein;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class EinsteinModelConnection implements BaseModelConnection {
+public class EinsteinModelConnection implements BaseTextModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EinsteinModelConnection.class);
 
