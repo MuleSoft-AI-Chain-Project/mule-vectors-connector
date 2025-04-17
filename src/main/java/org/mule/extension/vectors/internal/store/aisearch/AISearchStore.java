@@ -45,7 +45,7 @@ public class AISearchStore extends BaseStore {
         .endpoint(url)
         .apiKey(apiKey)
         .indexName(storeName)
-        .dimensions(dimension)
+        .dimensions(dimension > 0 ? dimension : (createStore ? dimension : 1536)) // Default dimension in case of no dimension and no need to create store
         .createOrUpdateIndex(createStore)
         .build();
   }
