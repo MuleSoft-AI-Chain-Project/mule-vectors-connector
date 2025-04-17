@@ -1,0 +1,9 @@
+{
+  "minMuleVersion": "4.9.0",
+  "javaSpecificationVersions": [
+    "17"
+  ],
+  "api": {
+    "main": "src/main/resources/api/vectors-connector-azure-api.raml"
+  }
+}
