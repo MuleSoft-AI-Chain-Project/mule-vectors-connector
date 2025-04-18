@@ -34,7 +34,6 @@ public class AzureOpenAIModelConnectionProvider  extends BaseModelConnectionProv
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIModelConnectionProvider.class);
 
-
   private HttpClient httpClient;
   
   @RefName
