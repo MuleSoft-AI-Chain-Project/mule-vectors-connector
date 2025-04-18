@@ -1,34 +1,38 @@
 package org.mule.extension.vectors.internal.connection.model.openai;
 
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Alias("openAI")
 @DisplayName("OpenAI")
-public class OpenAIModelConnection implements BaseModelConnection {
+public class OpenAIModelConnection implements BaseTextModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnection.class);
-
   private static final String ENDPOINT = "https://api.openai.com/v1/models";
+  
+  private final String apiKey;
+  private final HttpClient httpClient;
+  private final long timeout;
 
-  private String apiKey;
-
-  public OpenAIModelConnection(String apiKey) {
+  public OpenAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
     this.apiKey = apiKey;
-  }
-
-  public String getApiKey() {
-    return apiKey;
+    this.timeout = timeout;
+    this.httpClient = httpClient;
   }
 
   @Override
@@ -38,82 +42,109 @@ public class OpenAIModelConnection implements BaseModelConnection {
 
   @Override
   public void connect() throws ConnectionException {
-
-    if(apiKey.compareTo("demo") != 0) {
-
-      try {
-
-        doAuthenticatedHttpRequest();
-      } catch (ConnectionException e) {
-
-        throw e;
-
-      } catch (Exception e) {
-
-        throw new ConnectionException("Failed to connect to Open AI.", e);
-      }
+    
+    try {
+      getModels();
+      LOGGER.debug("Connected to OpenAI");
+    } catch (Exception e) {
+      throw new ConnectionException("Failed to connect to OpenAI.", e);
     }
   }
 
   @Override
   public void disconnect() {
-
+    // HttpClient lifecycle is managed by the provider
   }
 
   @Override
   public boolean isValid() {
-
     try {
-
-      if(apiKey.compareTo("demo") != 0) doAuthenticatedHttpRequest();
+      getModels();
       return true;
-
     } catch (Exception e) {
-
-      LOGGER.error("Failed to validate connection to Open AI.", e);
+      LOGGER.error("Failed to validate connection to OpenAI.", e);
       return false;
     }
   }
 
-  private void doAuthenticatedHttpRequest() throws ConnectionException {
-
+  private void getModels() throws ConnectionException {
     try {
-      // Create the URL object
-      URL url = new URL(ENDPOINT);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      HttpRequest request = HttpRequest.builder()
+          .method("GET")
+          .uri(ENDPOINT)
+          .addHeader("Authorization", "Bearer " + apiKey)
+          .build();
 
-      // Set request method to GET
-      connection.setRequestMethod("GET");
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
 
-      // Set headers
-      connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+      HttpResponse response = httpClient.send(request, options);
 
-      // Check response code
-      int responseCode = connection.getResponseCode();
-      if (responseCode != 200) {
-        // Read the error response
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-
-        while ((inputLine = in.readLine()) != null) {
-          response.append(inputLine);
-        }
-        in.close();
-
-        // Print the error response
-        LOGGER.error("Error (HTTP " + responseCode + "): " + response.toString());
-        throw new ConnectionException("Impossible to connect to OpenAI. " + "Error (HTTP " + responseCode + "): " + response.toString());
+      if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
+        LOGGER.error("Authentication failed. Please check your credentials.");
+        throw new ConnectionException("Invalid credentials");
       }
 
+      if (response.getStatusCode() != 200) {
+        String errorBody = new String(response.getEntity().getBytes());
+        String errorMsg = String.format("Unexpected response code: %d - %s", response.getStatusCode(), errorBody);
+        LOGGER.error(errorMsg);
+        throw new ConnectionException(errorMsg);
+      }
     } catch (ConnectionException e) {
-
       throw e;
+    } catch (Exception e) {
+      LOGGER.error("Failed to validate credentials", e);
+      throw new ConnectionException("Failed to validate credentials", e);
+    }
+  }
+
+  public Object generateEmbeddings(List<String> inputs, String modelName) {
+    if(inputs == null || inputs.isEmpty()) {
+      throw new IllegalArgumentException("Input list cannot be null or empty");
+    }
+    if(modelName == null || modelName.isEmpty()) {
+      throw new IllegalArgumentException("Model name cannot be null or empty");
+    }
+
+    try {
+      Map<String, Object> requestBody = new HashMap<>();
+      requestBody.put("input", inputs);
+      requestBody.put("model", modelName);
+
+      ObjectMapper mapper = new ObjectMapper();
+      byte[] jsonBody = mapper.writeValueAsBytes(requestBody);
+
+      HttpRequest request = HttpRequest.builder()
+          .method("POST")
+          .uri("https://api.openai.com/v1/embeddings")
+          .addHeader("Authorization", "Bearer " + apiKey)
+          .addHeader("Content-Type", "application/json")
+          .entity(new ByteArrayHttpEntity(jsonBody))
+          .build();
+
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
+
+      HttpResponse response = httpClient.send(request, options);
+
+      if (response.getStatusCode() != 200) {
+        String errorBody = new String(response.getEntity().getBytes());
+        String errorMsg = String.format("Error generating embeddings. Status: %d - %s", 
+            response.getStatusCode(), errorBody);
+        LOGGER.error(errorMsg);
+        throw new RuntimeException(errorMsg);
+      }
+
+      return new String(response.getEntity().getBytes());
 
     } catch (Exception e) {
-
-      LOGGER.error("Impossible to connect to OpenAI", e);
-      throw new ConnectionException("Impossible to connect to OpenAI", e);
+      LOGGER.error("Error generating embeddings", e);
+      throw new RuntimeException("Failed to generate embeddings", e);
     }
   }
 }
