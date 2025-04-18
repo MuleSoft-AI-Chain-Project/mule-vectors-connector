@@ -35,14 +35,6 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
     this.httpClient = httpClient;
   }
 
-  public String getApiKey() {
-    return apiKey;
-  }
-
-  public HttpClient getHttpClient() {
-    return httpClient;
-  }
-
   @Override
   public String getEmbeddingModelService() {
     return Constants.EMBEDDING_MODEL_SERVICE_OPENAI;
