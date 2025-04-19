@@ -16,6 +16,8 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonObject;
+
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -238,14 +240,31 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
 
   @Override
   public Object generateEmbeddings(byte[] imageBytes, String modelName) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'generateEmbeddings'");
+
+    return generateEmbeddings(null, imageBytes, modelName);
   }
 
   @Override
   public Object generateEmbeddings(String text, byte[] imageBytes, String modelName) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'generateEmbeddings'");
+    
+    // Convert the image to Base64
+    byte[] imageData = Base64.getEncoder().encode(imageBytes);
+    String encodedImage = new String(imageData, StandardCharsets.UTF_8);
+    JSONObject jsonImage = new JSONObject();
+    jsonImage.put("bytesBase64Encoded", encodedImage);
+
+    JSONObject instance = new JSONObject();
+    if(text != null && !text.isEmpty()) instance.put("text", text);
+    instance.put("image", jsonImage);
+
+    JSONArray instances = new JSONArray();
+    instances.put(instance);
+
+    JSONObject requestBodyJson = new JSONObject();
+    requestBodyJson.put("instances", instances);
+    String requestBody = requestBodyJson.toString();
+
+    return generateEmbeddings(requestBody, modelName);
   }
 
   private String generateEmbeddings(String requestBody, String modelName) {
