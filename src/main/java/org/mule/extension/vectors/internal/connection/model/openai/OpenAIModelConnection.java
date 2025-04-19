@@ -23,15 +23,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OpenAIModelConnection implements BaseTextModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnection.class);
-  private static final String ENDPOINT = "https://api.openai.com/v1/models";
-  
+  private static final String MODELS_ENDPOINT = "https://api.openai.com/v1/models";
+  private static final String EMBEDDINGS_ENDPOINT = "https://api.openai.com/v1/embeddings";
+
   private final String apiKey;
   private final HttpClient httpClient;
   private final long timeout;
 
   public OpenAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
     this.apiKey = apiKey;
-    this.timeout = timeout;
+    this.timeout = timeout; 
     this.httpClient = httpClient;
   }
 
@@ -42,7 +43,6 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
 
   @Override
   public void connect() throws ConnectionException {
-    
     try {
       getModels();
       LOGGER.debug("Connected to OpenAI");
@@ -71,7 +71,7 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
     try {
       HttpRequest request = HttpRequest.builder()
           .method("GET")
-          .uri(ENDPOINT)
+          .uri(MODELS_ENDPOINT)
           .addHeader("Authorization", "Bearer " + apiKey)
           .build();
 
@@ -106,7 +106,7 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
       throw new IllegalArgumentException("Input list cannot be null or empty");
     }
     if(modelName == null || modelName.isEmpty()) {
-      throw new IllegalArgumentException("Model name cannot be null or empty");
+      throw new IllegalArgumentException("Model name cannot be null or empty");  
     }
 
     try {
@@ -119,7 +119,7 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
 
       HttpRequest request = HttpRequest.builder()
           .method("POST")
-          .uri("https://api.openai.com/v1/embeddings")
+          .uri(EMBEDDINGS_ENDPOINT)
           .addHeader("Authorization", "Bearer " + apiKey)
           .addHeader("Content-Type", "application/json")
           .entity(new ByteArrayHttpEntity(jsonBody))
