@@ -2,6 +2,8 @@ package org.mule.extension.vectors.internal.model.multimodal.azureaivision;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.output.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
 import org.slf4j.Logger;
@@ -33,16 +35,36 @@ public class AzureAIVisionEmbeddingMultimodalModel implements EmbeddingMultimoda
 
   @Override
   public Response<Embedding> embedText(String text) {
-
-    Embedding embedding = Embedding.from(connection.embedText(text, this.modelName));
-    return Response.from(embedding);
+    try {
+      String response = (String) connection.generateTextEmbeddings(List.of(text), this.modelName);
+      JSONObject jsonResponse = new JSONObject(response);
+      JSONArray vectorArray = jsonResponse.getJSONArray("vector");
+      float[] vector = new float[vectorArray.length()];
+      for (int i = 0; i < vectorArray.length(); i++) {
+        vector[i] = (float) vectorArray.getDouble(i);
+      }
+      return Response.from(Embedding.from(vector));
+    } catch (Exception e) {
+      LOGGER.error("Failed to process text embedding response", e);
+      throw new RuntimeException("Failed to process text embedding response", e);
+    }
   }
 
   @Override
   public Response<Embedding> embedImage(byte[] imageBytes) {
-
-    Embedding embedding = Embedding.from(connection.embedImage(imageBytes, this.modelName));
-    return Response.from(embedding);
+    try {
+      String response = (String) connection.generateImageEmbeddings(List.of(imageBytes), this.modelName);
+      JSONObject jsonResponse = new JSONObject(response);
+      JSONArray vectorArray = jsonResponse.getJSONArray("vector");
+      float[] vector = new float[vectorArray.length()];
+      for (int i = 0; i < vectorArray.length(); i++) {
+        vector[i] = (float) vectorArray.getDouble(i);
+      }
+      return Response.from(Embedding.from(vector));
+    } catch (Exception e) {
+      LOGGER.error("Failed to process image embedding response", e);
+      throw new RuntimeException("Failed to process image embedding response", e);
+    }
   }
 
   @Override

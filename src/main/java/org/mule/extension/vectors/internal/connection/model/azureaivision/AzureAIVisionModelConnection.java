@@ -1,8 +1,9 @@
 package org.mule.extension.vectors.internal.connection.model.azureaivision;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import org.json.JSONObject;
+
+import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -15,12 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-public class AzureAIVisionModelConnection implements BaseModelConnection {
+public class AzureAIVisionModelConnection implements BaseTextModelConnection, BaseImageModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureAIVisionModelConnection.class);
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private final String endpoint;
   private final String apiKey;
@@ -68,9 +69,45 @@ public class AzureAIVisionModelConnection implements BaseModelConnection {
     }
   }
 
-  public float[] embedText(String text, String modelName) {
-    LOGGER.debug(String.format("Embedding text: %s, Model name: %s", text, modelName));
+  @Override
+  public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {
+    LOGGER.debug(String.format("Embedding images, Model name: %s", modelName));
     try {
+      if (imageBytesList.size() != 1) {
+        throw new UnsupportedOperationException("Azure AI Vision only supports embedding one image at a time");
+      }
+
+      HttpRequestBuilder requestBuilder = HttpRequest.builder()
+          .method("POST")
+          .uri(endpoint + "/computervision/retrieval:vectorizeImage")
+          .addQueryParam("api-version", apiVersion)
+          .addQueryParam("model-version", modelName)
+          .addHeader("Content-Type", "application/octet-stream")
+          .addHeader("Ocp-Apim-Subscription-Key", apiKey)
+          .entity(new ByteArrayHttpEntity(imageBytesList.get(0)));
+
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
+
+      HttpResponse response = httpClient.send(requestBuilder.build(), options);
+      validateResponse(response);
+
+      return new String(response.getEntity().getBytes());
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to embed image", e);
+    }
+  }
+
+  @Override
+  public Object generateTextEmbeddings(List<String> inputs, String modelName) {
+    LOGGER.debug(String.format("Embedding texts, Model name: %s", modelName));
+    try {
+      if (inputs.size() != 1) {
+        throw new UnsupportedOperationException("Azure AI Vision only supports embedding one text at a time");
+      }
+
       HttpRequestBuilder requestBuilder = HttpRequest.builder()
           .method("POST")
           .uri(endpoint + "/computervision/retrieval:vectorizeText")
@@ -79,56 +116,22 @@ public class AzureAIVisionModelConnection implements BaseModelConnection {
           .addHeader("Content-Type", "application/json")
           .addHeader("Ocp-Apim-Subscription-Key", apiKey);
 
-      String jsonBody = OBJECT_MAPPER.writeValueAsString(new TextEmbeddingRequest(text));
+      JSONObject jsonRequest = new JSONObject();
+      jsonRequest.put("text", inputs.get(0));
+      String jsonBody = jsonRequest.toString();
       requestBuilder.entity(new ByteArrayHttpEntity(jsonBody.getBytes()));
 
       HttpRequestOptions options = HttpRequestOptions.builder()
-          .responseTimeout((int)timeout)  // Cast long to int
+          .responseTimeout((int)timeout)
           .followsRedirect(false)
           .build();
 
       HttpResponse response = httpClient.send(requestBuilder.build(), options);
       validateResponse(response);
 
-      TextEmbeddingResponse embeddingResponse = OBJECT_MAPPER.readValue(
-          new String(response.getEntity().getBytes()), 
-          TextEmbeddingResponse.class
-      );
-      return embeddingResponse.getVector();
-
+      return new String(response.getEntity().getBytes());
     } catch (Exception e) {
       throw new RuntimeException("Failed to embed text", e);
-    }
-  }
-
-  public float[] embedImage(byte[] imageBytes, String modelName) {
-    LOGGER.debug(String.format("Embedding image, Model name: %s", modelName));
-    try {
-      HttpRequestBuilder requestBuilder = HttpRequest.builder()
-          .method("POST")
-          .uri(endpoint + "/computervision/retrieval:vectorizeImage")
-          .addQueryParam("api-version", apiVersion)
-          .addQueryParam("model-version", modelName)
-          .addHeader("Content-Type", "application/octet-stream")
-          .addHeader("Ocp-Apim-Subscription-Key", apiKey)
-          .entity(new ByteArrayHttpEntity(imageBytes));
-
-      HttpRequestOptions options = HttpRequestOptions.builder()
-          .responseTimeout((int)timeout)  // Cast long to int
-          .followsRedirect(false)
-          .build();
-
-      HttpResponse response = httpClient.send(requestBuilder.build(), options);
-      validateResponse(response);
-
-      TextEmbeddingResponse embeddingResponse = OBJECT_MAPPER.readValue(
-          new String(response.getEntity().getBytes()), 
-          TextEmbeddingResponse.class
-      );
-      return embeddingResponse.getVector();
-
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to embed image", e);
     }
   }
 
@@ -157,49 +160,6 @@ public class AzureAIVisionModelConnection implements BaseModelConnection {
       }
     } catch (IOException e) {
       throw new RuntimeException("Failed to read error response", e);
-    }
-  }
-
-  // Inner classes for JSON serialization/deserialization
-  private static class TextEmbeddingRequest {
-    @JsonProperty("text")
-    private final String text;
-
-    public TextEmbeddingRequest(@JsonProperty("text") String text) {
-      this.text = text;
-    }
-
-    @JsonProperty("text")
-    public String getText() {
-      return text;
-    }
-  }
-
-  private static class TextEmbeddingResponse {
-    @JsonProperty("vector")
-    private float[] vector;
-
-    @JsonProperty("modelVersion")
-    private String modelVersion;
-
-    @JsonProperty("vector")
-    public float[] getVector() {
-      return vector;
-    }
-
-    @JsonProperty("vector")
-    public void setVector(float[] vector) {
-      this.vector = vector;
-    }
-
-    @JsonProperty("modelVersion")
-    public String getModelVersion() {
-      return modelVersion;
-    }
-
-    @JsonProperty("modelVersion") 
-    public void setModelVersion(String modelVersion) {
-      this.modelVersion = modelVersion;
     }
   }
 }
