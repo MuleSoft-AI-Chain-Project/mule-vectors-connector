@@ -15,7 +15,6 @@ public class AzureAIVisionEmbeddingMultimodalModel implements EmbeddingMultimoda
 
   private AzureAIVisionModelConnection connection;
   private final String modelName;
-  private final Integer maxRetries;
   private Integer dimension;
   
   public AzureAIVisionEmbeddingMultimodalModel(AzureAIVisionModelConnection connection,
@@ -24,7 +23,6 @@ public class AzureAIVisionEmbeddingMultimodalModel implements EmbeddingMultimoda
 
     this.connection = connection;
     this.modelName = modelName != null ? modelName : AzureAIVisionEmbeddingMultimodalModelName.getDefaultModelName();
-    this.maxRetries = maxRetries != null ? maxRetries : 3;
   }
 
   @Override
