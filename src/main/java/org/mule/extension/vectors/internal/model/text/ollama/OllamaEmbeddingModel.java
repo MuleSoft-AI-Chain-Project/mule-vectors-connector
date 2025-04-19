@@ -44,7 +44,7 @@ public class OllamaEmbeddingModel extends DimensionAwareEmbeddingModel {
         // Process texts one at a time since Ollama only supports single text embedding
         for (int i = 0; i < texts.size(); i++) {
             try {
-                String response = (String) connection.generateEmbeddings(Collections.singletonList(texts.get(i)), modelName);
+                String response = (String) connection.generateTextEmbeddings(Collections.singletonList(texts.get(i)), modelName);
                 JSONObject jsonResponse = new JSONObject(response);
 
                 // Get the embedding array directly from the response

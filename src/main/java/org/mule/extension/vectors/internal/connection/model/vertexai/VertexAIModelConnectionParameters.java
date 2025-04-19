@@ -49,46 +49,10 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
     private String privateKey;
 
     @Parameter
-    @DisplayName("Max attemps")
-    @Summary("Maximum number of retries")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(order = 1, tab = Placement.ADVANCED_TAB)
-    @Example("3")
-    @Optional(defaultValue = "3")
-    private int maxAttempts;
-
-    @Parameter
-    @DisplayName("Initial retry delay")
-    @Summary("Initial retry delay in milliseconds")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(order = 2, tab = Placement.ADVANCED_TAB)
-    @Example("500")
-    @Optional(defaultValue = "500")
-    private long initialRetryDelay;
-
-    @Parameter
-    @DisplayName("Retry delay multiplier")
-    @Summary("Multiplier for subsequent retries")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(order = 3, tab = Placement.ADVANCED_TAB)
-    @Example("1.5")
-    @Optional(defaultValue = "1.5")
-    private double retryDelayMultiplier;
-
-    @Parameter
-    @DisplayName("Maximum retry delay")
-    @Summary("Maximum retry delay in milliseconds")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(order = 4, tab = Placement.ADVANCED_TAB)
-    @Example("5000")
-    @Optional(defaultValue = "5000")
-    private long maxRetryDelay;
-
-    @Parameter
     @DisplayName("Total timeout")
     @Summary("Total timeout for the operation in milliseconds")
     @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(order = 5, tab = Placement.ADVANCED_TAB)
+    @Placement(order = 1, tab = Placement.ADVANCED_TAB)
     @Example("60000")
     @Optional(defaultValue = "60000")
     private long totalTimeout;
@@ -115,22 +79,6 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
         return privateKey;
     }
 
-    public int getMaxAttempts() {
-        return maxAttempts;
-    }
-
-    public long getInitialRetryDelay() {
-        return initialRetryDelay;
-    }
-
-    public double getRetryDelayMultiplier() {
-        return retryDelayMultiplier;
-    }
-
-    public long getMaxRetryDelay() {
-        return maxRetryDelay;
-    }
-
     public long getTotalTimeout() {
         return totalTimeout;
     }
@@ -143,11 +91,7 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
                 ", clientEmail='" + clientEmail + '\'' +
                 ", clientId='" + clientId + '\'' +
                 ", privateKeyId='" + privateKeyId + '\'' +
-                ", privateKey='" + privateKey + '\'' +
-                ", maxAttempts=" + maxAttempts +
-                ", initialRetryDelay=" + initialRetryDelay +
-                ", retryDelayMultiplier=" + retryDelayMultiplier +
-                ", maxRetryDelay=" + maxRetryDelay +
+                //", privateKey='" + privateKey + '\'' +
                 ", totalTimeout=" + totalTimeout +
                 '}';
     }

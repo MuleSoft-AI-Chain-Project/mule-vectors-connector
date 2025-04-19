@@ -41,9 +41,7 @@ public class EmbeddingModelHelper {
     MINI_LM_L6_V2("sentence-transformers/all-MiniLM-L6-v2"),
     SFDC_AZURE_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultAzureOpenAITextEmbeddingAda_002"),
     SFDC_OPENAI_TEXT_EMBEDDING_ADA_002("sfdc_ai__DefaultOpenAITextEmbeddingAda_002"),
-    VERTEX_TEXT_EMBEDDING_GECKO_003("textembedding-gecko@003"),
-    VERTEX_TEXT_EMBEDDING_004("text-embedding-004"),
-    VERTEX_TEXT_EMBEDDING_GECKO_MULTILINGUAL_001("textembedding-gecko-multilingual@001"),
+    VERTEX_TEXT_EMBEDDING_005("text-embedding-005"),
     VERTEX_TEXT_MULTILINGUAL_EMBEDDING_002("text-multilingual-embedding-002");
 
     private final String modelName;

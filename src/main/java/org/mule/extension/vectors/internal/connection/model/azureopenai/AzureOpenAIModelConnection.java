@@ -128,7 +128,7 @@ public class AzureOpenAIModelConnection implements BaseTextModelConnection {
   }
 
   @Override
-  public Object generateEmbeddings(List<String> inputs, String deploymentName) {
+  public Object generateTextEmbeddings(List<String> inputs, String deploymentName) {
 
     if(inputs == null || inputs.isEmpty()) {
       throw new IllegalArgumentException("Input list cannot be null or empty");

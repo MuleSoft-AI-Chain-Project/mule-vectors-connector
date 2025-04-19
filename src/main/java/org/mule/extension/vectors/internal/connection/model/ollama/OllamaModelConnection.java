@@ -103,7 +103,7 @@ public class OllamaModelConnection implements BaseTextModelConnection {
     }
   }
 
-  public Object generateEmbeddings(List<String> inputs, String modelName) {
+  public Object generateTextEmbeddings(List<String> inputs, String modelName) {
     if(inputs == null || inputs.isEmpty()) {
       throw new IllegalArgumentException("Input list cannot be null or empty");
     }
