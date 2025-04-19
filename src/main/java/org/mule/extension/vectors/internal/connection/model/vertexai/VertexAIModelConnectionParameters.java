@@ -91,7 +91,7 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
                 ", clientEmail='" + clientEmail + '\'' +
                 ", clientId='" + clientId + '\'' +
                 ", privateKeyId='" + privateKeyId + '\'' +
-                ", privateKey='" + privateKey + '\'' +
+                //", privateKey='" + privateKey + '\'' +
                 ", totalTimeout=" + totalTimeout +
                 '}';
     }

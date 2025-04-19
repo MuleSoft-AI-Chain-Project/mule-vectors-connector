@@ -49,7 +49,7 @@ public class OpenAIEmbeddingModel extends DimensionAwareEmbeddingModel {
         for (int x = 0; x < texts.size(); x += BATCH_SIZE) {
             List<String> batch = texts.subList(x, Math.min(x + BATCH_SIZE, texts.size()));
             try {
-                String responseText = (String) connection.generateEmbeddings(batch, modelName);
+                String responseText = (String) connection.generateTextEmbeddings(batch, modelName);
                 JSONObject jsonResponse = new JSONObject(responseText);
 
                 tokenUsage += jsonResponse.getJSONObject("usage").getInt("total_tokens");

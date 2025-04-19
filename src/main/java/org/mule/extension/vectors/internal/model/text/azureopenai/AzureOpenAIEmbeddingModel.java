@@ -91,7 +91,7 @@ public class AzureOpenAIEmbeddingModel extends DimensionAwareEmbeddingModel {
       List<String> batch = texts.subList(x, Math.min(x + BATCH_SIZE, texts.size()));
 
       // Generate embeddings for current batch
-      String response = (String)AzureOpenAIModelConnection.generateEmbeddings(batch, modelName);
+      String response = (String)AzureOpenAIModelConnection.generateTextEmbeddings(batch, modelName);
       JSONObject jsonResponse = new JSONObject(response);
 
       // Accumulate token usage

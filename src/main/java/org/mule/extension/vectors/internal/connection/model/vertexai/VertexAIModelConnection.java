@@ -16,8 +16,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
-
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -221,7 +219,7 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
   }
 
   @Override
-  public Object generateEmbeddings(List<String> inputs, String modelName) {
+  public Object generateTextEmbeddings(List<String> inputs, String modelName) {
       
     // Prepare the input data
     JSONArray instances = new JSONArray();
@@ -239,26 +237,62 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
   }
 
   @Override
-  public Object generateEmbeddings(byte[] imageBytes, String modelName) {
+  public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {
 
-    return generateEmbeddings(null, imageBytes, modelName);
+    JSONArray instances = new JSONArray();
+
+    for (int i = 0; i < imageBytesList.size(); i++) {
+
+      byte[] imageBytes = imageBytesList.get(i);
+
+
+      JSONObject instance = new JSONObject();
+
+      // Convert the image to Base64
+      byte[] imageData = Base64.getEncoder().encode(imageBytes);
+      String encodedImage = new String(imageData, StandardCharsets.UTF_8);
+      JSONObject jsonImage = new JSONObject();
+      jsonImage.put("bytesBase64Encoded", encodedImage);
+      instance.put("image", jsonImage);
+
+      instances.put(instance);
+    }
+
+    JSONObject requestBodyJson = new JSONObject();
+    requestBodyJson.put("instances", instances);
+    String requestBody = requestBodyJson.toString();
+
+    return generateEmbeddings(requestBody, modelName);
   }
 
   @Override
-  public Object generateEmbeddings(String text, byte[] imageBytes, String modelName) {
+  public Object generateMultimodalEmbeddings(List<String> texts, List<byte[]> imageBytesList, String modelName) {
     
-    // Convert the image to Base64
-    byte[] imageData = Base64.getEncoder().encode(imageBytes);
-    String encodedImage = new String(imageData, StandardCharsets.UTF_8);
-    JSONObject jsonImage = new JSONObject();
-    jsonImage.put("bytesBase64Encoded", encodedImage);
-
-    JSONObject instance = new JSONObject();
-    if(text != null && !text.isEmpty()) instance.put("text", text);
-    instance.put("image", jsonImage);
+    if (texts.size() != imageBytesList.size()) {
+      throw new IllegalArgumentException("The number of texts and images must be the same.");
+    }
 
     JSONArray instances = new JSONArray();
-    instances.put(instance);
+
+    for (int i = 0; i < texts.size(); i++) {
+
+      String text = texts.get(i);
+      byte[] imageBytes = imageBytesList.get(i);
+
+
+      JSONObject instance = new JSONObject();
+
+      // Convert the image to Base64
+      byte[] imageData = Base64.getEncoder().encode(imageBytes);
+      String encodedImage = new String(imageData, StandardCharsets.UTF_8);
+      JSONObject jsonImage = new JSONObject();
+      jsonImage.put("bytesBase64Encoded", encodedImage);
+      instance.put("image", jsonImage);
+
+      instance.put("text", text);
+
+      instances.put(instance);
+    }
 
     JSONObject requestBodyJson = new JSONObject();
     requestBodyJson.put("instances", instances);

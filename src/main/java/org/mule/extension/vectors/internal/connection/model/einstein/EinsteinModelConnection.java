@@ -147,7 +147,7 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
     return jsonObject.toString();
   }
 
-  public Object generateEmbeddings(List<String> inputs, String modelName) {
+  public Object generateTextEmbeddings(List<String> inputs, String modelName) {
     return generateEmbeddings(inputs, modelName, false);
   }
 

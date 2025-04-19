@@ -7,7 +7,7 @@ import java.util.Map;
 // This enum is used to define the embedding model names and their dimensions for Vertex AI.
 public enum VertexAiEmbeddingModelName {
   TEXT_EMBEDDING_004("text-embedding-005", 768),
-  TEXT_MULTILINGUAL_EMBEDDING_002("text-multilingual-embedding-002", 768),
+  TEXT_MULTILINGUAL_EMBEDDING_002("text-multilingual-embedding-002", 768);
 
   private final String stringValue;
   private final Integer dimension;

@@ -14,10 +14,7 @@ import org.mule.runtime.extension.api.exception.ModuleException;
  */
 public class VertexAIModel extends BaseModel {
 
-  private static final String DEFAULT_LOCATION = "us-central1";
-  private static final String PUBLISHER = "google";
-
-  private VertexAIModelConnection vertexAiModelConnection;
+  private final VertexAIModelConnection vertexAiModelConnection;
 
   /**
    * Constructs a new {@link VertexAIModel} instance.
@@ -41,11 +38,7 @@ public class VertexAIModel extends BaseModel {
   public EmbeddingModel buildEmbeddingModel() {
     try {
       return VertexAiEmbeddingModel.builder()
-          .predictionServiceClient(vertexAiModelConnection.getPredictionClient())
-          .llmUtilityServiceClient(vertexAiModelConnection.getLlmUtilityServiceClient())
-          .project(vertexAiModelConnection.getProjectId())
-          .location(vertexAiModelConnection.getLocation() != null ? vertexAiModelConnection.getLocation() : DEFAULT_LOCATION)
-          .publisher(PUBLISHER)
+          .connection(vertexAiModelConnection)
           .modelName(embeddingModelParameters.getEmbeddingModelName())
           .build();
     } catch (Exception e) {
