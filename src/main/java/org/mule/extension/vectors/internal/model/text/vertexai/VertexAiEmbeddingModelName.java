@@ -3,14 +3,11 @@ package org.mule.extension.vectors.internal.model.text.vertexai;
 import java.util.HashMap;
 import java.util.Map;
 
+// See: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions#embeddings_stable_model_versions
+// This enum is used to define the embedding model names and their dimensions for Vertex AI.
 public enum VertexAiEmbeddingModelName {
-  TEXT_EMBEDDING_004("text-embedding-004", 768),
-  TEXT_EMBEDDING_PREVIEW_0815("text-embedding-preview-0815", 768),
+  TEXT_EMBEDDING_004("text-embedding-005", 768),
   TEXT_MULTILINGUAL_EMBEDDING_002("text-multilingual-embedding-002", 768),
-  TEXTEMBEDDING_GECKO_MULTILINGUAL_001("textembedding-gecko-multilingual@001", 768),
-  TEXTEMBEDDING_GECKO_001("textembedding-gecko@001", 768),
-  TEXTEMBEDDING_GECKO_002("textembedding-gecko@002", 768),
-  TEXTEMBEDDING_GECKO_003("textembedding-gecko@003", 768);
 
   private final String stringValue;
   private final Integer dimension;
