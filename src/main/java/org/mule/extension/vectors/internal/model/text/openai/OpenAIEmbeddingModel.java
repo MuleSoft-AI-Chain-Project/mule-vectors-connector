@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.model.text.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.DimensionAwareEmbeddingModel;
