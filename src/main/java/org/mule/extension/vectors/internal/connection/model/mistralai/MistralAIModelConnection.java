@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.connection.model.mistralai;
 
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Alias("mistralAI")
 @DisplayName("Mistral AI")
-public class MistralAIModelConnection implements BaseModelConnection {
+public class MistralAIModelConnection implements BaseTextModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MistralAIModelConnection.class);
   private static final String MODELS_ENDPOINT = "https://api.mistral.ai/v1/models";
