@@ -3,9 +3,11 @@ package org.mule.extension.vectors.internal.model.multimodal.vertexai;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mule.extension.vectors.internal.helper.model.EmbeddingModelHelper;
+
 public enum VertexAiEmbeddingMultimodalModelName {
 
-  MULTIMODALEMBEDDING("multimodalembedding", 1408);
+  MULTIMODALEMBEDDING(EmbeddingModelHelper.MultimodalEmbeddingModelNames.VERTEX_MULTI_MODAL_EMBEDDING.getModelName(), 1408);
 
   private final String stringValue;
   private final Integer dimension;

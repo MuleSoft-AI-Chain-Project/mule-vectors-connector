@@ -5,38 +5,28 @@ import dev.langchain4j.internal.Utils;
 import dev.langchain4j.internal.ValidationUtils;
 import dev.langchain4j.model.output.Response;
 import dev.langchain4j.model.output.TokenUsage;
+import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 
-// https://docs.nomic.ai/reference/api/embed-image-v-1-embedding-image-post
-public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel {
+public class NomicEmbeddingMultimodalModel implements EmbeddingMultimodalModel {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NomicEmbeddingMultimodalModel.class);
-
-  private static final String DEFAULT_BASE_URL = "https://api-atlas.nomic.ai/v1/";
-  private static final Integer DEFAULT_MAX_RETRIES = 3;
-  private final NomicClient client;
+  private final NomicModelConnection connection;
   private final String modelName;
-  private final Integer maxRetries;
 
-  public NomicEmbeddingMultimodalModel(String baseUrl, String apiKey, String modelName, Duration timeout, Integer maxRetries) {
-
-    this.client = NomicClient.builder()
-        .baseUrl((String) Utils.getOrDefault(baseUrl, DEFAULT_BASE_URL))
-        .apiKey(ValidationUtils.ensureNotBlank(apiKey, "apiKey"))
-        .timeout((Duration)Utils.getOrDefault(timeout, Duration.ofSeconds(60L)))
-        .build();
-
+  public NomicEmbeddingMultimodalModel(NomicModelConnection connection, String modelName) {
+    this.connection = ValidationUtils.ensureNotNull(connection, "connection");
     this.modelName = (String)Utils.getOrDefault(modelName, "nomic-embed-vision-v1.5");
-    this.maxRetries = (Integer)Utils.getOrDefault(maxRetries, DEFAULT_MAX_RETRIES);
   }
 
   @Override
@@ -46,45 +36,46 @@ public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel 
 
   @Override
   public Response<Embedding> embedText(String text) {
-
-    throw new ModuleException(String.format("Nomic %s model doesn't support generating embedding for text only", this.modelName) , MuleVectorsErrorType.AI_SERVICES_FAILURE);
+    throw new ModuleException(String.format("Nomic %s model doesn't support generating embedding for text only", this.modelName), MuleVectorsErrorType.AI_SERVICES_FAILURE);
   }
 
   @Override
   public Response<Embedding> embedImage(byte[] imageBytes) {
-
-    NomicEmbeddingResponseBody response = client.embed(NomicImageEmbeddingRequestBody.builder()
-                                                            .model(this.modelName)
-                                                            .images(Arrays.asList(imageBytes))
-                                                            .build());
-    Embedding embedding = Embedding.from(response.getEmbeddings().get(0));
-    TokenUsage tokenUsage = new TokenUsage(response.getUsage().getTotalTokens(), 0);
-    return Response.from(embedding, tokenUsage);
+    Response<List<Embedding>> response = embedImages(Arrays.asList(imageBytes));
+    return Response.from(response.content().get(0), response.tokenUsage());
   }
 
   @Override
   public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-
     LOGGER.warn(String.format("Nomic %s model doesn't support generating embedding for a combination of image and text. " +
-                                  "The text will not be sent to the model to generate the embeddings.", this.modelName));
+        "The text will not be sent to the model to generate the embeddings.", this.modelName));
     return embedImage(imageBytes);
   }
 
   @Override
   public Response<List<Embedding>> embedTexts(List<String> texts) {
-    throw new ModuleException(String.format("Nomic %s model doesn't support generating embedding for text only.", this.modelName) , MuleVectorsErrorType.AI_SERVICES_FAILURE);
+    throw new ModuleException(String.format("Nomic %s model doesn't support generating embedding for text only.", this.modelName), MuleVectorsErrorType.AI_SERVICES_FAILURE);
   }
 
   @Override
   public Response<List<Embedding>> embedImages(List<byte[]> imageBytesList) {
+    String responseJson = (String)connection.generateImageEmbeddings(imageBytesList, this.modelName);
+    JSONObject response = new JSONObject(responseJson);
+    JSONArray embeddings = response.getJSONArray("embeddings");
+    JSONObject usage = response.getJSONObject("usage");
+    
+    List<Embedding> embeddingsList = new ArrayList<>();
+    for (int j = 0; j < embeddings.length(); j++) {
+        JSONArray embeddingArray = embeddings.getJSONArray(j);
+        float[] embeddingValues = new float[embeddingArray.length()];
+        for (int i = 0; i < embeddingArray.length(); i++) {
+            embeddingValues[i] = (float)embeddingArray.getDouble(i);
+        }
+        embeddingsList.add(Embedding.from(embeddingValues));
+    }
 
-    NomicEmbeddingResponseBody response = client.embed(NomicImageEmbeddingRequestBody.builder()
-                                                            .model(this.modelName)
-                                                            .images(imageBytesList)
-                                                            .build());
-    List<Embedding> embeddings = (List<Embedding>)response.getEmbeddings().stream().map(Embedding::from).collect(Collectors.toList());
-    TokenUsage tokenUsage = new TokenUsage(response.getUsage().getTotalTokens(), 0);
-    return Response.from(embeddings, tokenUsage);
+    TokenUsage tokenUsage = new TokenUsage(usage.getInt("total_tokens"), 0);
+    return Response.from(embeddingsList, tokenUsage);
   }
 
   public static NomicEmbeddingMultimodalModelBuilder builder() {
@@ -92,23 +83,14 @@ public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel 
   }
 
   public static class NomicEmbeddingMultimodalModelBuilder {
-
-    private String baseUrl;
-    private String apiKey;
+    private NomicModelConnection connection;
     private String modelName;
-    private Duration timeout;
-    private Integer maxRetries;
 
     NomicEmbeddingMultimodalModelBuilder() {
     }
 
-    public NomicEmbeddingMultimodalModelBuilder baseUrl(String baseUrl) {
-      this.baseUrl = baseUrl;
-      return this;
-    }
-
-    public NomicEmbeddingMultimodalModelBuilder apiKey(String apiKey) {
-      this.apiKey = apiKey;
+    public NomicEmbeddingMultimodalModelBuilder connection(NomicModelConnection connection) {
+      this.connection = connection;
       return this;
     }
 
@@ -117,22 +99,12 @@ public class NomicEmbeddingMultimodalModel  implements EmbeddingMultimodalModel 
       return this;
     }
 
-    public NomicEmbeddingMultimodalModelBuilder timeout(Duration timeout) {
-      this.timeout = timeout;
-      return this;
-    }
-
-    public NomicEmbeddingMultimodalModelBuilder maxRetries(Integer maxRetries) {
-      this.maxRetries = maxRetries;
-      return this;
-    }
-
     public NomicEmbeddingMultimodalModel build() {
-      return new NomicEmbeddingMultimodalModel(this.baseUrl, this.apiKey, this.modelName, this.timeout, this.maxRetries);
+      return new NomicEmbeddingMultimodalModel(this.connection, this.modelName);
     }
 
     public String toString() {
-      return "NomicEmbeddingMultimodalModel.NomicEmbeddingMultimodalModelBuilder(baseUrl=" + this.baseUrl + ", apiKey=" + this.apiKey + ", modelName=" + this.modelName + ", timeout=" + this.timeout + ", maxRetries=" + this.maxRetries + ")";
+      return "NomicEmbeddingMultimodalModel.NomicEmbeddingMultimodalModelBuilder(connection=" + this.connection + ", modelName=" + this.modelName + ")";
     }
   }
 }
