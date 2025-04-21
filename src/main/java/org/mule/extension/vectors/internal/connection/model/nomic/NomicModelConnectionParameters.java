@@ -17,15 +17,6 @@ public class NomicModelConnectionParameters extends BaseModelConnectionParameter
   private String apiKey;
 
   @Parameter
-  @DisplayName("Max attemps")
-  @Summary("Maximum number of retries")
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
-  @Example("3")
-  @Optional(defaultValue = "3")
-  private int maxAttempts;
-
-  @Parameter
   @DisplayName("Timeout")
   @Summary("Timeout for the operation in milliseconds")
   @Expression(ExpressionSupport.SUPPORTED)
@@ -38,7 +29,7 @@ public class NomicModelConnectionParameters extends BaseModelConnectionParameter
     return apiKey;
   }
 
-  public int getMaxAttempts() { return maxAttempts; }
-
-  public long getTotalTimeout() { return totalTimeout; }
+  public long getTotalTimeout() {
+    return totalTimeout;
+  }
 }

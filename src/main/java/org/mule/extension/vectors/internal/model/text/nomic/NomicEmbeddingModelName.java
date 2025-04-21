@@ -1,19 +1,19 @@
-package org.mule.extension.vectors.internal.model.multimodal.nomic;
+package org.mule.extension.vectors.internal.model.text.nomic;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mule.extension.vectors.internal.helper.model.EmbeddingModelHelper;
 
-public enum NomicEmbeddingMultimodalModelName {
-  NOMIC_EMBED_VISION_V1(EmbeddingModelHelper.MultimodalEmbeddingModelNames.NOMIC_EMBED_VISION_V1.getModelName(), 768),
-  NOMIC_EMBED_VISION_V1_5(EmbeddingModelHelper.MultimodalEmbeddingModelNames.NOMIC_EMBED_VISION_V1_5.getModelName(), 768);
+public enum NomicEmbeddingModelName {
+  NOMIC_EMBED_TEXT_V1(EmbeddingModelHelper.TextEmbeddingModelNames.NOMIC_EMBED_TEXT_V1.getModelName(), 768),
+  NOMIC_EMBED_TEXT_V1_5(EmbeddingModelHelper.TextEmbeddingModelNames.NOMIC_EMBED_TEXT_V1_5.getModelName(), 768);
 
   private final String stringValue;
   private final Integer dimension;
   private static final Map<String, Integer> KNOWN_DIMENSION = new HashMap(values().length);
 
-  private NomicEmbeddingMultimodalModelName(String stringValue, Integer dimension) {
+  private NomicEmbeddingModelName(String stringValue, Integer dimension) {
     this.stringValue = stringValue;
     this.dimension = dimension;
   }
@@ -31,11 +31,11 @@ public enum NomicEmbeddingMultimodalModelName {
   }
 
   static {
-    NomicEmbeddingMultimodalModelName[] var0 = values();
+    NomicEmbeddingModelName[] var0 = values();
     int var1 = var0.length;
 
     for(int i = 0; i < var1; ++i) {
-      NomicEmbeddingMultimodalModelName embeddingModelName = var0[i];
+        NomicEmbeddingModelName embeddingModelName = var0[i];
       KNOWN_DIMENSION.put(embeddingModelName.toString(), embeddingModelName.dimension());
     }
 
