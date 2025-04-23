@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
@@ -19,6 +20,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.aisearch.AISearchStore;
+import org.mule.extension.vectors.internal.store.alloydb.AlloyDBStore;
 import org.mule.extension.vectors.internal.store.chroma.ChromaStore;
 import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStore;
 import org.mule.extension.vectors.internal.store.milvus.MilvusStore;
@@ -317,6 +319,11 @@ public class BaseStore {
         case Constants.VECTOR_STORE_QDRANT:
 
           baseStore = new QdrantStore(storeConfiguration, (QdrantStoreConnection)storeConnection, storeName, queryParams, dimension, createStore);
+          break;
+
+        case Constants.VECTOR_STORE_ALLOYDB:
+          
+          baseStore = new AlloyDBStore(storeConfiguration, (AlloyDBStoreConnection)storeConnection, storeName, queryParams, dimension, createStore);
           break;
 
         default:

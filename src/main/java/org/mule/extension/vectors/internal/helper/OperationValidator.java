@@ -40,6 +40,7 @@ public class OperationValidator {
     // Mapping operation types to supported vector stores
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_STORE_METADATA,
             new HashSet<>(Arrays.asList(
+              Constants.VECTOR_STORE_ALLOYDB,
               Constants.VECTOR_STORE_PGVECTOR,
               Constants.VECTOR_STORE_ELASTICSEARCH,
               Constants.VECTOR_STORE_OPENSEARCH,
@@ -52,6 +53,7 @@ public class OperationValidator {
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA,
             new HashSet<>(Arrays.asList(
+              Constants.VECTOR_STORE_ALLOYDB,
               Constants.VECTOR_STORE_PGVECTOR,
               Constants.VECTOR_STORE_ELASTICSEARCH,
               Constants.VECTOR_STORE_OPENSEARCH,
@@ -64,6 +66,7 @@ public class OperationValidator {
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS,
             new HashSet<>(Arrays.asList(
+              Constants.VECTOR_STORE_ALLOYDB,
               Constants.VECTOR_STORE_PGVECTOR,
               Constants.VECTOR_STORE_ELASTICSEARCH,
               // Constants.VECTOR_STORE_OPENSEARCH, // Not supported yet.

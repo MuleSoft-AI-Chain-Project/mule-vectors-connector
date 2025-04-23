@@ -43,7 +43,7 @@ public class Constants {
 
   public static final String VECTOR_STORE_PGVECTOR = "PGVECTOR";
   public static final String VECTOR_STORE_ELASTICSEARCH = "ELASTICSEARCH";
-
+  public static final String VECTOR_STORE_ALLOYDB = "ALLOYDB";
   public static final String VECTOR_STORE_OPENSEARCH = "OPENSEARCH";
   public static final String VECTOR_STORE_MILVUS = "MILVUS";
   public static final String VECTOR_STORE_CHROMA = "CHROMA";
