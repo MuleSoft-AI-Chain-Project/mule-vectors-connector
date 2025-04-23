@@ -56,7 +56,7 @@ public class AlloyDBStoreConnectionParameters extends BaseStoreConnectionParamet
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 8, tab = "Private/Public IP")
-  @Example("5432")
+  @Optional(defaultValue = "5432")
   private int port;
 
   @Parameter
