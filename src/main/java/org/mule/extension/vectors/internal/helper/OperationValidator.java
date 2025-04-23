@@ -78,6 +78,7 @@ public class OperationValidator {
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_QUERY_ALL,
             new HashSet<>(Arrays.asList(
+              Constants.VECTOR_STORE_ALLOYDB,
               Constants.VECTOR_STORE_PGVECTOR,
               Constants.VECTOR_STORE_ELASTICSEARCH,
               Constants.VECTOR_STORE_OPENSEARCH,
