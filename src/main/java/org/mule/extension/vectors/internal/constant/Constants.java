@@ -7,6 +7,9 @@ public class Constants {
 
   private Constants() {}
 
+  public static final String PAYLOAD_CONTENT_TYPE_BASE64 = "base64";
+  public static final String PAYLOAD_CONTENT_TYPE_BINARY = "binary";
+
   public static final String FILE_TYPE_ANY = "any";
   public static final String FILE_TYPE_TEXT = "text";
   public static final String FILE_TYPE_CRAWL = "crawl";
@@ -43,13 +46,14 @@ public class Constants {
 
   public static final String VECTOR_STORE_PGVECTOR = "PGVECTOR";
   public static final String VECTOR_STORE_ELASTICSEARCH = "ELASTICSEARCH";
-
+  public static final String VECTOR_STORE_ALLOYDB = "ALLOYDB";
   public static final String VECTOR_STORE_OPENSEARCH = "OPENSEARCH";
   public static final String VECTOR_STORE_MILVUS = "MILVUS";
   public static final String VECTOR_STORE_CHROMA = "CHROMA";
   public static final String VECTOR_STORE_PINECONE = "PINECONE";
   public static final String VECTOR_STORE_AI_SEARCH = "AI_SEARCH";
   public static final String VECTOR_STORE_QDRANT = "QDRANT";
+  public static final String VECTOR_STORE_EPHEMERAL_FILE = "EPHEMERAL_FILE";
 
   public static final String STORE_SCHEMA_METADATA_FIELD_NAME = "metadata";
 

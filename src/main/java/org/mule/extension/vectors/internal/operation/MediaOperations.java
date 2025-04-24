@@ -1,23 +1,17 @@
 package org.mule.extension.vectors.internal.operation;
 
 import org.json.JSONObject;
-import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.api.metadata.MediaResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.error.provider.DocumentErrorTypeProvider;
 import org.mule.extension.vectors.internal.error.provider.MediaErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParameters;
 import org.mule.extension.vectors.internal.helper.parameter.ImageProcessorParameters;
 import org.mule.extension.vectors.internal.helper.parameter.MediaParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
-import org.mule.extension.vectors.internal.metadata.DocumentsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.metadata.MediasOutputTypeMetadataResolver;
-import org.mule.extension.vectors.internal.pagination.DocumentPagingProvider;
 import org.mule.extension.vectors.internal.pagination.MediaPagingProvider;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.util.JsonUtils;
@@ -109,9 +103,9 @@ public class MediaOperations {
           new HashMap<String, Object>() {{
             put("mediaType", mediaParameters.getMediaType());
             put("contextPath", mediaParameters.getContextPath());
-            put("fileType", media.metadata().get(METADATA_KEY_FILE_TYPE));
-            put("mimeType", media.metadata().get(METADATA_KEY_MIME_TYPE));
-            put("source", media.metadata().get(METADATA_KEY_SOURCE));
+            put("fileType", media.metadata().getString(METADATA_KEY_FILE_TYPE));
+            put("mimeType", media.metadata().getString(METADATA_KEY_MIME_TYPE));
+            put("source", media.metadata().getString(METADATA_KEY_SOURCE));
           }});
 
     } catch (ModuleException me) {

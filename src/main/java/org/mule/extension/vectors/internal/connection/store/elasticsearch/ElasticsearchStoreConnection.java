@@ -1,7 +1,5 @@
 package org.mule.extension.vectors.internal.connection.store.elasticsearch;
 
-import co.elastic.clients.elasticsearch.core.health_report.IndicatorHealthStatus;
-import co.elastic.clients.transport.endpoints.BooleanResponse;
 import dev.langchain4j.internal.Utils;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -10,7 +8,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 import org.elasticsearch.client.RestClient;

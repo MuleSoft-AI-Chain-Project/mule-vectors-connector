@@ -21,15 +21,12 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStore;
-import org.mule.extension.vectors.internal.store.pgvector.PGVectorStore;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -179,7 +176,7 @@ public class QdrantStore extends BaseStore {
         float[] vector = null;
         if (queryParams.retrieveEmbeddings()) {
 
-          Points.Vectors vectors = currentPoint.getVectors();
+          Points.VectorsOutput vectors = currentPoint.getVectors();
           if (vectors != null && vectors.getSerializedSize() > 0) {
             vector = new float[vectors.getVector().getDataCount()];
             for (int i = 0; i < vectors.getVector().getDataCount(); i++) {

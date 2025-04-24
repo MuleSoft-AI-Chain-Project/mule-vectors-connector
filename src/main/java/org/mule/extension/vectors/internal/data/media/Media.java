@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.data;
+package org.mule.extension.vectors.internal.data.media;
 
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.image.Image;
@@ -47,7 +47,7 @@ public class Media {
   }
 
   public String metadata(String key) {
-    return this.metadata.get(key);
+    return this.metadata.getString(key);
   }
 
   @Override
@@ -74,7 +74,7 @@ public class Media {
         ", image=" + (image != null ? image.toString() : "null") +
         ", video=" + (video != null ? video.toString() : "null") +
         ", audioData=" + (audioData != null ? audioData.length + " bytes" : "null") +
-        ", metadata=" + metadata.asMap() +
+        ", metadata=" + metadata.toMap() +
         " }";
   }
 

@@ -5,20 +5,10 @@ import io.qdrant.client.QdrantClient;
 import io.qdrant.client.QdrantGrpcClient;
 import io.qdrant.client.grpc.QdrantOuterClass;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.meta.ExpressionSupport;
-import org.mule.runtime.extension.api.annotation.Expression;
-import org.mule.runtime.extension.api.annotation.param.Parameter;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Example;
-import org.mule.runtime.extension.api.annotation.param.display.Password;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class QdrantStoreConnection implements BaseStoreConnection {
 
@@ -119,6 +109,6 @@ public class QdrantStoreConnection implements BaseStoreConnection {
     ListenableFuture<QdrantOuterClass.HealthCheckReply> healthCheckFuture = this.client.healthCheckAsync();
 
     // Make it synchronous by calling get()
-    QdrantOuterClass.HealthCheckReply healthCheckReply = healthCheckFuture.get();
+    healthCheckFuture.get();
   }
 }

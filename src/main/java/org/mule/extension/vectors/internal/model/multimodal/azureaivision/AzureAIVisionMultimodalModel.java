@@ -2,15 +2,11 @@ package org.mule.extension.vectors.internal.model.multimodal.azureaivision;
 
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
-import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.model.BaseModel;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
-import org.mule.extension.vectors.internal.model.multimodal.nomic.NomicEmbeddingMultimodalModel;
 import org.mule.runtime.extension.api.exception.ModuleException;
-
-import java.time.Duration;
 
 public class AzureAIVisionMultimodalModel  extends BaseModel {
 

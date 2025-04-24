@@ -8,8 +8,10 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
@@ -18,10 +20,11 @@ import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreCo
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.store.aisearch.AISearchStore;
+import org.mule.extension.vectors.internal.store.alloydb.AlloyDBStore;
 import org.mule.extension.vectors.internal.store.chroma.ChromaStore;
 import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStore;
+import org.mule.extension.vectors.internal.store.ephemeralfile.EphemeralFileStore;
 import org.mule.extension.vectors.internal.store.milvus.MilvusStore;
 import org.mule.extension.vectors.internal.store.opensearch.OpenSearchStore;
 import org.mule.extension.vectors.internal.store.pgvector.PGVectorStore;
@@ -318,6 +321,16 @@ public class BaseStore {
         case Constants.VECTOR_STORE_QDRANT:
 
           baseStore = new QdrantStore(storeConfiguration, (QdrantStoreConnection)storeConnection, storeName, queryParams, dimension, createStore);
+          break;
+
+        case Constants.VECTOR_STORE_ALLOYDB:
+          
+          baseStore = new AlloyDBStore(storeConfiguration, (AlloyDBStoreConnection)storeConnection, storeName, queryParams, dimension, createStore);
+          break;
+
+        case Constants.VECTOR_STORE_EPHEMERAL_FILE:
+
+          baseStore = new EphemeralFileStore(storeConfiguration, (EphemeralFileStoreConnection)storeConnection, storeName, queryParams, dimension);
           break;
 
         default:

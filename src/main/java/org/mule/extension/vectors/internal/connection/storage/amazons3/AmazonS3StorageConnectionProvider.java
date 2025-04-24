@@ -8,16 +8,10 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Alias("amazonS3")
 @DisplayName("Amazon S3")
 public class AmazonS3StorageConnectionProvider extends BaseStorageConnectionProvider {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3StorageConnectionProvider.class);
-
-  private static final String SERVICE = "s3";
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AmazonS3StorageConnectionParameters amazonS3StorageConnectionParameters;

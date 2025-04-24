@@ -1,0 +1,631 @@
+#%RAML 1.0
+title: MuleSoft Vectors Connector API
+description: API for interacting with vector databases
+version: 1.0.0
+
+baseUri: http://localhost:{port}
+baseUriParameters:
+  port:
+    default: "8081"
+
+types:
+  ErrorResponse:
+    properties:
+      message:
+        type: string
+        required: true
+
+/load-document:
+  post:
+    description: Loads a single document from the file system.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the document file.
+        required: true
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
+    responses:
+      200:
+        description: Document loaded successfully.
+        body:
+          application/json:
+            example:
+              {
+                "text-segments": [
+                  {
+                    "metadata": {
+                      "index": "0",
+                      "source": "s3://ms-vectors/invoicesample.pdf",
+                      "file_type": "any",
+                      "file_name": "invoicesample.pdf"
+                    },
+                    "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
+                  }
+                ]
+              }
+      400:
+        description: Bad Request (e.g., invalid file path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/load-documents:
+  post:
+    description: Loads multiple documents from a folder.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the folder containing documents.
+        required: true
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
+    responses:
+      200:
+        description: Documents loaded successfully.
+        body:
+          application/json:
+            example:
+              [
+                {
+                  "text-segments": [
+                    {
+                      "metadata": {
+                        "index": "0",
+                        "source": "s3://ms-vectors/invoicesample.pdf",
+                        "file_type": "any",
+                        "file_name": "invoicesample.pdf"
+                      },
+                      "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
+                    }
+                  ]
+                }
+              ]
+      400:
+        description: Bad Request (e.g., invalid folder path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/load-media:
+  post:
+    description: Loads a single media from the file system.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the media file.
+        required: true
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Media loaded successfully.
+        body:
+          application/json:
+            type: object
+            example:
+              {
+                "metadata": {
+                  "absolute_directory_path": "/Users/tbolis/Downloads",
+                  "source": "file:///Users/tbolis/Downloads/icon.png",
+                  "media_type": "image",
+                  "mime_type": "image/png",
+                  "file_type": "png",
+                  "file_name": "icon.png"
+                },
+                "base64Data": "iVBORw0KGgo..."
+              }
+      400:
+        description: Bad Request (e.g., invalid media path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/load-medias:
+  post:
+    description: Loads multiple medias from a folder.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the folder containing medias.
+        required: true
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Media loaded successfully.
+        body:
+          application/json:
+            type: array
+            example:
+              [
+                {
+                  "metadata": {
+                    "absolute_directory_path": "/Users/tbolis/Downloads",
+                    "source": "file:///Users/tbolis/Downloads/icon.png",
+                    "media_type": "image",
+                    "mime_type": "image/png",
+                    "file_type": "png",
+                    "file_name": "icon.png"
+                  },
+                  "base64Data": "iVBORw0KGgo..."
+                }
+              ]
+      400:
+        description: Bad Request (e.g., invalid media path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/embed-text:  # New resource for adding text to the store
+  post:
+    description: Adds text content to the vector store.
+    queryParameters:
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
+    body:
+      application/json:
+        type: object
+        properties:
+          text:
+            type: string
+            description: The text content to add to the store.
+            required: true
+    responses:
+      201:
+        description: Text added successfully.
+      400:
+        description: Bad Request (e.g., missing text content).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/add-document:  # New resource for adding a document to the store
+  post:
+    description: Adds a document to the vector store.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the document file.
+        required: true
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
+    responses:
+      201:
+        description: Document added successfully.
+      400:
+        description: Bad Request (e.g., invalid document format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/add-text:  # New resource for adding text to the store
+  post:
+    description: Adds text content to the vector store.
+    queryParameters:
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 0  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 0  # Default value
+    body:
+      application/json:
+        type: object
+        properties:
+          text:
+            type: string
+            description: The text content to add to the store.
+            required: true
+          customMetadata:
+            type: object
+            description: Custom metadata key-value pairs to associate with the text
+            required: false
+            example:
+              {
+                "category": "invoice",
+                "department": "sales",
+                "products": "A001,A002,A003"
+              }
+    responses:
+      201:
+        description: Text added successfully.
+      400:
+        description: Bad Request (e.g., missing text content).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/add-media:
+  post:
+    description: Loads a single media from the file system and add it to the store.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the media file.
+        required: true
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Media added successfully.
+      400:
+        description: Bad Request (e.g., invalid media path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/add-binary:
+  post:
+    description: Add media binary to the store.
+    body:
+      multipart/form-data:
+        properties:
+          imageBinary:
+            description: The image file to upload.
+            type: file
+            required: true
+          imageLabel:
+            description: A label or tag for the uploaded image.
+            type: string
+            required: false
+    queryParameters:
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Media binary added successfully.
+      400:
+        description: Bad Request (e.g., invalid media path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/query-by-text:  # New resource for querying the store
+  post:
+    description: Queries the vector store for similar items.
+    body:
+      application/json:
+        type: object
+        properties:
+          prompt:
+            type: string
+            description: The query prompt.
+            required: true
+          filter:
+            type: string
+            description: The query filter.
+            required: false
+        example:
+          {
+            "prompt": "What is the invoice number?",
+             "filter": "index=1 AND (file_name = 'example.pdf' OR file_type = 'any')"          
+          }
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/query-media-by-text:  # New resource for querying the store
+  post:
+    description: Queries the vector store for similar items.
+    body:
+      application/json:
+        type: object
+        properties:
+          prompt:
+            type: string
+            description: The query prompt.
+            required: true
+        example:
+          {
+            "prompt": "Logo image",      
+          }
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/query-by-binary:  # New resource for querying the store
+  post:
+    description: Queries the vector store for similar items.
+    body:
+      multipart/form-data:
+        properties:
+          imageBinary:
+            description: The image file to upload.
+            type: file
+            required: true
+          imageLabel:
+            description: A label or tag for the uploaded image.
+            type: string
+            required: false
+    queryParameters:
+      targetWidth:
+        type: integer
+        description: The media target width.
+        required: false
+        default: 512  # Default value
+      targetHeight:
+        type: integer
+        description: The media target height.
+        required: false
+        default: 512  # Default value
+      compressionQuality:
+        type: number
+        description: The media compression quality.
+        required: false
+        default: 1  # Default value
+      scaleStrategy:
+        type: string
+        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
+        required: false
+        default: "FIT"  # Default value
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/query-all:
+  post:
+    description: Queries all rows from the vector store.
+    queryParameters:
+      retrieveEmbeddings:
+        type: boolean
+        description: Whether to include embeddings in the response
+        required: false
+        default: false
+    responses:
+      200:
+        description: Query completed successfully.
+        body:
+          application/json:
+            # Define the structure of the query results here
+            # Example:
+            # type: QueryResults
+      400:
+        description: Bad Request (e.g., invalid query format).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/remove:
+  delete:
+    description: Removes one or more documents from the vector store based on a filter.
+    body:
+      application/json:
+        type: object
+        properties:
+          ids:
+            type: array
+            description: The filter used to select documents for removal.
+            items:
+              type: string
+            required: false
+          metadataCondition:
+            type: string
+            description: The filter used to select documents for removal.
+            required: false
+        example:
+          {
+            "ids": ["", ""],
+            "metadataCondition": "file_name = 'example.pdf' OR file_type = 'invoice'"
+          }
+    responses:
+      200:
+        description: Document(s) removed successfully.
+      400:
+        description: Bad Request (e.g., missing or invalid filter).
+        body:
+          application/json:
+            type: ErrorResponse
+      404:
+        description: No documents found matching the specified filter.
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse

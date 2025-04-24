@@ -3,9 +3,11 @@ package org.mule.extension.vectors.internal.model.multimodal.nomic;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mule.extension.vectors.internal.helper.model.EmbeddingModelHelper;
+
 public enum NomicEmbeddingMultimodalModelName {
-  NOMIC_EMBED_VISION_V1("nomic-embed-vision-v1", 768),
-  NOMIC_EMBED_VISION_V1_5("nomic-embed-vision-v1.5", 768);
+  NOMIC_EMBED_VISION_V1(EmbeddingModelHelper.MultimodalEmbeddingModelNames.NOMIC_EMBED_VISION_V1.getModelName(), 768),
+  NOMIC_EMBED_VISION_V1_5(EmbeddingModelHelper.MultimodalEmbeddingModelNames.NOMIC_EMBED_VISION_V1_5.getModelName(), 768);
 
   private final String stringValue;
   private final Integer dimension;

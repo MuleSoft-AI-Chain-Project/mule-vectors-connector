@@ -4,7 +4,7 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.MediaResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.MediaParameters;
@@ -76,9 +76,9 @@ public class MediaPagingProvider implements PagingProvider<BaseStorageConnection
               new HashMap<String, Object>() {{
                 put("mediaType", mediaParameters.getMediaType());
                 put("contextPath", mediaParameters.getContextPath());
-                put("fileType", media.metadata().get(METADATA_KEY_FILE_TYPE));
-                put("mimeType", media.metadata().get(METADATA_KEY_MIME_TYPE));
-                put("source", media.metadata().get(METADATA_KEY_SOURCE));
+                put("fileType", media.metadata().getString(METADATA_KEY_FILE_TYPE));
+                put("mimeType", media.metadata().getString(METADATA_KEY_MIME_TYPE));
+                put("source", media.metadata().getString(METADATA_KEY_SOURCE));
               }},
               streamingHelper);
 

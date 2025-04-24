@@ -20,7 +20,6 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
 import java.util.*;
 
-import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageDocumentResponse;
 
 public class DocumentPagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, DocumentResponseAttributes>> {

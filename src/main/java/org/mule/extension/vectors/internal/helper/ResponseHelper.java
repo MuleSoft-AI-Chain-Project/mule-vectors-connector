@@ -37,7 +37,7 @@ public final class ResponseHelper {
       Map<String, Object> storeAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, StoreResponseAttributes>> page =  new LinkedList();
+    List<Result<CursorProvider, StoreResponseAttributes>> page = new LinkedList<>();
 
     page.add(Result.<CursorProvider, StoreResponseAttributes>builder()
                  .attributes(new StoreResponseAttributes((HashMap<String, Object>) storeAttributes))
@@ -102,7 +102,7 @@ public final class ResponseHelper {
       Map<String, Object> documentAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, DocumentResponseAttributes>> page =  new LinkedList();
+    List<Result<CursorProvider, DocumentResponseAttributes>> page =  new LinkedList<>();
 
     page.add(Result.<CursorProvider, DocumentResponseAttributes>builder()
         .attributes(new DocumentResponseAttributes((HashMap<String, Object>) documentAttributes))
@@ -119,7 +119,7 @@ public final class ResponseHelper {
       Map<String, Object> mediaAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, MediaResponseAttributes>> page =  new LinkedList();
+    List<Result<CursorProvider, MediaResponseAttributes>> page =  new LinkedList<>();
 
     page.add(Result.<CursorProvider, MediaResponseAttributes>builder()
                  .attributes(new MediaResponseAttributes((HashMap<String, Object>) mediaAttributes))

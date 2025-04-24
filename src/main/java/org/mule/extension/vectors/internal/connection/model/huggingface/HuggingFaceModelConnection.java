@@ -1,31 +1,40 @@
 package org.mule.extension.vectors.internal.connection.model.huggingface;
 
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
-import org.mule.extension.vectors.internal.connection.model.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Alias("huggingFace")
 @DisplayName("Hugging Face")
-public class HuggingFaceModelConnection implements BaseModelConnection {
+public class HuggingFaceModelConnection implements BaseTextModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceModelConnection.class);
 
-  private static final String ENDPOINT = "https://huggingface.co/api/whoami-v2";
+  private static final String AUTH_ENDPOINT = "https://huggingface.co/api/whoami-v2";
+  private static final String EMBEDDINGS_ENDPOINT = "https://api-inference.huggingface.co/pipeline/feature-extraction/";
 
-  private String apiKey;
+  private final String apiKey;
+  private final HttpClient httpClient;
+  private final long timeout;
 
-  public HuggingFaceModelConnection(String apiKey) {
+  public HuggingFaceModelConnection(String apiKey, long timeout, HttpClient httpClient) {
     this.apiKey = apiKey;
+    this.timeout = timeout;
+    this.httpClient = httpClient;
   }
 
   public String getApiKey() {
@@ -39,74 +48,112 @@ public class HuggingFaceModelConnection implements BaseModelConnection {
 
   @Override
   public void connect() throws ConnectionException {
-
     try {
-
-      doAuthenticatedHttpRequest();
-    } catch (ConnectionException e) {
-
-      throw e;
-
+      validateCredentials();
+      LOGGER.debug("Connected to Hugging Face");
     } catch (Exception e) {
-
       throw new ConnectionException("Failed to connect to Hugging Face.", e);
     }
   }
 
   @Override
   public void disconnect() {
-
+    // HttpClient lifecycle is managed by the provider
   }
 
   @Override
   public boolean isValid() {
-
     try {
-
-      doAuthenticatedHttpRequest();
+      validateCredentials();
       return true;
-
     } catch (Exception e) {
-
       LOGGER.error("Failed to validate connection to Hugging Face.", e);
       return false;
     }
   }
 
-  private void doAuthenticatedHttpRequest() throws ConnectionException {
-
+  private void validateCredentials() throws ConnectionException {
     try {
+      HttpRequest request = HttpRequest.builder()
+          .method("GET")
+          .uri(AUTH_ENDPOINT)
+          .addHeader("Authorization", "Bearer " + apiKey)
+          .build();
 
-      // Set up the HTTP connection
-      URL url = new URL(ENDPOINT);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("GET");
-      connection.setRequestProperty("Authorization", "Bearer " + apiKey);
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
 
-      // Check the response code
-      int responseCode = connection.getResponseCode();
-      if (responseCode != 200) {
-        // Error handling
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-        String line;
-        StringBuilder errorResponse = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-          errorResponse.append(line);
-        }
-        reader.close();
-        // Print the error response
-        LOGGER.error("Error (HTTP " + responseCode + "): " + errorResponse.toString());
-        throw new ConnectionException("Impossible to connect to Hugging Face. " + "Error (HTTP " + responseCode + "): " + errorResponse.toString());
+      HttpResponse response = httpClient.send(request, options);
+
+      if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
+        LOGGER.error("Authentication failed. Please check your credentials.");
+        throw new ConnectionException("Invalid credentials");
+      }
+
+      if (response.getStatusCode() != 200) {
+        String errorBody = new String(response.getEntity().getBytes());
+        String errorMsg = String.format("Unexpected response code: %d - %s", 
+            response.getStatusCode(), errorBody);
+        LOGGER.error(errorMsg);
+        throw new ConnectionException(errorMsg);
       }
 
     } catch (ConnectionException e) {
-
       throw e;
+    } catch (Exception e) {
+      LOGGER.error("Failed to validate credentials", e);
+      throw new ConnectionException("Failed to validate credentials", e);
+    }
+  }
+
+  @Override
+  public Object generateTextEmbeddings(List<String> inputs, String modelName) {
+    if(inputs == null || inputs.isEmpty()) {
+      throw new IllegalArgumentException("Input list cannot be null or empty");
+    }
+    if(modelName == null || modelName.isEmpty()) {
+      throw new IllegalArgumentException("Model name cannot be null or empty");
+    }
+
+    try {
+      String url = EMBEDDINGS_ENDPOINT + modelName;
+      
+      Map<String, Object> requestBody = new HashMap<>();
+      requestBody.put("inputs", inputs);
+      
+      ObjectMapper mapper = new ObjectMapper();
+      byte[] jsonBody = mapper.writeValueAsBytes(requestBody);
+
+      HttpRequest request = HttpRequest.builder()
+          .method("POST")
+          .uri(url)
+          .addHeader("Authorization", "Bearer " + apiKey)
+          .addHeader("Content-Type", "application/json")
+          .entity(new ByteArrayHttpEntity(jsonBody))
+          .build();
+
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
+
+      HttpResponse response = httpClient.send(request, options);
+
+      if (response.getStatusCode() != 200) {
+        String errorBody = new String(response.getEntity().getBytes());
+        String errorMsg = String.format("Error generating embeddings. Status: %d - %s", 
+            response.getStatusCode(), errorBody);
+        LOGGER.error(errorMsg);
+        throw new RuntimeException(errorMsg);
+      }
+
+      return new String(response.getEntity().getBytes());
 
     } catch (Exception e) {
-
-      LOGGER.error("Impossible to connect to Hugging Face", e);
-      throw new ConnectionException("Impossible to connect to Hugging Face", e);
+      LOGGER.error("Error generating embeddings", e);
+      throw new RuntimeException("Failed to generate embeddings", e);
     }
   }
 }

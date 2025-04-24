@@ -2,8 +2,6 @@ package org.mule.extension.vectors.internal.connection.store.elasticsearch;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
-import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;

@@ -2,12 +2,6 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import dev.langchain4j.store.embedding.filter.Filter;
 import org.mule.extension.vectors.internal.helper.metadata.MetadataFilterHelper;
-import org.mule.runtime.extension.api.annotation.Alias;
-import org.mule.runtime.extension.api.annotation.param.Content;
-import org.mule.runtime.extension.api.annotation.param.Optional;
-import org.mule.runtime.extension.api.annotation.param.Parameter;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

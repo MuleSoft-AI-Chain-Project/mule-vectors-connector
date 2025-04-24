@@ -17,15 +17,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.store.BaseStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +31,6 @@ import java.util.stream.IntStream;
  * convert collections of JSON objects to JSON arrays, and handle document segmentation.
  */
 public final class JsonUtils {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(JsonUtils.class);
 
   private JsonUtils() {}
 

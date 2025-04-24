@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

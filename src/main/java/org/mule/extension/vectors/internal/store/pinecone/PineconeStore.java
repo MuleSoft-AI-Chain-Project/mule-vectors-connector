@@ -20,8 +20,6 @@ import org.mule.extension.vectors.internal.store.BaseStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +36,7 @@ public class PineconeStore extends BaseStore {
 
     super(storeConfiguration, pineconeStoreConnection, storeName, queryParams, dimension, createStore);
 
-    ValidationUtils.ensureBetween(queryParams.pageSize(), 0, 100, "pageSize");
+    if(queryParams != null) ValidationUtils.ensureBetween(queryParams.pageSize(), 0, 100, "pageSize");
     this.apiKey = pineconeStoreConnection.getApiKey();
     this.cloud = pineconeStoreConnection.getCloud();
     this.region = pineconeStoreConnection.getRegion();

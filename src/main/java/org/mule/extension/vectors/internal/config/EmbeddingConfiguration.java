@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.config;
 
-import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnectionProvider;
 import org.mule.extension.vectors.internal.connection.model.azureopenai.AzureOpenAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.connection.model.einstein.EinsteinModelConnectionProvider;

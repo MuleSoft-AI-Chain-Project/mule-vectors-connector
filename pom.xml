@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.4.30</version>
+    <version>0.5.0</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -72,16 +72,16 @@
 	<parent>
 		<groupId>org.mule.extensions</groupId>
 		<artifactId>mule-modules-parent</artifactId>
-		<version>1.6.9</version>
+		<version>1.9.0</version>
 	</parent>
 
     <properties>
 		<skipVerifications>false</skipVerifications>
-        <muleJavaEeBomVersion>4.6.9</muleJavaEeBomVersion>
+        <muleJavaEeBomVersion>4.9.0</muleJavaEeBomVersion>
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
-		<langchain4jVersion>0.35.0</langchain4jVersion>
+		<langchain4jVersion>1.0.0-beta3</langchain4jVersion>
 		<mule.sdk.api.version>0.10.3</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
@@ -301,56 +301,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Embedding Model Service Dependencies (Optionals) -->
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-azure-open-ai</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-open-ai</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-mistral-ai</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-nomic</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-hugging-face</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-vertex-ai</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-ollama</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- Vector Store Dependencies (Optionals) -->
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
@@ -358,6 +308,13 @@
 			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-alloydb-pg</artifactId>
+			<version>${langchain4jVersion}</version>
+			<scope>provided</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>

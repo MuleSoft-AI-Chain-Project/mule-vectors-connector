@@ -1,38 +1,40 @@
 package org.mule.extension.vectors.internal.connection.model.azureopenai;
 
-import com.azure.ai.openai.OpenAIClient;
-import com.azure.ai.openai.OpenAIClientBuilder;
-import com.azure.ai.openai.OpenAIServiceVersion;
-import com.azure.core.credential.AzureKeyCredential;
-import com.azure.core.http.HttpClient;
-import com.azure.core.http.netty.NettyAsyncHttpClientProvider;
-import com.azure.core.http.policy.ExponentialBackoffOptions;
-import com.azure.core.http.policy.HttpLogOptions;
-import com.azure.core.http.policy.RetryOptions;
-import com.azure.core.util.Header;
-import com.azure.core.util.HttpClientOptions;
-import dev.langchain4j.internal.ValidationUtils;
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class AzureOpenAIModelConnection implements BaseModelConnection {
+public class AzureOpenAIModelConnection implements BaseTextModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIModelConnection.class);
 
   private String endpoint;
   private String apiKey;
-  private OpenAIClient openAIClient;
+  private final String apiVersion;
+  private final long timeout;
+  private final HttpClient httpClient;
 
-  public AzureOpenAIModelConnection(String endpoint, String apiKey) {
+  public AzureOpenAIModelConnection(String endpoint, String apiKey, String apiVersion, long timeout, HttpClient httpClient) {
     this.endpoint = endpoint;
     this.apiKey = apiKey;
+    this.apiVersion = apiVersion;
+    this.timeout = timeout;
+    this.httpClient = httpClient;
   }
 
   public String getEndpoint() {
@@ -43,10 +45,6 @@ public class AzureOpenAIModelConnection implements BaseModelConnection {
     return apiKey;
   }
 
-  public OpenAIClient getOpenAIClient() {
-    return openAIClient;
-  }
-
   @Override
   public String getEmbeddingModelService() {
     return Constants.EMBEDDING_MODEL_SERVICE_AZURE_OPENAI;
@@ -54,53 +52,149 @@ public class AzureOpenAIModelConnection implements BaseModelConnection {
 
   @Override
   public void connect() throws ConnectionException {
-
-    Duration timeout = Duration.ofSeconds(60L);
-    HttpClientOptions clientOptions = new HttpClientOptions();
-    clientOptions.setConnectTimeout(timeout);
-    clientOptions.setResponseTimeout(timeout);
-    clientOptions.setReadTimeout(timeout);
-    clientOptions.setWriteTimeout(timeout);
-    String userAgent = "langchain4j-azure-openai";
-
-    List<Header> headers = new ArrayList();
-    headers.add(new Header("User-Agent", userAgent));
-    clientOptions.setHeaders(headers);
-
-    HttpClient httpClient = (new NettyAsyncHttpClientProvider()).createInstance(clientOptions);
-    HttpLogOptions httpLogOptions = new HttpLogOptions();
-
-    ExponentialBackoffOptions exponentialBackoffOptions = new ExponentialBackoffOptions();
-    exponentialBackoffOptions.setMaxRetries(3);
-    RetryOptions retryOptions = new RetryOptions(exponentialBackoffOptions);
-    OpenAIClientBuilder openAIClientBuilder = (new OpenAIClientBuilder())
-        .credential(new AzureKeyCredential(apiKey))
-        .endpoint(ValidationUtils.ensureNotBlank(endpoint, "endpoint"))
-        .serviceVersion(OpenAIServiceVersion.getLatest())
-        .httpClient(httpClient).clientOptions(clientOptions)
-        .httpLogOptions(httpLogOptions)
-        .retryOptions(retryOptions);
-
-    this.openAIClient = openAIClientBuilder.buildClient();
-
-    LOGGER.debug("Connected to Azure Open AI.");
-  }
-
-  @Override
-  public void disconnect() {
-
-    if(this.openAIClient != null) {
-
-      // Add logic to invalidate connection
-      LOGGER.debug("Disconnecting from Azure Open AI.");
+    try {
+      
+      testCredentials();
+      LOGGER.debug("Connected to Azure Open AI");
+    } catch (Exception e) {
+      throw new ConnectionException("Failed to connect to Azure Open AI", e);
     }
   }
 
   @Override
-  public boolean isValid() {
+  public void disconnect() {
+    // HttpClient lifecycle is managed by the provider
+  }
 
-    openAIClient.listBatches();;
-    LOGGER.debug("Azure Open AI connection is valid.");
-    return true;
+  @Override
+  public boolean isValid() {
+    try {
+
+      testCredentials();
+      return true;
+    } catch (Exception e) {
+      LOGGER.error("Failed to validate connection to Azure AI Vision", e);
+      return false;
+    }
+  }
+
+  public void testCredentials() {
+    try {
+      String url = String.format("%s/openai/deployments/test-connection/embeddings?api-version=%s", endpoint, apiVersion);
+      
+      Map<String, Object> requestBody = new HashMap<>();
+      requestBody.put("input", List.of("")); // Minimal payload with empty string
+      
+      ObjectMapper mapper = new ObjectMapper();
+      byte[] jsonBody = mapper.writeValueAsBytes(requestBody);
+
+      HttpRequest request = HttpRequest.builder()
+          .method("POST")
+          .uri(url)
+          .addHeader("api-key", apiKey)
+          .addHeader("Content-Type", "application/json")
+          .entity(new ByteArrayHttpEntity(jsonBody))
+          .build();
+
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
+
+      HttpResponse response = httpClient.send(request, options);
+
+      // 401/403 indicate auth failures
+      if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
+        LOGGER.error("Authentication failed. Please check your credentials.");
+        throw new RuntimeException("Invalid credentials");
+      }
+      
+      // 404 with DeploymentNotFound is expected since we're using a fake deployment
+      // Any other error indicates a problem
+      if (response.getStatusCode() != 404) {
+        String errorMsg = String.format("Unexpected response code: %d", response.getStatusCode());
+        LOGGER.error(errorMsg);
+        throw new RuntimeException(errorMsg);
+      }
+
+    } catch (RuntimeException re) {
+
+      throw re;
+
+    } catch (Exception e) {
+      LOGGER.error("Failed to validate credentials", e);
+      throw new RuntimeException("Failed to validate credentials", e);
+    }
+  }
+
+  @Override
+  public Object generateTextEmbeddings(List<String> inputs, String deploymentName) {
+
+    if(inputs == null || inputs.isEmpty()) {
+      throw new IllegalArgumentException("Input list cannot be null or empty");
+    }
+    if(deploymentName == null || deploymentName.isEmpty()) {
+      throw new IllegalArgumentException("Model name cannot be null or empty");
+    }
+    LOGGER.debug("Generating embeddings for {} inputs using model: {}", inputs.size(), deploymentName);
+
+    try {
+      String url = String.format("%s/openai/deployments/%s/embeddings?api-version=%s", endpoint, deploymentName, apiVersion);
+      
+      Map<String, Object> requestBody = new HashMap<>();
+      requestBody.put("input", inputs);
+      
+      ObjectMapper mapper = new ObjectMapper();
+      byte[] jsonBody = mapper.writeValueAsBytes(requestBody);
+
+      HttpRequest request = HttpRequest.builder()
+          .method("POST")
+          .uri(url)
+          .addHeader("api-key", apiKey)
+          .addHeader("Content-Type", "application/json")
+          .entity(new ByteArrayHttpEntity(jsonBody))
+          .build();
+
+      HttpRequestOptions options = HttpRequestOptions.builder()
+          .responseTimeout((int)timeout)
+          .followsRedirect(false)
+          .build();
+
+      HttpResponse response = httpClient.send(request, options);
+
+      validateResponse(response);
+
+      return new String(response.getEntity().getBytes());
+
+    } catch (Exception e) {
+      LOGGER.error("Error generating embeddings", e);
+      throw new RuntimeException("Failed to generate embeddings", e);
+    }
+  }
+
+  private void validateResponse(HttpResponse response) {
+
+    if (response.getStatusCode() != 200) {
+      
+      String responseBody = "";
+
+      try {
+        
+        responseBody = new String(response.getEntity().getBytes());
+        LOGGER.error("Error (HTTP {}): {}", response.getStatusCode(), responseBody);
+
+      } catch (IOException e) {
+        
+        LOGGER.error("Error reading response body", e);
+      }
+      
+      MuleVectorsErrorType muleVectorsErrorType = response.getStatusCode() == 429 ?
+          MuleVectorsErrorType.AI_SERVICES_RATE_LIMITING_ERROR : MuleVectorsErrorType.AI_SERVICES_FAILURE;
+
+      throw new ModuleException(
+          String.format("Error while generating embeddings with \"AZURE OPEN AI\" embedding model service. Response code: %s. Response %s.",
+              response.getStatusCode(), responseBody),
+          muleVectorsErrorType);
+    }
   }
 }

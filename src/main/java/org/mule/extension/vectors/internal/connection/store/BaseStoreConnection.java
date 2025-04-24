@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.connection.store;
 
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
 
 public interface BaseStoreConnection {
 

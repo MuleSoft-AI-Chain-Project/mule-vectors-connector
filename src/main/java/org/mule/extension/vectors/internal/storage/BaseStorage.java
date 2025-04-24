@@ -11,9 +11,8 @@ import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlo
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.Media;
+import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
@@ -65,7 +64,7 @@ public abstract class BaseStorage {
     return storageConnection == null ? Constants.STORAGE_TYPE_LOCAL : storageConnection.getStorageType();
   }
 
-  protected DocumentParser getDocumentParser(String fileType) {
+  public static DocumentParser getDocumentParser(String fileType) {
 
     DocumentParser documentParser = null;
     switch (fileType) {

@@ -10,8 +10,9 @@ MuleSoft Vectors provides access to a broad number of external Vector Stores and
 
 ### Requirements
 
-- The maximum supported version for Java SDK is JDK 17. You can use JDK 17 only for running your application.
-- Compilation with Java SDK must be done with JDK 8.
+- Mule Runtime >= 4.9.0 must be used
+- The supported version for Java SDK is JDK 17. 
+- Compilation with Java SDK must be done with JDK 17.
 
 
 ### Installation (using maven central dependency)

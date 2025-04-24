@@ -8,22 +8,17 @@ import org.mule.extension.vectors.internal.model.BaseModel;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import java.time.Duration;
-
 public class NomicMultimodalModel extends BaseModel {
 
   private final NomicModelConnection nomicModelConnection;
 
   public NomicMultimodalModel(EmbeddingConfiguration embeddingConfiguration,
-                                 NomicModelConnection nomicModelConnection,
-                                 EmbeddingModelParameters embeddingModelParameters) {
-
+                             NomicModelConnection nomicModelConnection,
+                             EmbeddingModelParameters embeddingModelParameters) {
     super(embeddingConfiguration, nomicModelConnection, embeddingModelParameters);
-    try{
-
+    try {
       this.nomicModelConnection = nomicModelConnection;
     } catch (Exception e) {
-
       throw new ModuleException(
           String.format("Error initializing Nomic Model."),
           MuleVectorsErrorType.AI_SERVICES_FAILURE,
@@ -32,22 +27,16 @@ public class NomicMultimodalModel extends BaseModel {
   }
 
   public EmbeddingMultimodalModel buildEmbeddingMultimodalModel() {
-
-      try {
-
+    try {
       return NomicEmbeddingMultimodalModel.builder()
-          .apiKey(nomicModelConnection.getApiKey())
-          .maxRetries(nomicModelConnection.getMaxAttempts())
+          .connection(nomicModelConnection)
           .modelName(embeddingModelParameters.getEmbeddingModelName())
-          .timeout(Duration.ofMillis(nomicModelConnection.getTimeout()))
           .build();
-
-      } catch (Exception e) {
-
+    } catch (Exception e) {
       throw new ModuleException(
           String.format("Error initializing Nomic Embedding Model."),
           MuleVectorsErrorType.AI_SERVICES_FAILURE,
           e);
-      }
+    }
   }
 }
