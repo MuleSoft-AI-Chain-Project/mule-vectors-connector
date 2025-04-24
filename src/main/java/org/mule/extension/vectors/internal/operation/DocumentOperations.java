@@ -4,6 +4,7 @@ import dev.langchain4j.data.document.DefaultDocument;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.document.Metadata;
+import org.mule.extension.vectors.internal.util.MetadataUtils;
 import scala.collection.Map;
 
 import org.json.JSONObject;
@@ -185,10 +186,7 @@ public class DocumentOperations {
       DocumentParser documentParser = BaseStorage.getDocumentParser(payloadParameters.getFileType());
       Document document = documentParser.parse(documentStream);
 
-      document.metadata().putAll(new HashMap<>() {{
-        put("fileType", payloadParameters.getFileType());
-        put("fileName", payloadParameters.getFileName());
-      }});
+      MetadataUtils.addMetadataToDocument(document, payloadParameters.getFileType(), payloadParameters.getFileName());
 
       JSONObject jsonObject = JsonUtils.docToTextSegmentsJson(document,
                                                               segmentationParameters.getMaxSegmentSizeInChars(),
