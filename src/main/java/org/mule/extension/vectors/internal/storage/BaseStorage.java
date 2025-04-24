@@ -64,7 +64,7 @@ public abstract class BaseStorage {
     return storageConnection == null ? Constants.STORAGE_TYPE_LOCAL : storageConnection.getStorageType();
   }
 
-  protected DocumentParser getDocumentParser(String fileType) {
+  public static DocumentParser getDocumentParser(String fileType) {
 
     DocumentParser documentParser = null;
     switch (fileType) {
