@@ -48,7 +48,8 @@ public class OperationValidator {
               Constants.VECTOR_STORE_CHROMA,
               Constants.VECTOR_STORE_PINECONE,
               Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT
+              Constants.VECTOR_STORE_QDRANT,
+              Constants.VECTOR_STORE_EPHEMERAL_FILE
             )));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA,
@@ -61,7 +62,8 @@ public class OperationValidator {
               Constants.VECTOR_STORE_CHROMA,
               Constants.VECTOR_STORE_PINECONE, // Do not support GTE with strings.
               Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT
+              Constants.VECTOR_STORE_QDRANT,
+              Constants.VECTOR_STORE_EPHEMERAL_FILE
             )));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS,
@@ -73,7 +75,8 @@ public class OperationValidator {
               Constants.VECTOR_STORE_MILVUS,
               Constants.VECTOR_STORE_CHROMA,
               // Constants.VECTOR_STORE_PINECONE,
-              Constants.VECTOR_STORE_AI_SEARCH
+              Constants.VECTOR_STORE_AI_SEARCH,
+              Constants.VECTOR_STORE_EPHEMERAL_FILE
             )));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_QUERY_ALL,
@@ -86,7 +89,8 @@ public class OperationValidator {
               Constants.VECTOR_STORE_CHROMA,
               Constants.VECTOR_STORE_PINECONE,
               Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT
+              Constants.VECTOR_STORE_QDRANT,
+              Constants.VECTOR_STORE_EPHEMERAL_FILE
             )));
 
   }
