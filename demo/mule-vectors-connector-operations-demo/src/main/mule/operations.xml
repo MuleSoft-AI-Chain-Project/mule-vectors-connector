@@ -6,6 +6,20 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	<flow name="load-document-from-payload-operation" doc:id="c0e64701-8f33-4398-8138-b88f5a0cbdba" >
+		<choice doc:name="Choice" doc:id="98f0e82e-79e2-4a39-830f-04521dd57292" >
+			<when expression='#[payload.parts.format.content == "binary"]'>
+				<ms-vectors:document-load-from-payload doc:name="[Document] Load from binary payload" doc:id="75d00cce-dc3f-4bff-8410-edeb59ac535d" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" fileName='#[payload.parts.fileName.content default ""]' fileType="#[payload.parts.fileType.content]">
+			<ms-vectors:content><![CDATA[#[payload.parts.documentBinary.content]]]></ms-vectors:content>
+		</ms-vectors:document-load-from-payload>
+			</when>
+			<otherwise >
+				<ms-vectors:document-load-from-payload doc:name="[Document] Load from base64 payload" doc:id="2b743515-a863-450b-a8d0-254919c98656" format="base64" fileType="#[payload.parts.fileType.content]" fileName='#[payload.parts.fileName.content default ""]' maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" >
+					<ms-vectors:content ><![CDATA[#[payload.parts.documentBase64.content]]]></ms-vectors:content>
+				</ms-vectors:document-load-from-payload>
+			</otherwise>
+		</choice>
+	</flow>
 	<flow name="load-single-document-operation" doc:id="4bc1532b-bb2d-452c-8f1a-81c9a696816b" >
 		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="9e0f2c9c-cc1e-4c1e-8447-34a179a3f091" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
 	</flow>

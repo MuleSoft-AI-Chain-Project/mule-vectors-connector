@@ -7,6 +7,9 @@ public class Constants {
 
   private Constants() {}
 
+  public static final String PAYLOAD_CONTENT_TYPE_BASE64 = "base64";
+  public static final String PAYLOAD_CONTENT_TYPE_BINARY = "binary";
+
   public static final String FILE_TYPE_ANY = "any";
   public static final String FILE_TYPE_TEXT = "text";
   public static final String FILE_TYPE_CRAWL = "crawl";

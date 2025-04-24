@@ -14,6 +14,76 @@ types:
       message:
         type: string
         required: true
+        
+/load-document-from-payload:
+  post:
+    description: Loads a single document from the file system.
+    queryParameters:
+      maxSegmentSize:
+        type: integer
+        description: Maximum size of each segment.
+        required: false
+        default: 3000  # Default value
+      maxOverlapSize:
+        type: integer
+        description: Maximum overlap size between segments.
+        required: false
+        default: 300  # Default value
+    body:
+      multipart/form-data:
+        properties:
+          documentBinary:
+            description: The document binary to upload.
+            type: file
+            required: false
+          documentBase64:
+            description: The document base64 to upload.
+            type: string
+            required: false
+          format:
+            description: The document content format
+            type: string
+            enum: [binary, base64]
+            default: binary
+          fileType:
+            description: The document file type
+            type: string
+            enum: [any, text]
+            default: text
+          fileName:
+            description: The document file name
+            type: string
+            default: "example.txt"
+            required: false
+    responses:
+      200:
+        description: Document loaded successfully.
+        body:
+          application/json:
+            example:
+              {
+                "text-segments": [
+                  {
+                    "metadata": {
+                      "index": "0",
+                      "source": "s3://ms-vectors/invoicesample.pdf",
+                      "file_type": "any",
+                      "file_name": "invoicesample.pdf"
+                    },
+                    "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
+                  }
+                ]
+              }
+      400:
+        description: Bad Request (e.g., invalid file path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
 
 /load-document:
   post:
