@@ -53,7 +53,7 @@ payload.payload]]></ee:set-payload>
 	</flow>
 	<flow name="remove-from-store" doc:id="1162301b-2e97-4183-804c-4a2f6f27c0b3" >
 		<choice doc:name="Choice" doc:id="d409615a-3189-4ca9-996c-a0c33635211e" >
-			<when expression="#[payload.ids != null]">
+			<when expression="#[payload.ids != null and sizeOf(payload.ids) &gt; 0]">
 				<ms-vectors:store-remove doc:name="[Store] Remove by Ids" doc:id="156137d3-b051-4e93-86b6-83ff2d69788b" config-ref="AISearch_Store_Config" storeName="demo" ids="#[payload.ids]">
 		</ms-vectors:store-remove>
 			</when>

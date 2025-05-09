@@ -445,6 +445,13 @@ public class StoreOperations {
     } catch (ModuleException me) {
       throw me;
 
+    } catch (IllegalArgumentException e) {
+
+      LOGGER.debug(String.format("No entry to delete from %s was found filtering with the provided matching criteria.", storeName));
+      throw new ModuleException(
+          String.format("No entry to delete from %s was found filtering with the provided matching criteria.", storeName),
+          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE);
+
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while removing embeddings from the store %s", storeName),

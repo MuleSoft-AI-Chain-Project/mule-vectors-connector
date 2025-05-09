@@ -1,12 +1,13 @@
 package org.mule.extension.vectors.internal.store.aisearch;
 
-
 import dev.langchain4j.rag.content.retriever.azure.search.AzureAiSearchFilterMapper;
 import dev.langchain4j.store.embedding.filter.*;
 import dev.langchain4j.store.embedding.filter.comparison.*;
 import dev.langchain4j.store.embedding.filter.logical.And;
 import dev.langchain4j.store.embedding.filter.logical.Not;
 import dev.langchain4j.store.embedding.filter.logical.Or;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -19,20 +20,22 @@ import static java.lang.String.format;
  */
 public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapper {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(VectorsAzureAiSearchFilterMapper.class);
+
     public VectorsAzureAiSearchFilterMapper() {
     }
 
     public String map(Filter filter) {
+
         if (filter == null) return "";
 
-        if (isLogicalOperator(filter)) {
-            return mapLogicalOperator(filter);
-        } else {
-            return mapComparisonFilter(filter);
-        }
+        String azureAISearchFilter = isLogicalOperator(filter) ? mapLogicalOperator(filter) : mapComparisonFilter(filter);
+        LOGGER.debug(String.format("LangChain4j Filter: %s", filter.toString()));
+        LOGGER.debug(String.format("Azure AI Search Filter: %s", azureAISearchFilter));
+        return azureAISearchFilter;
     }
-    
-    
+
+
     private String mapLogicalOperator(Filter operator) {
         if (operator instanceof And) return  format(getLogicalFormat(operator), map(((And) operator).left()), map(((And) operator).right()));
         if (operator instanceof Or) return format(getLogicalFormat(operator), map(((Or) operator).left()), map(((Or) operator).right()));
@@ -66,16 +69,15 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
 
     private String getComparisonFormat(Filter filter) {
         if (filter instanceof IsEqualTo) return "k/value eq '%s'";
-// not use, it raplace by Not ( isEqualTo )
-//        if (filter instanceof IsNotEqualTo) return "k/value ne '%s'";
+        // not use, it raplace by Not ( isEqualTo )
+        //        if (filter instanceof IsNotEqualTo) return "k/value ne '%s'";
         if (filter instanceof IsGreaterThan) return "k/value gt '%s'";
         if (filter instanceof IsGreaterThanOrEqualTo) return "k/value ge '%s'";
         if (filter instanceof IsLessThan) return "k/value lt '%s'";
         if (filter instanceof IsLessThanOrEqualTo) return "k/value le '%s'";
         if (filter instanceof IsIn) return "search.in(k/value, ('%s'))";
-        if (filter instanceof ContainsString) return "search.ismatch('%s', 'metadata/attributes/value')";
-// not use, it raplace by Not ( IsIn )
-//        if (filter instanceof IsNotIn) return "not search.in(k/value, ('%s'))";
+        // not use, it raplace by Not ( IsIn )
+        //        if (filter instanceof IsNotIn) return "not search.in(k/value, ('%s'))";
         throw new UnsupportedOperationException("Unsupported filter type: " + filter.getClass().getName());
     }
 
