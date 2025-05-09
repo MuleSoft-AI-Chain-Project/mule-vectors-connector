@@ -22,6 +22,10 @@ public class MetadataFilterHelper {
   private static final Pattern NUMBER_PATTERN =
       Pattern.compile("^-?\\d+(\\.\\d+)?$");
 
+  private enum OperatorType {
+    AND, OR, NONE
+  }
+
   public static Filter fromExpression(String expression) {
     if (expression == null || expression.trim().isEmpty()) {
       throw new IllegalArgumentException("Expression cannot be null or empty");
@@ -30,23 +34,27 @@ public class MetadataFilterHelper {
     expression = expression.trim();
     LOGGER.debug("Processing expression: " + expression);
 
-    // Handle parentheses (recursive case)
-    if (expression.startsWith("(") && expression.endsWith(")")) {
-      // Verify matching parentheses
-      if (countParentheses(expression) != 0) {
-        throw new IllegalArgumentException("Mismatched parentheses in expression: " + expression);
-      }
-      return fromExpression(expression.substring(1, expression.length() - 1).trim());
+    while (expression.startsWith("(") && expression.endsWith(")") &&
+        isRedundantlyWrapped(expression)) {
+      LOGGER.debug("Stripping redundant outer parentheses from: " + expression);
+      expression = expression.substring(1, expression.length() - 1).trim();
+      LOGGER.debug("Expression after stripping: " + expression);
     }
 
-    // Split by "AND" or "OR" while respecting parentheses
     List<String> tokens = splitExpression(expression);
-    LOGGER.debug("splitExpression tokens: " + tokens);
+    LOGGER.debug("splitExpression tokens for '" + expression + "': " + tokens);
 
     if (tokens.size() > 1) {
+      OperatorType opType = getOperatorTypeForCurrentLevel(expression);
+      boolean currentLevelIsAnd;
 
-      boolean isAnd = (expression.toUpperCase().contains("AND") && expression.toUpperCase().indexOf("AND") < expression.toUpperCase().indexOf("OR")) ||
-          !expression.toUpperCase().contains("OR");
+      if (opType == OperatorType.AND) {
+        currentLevelIsAnd = true;
+      } else if (opType == OperatorType.OR) {
+        currentLevelIsAnd = false;
+      } else {
+        throw new IllegalArgumentException("Could not determine consistent logical operator for expression: " + expression + ". Tokens found: " + tokens.size());
+      }
 
       List<Filter> subFilters = new ArrayList<>();
       for (String token : tokens) {
@@ -55,7 +63,12 @@ public class MetadataFilterHelper {
         }
         subFilters.add(fromExpression(token.trim()));
       }
-      return createCompositeFilter(subFilters, isAnd);
+      return createCompositeFilter(subFilters, currentLevelIsAnd);
+    }
+
+    if (expression.startsWith("(") && expression.endsWith(")") && isRedundantlyWrapped(expression) ) {
+      LOGGER.debug("Processing single token as parenthesized sub-expression: " + expression);
+      return fromExpression(expression.substring(1, expression.length() - 1).trim());
     }
 
     // Parse simple condition
@@ -78,8 +91,8 @@ public class MetadataFilterHelper {
     }
 
     // Handle quoted strings
-    if (valueStr.startsWith("'") && valueStr.endsWith("'") ||
-        valueStr.startsWith("\"") && valueStr.endsWith("\"")) {
+    if ((valueStr.startsWith("'") && valueStr.endsWith("'")) ||
+        (valueStr.startsWith("\"") && valueStr.endsWith("\""))) {
       valueStr = valueStr.substring(1, valueStr.length() - 1);
     }
 
@@ -87,6 +100,47 @@ public class MetadataFilterHelper {
     Object value = parseValue(valueStr);
 
     return createFilter(field, operator, value);
+  }
+
+  private static boolean isRedundantlyWrapped(String expression) {
+    if (!expression.startsWith("(") || !expression.endsWith(")")) {
+      return false;
+    }
+    int balance = 0;
+    for (int i = 0; i < expression.length() -1; i++) {
+      if (expression.charAt(i) == '(') {
+        balance++;
+      } else if (expression.charAt(i) == ')') {
+        balance--;
+      }
+      if (balance == 0 && i < expression.length() - 1) {
+        return false;
+      }
+    }
+    return balance == 1;
+  }
+
+  private static OperatorType getOperatorTypeForCurrentLevel(String expression) {
+    int balance = 0;
+    for (int i = 0; i < expression.length(); i++) {
+      char c = expression.charAt(i);
+      if (c == '(') {
+        balance++;
+      } else if (c == ')') {
+        balance--;
+        if (balance < 0) {
+          throw new IllegalArgumentException("Mismatched parentheses leading to negative balance at index " + i + " in: " + expression);
+        }
+      } else if (balance == 0) {
+        if (checkLogicalOperator(expression, i, "AND")) {
+          return OperatorType.AND;
+        }
+        if (checkLogicalOperator(expression, i, "OR")) {
+          return OperatorType.OR;
+        }
+      }
+    }
+    return OperatorType.NONE;
   }
 
   private static Object parseValue(String value) {
@@ -98,13 +152,15 @@ public class MetadataFilterHelper {
           return Long.parseLong(value);
         }
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid number format: " + value);
+        throw new IllegalArgumentException("Invalid number format for value '" + value + "' that matched number pattern.");
       }
     }
     return value;
   }
 
   private static Filter createFilter(String field, String operator, Object value) {
+
+    String methodName ="";
     try {
       MetadataFilterBuilder filterBuilder = metadataKey(field);
       
@@ -119,11 +175,23 @@ public class MetadataFilterHelper {
         return filterBuilder.containsString(stringValue);
       }
 
-      String methodName = getFilterMethod(operator);
-      Method method = filterBuilder.getClass().getMethod(methodName, Utils.getPrimitiveTypeClass(value));
+      methodName = getFilterMethod(operator);
+      if (value == null) {
+        throw new IllegalArgumentException("Value cannot be null for operator " + operator + " on field " + field);
+      }
+      Method method = filterBuilder.getClass().getMethod(methodName, Utils.getPrimitiveTypeClass(value)); // Line 187 from stack trace
       return (Filter) method.invoke(filterBuilder, value);
 
-    } catch (Exception e) {
+    } catch (NoSuchMethodException nsme) {
+      String typeName = (value != null) ? value.getClass().getName() : "null";
+      // Provide more info about the expected parameter type based on Utils.getPrimitiveTypeClass(value)
+      Class<?> expectedParamType = (value != null) ? Utils.getPrimitiveTypeClass(value) : null;
+      String expectedParamTypeName = (expectedParamType != null) ? expectedParamType.getName() : "unknown (due to null value)";
+
+      LOGGER.error("No such method '" + methodName + "' for value type '" + typeName + "' (resolved to parameter type '" + expectedParamTypeName + "'). Field: " + field + ", Value: " + value, nsme);
+      throw new IllegalArgumentException("Failed to create filter. Method '" + methodName + "' with parameter type '" + expectedParamTypeName + "' not found. Details: " + nsme.getMessage());
+    }
+    catch (Exception e) {
       LOGGER.error("Error creating filter: " + e.getMessage(), e);
       throw new IllegalArgumentException("Failed to create filter: " + e.getMessage());
     }
@@ -152,60 +220,81 @@ public class MetadataFilterHelper {
     List<String> parts = new ArrayList<>();
     StringBuilder current = new StringBuilder();
     int openParens = 0;
-    boolean hasAnd = false;
-    boolean hasOr = false;
+    boolean firstOperatorIsAnd = false;
+    boolean firstOperatorIsOr = false;
+    boolean firstOperatorFound = false;
 
     for (int i = 0; i < expression.length(); i++) {
       char c = expression.charAt(i);
 
-      if (c == '(') openParens++;
-      else if (c == ')') openParens--;
-
-      // Check for logical operators
-      if (openParens == 0) {
-        hasAnd = hasAnd || checkLogicalOperator(expression, i, "AND");
-        hasOr = hasOr || checkLogicalOperator(expression, i, "OR");
-        if(hasAnd && hasOr) {
-          throw new IllegalArgumentException("Mixed AND/OR operations must be explicitly grouped with parentheses. Expression: " + expression);
+      if (c == '(') {
+        openParens++;
+      } else if (c == ')') {
+        openParens--;
+        if (openParens < 0) {
+          throw new IllegalArgumentException("Mismatched parentheses in expression (extra closing): " + expression);
         }
-        if (checkLogicalOperator(expression, i, "AND") ||
-            checkLogicalOperator(expression, i, "OR")) {
+      }
+
+      // Check for operators only if not inside parentheses
+      if (openParens == 0 && (Character.isUpperCase(c) || Character.isLetter(c))) { // Potential start of AND or OR
+        boolean isAndOp = checkLogicalOperator(expression, i, "AND");
+        boolean isOrOp = checkLogicalOperator(expression, i, "OR");
+
+        if (isAndOp || isOrOp) {
+          if (!firstOperatorFound) {
+            firstOperatorIsAnd = isAndOp;
+            firstOperatorIsOr = isOrOp;
+            firstOperatorFound = true;
+          } else {
+            if ((firstOperatorIsAnd && isOrOp) || (firstOperatorIsOr && isAndOp)) {
+              throw new IllegalArgumentException("Mixed AND/OR operations at the same level must be explicitly grouped with parentheses. Expression: " + expression);
+            }
+          }
+
           if (current.length() > 0) {
             parts.add(current.toString().trim());
             current.setLength(0);
           }
-          // Skip the operator
-          i += expression.substring(i).toUpperCase().startsWith("AND") ? 2 : 1;
+          i += (isAndOp ? "AND".length() : "OR".length()) - 1;
           continue;
         }
       }
-
       current.append(c);
+    }
+
+    if (openParens != 0) {
+      throw new IllegalArgumentException("Mismatched parentheses in expression (extra opening): " + expression);
     }
 
     if (current.length() > 0) {
       parts.add(current.toString().trim());
     }
 
+    if (parts.isEmpty() && !expression.trim().isEmpty()) {
+      parts.add(expression.trim()); // Handles case where expression is a single token without operators
+    }
     return parts;
   }
 
   private static boolean checkLogicalOperator(String expression, int index, String operator) {
-    String upperExpression = expression.toUpperCase();
-    return upperExpression.startsWith(operator, index) &&
-        (index == 0 || Character.isWhitespace(expression.charAt(index - 1))) &&
-        (index + operator.length() >= expression.length() ||
-            Character.isWhitespace(expression.charAt(index + operator.length())));
-  }
-
-  private static int countParentheses(String expression) {
-    int count = 0;
-    for (char c : expression.toCharArray()) {
-      if (c == '(') count++;
-      else if (c == ')') count--;
-      if (count < 0) return count; // Closing parenthesis without matching opening
+    if (index + operator.length() > expression.length()) { // Boundary check
+      return false;
     }
-    return count;
+    // Case-insensitive check for the operator itself
+    if (!expression.substring(index, index + operator.length()).equalsIgnoreCase(operator)) {
+      return false;
+    }
+    // Check char before operator (if not start of string)
+    if (index > 0 && !Character.isWhitespace(expression.charAt(index - 1))) {
+      return false;
+    }
+    // Check char after operator (if not end of string)
+    if ((index + operator.length()) < expression.length() &&
+        !Character.isWhitespace(expression.charAt(index + operator.length()))) {
+      return false;
+    }
+    return true;
   }
 
   private static Filter createCompositeFilter(List<Filter> subFilters, boolean isAnd) {
@@ -215,8 +304,15 @@ public class MetadataFilterHelper {
     if (subFilters.size() == 1) {
       return subFilters.get(0);
     }
-    return isAnd ?
-        subFilters.get(0).and(createCompositeFilter(subFilters.subList(1, subFilters.size()), isAnd)) :
-        subFilters.get(0).or(createCompositeFilter(subFilters.subList(1, subFilters.size()), isAnd));
+
+    Filter result = subFilters.get(0);
+    for (int i = 1; i < subFilters.size(); i++) {
+      if (isAnd) {
+        result = result.and(subFilters.get(i));
+      } else {
+        result = result.or(subFilters.get(i));
+      }
+    }
+    return result;
   }
 }
