@@ -109,9 +109,9 @@ public class AzureOpenAIModelConnection implements BaseTextModelConnection {
         throw new RuntimeException("Invalid credentials");
       }
       
-      // 404 with DeploymentNotFound is expected since we're using a fake deployment
+      // Either 404 with DeploymentNotFound or 400 with Bad Request is expected since we're using a fake deployment
       // Any other error indicates a problem
-      if (response.getStatusCode() != 404) {
+      if (response.getStatusCode() != 404 && response.getStatusCode() != 400) {
         String errorMsg = String.format("Unexpected response code: %d", response.getStatusCode());
         LOGGER.error(errorMsg);
         throw new RuntimeException(errorMsg);
