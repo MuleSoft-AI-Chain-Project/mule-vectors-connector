@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.5.4</version>
+    <version>0.5.10</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -81,7 +81,8 @@
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
-		<langchain4jVersion>1.0.0-beta3</langchain4jVersion>
+		<langchain4jVersion>1.0.0</langchain4jVersion>
+		<langchain4jCommunityVersion>1.0.0-beta5</langchain4jCommunityVersion>
 		<mule.sdk.api.version>0.10.3</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
@@ -93,6 +94,20 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -144,7 +159,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-        </dependencies>
+			<dependency>
+				<groupId>dev.langchain4j</groupId>
+				<artifactId>langchain4j-bom</artifactId>
+				<version>${langchain4jVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
     </dependencyManagement>
 
     <dependencies>
@@ -252,7 +274,6 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j</artifactId>
-			<version>${langchain4jVersion}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jsoup</artifactId>
@@ -264,7 +285,6 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-parser-apache-tika</artifactId>
-			<version>${langchain4jVersion}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>log4j-api</artifactId>
@@ -276,28 +296,24 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
-			<version>${langchain4jVersion}</version>
 		</dependency>
 
 		<!-- Storage Dependencies (Optionals) -->
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-azure-storage-blob</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-amazon-s3</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-google-cloud-storage</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -305,63 +321,56 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-chroma</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
-
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-community-alloydb-pg</artifactId>
-			<version>${langchain4jVersion}</version>
-			<scope>provided</scope>
-        </dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-milvus</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-elasticsearch</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-opensearch</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-pgvector</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-pinecone</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-qdrant</artifactId>
-			<version>${langchain4jVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-azure-ai-search</artifactId>
-			<version>${langchain4jVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- LangChain4J Community Modules (not included in BOM) -->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-community-alloydb-pg</artifactId>
+			<version>${langchain4jCommunityVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
