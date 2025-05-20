@@ -76,6 +76,7 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
         if (filter instanceof IsLessThan) return "k/value lt '%s'";
         if (filter instanceof IsLessThanOrEqualTo) return "k/value le '%s'";
         if (filter instanceof IsIn) return "search.in(k/value, ('%s'))";
+        if (filter instanceof ContainsString) return "search.ismatch('%s', 'metadata/attributes/value', 'simple', 'all')";
         // not use, it raplace by Not ( IsIn )
         //        if (filter instanceof IsNotIn) return "not search.in(k/value, ('%s'))";
         throw new UnsupportedOperationException("Unsupported filter type: " + filter.getClass().getName());

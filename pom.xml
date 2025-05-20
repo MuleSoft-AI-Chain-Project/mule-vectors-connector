@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.5.10</version>
+    <version>0.5.11</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -101,10 +101,13 @@
 				<executions>
 					<execution>
 						<id>attach-sources</id>
-						<phase>verify</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
+						<phase>verify</phase>
+						<configuration>
+							<classifier>mule-plugin-sources</classifier>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

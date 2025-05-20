@@ -217,64 +217,74 @@ public class MetadataFilterHelper {
   }
 
   private static List<String> splitExpression(String expression) {
-    List<String> parts = new ArrayList<>();
-    StringBuilder current = new StringBuilder();
-    int openParens = 0;
-    boolean firstOperatorIsAnd = false;
-    boolean firstOperatorIsOr = false;
-    boolean firstOperatorFound = false;
+      List<String> parts = new ArrayList<>();
+      StringBuilder current = new StringBuilder();
+      int openParens = 0;
+      boolean firstOperatorIsAnd = false;
+      boolean firstOperatorIsOr = false;
+      boolean firstOperatorFound = false;
+      boolean inSingleQuote = false;
+      boolean inDoubleQuote = false;
 
-    for (int i = 0; i < expression.length(); i++) {
-      char c = expression.charAt(i);
+      for (int i = 0; i < expression.length(); i++) {
+          char c = expression.charAt(i);
 
-      if (c == '(') {
-        openParens++;
-      } else if (c == ')') {
-        openParens--;
-        if (openParens < 0) {
-          throw new IllegalArgumentException("Mismatched parentheses in expression (extra closing): " + expression);
-        }
-      }
-
-      // Check for operators only if not inside parentheses
-      if (openParens == 0 && (Character.isUpperCase(c) || Character.isLetter(c))) { // Potential start of AND or OR
-        boolean isAndOp = checkLogicalOperator(expression, i, "AND");
-        boolean isOrOp = checkLogicalOperator(expression, i, "OR");
-
-        if (isAndOp || isOrOp) {
-          if (!firstOperatorFound) {
-            firstOperatorIsAnd = isAndOp;
-            firstOperatorIsOr = isOrOp;
-            firstOperatorFound = true;
-          } else {
-            if ((firstOperatorIsAnd && isOrOp) || (firstOperatorIsOr && isAndOp)) {
-              throw new IllegalArgumentException("Mixed AND/OR operations at the same level must be explicitly grouped with parentheses. Expression: " + expression);
-            }
+          if (c == '\'' && !inDoubleQuote) {
+              inSingleQuote = !inSingleQuote;
+          } else if (c == '"' && !inSingleQuote) {
+              inDoubleQuote = !inDoubleQuote;
           }
 
-          if (current.length() > 0) {
-            parts.add(current.toString().trim());
-            current.setLength(0);
+          if (!inSingleQuote && !inDoubleQuote) {
+              if (c == '(') {
+                  openParens++;
+              } else if (c == ')') {
+                  openParens--;
+                  if (openParens < 0) {
+                      throw new IllegalArgumentException("Mismatched parentheses in expression (extra closing): " + expression);
+                  }
+              }
+
+              // Check for operators only if not inside parentheses or quotes
+              if (openParens == 0 && (Character.isUpperCase(c) || Character.isLetter(c))) {
+                  boolean isAndOp = checkLogicalOperator(expression, i, "AND");
+                  boolean isOrOp = checkLogicalOperator(expression, i, "OR");
+
+                  if (isAndOp || isOrOp) {
+                      if (!firstOperatorFound) {
+                          firstOperatorIsAnd = isAndOp;
+                          firstOperatorIsOr = isOrOp;
+                          firstOperatorFound = true;
+                      } else {
+                          if ((firstOperatorIsAnd && isOrOp) || (firstOperatorIsOr && isAndOp)) {
+                              throw new IllegalArgumentException("Mixed AND/OR operations at the same level must be explicitly grouped with parentheses. Expression: " + expression);
+                          }
+                      }
+
+                      if (current.length() > 0) {
+                          parts.add(current.toString().trim());
+                          current.setLength(0);
+                      }
+                      i += (isAndOp ? "AND".length() : "OR".length()) - 1;
+                      continue;
+                  }
+              }
           }
-          i += (isAndOp ? "AND".length() : "OR".length()) - 1;
-          continue;
-        }
+          current.append(c);
       }
-      current.append(c);
-    }
 
-    if (openParens != 0) {
-      throw new IllegalArgumentException("Mismatched parentheses in expression (extra opening): " + expression);
-    }
+      if (openParens != 0) {
+          throw new IllegalArgumentException("Mismatched parentheses in expression (extra opening): " + expression);
+      }
 
-    if (current.length() > 0) {
-      parts.add(current.toString().trim());
-    }
+      if (current.length() > 0) {
+          parts.add(current.toString().trim());
+      }
 
-    if (parts.isEmpty() && !expression.trim().isEmpty()) {
-      parts.add(expression.trim()); // Handles case where expression is a single token without operators
-    }
-    return parts;
+      if (parts.isEmpty() && !expression.trim().isEmpty()) {
+          parts.add(expression.trim());
+      }
+      return parts;
   }
 
   private static boolean checkLogicalOperator(String expression, int index, String operator) {
