@@ -49,6 +49,7 @@ public class Constants {
   public static final String VECTOR_STORE_ALLOYDB = "ALLOYDB";
   public static final String VECTOR_STORE_OPENSEARCH = "OPENSEARCH";
   public static final String VECTOR_STORE_MILVUS = "MILVUS";
+  public static final String VECTOR_STORE_MONGODB_ATLAS = "MONGODB_ATLAS";
   public static final String VECTOR_STORE_CHROMA = "CHROMA";
   public static final String VECTOR_STORE_PINECONE = "PINECONE";
   public static final String VECTOR_STORE_AI_SEARCH = "AI_SEARCH";
