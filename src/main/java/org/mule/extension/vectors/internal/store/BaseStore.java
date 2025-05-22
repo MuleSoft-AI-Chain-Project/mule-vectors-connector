@@ -13,6 +13,7 @@ import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreCo
 import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
@@ -26,6 +27,7 @@ import org.mule.extension.vectors.internal.store.chroma.ChromaStore;
 import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStore;
 import org.mule.extension.vectors.internal.store.ephemeralfile.EphemeralFileStore;
 import org.mule.extension.vectors.internal.store.milvus.MilvusStore;
+import org.mule.extension.vectors.internal.store.mongodbatlas.MongoDBAtlasStore;
 import org.mule.extension.vectors.internal.store.opensearch.OpenSearchStore;
 import org.mule.extension.vectors.internal.store.pgvector.PGVectorStore;
 import org.mule.extension.vectors.internal.store.pinecone.PineconeStore;
@@ -286,6 +288,11 @@ public class BaseStore {
         case Constants.VECTOR_STORE_MILVUS:
 
           baseStore = new MilvusStore(storeConfiguration, (MilvusStoreConnection)storeConnection, storeName, queryParams, dimension);
+          break;
+
+        case Constants.VECTOR_STORE_MONGODB_ATLAS:
+
+          baseStore = new MongoDBAtlasStore(storeConfiguration, (MongoDBAtlasStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
           break;
 
         case Constants.VECTOR_STORE_PGVECTOR:
