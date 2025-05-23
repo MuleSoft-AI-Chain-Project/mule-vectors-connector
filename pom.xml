@@ -72,24 +72,24 @@
 	<parent>
 		<groupId>org.mule.extensions</groupId>
 		<artifactId>mule-modules-parent</artifactId>
-		<version>1.9.0</version>
+		<version>1.9.4</version>
 	</parent>
 
     <properties>
-		<skipVerifications>false</skipVerifications>
-        <muleJavaEeBomVersion>4.9.0</muleJavaEeBomVersion>
+		<runtimeProduct>MULE_EE</runtimeProduct>
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
 		<langchain4jBomVersion>1.0.1</langchain4jBomVersion>
 		<langchain4jCommunityVersion>1.0.1-beta6</langchain4jCommunityVersion>
-		<mule.sdk.api.version>0.10.3</mule.sdk.api.version>
+		<mule.sdk.api.version>0.11.4</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
+		<munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
+		<munit.version>3.4.0</munit.version>
 		<jacoco.version>0.8.12</jacoco.version>
 		<maven.surefire.version>2.22.2</maven.surefire.version>
-		<munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
-		<munit.version>3.3.1</munit.version>
+		<skip.unit.tests>false</skip.unit.tests>
     </properties>
 
 	<build>
@@ -113,13 +113,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.mule</groupId>
-                <artifactId>mule-javaee-runtime-bom</artifactId>
-                <version>${muleJavaEeBomVersion}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 			<dependency>
 				<groupId>dev.langchain4j</groupId>
 				<artifactId>langchain4j-bom</artifactId>
@@ -138,26 +131,6 @@
 			<groupId>org.mule.sdk</groupId>
 			<artifactId>mule-sdk-api</artifactId>
 			<version>${mule.sdk.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.mulesoft.munit</groupId>
-			<artifactId>munit-runner</artifactId>
-			<version>3.2.1</version>
-			<classifier>mule-plugin</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mulesoft.munit</groupId>
-			<artifactId>munit-tools</artifactId>
-			<version>3.2.1</version>
-			<classifier>mule-plugin</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.weave</groupId>
-			<artifactId>assertions</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
 		</dependency>
 
 		<!-- Other Libraries Required Dependencies -->
