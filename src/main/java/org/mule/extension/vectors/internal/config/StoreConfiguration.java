@@ -11,6 +11,7 @@ import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearc
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnectionProvider;
+import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionProvider;
 import org.mule.extension.vectors.internal.operation.StoreOperations;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
@@ -27,6 +28,7 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
     PGVectorStoreConnectionProvider.class,
     PineconeStoreConnectionProvider.class,
     QdrantStoreConnectionProvider.class,
+    WeaviateStoreConnectionProvider.class,
     EphemeralFileStoreConnectionProvider.class})
 @Operations({StoreOperations.class})
 public class StoreConfiguration {
