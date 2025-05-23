@@ -403,8 +403,6 @@ public class StoreOperations {
     try {
       OperationValidator.validateOperationType(
           Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS, storeConnection.getVectorStore());
-      OperationValidator.validateOperationType(
-          Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
 
       removeFilterParams.validate();
 
@@ -423,10 +421,16 @@ public class StoreOperations {
         embeddingStore.removeAll(removeFilterParams.getIds());
       } else if(removeFilterParams.isConditionSet()) {
 
+        OperationValidator.validateOperationType(
+            Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
+
         LOGGER.info(String.format("Remove by metadata condition %s from store/collection %s", removeFilterParams.getCondition(), storeName));
         Filter filter = removeFilterParams.buildMetadataFilter();
         embeddingStore.removeAll(filter);
       } else {
+
+        OperationValidator.validateOperationType(
+            Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS_ALL, storeConnection.getVectorStore());
 
         LOGGER.info(String.format("Remove all from store/collection %s", storeName));
         embeddingStore.removeAll();

@@ -13,10 +13,12 @@ import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreCo
 import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
@@ -26,10 +28,12 @@ import org.mule.extension.vectors.internal.store.chroma.ChromaStore;
 import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStore;
 import org.mule.extension.vectors.internal.store.ephemeralfile.EphemeralFileStore;
 import org.mule.extension.vectors.internal.store.milvus.MilvusStore;
+import org.mule.extension.vectors.internal.store.mongodbatlas.MongoDBAtlasStore;
 import org.mule.extension.vectors.internal.store.opensearch.OpenSearchStore;
 import org.mule.extension.vectors.internal.store.pgvector.PGVectorStore;
 import org.mule.extension.vectors.internal.store.pinecone.PineconeStore;
 import org.mule.extension.vectors.internal.store.qdrant.QdrantStore;
+import org.mule.extension.vectors.internal.store.weaviate.WeaviateStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -288,6 +292,11 @@ public class BaseStore {
           baseStore = new MilvusStore(storeConfiguration, (MilvusStoreConnection)storeConnection, storeName, queryParams, dimension);
           break;
 
+        case Constants.VECTOR_STORE_MONGODB_ATLAS:
+
+          baseStore = new MongoDBAtlasStore(storeConfiguration, (MongoDBAtlasStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
+          break;
+
         case Constants.VECTOR_STORE_PGVECTOR:
 
           baseStore = new PGVectorStore(storeConfiguration, (PGVectorStoreConnection)storeConnection, storeName, queryParams, dimension, createStore);
@@ -326,6 +335,11 @@ public class BaseStore {
         case Constants.VECTOR_STORE_ALLOYDB:
           
           baseStore = new AlloyDBStore(storeConfiguration, (AlloyDBStoreConnection)storeConnection, storeName, queryParams, dimension, createStore);
+          break;
+
+        case Constants.VECTOR_STORE_WEAVIATE:
+
+          baseStore = new WeaviateStore(storeConfiguration, (WeaviateStoreConnection) storeConnection, storeName, queryParams, dimension);
           break;
 
         case Constants.VECTOR_STORE_EPHEMERAL_FILE:

@@ -49,10 +49,12 @@ public class Constants {
   public static final String VECTOR_STORE_ALLOYDB = "ALLOYDB";
   public static final String VECTOR_STORE_OPENSEARCH = "OPENSEARCH";
   public static final String VECTOR_STORE_MILVUS = "MILVUS";
+  public static final String VECTOR_STORE_MONGODB_ATLAS = "MONGODB_ATLAS";
   public static final String VECTOR_STORE_CHROMA = "CHROMA";
   public static final String VECTOR_STORE_PINECONE = "PINECONE";
   public static final String VECTOR_STORE_AI_SEARCH = "AI_SEARCH";
   public static final String VECTOR_STORE_QDRANT = "QDRANT";
+  public static final String VECTOR_STORE_WEAVIATE = "WEAVIATE";
   public static final String VECTOR_STORE_EPHEMERAL_FILE = "EPHEMERAL_FILE";
 
   public static final String STORE_SCHEMA_METADATA_FIELD_NAME = "metadata";
@@ -82,6 +84,7 @@ public class Constants {
   public static final String STORE_OPERATION_TYPE_STORE_METADATA = "STORE_METADATA";
   public static final String STORE_OPERATION_TYPE_FILTER_BY_METADATA = "FILTER_BY_METADATA";
   public static final String STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS = "REMOVE_EMBEDDINGS";
+  public static final String STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS_ALL = "REMOVE_ALL_EMBEDDINGS";
   public static final String STORE_OPERATION_TYPE_QUERY_ALL = "QUERY_ALL";
 
   public static final String JSON_KEY_SOURCES = "sources";
