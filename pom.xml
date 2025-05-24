@@ -169,7 +169,7 @@
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
 			<version>1.65.1</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -236,86 +236,86 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-azure-storage-blob</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-amazon-s3</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-loader-google-cloud-storage</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Vector Store Dependencies (Optionals) -->
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-chroma</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-milvus</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-elasticsearch</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-opensearch</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-pgvector</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-pinecone</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-qdrant</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-azure-ai-search</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-mongodb-atlas</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
 			<version>5.4.0</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-weaviate</artifactId>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- LangChain4J Community Modules (not included in BOM) -->
@@ -323,7 +323,7 @@
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-community-alloydb-pg</artifactId>
 			<version>${langchain4jCommunityVersion}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>

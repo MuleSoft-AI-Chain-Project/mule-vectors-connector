@@ -7,8 +7,37 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 			<munit:parameterization name="config-storage-local" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="StorageLocalConfig" />
-					<munit:parameter propertyName="contextFilePath" value="/document/Sample.pdf" />
-					<munit:parameter propertyName="contextFolderPath" value="/documents" />
+					<munit:parameter propertyName="contextDocumentPath" value="/munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="/munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="/munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="/munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-amazon-s3" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageS3Config" />
+					<munit:parameter propertyName="contextDocumentPath" value="s3://munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="s3://munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="s3://munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="s3://munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-azure-blob" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageAzureBlobConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-google-storage" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageGCSConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="gs://munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="gs://munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="gs://munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="gs://munit-image-samples" />
 				</munit:parameters>
 			</munit:parameterization>
 		</munit:parameterizations>
@@ -24,7 +53,7 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		</munit:validation>
 	</munit:test>
 	<sub-flow name="document-operations-load-single" doc:id="b5a7f13b-138a-474f-83f0-c3cc402d0639" >
-		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="d9c193cd-f918-4d85-aa09-b35a992d907e" config-ref="${config}" contextPath="${contextFilePath}" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" fileType="any"/>
+		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="d9c193cd-f918-4d85-aa09-b35a992d907e" config-ref="${config}" contextPath="${contextDocumentPath}" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" fileType="any"/>
 	</sub-flow>
 	<sub-flow name="document-operations-validate-textSegments" doc:id="f553eeb7-abe8-470d-9560-2a8ff7c58153" >
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="5afc51b9-52b0-4bf9-a9fa-70829958c2b8" message="Payload is null" expression="#[vars.textSegments]" is="#[MunitTools::notNullValue()]" />
