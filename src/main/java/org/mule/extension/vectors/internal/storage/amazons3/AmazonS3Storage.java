@@ -13,8 +13,6 @@ import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.regions.Region;
-import dev.langchain4j.data.document.loader.amazon.s3.AmazonS3DocumentLoader;
-import dev.langchain4j.data.document.loader.amazon.s3.AwsCredentials;
 import dev.langchain4j.data.image.Image;
 
 import java.net.URLEncoder;
@@ -38,21 +36,6 @@ public class AmazonS3Storage extends BaseStorage {
     private final String awsRegion;
 
     private String continuationToken = null;
-
-    private AwsCredentials getCredentials() {
-        return new AwsCredentials(awsAccessKeyId, awsSecretAccessKey);
-    }
-
-    private AmazonS3DocumentLoader loader;
-
-    private AmazonS3DocumentLoader getLoader() {
-
-        if(loader == null) {
-
-            loader = new AmazonS3DocumentLoader(s3Client);
-        }
-        return loader;
-    }
 
     private S3Client s3Client;
 
@@ -118,7 +101,7 @@ public class AmazonS3Storage extends BaseStorage {
     public Document getSingleDocument() {
 
         LOGGER.debug("S3 URL: " + contextPath);
-        Document document = getLoader().loadDocument(getAWSS3Bucket(), getAWSS3ObjectKey(), documentParser);
+        Document document = ((AmazonS3StorageConnection)storageConnection).loadDocument(getAWSS3Bucket(), getAWSS3ObjectKey(), documentParser);
         MetadataUtils.addMetadataToDocument(document, fileType, getAWSS3ObjectKey());
         return document;
     }
@@ -238,7 +221,7 @@ public class AmazonS3Storage extends BaseStorage {
             LOGGER.debug("AWS S3 Object Key: " + object.key());
             Document document;
             try {
-                document = getLoader().loadDocument(getAWSS3Bucket(), object.key(), documentParser);
+                document = ((AmazonS3StorageConnection)storageConnection).loadDocument(getAWSS3Bucket(), object.key(), documentParser);
             } catch(BlankDocumentException bde) {
 
                 LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));

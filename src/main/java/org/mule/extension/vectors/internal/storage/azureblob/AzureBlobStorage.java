@@ -9,7 +9,6 @@ import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.common.StorageSharedKeyCredential;
 import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.loader.azure.storage.blob.AzureBlobStorageDocumentLoader;
 import dev.langchain4j.data.image.Image;
 
 import java.io.ByteArrayOutputStream;
@@ -54,17 +53,6 @@ public class AzureBlobStorage extends BaseStorage {
                 .buildClient();
         }
         return this.blobServiceClient;
-    }
-
-    private AzureBlobStorageDocumentLoader loader;
-
-    private AzureBlobStorageDocumentLoader getLoader() {
-
-        if(this.loader == null) {
-
-            this.loader = new AzureBlobStorageDocumentLoader(getBlobServiceClient());
-        }
-        return this.loader;
     }
 
     private Iterator<BlobItem> blobIterator;
@@ -124,7 +112,7 @@ public class AzureBlobStorage extends BaseStorage {
         String containerName = getContainerName();
         String blobName = getBlobName();
         LOGGER.debug("Blob name: " + blobName);
-        Document document = getLoader().loadDocument(containerName, blobName, documentParser);
+        Document document = ((AzureBlobStorageConnection)storageConnection).loadDocument(containerName, blobName, documentParser);
         MetadataUtils.addMetadataToDocument(document, fileType, blobName);
         return document;
     }
@@ -220,7 +208,7 @@ public class AzureBlobStorage extends BaseStorage {
             LOGGER.debug("Blob name: " + blobItem.getName());
             Document document;
             try {
-                document = getLoader().loadDocument(contextPath, blobItem.getName(), documentParser);
+                document = ((AzureBlobStorageConnection)storageConnection).loadDocument(contextPath, blobItem.getName(), documentParser);
             } catch(BlankDocumentException bde) {
 
                 LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
