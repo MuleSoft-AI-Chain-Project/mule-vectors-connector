@@ -5,12 +5,21 @@ import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnect
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 @Alias("azureBlob")
 @DisplayName("Azure Blob")
+@ExternalLib(name = "Azure Blob Storage",
+    type=DEPENDENCY,
+    description = "Azure Blob Storage",
+    nameRegexpMatcher = "(.*)\\.jar",
+    requiredClassName = "com.azure.storage.blob.BlobClient",
+    coordinates = "com.azure:azure-storage-blob:12.30.0")
 public class AzureBlobStorageConnectionProvider extends BaseStorageConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
