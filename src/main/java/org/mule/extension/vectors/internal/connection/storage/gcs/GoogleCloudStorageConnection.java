@@ -1,13 +1,21 @@
 package org.mule.extension.vectors.internal.connection.storage.gcs;
 
 import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import dev.langchain4j.data.document.BlankDocumentException;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DocumentParser;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+
+import static java.lang.String.format;
 
 public class GoogleCloudStorageConnection implements BaseStorageConnection {
 
@@ -76,7 +84,8 @@ public class GoogleCloudStorageConnection implements BaseStorageConnection {
     @Override
     public void connect() throws ConnectionException {
         try {
-            ServiceAccountCredentials serviceAccountCredentials = ServiceAccountCredentials.fromStream(new ByteArrayInputStream(buildJsonCredentials().getBytes()));
+            ServiceAccountCredentials
+                serviceAccountCredentials = ServiceAccountCredentials.fromStream(new ByteArrayInputStream(buildJsonCredentials().getBytes()));
             this.storageService = StorageOptions.newBuilder()
                     .setCredentials(serviceAccountCredentials)
                     .build()
@@ -101,5 +110,30 @@ public class GoogleCloudStorageConnection implements BaseStorageConnection {
     public boolean isValid() {
         this.storageService.list();
         return true;
+    }
+
+    public Document loadDocument(String bucket, String objectName, DocumentParser parser) {
+        Blob blob = this.storageService.get(bucket, objectName);
+        if (blob == null) {
+            throw new IllegalArgumentException("Object gs://" + bucket + "/" + objectName + " couldn't be found.");
+        }
+        try {
+
+            InputStream inputStream = Channels.newInputStream(blob.reader());
+            Document document = parser.parse(inputStream);
+            document.metadata().put("source", "gs://" + blob.getBucket() + "/" + blob.getName());
+            document.metadata().put("bucket", blob.getBucket());
+            document.metadata().put("name", blob.getName());
+            document.metadata().put("contentType", blob.getContentType());
+            document.metadata().put("size", blob.getSize());
+            document.metadata().put("createTime", blob.getCreateTimeOffsetDateTime().toString());
+            document.metadata().put("updateTime", blob.getUpdateTimeOffsetDateTime().toString());
+            return document;
+
+        } catch (BlankDocumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load document", e);
+        }
     }
 }

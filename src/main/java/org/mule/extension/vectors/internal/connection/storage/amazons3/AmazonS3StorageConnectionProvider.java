@@ -5,12 +5,22 @@ import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnect
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
+
+import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 @Alias("amazonS3")
 @DisplayName("Amazon S3")
+@ExternalLib(name = "Amazon AWS SDK",
+    type=DEPENDENCY,
+    description = "Amazon AWS SDK",
+    nameRegexpMatcher = "(.*)\\.jar",
+    requiredClassName = "software.amazon.awssdk.services.s3.S3Client",
+    coordinates = "software.amazon.awssdk:s3:2.31.6")
 public class AmazonS3StorageConnectionProvider extends BaseStorageConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
