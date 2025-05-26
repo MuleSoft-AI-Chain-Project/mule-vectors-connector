@@ -14,7 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<app.runtime>4.9.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
-		<langchain4jVersion>1.0.1-beta6</langchain4jVersion>
+		<langchain4jVersion>1.0.0-beta6</langchain4jVersion>
 	</properties>
 
 	<build>
@@ -35,9 +35,6 @@
 							<groupId>io.github.mulesoft-ai-chain-project</groupId>
 							<artifactId>mule4-vectors-connector</artifactId>
 							<additionalDependencies>
-								<!-- Storage Dependencies (Optionals) -->
-								
-								<!-- Vector Store Dependencies (Optionals) -->
 								<!-- BEGIN: Azure AI Search Dependency -->
 								<dependency>
 									<groupId>dev.langchain4j</groupId>
@@ -69,7 +66,7 @@
 		<dependency>
 			<groupId>io.github.mulesoft-ai-chain-project</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.5.30</version>
+			<version>0.5.40</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
