@@ -103,6 +103,10 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
     }
   }
 
+  public int getBatchSize() {
+    return batchSize;
+  }
+
   private String getAccessToken() throws ConnectionException{
 
     try {

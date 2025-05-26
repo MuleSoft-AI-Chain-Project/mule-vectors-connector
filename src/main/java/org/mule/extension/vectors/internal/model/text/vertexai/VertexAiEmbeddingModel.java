@@ -43,8 +43,13 @@ public class VertexAiEmbeddingModel extends DimensionAwareEmbeddingModel {
           .map(TextSegment::text)
           .collect(Collectors.toList());
 
-      String result = (String) connection.generateTextEmbeddings(texts, modelName);
-      return Response.from(parseEmbeddings(result));
+      List<Embedding> allEmbeddings = new ArrayList<>();
+      for (int i = 0; i < texts.size(); i += connection.getBatchSize()) {
+        List<String> batch = texts.subList(i, Math.min(i + connection.getBatchSize(), texts.size()));
+        String result = (String) connection.generateTextEmbeddings(batch, modelName);
+        allEmbeddings.addAll(parseEmbeddings(result));
+      }
+      return Response.from(allEmbeddings);
     } catch (Exception e) {
       LOGGER.error("Error generating embeddings", e);
       throw new RuntimeException("Failed to generate embeddings", e);
