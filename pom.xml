@@ -109,6 +109,22 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<sharedLibraries>
+						<sharedLibrary>
+							<groupId>software.amazon.awssdk</groupId>
+							<artifactId>s3</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.azure</groupId>
+							<artifactId>azure-storage-blob</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.google.cloud</groupId>
+							<artifactId>google-cloud-storage</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>com.mulesoft.munit</groupId>
