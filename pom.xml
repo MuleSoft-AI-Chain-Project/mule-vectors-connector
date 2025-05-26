@@ -281,8 +281,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-loader-google-cloud-storage</artifactId>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>2.43.0</version>
 			<scope>provided</scope>
 		</dependency>
 
