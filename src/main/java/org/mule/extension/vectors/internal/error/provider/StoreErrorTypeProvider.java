@@ -21,6 +21,7 @@ public class StoreErrorTypeProvider implements ErrorTypeProvider {
     return unmodifiableSet(new HashSet<>(asList(
         INVALID_PARAMETERS_ERROR,
         STORE_OPERATIONS_FAILURE,
-        STORE_SERVICES_FAILURE)));
+        STORE_SERVICES_FAILURE,
+        STORE_UNSUPPORTED_OPERATION)));
   }
 }

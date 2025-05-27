@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<munit:config name="document-operations.xml" minMuleVersion="4.9.0">
+		<munit:parameterizations >
+			<munit:parameterization name="config-storage-local" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageLocalConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="/munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="/munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="/munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="/munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-amazon-s3" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageS3Config" />
+					<munit:parameter propertyName="contextDocumentPath" value="s3://munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="s3://munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="s3://munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="s3://munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-azure-blob" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageAzureBlobConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-google-storage" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageGCSConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="gs://munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="gs://munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="gs://munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="gs://munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test name="document-operations-load-single" doc:id="822bc583-18e8-474c-941e-c0bf47c4096f" >
+		<munit:execution >
+			<flow-ref doc:name="document-operations-load-single-exec" doc:id="d109a37d-07b4-49b1-8c7d-ad1a12f73c54" name="document-operations-load-single-exec"/>
+			<logger level="INFO" doc:name="Log payload" doc:id="3798c06c-b490-4c71-9eb8-4b1ba2f10b7e" message="#[payload]"/>
+		</munit:execution>
+		<munit:validation >
+			<set-variable value="#[payload]" doc:name="textSegments" doc:id="fbec44dd-1bd4-423c-afe4-587837dc653c" variableName="textSegments"/>
+			<flow-ref doc:name="document-operations-validate-textSegments" doc:id="099213d9-dc4a-4c40-8983-069271528826" name="document-operations-validate-textSegments"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="document-operations-load-list" doc:id="a617fbce-41e8-4866-a4aa-414b2c92f408">
+		<munit:execution>
+			<flow-ref doc:name="document-operations-load-list-exec" doc:id="5f1d0297-f436-4751-b390-a72e004a1ce4" name="document-operations-load-list-exec" />
+			<logger level="INFO" doc:name="Log payload" doc:id="90726ae2-e9a8-486a-9424-790fa8c16f09" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<set-variable value="#[payload[0]]" doc:name="textSegments" doc:id="4c829f3f-a016-41fb-88d9-8ef350ae704e" variableName="textSegments" />
+			<flow-ref doc:name="document-operations-validate-textSegments" doc:id="e259097f-df78-49c1-a9c9-2af6ee2c0b76" name="document-operations-validate-textSegments" />
+		</munit:validation>
+	</munit:test>
+	<sub-flow name="document-operations-validate-textSegments" doc:id="f553eeb7-abe8-470d-9560-2a8ff7c58153" >
+		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="5afc51b9-52b0-4bf9-a9fa-70829958c2b8" message="Payload is null" expression="#[vars.textSegments]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that text-segments is not empty" doc:id="2262c660-2c7a-442b-8da8-fe31c49ffaaf" message="text-segments is empty" expression='#[vars.textSegments."text-segments"]' is="#[MunitTools::not(MunitTools::isEmpty())]" />
+		<munit-tools:assert-equals doc:name="Assert has 3 text segement" doc:id="887c741c-f9a6-4a7d-93e0-d84b98758926" actual='#[sizeOf(vars.textSegments."text-segments")]' expected="#[4]" message="The file has not been splitted into 4  segments" />
+		<munit-tools:assert-that doc:name="Assert that 1st text segment contains title" doc:id="ca520b88-8050-4be7-9a1b-16cd237edc1b" is='#[MunitTools::containsString("Sample PDF")]' expression='#[vars.textSegments."text-segments"[0].text]' message="The 1st text segment is not reflecting the file content"/>
+		<munit-tools:assert-that doc:name="Assert that metadata field contains valid index attribute" doc:id="5e9c6306-7b53-41aa-88f2-5097b45f940e" is='#[MunitTools::containsString("2")]' expression='#[vars.textSegments."text-segments"[2].metadata.index]' message=" Metadata field doesn't contain index attribute"/>
+	</sub-flow>
+
+</mule>
