@@ -57,6 +57,15 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
     @Optional(defaultValue = "60000")
     private long totalTimeout;
 
+    @Parameter
+    @DisplayName("Batch size")
+    @Summary("Number of input texts sent in a single call")
+    @Expression(ExpressionSupport.SUPPORTED)
+    @Placement(order = 2, tab = Placement.ADVANCED_TAB)
+    @Example("10")
+    @Optional(defaultValue = "10")
+    private int batchSize;
+
     public String getProjectId() {
         return projectId;
     }
@@ -83,6 +92,8 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
         return totalTimeout;
     }
 
+    public int getBatchSize() { return batchSize; }
+
     @Override
     public String toString() {
         return "VertexAIModelConnectionParameters{" +
@@ -93,6 +104,7 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
                 ", privateKeyId='" + privateKeyId + '\'' +
                 //", privateKey='" + privateKey + '\'' +
                 ", totalTimeout=" + totalTimeout +
+                ", batchSize=" + batchSize +
                 '}';
     }
 }
