@@ -46,7 +46,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<munit:test name="document-operations-load-single" doc:id="822bc583-18e8-474c-941e-c0bf47c4096f" >
 		<munit:execution >
 			<flow-ref doc:name="document-operations-load-single-exec" doc:id="d109a37d-07b4-49b1-8c7d-ad1a12f73c54" name="document-operations-load-single-exec"/>
-			<logger level="INFO" doc:name="Log payload" doc:id="3798c06c-b490-4c71-9eb8-4b1ba2f10b7e" message="#[payload]"/>
 		</munit:execution>
 		<munit:validation >
 			<set-variable value="#[payload]" doc:name="textSegments" doc:id="fbec44dd-1bd4-423c-afe4-587837dc653c" variableName="textSegments"/>
@@ -56,7 +55,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<munit:test name="document-operations-load-list" doc:id="a617fbce-41e8-4866-a4aa-414b2c92f408">
 		<munit:execution>
 			<flow-ref doc:name="document-operations-load-list-exec" doc:id="5f1d0297-f436-4751-b390-a72e004a1ce4" name="document-operations-load-list-exec" />
-			<logger level="INFO" doc:name="Log payload" doc:id="90726ae2-e9a8-486a-9424-790fa8c16f09" message="#[payload]" />
 		</munit:execution>
 		<munit:validation>
 			<set-variable value="#[payload[0]]" doc:name="textSegments" doc:id="4c829f3f-a016-41fb-88d9-8ef350ae704e" variableName="textSegments" />
