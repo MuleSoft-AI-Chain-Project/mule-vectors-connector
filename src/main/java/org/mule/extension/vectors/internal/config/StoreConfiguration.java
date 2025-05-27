@@ -34,12 +34,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     WeaviateStoreConnectionProvider.class,
     EphemeralFileStoreConnectionProvider.class})
 @Operations({StoreOperations.class})
-@ExternalLib(name = "LangChain4J Core",
-    type=DEPENDENCY,
-    description = "LangChain4J Core",
-    nameRegexpMatcher = "(.*)\\.jar",
-    requiredClassName = "dev.langchain4j.store.embedding.EmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-core:1.0.1")
 public class StoreConfiguration {
 
 }
