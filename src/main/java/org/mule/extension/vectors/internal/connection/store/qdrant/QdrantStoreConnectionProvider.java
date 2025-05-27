@@ -5,14 +5,23 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 @Alias("qdrant")
 @DisplayName("Qdrant")
+@ExternalLib(name = "LangChain4J Qdrant",
+    type=DEPENDENCY,
+    description = "LangChain4J Qdrant",
+    nameRegexpMatcher = "(.*)\\.jar",
+    requiredClassName = "dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore",
+    coordinates = "dev.langchain4j:langchain4j-qdrant:1.0.1-beta6")
 public class QdrantStoreConnectionProvider  extends BaseStoreConnectionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStoreConnectionProvider.class);

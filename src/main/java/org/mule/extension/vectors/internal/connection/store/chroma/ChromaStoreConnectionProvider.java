@@ -5,14 +5,23 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 @Alias("chroma")
 @DisplayName("Chroma")
+@ExternalLib(name = "LangChain4J Chroma",
+    type=DEPENDENCY,
+    description = "LangChain4J Chroma",
+    nameRegexpMatcher = "(.*)\\.jar",
+    requiredClassName = "dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore",
+    coordinates = "dev.langchain4j:langchain4j-chroma:1.0.1-beta6")
 public class ChromaStoreConnectionProvider  extends BaseStoreConnectionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStoreConnectionProvider.class);

@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<munit:parameterizations >
 			<munit:parameterization name="config-storage-local" >
 				<munit:parameters >
-					<munit:parameter propertyName="config" value="StorageLocalConfig" />
+					<munit:parameter propertyName="config" value="storageLocalConfig" />
 					<munit:parameter propertyName="contextDocumentPath" value="/munit-document-samples/sample.pdf" />
 					<munit:parameter propertyName="contextDocumentFolderPath" value="/munit-document-samples" />
 					<munit:parameter propertyName="contextMediaPath" value="/munit-image-samples/sample.jpg" />

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.5.40</version>
+    <version>0.5.43-SNAPSHOT</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -81,7 +81,6 @@
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
 		<langchain4jBomVersion>1.0.1</langchain4jBomVersion>
-		<langchain4jAdditionalPluginDependencies>1.0.1-beta6</langchain4jAdditionalPluginDependencies>
 		<langchain4jCommunityVersion>1.0.1-beta6</langchain4jCommunityVersion>
 		<mule.sdk.api.version>0.11.4</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
@@ -111,6 +110,24 @@
 				</executions>
 				<configuration>
 					<sharedLibraries>
+						<!-- LangChain Dependencies -->
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-core</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+						</sharedLibrary>
+						<!-- Storage Services Dependencies -->
 						<sharedLibrary>
 							<groupId>software.amazon.awssdk</groupId>
 							<artifactId>s3</artifactId>
@@ -122,6 +139,51 @@
 						<sharedLibrary>
 							<groupId>com.google.cloud</groupId>
 							<artifactId>google-cloud-storage</artifactId>
+						</sharedLibrary>
+						<!-- Vector Stores Dependencies -->
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-chroma</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-milvus</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-elasticsearch</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-opensearch</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-pgvector</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-pinecone</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-qdrant</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-azure-ai-search</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-mongodb-atlas</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-weaviate</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-community-alloydb-pg</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
 				</configuration>
@@ -241,7 +303,13 @@
 			<version>3.9.4</version>
 		</dependency>
 
-		<!-- LangChain Required Dependencies -->
+		<!-- LangChain Dependencies -->
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
@@ -252,6 +320,7 @@
 					<groupId>org.jsoup</groupId>
 				</exclusion>
 			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -263,11 +332,13 @@
 					<groupId>org.apache.logging.log4j</groupId>
 				</exclusion>
 			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Storage Dependencies (Optionals) -->
@@ -344,12 +415,6 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-mongodb-atlas</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver-sync</artifactId>
-			<version>5.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 

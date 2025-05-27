@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 	
 	<configuration-properties file="automation-credentials.properties"/>
 	
-	<ms-vectors:storage-config name="StorageLocalConfig" doc:name="MuleSoft Vectors Connector Storage config" doc:id="bb29c0d8-f00b-4963-af0a-1cb9bcf59833" >
+	<ms-vectors:storage-config name="storageLocalConfig" doc:name="MuleSoft Vectors Connector Storage config" doc:id="bb29c0d8-f00b-4963-af0a-1cb9bcf59833" >
 		<ms-vectors:local-connection workingDir="${app.home}"/>
 	</ms-vectors:storage-config>
 	<ms-vectors:storage-config name="storageS3Config" doc:name="MuleSoft Vectors Connector Document config" doc:id="48ec9e58-d4be-4831-afb8-b7160e8274a0" >
@@ -23,5 +23,9 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 	<ms-vectors:storage-config name="storageGCSConfig" doc:name="MuleSoft Vectors Connector Document config" doc:id="35b91155-d569-48f2-9185-ec23639fd08a" >
 		<ms-vectors:google-cloud-storage-connection projectId="${gcs.projectId}" clientId="${gcs.clientId}" clientEmail="${gcs.clientEmail}" privateKeyId="${gcs.privateKeyId}" privateKey="${gcs.privateKey}"/>
 	</ms-vectors:storage-config>
-
+	
+	<ms-vectors:store-config name="storeOpenSearchConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="bbd34f93-9ac1-4c8b-b629-258bfb4fbac5" >
+		<ms-vectors:open-search-connection url="${openSearch.url}" user="${openSearch.user}" password="${openSearch.password}" />
+	</ms-vectors:store-config>
+	
 </mule>
