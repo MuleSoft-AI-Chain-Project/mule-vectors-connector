@@ -16,7 +16,6 @@
 	<munit:test doc:id="25c072ca-50b7-4072-aefb-25924bbd0511" name="store-operations-add-to-store">
 		<munit:execution>
 			<flow-ref doc:id="ae8eb0e5-96c8-420e-8a7b-64d9c408c7f0" doc:name="store-operations-ADD-to-store-exec" name="store-operations-add-to-store-exec"/>
-			<logger doc:id="a396a786-90c7-43ca-87df-40187ba7699f" doc:name="Log payload" level="INFO" message="#[payload]"/>
 		</munit:execution>
 		<munit:validation>
 			<flow-ref doc:id="af61ece6-eb78-48fc-a539-cad8120997f7" doc:name="store-operations-validate-add-to-store" name="store-operations-validate-add-to-store"/>
@@ -31,10 +30,9 @@
 	<munit:test doc:id="e4aba12a-2d12-442c-a83e-dbd14102b8d3" name="store-operations-query-from-store">
 		<munit:execution>
 			<set-variable value="#[uuid()]" doc:name="munit_uuid" doc:id="a803cbc2-4ce0-46c0-8531-793472233eaa" variableName="munit_uuid" />
-			<flow-ref doc:name="store-operations-REMOVE-all-from-store" doc:id="d6e113b5-19a4-4455-af63-5c920fa0eb2e" name="store-operations-remove-all-from-store" />
+			<flow-ref doc:name="store-operations-REMOVE-all-from-store" doc:id="d6e113b5-19a4-4455-af63-5c920fa0eb2e" name="store-operations-remove-all-from-store-exec" />
 			<flow-ref doc:id="5562ba21-0539-4c53-bbe3-b90dc27b1767" doc:name="store-operations-ADD-to-store-exec" name="store-operations-add-to-store-exec"/>
 			<flow-ref doc:id="8e3c98b7-e562-4fff-9f18-d8991fae2484" doc:name="store-operations-QUERY-store-exec" name="store-operations-query-store-exec"/>
-			<logger doc:id="ec87dd9e-bbf5-483b-8a12-cf3633b97b50" doc:name="Log payload" level="INFO" message="#[payload]"/>
 		</munit:execution>
 		<munit:validation>
 			<flow-ref doc:id="9543b85e-419b-4e62-92e5-df281920b86b" doc:name="store-operations-validate-query-from-store" name="store-operations-validate-query-from-store"/>
@@ -47,10 +45,9 @@
 	<munit:test doc:id="729af2a6-d85a-46b9-9584-ee6104382803" name="store-operations-query-all-from-store">
 		<munit:execution>
 			<set-variable value="#[uuid()]" doc:name="munit_uuid" doc:id="ca7f7c95-190d-418a-b9fd-937776b4961a" variableName="munit_uuid" />
-			<flow-ref doc:name="store-operations-REMOVE-all-from-store" doc:id="b8c38fa7-b472-43f1-8438-447e3284105f" name="store-operations-remove-all-from-store" />
+			<flow-ref doc:name="store-operations-REMOVE-all-from-store" doc:id="b8c38fa7-b472-43f1-8438-447e3284105f" name="store-operations-remove-all-from-store-exec" />
 			<flow-ref doc:id="1cc9b910-2bc8-415a-965c-322acbcdff64" doc:name="store-operations-ADD-to-store-exec" name="store-operations-add-to-store-exec"/>
 			<flow-ref doc:id="7b27c052-2315-4751-a939-2d22a78edfb5" doc:name="store-operations-QUERY-all-store-exec" name="store-operations-query-all-from-store-exec"/>
-			<logger doc:id="0014bca8-5133-4cb4-93f2-de613bd8354f" doc:name="Log payload" level="INFO" message="#[payload]"/>
 		</munit:execution>
 		<munit:validation>
 			<flow-ref doc:id="65d949e4-ee32-4b62-9e3b-70dae36adbfb" doc:name="store-operations-validate-query-all-from-store" name="store-operations-validate-query-all-from-store"/>
@@ -58,7 +55,26 @@
 	</munit:test>
 	<sub-flow doc:id="5fb6a98f-09cd-43bc-9009-b40260107195" name="store-operations-validate-query-all-from-store">
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="09c96239-50dd-4ef1-85c6-e096c58f0179" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that has &gt;= 4 sources." doc:id="f87f41f5-b177-45b7-8415-9e9c47058286" is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
+		<munit-tools:assert-that doc:name="Assert that has &gt;= 4 records." doc:id="f87f41f5-b177-45b7-8415-9e9c47058286" is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
 	</sub-flow>
-
+	<munit:test doc:id="c6a835e8-a06f-471c-96e4-b4e062bd226b" name="store-operations-remove-all-from-store">
+		<munit:execution>
+			<flow-ref doc:name="store-operations-REMOVE-all-from-store" doc:id="a93ab829-dda3-4dab-9d17-8c3319b39d01" name="store-operations-remove-all-from-store-exec" />
+			<flow-ref doc:id="2dbcecd3-cf2a-43ee-8b0b-684f811e39a1" doc:name="store-operations-QUERY-all-store-exec" name="store-operations-query-all-from-store-exec"/>
+		</munit:execution>
+		<munit:validation>
+			<flow-ref doc:id="6b23ca37-9cdf-4e17-9be1-0d82aad43801" doc:name="store-operations-validate-remove-all-from-store" name="store-operations-validate-remove-all-from-store"/>
+		</munit:validation>
+	</munit:test>
+	<sub-flow doc:id="b9d7a69a-fa62-4d44-b1df-52a7b220e034" name="store-operations-validate-remove-all-from-store">
+		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="c6a2522b-5bb1-4dfc-9b11-0a8efd8d6c2b" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		<choice doc:name="Choice" doc:id="0354944b-caf9-4b74-8463-86857046e872" >
+			<when expression="#[!(vars.removeAllSupported default true)]">
+				<logger level="INFO" doc:name="Logger" doc:id="ac25914b-5672-41bb-b14f-d5d5fd1d5c3c" message="Skip validation due to unsupported operation"/>
+			</when>
+			<otherwise >
+				<munit-tools:assert-equals doc:name="Assert records equal to 0" doc:id="d74759bf-61f9-423e-9def-d0fad2646bed" expected="0" actual="sizeOf(payload)" message="At least one record still exists." />
+			</otherwise>
+		</choice>
+	</sub-flow>
 </mule>

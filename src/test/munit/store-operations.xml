@@ -40,13 +40,14 @@ payload.payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
-	<sub-flow name="store-operations-remove-all-from-store" doc:id="dec2a61d-a5ea-47f6-87df-fefe74f40a82" >
+	<sub-flow name="store-operations-remove-all-from-store-exec" doc:id="dec2a61d-a5ea-47f6-87df-fefe74f40a82" >
 		<try doc:name="Try" doc:id="ff3e7291-e18a-49f7-87f5-c12ae58cd5d6" >
 			<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="26c2ee51-2185-40c4-8ed6-d2cf736e8272" config-ref="${config}" storeName="${storeName}" ids="#[vars.munit_ids]">
 		</ms-vectors:store-remove>
 			<error-handler >
 				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c01c28da-5144-48c0-b479-4b6f9328df14" type="MS-VECTORS:STORE_UNSUPPORTED_OPERATION">
 					<logger level="INFO" doc:name="Logger" doc:id="58163f50-a18b-4328-900a-fb5decdd7c24" message="Remove operation not supported for configuration: ${config}"/>
+					<set-variable value="#[false]" doc:name="removeAllSupported" doc:id="9d2a6830-731e-450e-8655-3add69b73ad9" variableName="removeAllSupported" />
 				</on-error-continue>
 			</error-handler>
 		</try>
