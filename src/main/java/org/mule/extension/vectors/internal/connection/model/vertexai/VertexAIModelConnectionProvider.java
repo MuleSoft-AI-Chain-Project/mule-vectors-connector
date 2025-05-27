@@ -72,6 +72,7 @@ public class VertexAIModelConnectionProvider extends BaseModelConnectionProvider
       vertexAIModelConnectionParameters.getPrivateKeyId(),
       vertexAIModelConnectionParameters.getPrivateKey(),
       vertexAIModelConnectionParameters.getTotalTimeout(),
+      vertexAIModelConnectionParameters.getBatchSize(),
       httpClient
       );
       vertexAIModelConnection.connect();

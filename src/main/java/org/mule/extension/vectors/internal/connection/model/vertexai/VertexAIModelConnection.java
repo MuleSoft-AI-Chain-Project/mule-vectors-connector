@@ -55,11 +55,12 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
   private String privateKey;  
   private final HttpClient httpClient;
   private final long timeout;
+  private final int batchSize;
 
   private String accessToken;
 
   public VertexAIModelConnection(String projectId, String location, String clientEmail, String clientId, String privateKeyId,
-                                 String privateKey, long timeout, HttpClient httpClient) {
+                                 String privateKey, long timeout, int batchSize, HttpClient httpClient) {
     this.projectId = projectId;
     this.location = location;
     this.clientEmail = clientEmail;
@@ -67,6 +68,7 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
     this.privateKeyId = privateKeyId;
     this.privateKey = privateKey;
     this.timeout = timeout;
+    this.batchSize = batchSize;
     this.httpClient = httpClient;
   }
 
@@ -99,6 +101,10 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
     } catch (Exception e) {
       return false;
     }
+  }
+
+  public int getBatchSize() {
+    return batchSize;
   }
 
   private String getAccessToken() throws ConnectionException{
