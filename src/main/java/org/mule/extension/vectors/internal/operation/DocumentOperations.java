@@ -1,11 +1,8 @@
 package org.mule.extension.vectors.internal.operation;
 
-import dev.langchain4j.data.document.DefaultDocument;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentParser;
-import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
-import scala.collection.Map;
 
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
@@ -143,8 +140,8 @@ public class DocumentOperations {
   }
 
   /**
-   * Load a single document from a raw binary or base64-encoded content, without using a connection. 
-   * Useful for inline or in-memory content processing. The document is processed into segments 
+   * Load a single document from a raw binary or base64-encoded content, without using a connection.
+   * Useful for inline or in-memory content processing. The document is processed into segments
    * based on the provided segmentation parameters.
    *
    * @param payloadParameters parameters for specifying document passed as payload .
@@ -164,7 +161,7 @@ public class DocumentOperations {
 
     try {
 
-    
+
       InputStream documentStream;
 
       LOGGER.debug(String.format("Payload Parameters: %s", payloadParameters));
@@ -173,11 +170,11 @@ public class DocumentOperations {
 
           byte[] decoded = Base64.getDecoder().decode(payloadParameters.getContent().toString());
           documentStream = new ByteArrayInputStream(decoded);
-      
+
       } else if (Constants.PAYLOAD_CONTENT_TYPE_BINARY.equalsIgnoreCase(payloadParameters.getFormat())) {
 
         documentStream = payloadParameters.getContent(); // Use as-is
-      
+
       } else {
 
           throw new IllegalArgumentException("Unsupported format: " + payloadParameters.getFormat());

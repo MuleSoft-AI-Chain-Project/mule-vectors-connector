@@ -31,6 +31,7 @@ import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.model.BaseModel;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
+import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.InputJsonType;
@@ -117,15 +118,10 @@ public class EmbeddingOperations {
             EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
             LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
 
-            if(segmentationParameters.getMaxSegmentSizeInChars() > 0) {
+            textSegments = Utils.splitTextIntoTextSegments(text,
+                                                           segmentationParameters.getMaxSegmentSizeInChars(),
+                                                           segmentationParameters.getMaxOverlapSizeInChars());
 
-              DocumentSplitter documentSplitter = DocumentSplitters.recursive(segmentationParameters.getMaxSegmentSizeInChars(),
-                                                                              segmentationParameters.getMaxOverlapSizeInChars());
-              textSegments = documentSplitter.split(new DefaultDocument(text));
-            } else {
-
-              textSegments.add(TextSegment.from(text));
-            }
             Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
             embeddings = textResponse.content();
             tokenUsage = textResponse.tokenUsage() != null ?

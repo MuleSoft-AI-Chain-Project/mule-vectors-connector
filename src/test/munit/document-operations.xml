@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="document-operations-load-single-exec" doc:id="ee915d69-8229-48a2-a638-4f7d6c55fa22" >
+		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="e0c84701-cd41-4324-bdda-63fe74dd1a4b" config-ref="${config}" fileType="any" contextPath="${contextDocumentPath}" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" />
+	</sub-flow>
+	<sub-flow name="document-operations-load-list-exec" doc:id="6e2d7fe3-acd7-4c97-9b40-d12ac9f5f328" >
+		<ms-vectors:document-load-list doc:name="[Document] Load list" doc:id="9eba6d6a-d878-4349-b26b-1c1e076bbbbb" config-ref="${config}" fileType="any" contextPath="${contextDocumentFolderPath}" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" />
+		<ee:transform doc:name="Transform Message" doc:id="d97b7d8f-3220-4752-8e61-ef6e905d85e0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>

@@ -70,11 +70,6 @@ public class AlloyDBStore extends BaseStore {
     /**
      * Constructs a PgVectorMetadataIterator for fetching metadata from the database in pages.
      *
-     * @param userName The username for database access.
-     * @param password The password for database access.
-     * @param host The PostgreSQL host.
-     * @param port The PostgreSQL port.
-     * @param database The name of the database.
      * @param table The table to fetch metadata from.
      * @param pageSize The number of rows per page for pagination.
      * @throws SQLException If a database error occurs.

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.5.30</version>
+    <version>0.6.0</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -72,24 +72,25 @@
 	<parent>
 		<groupId>org.mule.extensions</groupId>
 		<artifactId>mule-modules-parent</artifactId>
-		<version>1.9.0</version>
+		<version>1.9.4</version>
 	</parent>
 
     <properties>
-		<skipVerifications>false</skipVerifications>
-        <muleJavaEeBomVersion>4.9.0</muleJavaEeBomVersion>
+		<runtimeProduct>MULE_EE</runtimeProduct>
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
 		<langchain4jBomVersion>1.0.1</langchain4jBomVersion>
 		<langchain4jCommunityVersion>1.0.1-beta6</langchain4jCommunityVersion>
-		<mule.sdk.api.version>0.10.3</mule.sdk.api.version>
+		<mule.sdk.api.version>0.11.4</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
+		<munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
+		<munit.version>3.4.0</munit.version>
+		<mtf.tools.version>1.2.0</mtf.tools.version>
 		<jacoco.version>0.8.12</jacoco.version>
 		<maven.surefire.version>2.22.2</maven.surefire.version>
-		<munit.extensions.maven.plugin.version>1.2.0</munit.extensions.maven.plugin.version>
-		<munit.version>3.3.1</munit.version>
+		<skip.unit.tests>false</skip.unit.tests>
     </properties>
 
 	<build>
@@ -101,25 +102,117 @@
 				<extensions>true</extensions>
 				<executions>
 					<execution>
+						<phase>integration-test</phase>
 						<goals>
 							<goal>test</goal>
 						</goals>
-						<phase>integration-test</phase>
 					</execution>
 				</executions>
+				<configuration>
+					<sharedLibraries>
+						<!-- LangChain Dependencies -->
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-core</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+						</sharedLibrary>
+						<!-- Storage Services Dependencies -->
+						<sharedLibrary>
+							<groupId>software.amazon.awssdk</groupId>
+							<artifactId>s3</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.azure</groupId>
+							<artifactId>azure-storage-blob</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.google.cloud</groupId>
+							<artifactId>google-cloud-storage</artifactId>
+						</sharedLibrary>
+						<!-- Vector Stores Dependencies -->
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-chroma</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-milvus</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-elasticsearch</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-opensearch</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-pgvector</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-pinecone</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-qdrant</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-azure-ai-search</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-mongodb-atlas</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-weaviate</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-community-alloydb-pg</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.mulesoft.munit</groupId>
+						<artifactId>munit-runner</artifactId>
+						<version>${munit.version}</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+					<dependency>
+						<groupId>com.mulesoft.munit</groupId>
+						<artifactId>munit-tools</artifactId>
+						<version>${munit.version}</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+					<dependency>
+						<groupId>com.mulesoft.munit</groupId>
+						<artifactId>mtf-tools</artifactId>
+						<version>${mtf.tools.version}</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.mule</groupId>
-                <artifactId>mule-javaee-runtime-bom</artifactId>
-                <version>${muleJavaEeBomVersion}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 			<dependency>
 				<groupId>dev.langchain4j</groupId>
 				<artifactId>langchain4j-bom</artifactId>
@@ -138,26 +231,6 @@
 			<groupId>org.mule.sdk</groupId>
 			<artifactId>mule-sdk-api</artifactId>
 			<version>${mule.sdk.api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.mulesoft.munit</groupId>
-			<artifactId>munit-runner</artifactId>
-			<version>3.2.1</version>
-			<classifier>mule-plugin</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.mulesoft.munit</groupId>
-			<artifactId>munit-tools</artifactId>
-			<version>3.2.1</version>
-			<classifier>mule-plugin</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.weave</groupId>
-			<artifactId>assertions</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
 		</dependency>
 
 		<!-- Other Libraries Required Dependencies -->
@@ -230,7 +303,13 @@
 			<version>3.9.4</version>
 		</dependency>
 
-		<!-- LangChain Required Dependencies -->
+		<!-- LangChain Dependencies -->
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
@@ -241,6 +320,7 @@
 					<groupId>org.jsoup</groupId>
 				</exclusion>
 			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -252,29 +332,34 @@
 					<groupId>org.apache.logging.log4j</groupId>
 				</exclusion>
 			</exclusions>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Storage Dependencies (Optionals) -->
 		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-loader-azure-storage-blob</artifactId>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-storage-blob</artifactId>
+			<version>12.30.0</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-loader-amazon-s3</artifactId>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.31.6</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-document-loader-google-cloud-storage</artifactId>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>2.43.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -332,12 +417,6 @@
 			<artifactId>langchain4j-mongodb-atlas</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver-sync</artifactId>
-			<version>5.4.0</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
@@ -360,6 +439,12 @@
 			<id>mule-releases</id>
 			<name>Nexus Public Releases</name>
 			<url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>mulesoft-releases</id>
+			<name>MuleSoft Releases Repository</name>
+			<url>https://repository.mulesoft.org/releases/</url>
+			<layout>default</layout>
 		</repository>
 	</repositories>
 

@@ -1,10 +1,17 @@
 package org.mule.extension.vectors.internal.util;
 
+import dev.langchain4j.data.document.DefaultDocument;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -174,5 +181,33 @@ public class Utils {
    */
   public static <T> T getOrDefault(T value, T defaultValue) {
     return value != null ? value : defaultValue;
+  }
+
+  /**
+   * Splits the given text into a list of {@link TextSegment} objects.
+   * <p>
+   * If {@code maxSegmentSizeInChars} is greater than 0, the text is split into segments
+   * of at most {@code maxSegmentSizeInChars} characters, with up to {@code maxOverlapSizeInChars}
+   * characters of overlap between segments. If {@code maxSegmentSizeInChars} is 0 or less,
+   * the entire text is returned as a single {@link TextSegment}.
+   * </p>
+   *
+   * @param text The text to split.
+   * @param maxSegmentSizeInChars The maximum size of each segment in characters. If 0 or less, no splitting occurs.
+   * @param maxOverlapSizeInChars The maximum number of overlapping characters between segments.
+   * @return A list of {@link TextSegment} objects representing the split text.
+   */
+  public static List<TextSegment> splitTextIntoTextSegments(String text, int maxSegmentSizeInChars, int maxOverlapSizeInChars) {
+
+    List<TextSegment> textSegments = new LinkedList<>();
+    if(maxSegmentSizeInChars > 0) {
+
+      DocumentSplitter documentSplitter = DocumentSplitters.recursive(maxSegmentSizeInChars, maxOverlapSizeInChars);
+      textSegments = documentSplitter.split(new DefaultDocument(text));
+    } else {
+
+      textSegments.add(TextSegment.from(text));
+    }
+    return textSegments;
   }
 }

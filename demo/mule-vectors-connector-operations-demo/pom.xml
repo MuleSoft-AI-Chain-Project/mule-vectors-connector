@@ -14,7 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<app.runtime>4.9.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
-		<langchain4jVersion>1.0.0-beta5</langchain4jVersion>
+		<langchain4jVersion>1.0.0-beta6</langchain4jVersion>
 	</properties>
 
 	<build>
@@ -30,26 +30,24 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<additionalPluginDependencies>
-						<plugin>
-							<groupId>io.github.mulesoft-ai-chain-project</groupId>
-							<artifactId>mule4-vectors-connector</artifactId>
-							<additionalDependencies>
-							
-								<!-- Storage Dependencies (Optionals) -->
-								
-								<!-- Vector Store Dependencies (Optionals) -->
-								<!-- BEGIN: PGVector Dependency -->
-								<dependency> 
-									<groupId>dev.langchain4j</groupId>
-									<artifactId>langchain4j-pgvector</artifactId>
-									<version>${langchain4jVersion}</version>
-								</dependency>
-								<!-- END: PGVector Dependency -->
-								
-							</additionalDependencies>
-						</plugin>
-					</additionalPluginDependencies>
+					<sharedLibraries>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-pgvector</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -70,8 +68,8 @@
 		</dependency>
 		<dependency>
 			<groupId>io.github.mulesoft-ai-chain-project</groupId>
-	  		<artifactId>mule4-vectors-connector</artifactId>
-    		<version>0.5.30</version>
+			<artifactId>mule4-vectors-connector</artifactId>
+			<version>0.6.0</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
@@ -79,6 +77,26 @@
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.11.2</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-pgvector</artifactId>
+			<version>1.0.1-beta6</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<version>1.0.1-beta6</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+			<version>1.0.1-beta6</version>
 		</dependency>
 	</dependencies>
 

@@ -15,16 +15,24 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
   private String scheme;
   private String host;
   private Integer port;
+  private boolean securedGrpc;
+  private Integer grpcPort;
+  private boolean useGrpcForInserts;
   private String apikey;
   private boolean avoidDups;
   private String consistencyLevel;
 
   private static final String AUTH_CHECK_ENDPOINT = "/v1/schema";
 
-  public WeaviateStoreConnection(String scheme, String host, Integer port, String apiKey, boolean avoidDups, String consistencyLevel) {
+  public WeaviateStoreConnection(String scheme, String host, Integer port,
+                                 boolean securedGrpc, Integer grpcPort, boolean useGrpcForInserts,
+                                 String apiKey, boolean avoidDups, String consistencyLevel) {
     this.scheme = scheme;
     this.host = host;
     this.port = port;
+    this.securedGrpc = securedGrpc;
+    this.grpcPort = grpcPort;
+    this.useGrpcForInserts = useGrpcForInserts;
     this.apikey = apiKey;
     this.avoidDups = avoidDups;
     this.consistencyLevel = consistencyLevel;
@@ -41,6 +49,12 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
   public Integer getPort() {
     return port;
   }
+
+  public boolean isSecuredGrpc() { return securedGrpc; }
+
+  public Integer getGrpcPort() { return grpcPort; }
+
+  public boolean isUseGrpcForInserts() { return useGrpcForInserts; }
 
   public String getApikey() {
     return apikey;
