@@ -7,6 +7,8 @@
 					<munit:parameter propertyName="storeName" value="munit" />
 					<munit:parameter propertyName="minScore" value="0.1" />
 					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="false" />
+					<munit:parameter propertyName="supportRemove" value="false" />
 				</munit:parameters>
 			</munit:parameterization>
 			<munit:parameterization name="config-vector-pgvector" >
@@ -15,6 +17,8 @@
 					<munit:parameter propertyName="storeName" value="munit" />
 					<munit:parameter propertyName="minScore" value="0.1" />
 					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
+					<munit:parameter propertyName="supportRemove" value="true" />
 				</munit:parameters>
 			</munit:parameterization>
 			<munit:parameterization name="config-vector-aisearch" >
@@ -23,19 +27,28 @@
 					<munit:parameter propertyName="storeName" value="munit" />
 					<munit:parameter propertyName="minScore" value="0.1" />
 					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
+					<munit:parameter propertyName="supportRemove" value="true" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-vector-chroma" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storeChromaConfig" />
+					<munit:parameter propertyName="storeName" value="munit" />
+					<munit:parameter propertyName="minScore" value="0.1" />
+					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
+					<munit:parameter propertyName="supportRemove" value="true" />
 				</munit:parameters>
 			</munit:parameterization>
 		</munit:parameterizations>
 	</munit:config>
 	<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669" >
-		<try doc:name="Try" doc:id="1616c8a0-0104-4c1a-9887-f2b2e984f0c2" >
-			<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}"/>
-			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="209dd6b5-5749-4624-bcc9-6f9d35256947" type="MS-VECTORS:STORE_UNSUPPORTED_OPERATION" >
-					<logger level="INFO" doc:name="Logger" doc:id="011595b0-fcdf-4c2e-aa74-9fb4fa6df061" message="Remove operation not supported for configuration: ${config}" />
-				</on-error-continue>
-			</error-handler>
-		</try>
+		<choice doc:name="Choice" doc:id="69b9155e-c2f2-4c28-a7e4-a0d6d7e6c548" >
+			<when expression="${supportRemove}">
+				<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}" />
+			</when>
+		</choice>
 	</munit:after-suite>
 	<munit:test doc:id="25c072ca-50b7-4072-aefb-25924bbd0511" name="store-operations-add-to-store">
 		<munit:execution>
@@ -76,7 +89,7 @@
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="09c96239-50dd-4ef1-85c6-e096c58f0179" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		<munit-tools:assert-that doc:name="Assert that has &gt;= 4 records." doc:id="f87f41f5-b177-45b7-8415-9e9c47058286" is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
 	</sub-flow>
-	<munit:test doc:id="c6a835e8-a06f-471c-96e4-b4e062bd226b" name="store-operations-remove-from-store">
+	<munit:test doc:id="c6a835e8-a06f-471c-96e4-b4e062bd226b" name="store-operations-remove-from-store" ignore="#[!p('supportRemove')]">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-REMOVE-from-store" doc:id="a93ab829-dda3-4dab-9d17-8c3319b39d01" name="store-operations-remove-from-store-exec" />
 		</munit:execution>

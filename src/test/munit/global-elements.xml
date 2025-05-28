@@ -33,5 +33,8 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 	<ms-vectors:store-config name="storeAISearchConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="ccfd5cec-a20f-4163-8d53-176d2696a7a9" >
 		<ms-vectors:ai-search-connection url="${aiSearch.url}" apiKey="${aiSearch.key}" />
 	</ms-vectors:store-config>
+		<ms-vectors:store-config name="storeChromaConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="f6c39bc9-df49-4b7f-a666-1f46f9807c63" >
+		<ms-vectors:chroma-connection url="${chroma.url}" />
+	</ms-vectors:store-config>
 	
 </mule>
