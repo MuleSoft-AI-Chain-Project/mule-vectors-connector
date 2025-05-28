@@ -34,19 +34,37 @@ public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParame
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 4)
+  @Optional(defaultValue = "false")
+  private boolean securedGrpc;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 5)
+  @Optional
+  private Integer grpcPort;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 6)
+  @Optional(defaultValue = "false")
+  private boolean useGrpcForInserts;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 7)
   @Password
   private String apiKey;
 
   @Parameter
   @DisplayName("Avoid duplicates")
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 5)
+  @Placement(order = 8)
   @Optional(defaultValue = "true")
   private boolean avoidDups;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 6)
+  @Placement(order = 9)
   @Optional(defaultValue = "ALL")
   private String consistencyLevel;
 
@@ -61,6 +79,12 @@ public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParame
   public Integer getPort() {
     return port;
   }
+
+  public boolean isSecuredGrpc() { return securedGrpc; }
+
+  public Integer getGrpcPort() { return grpcPort; }
+
+  public boolean isUseGrpcForInserts() { return useGrpcForInserts; }
 
   public String getApiKey() {
     return apiKey;
