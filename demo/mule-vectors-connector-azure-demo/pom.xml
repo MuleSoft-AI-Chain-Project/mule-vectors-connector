@@ -30,21 +30,24 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<additionalPluginDependencies>
-						<plugin>
-							<groupId>io.github.mulesoft-ai-chain-project</groupId>
-							<artifactId>mule4-vectors-connector</artifactId>
-							<additionalDependencies>
-								<!-- BEGIN: Azure AI Search Dependency -->
-								<dependency>
-									<groupId>dev.langchain4j</groupId>
-									<artifactId>langchain4j-azure-ai-search</artifactId>
-									<version>${langchain4jVersion}</version>
-								</dependency>
-								<!-- END: Azure AI Search Dependency -->
-							</additionalDependencies>
-						</plugin>
-					</additionalPluginDependencies>
+					<sharedLibraries>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-azure-ai-search</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -66,7 +69,7 @@
 		<dependency>
 			<groupId>io.github.mulesoft-ai-chain-project</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.5.40</version>
+			<version>0.6.0</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
@@ -74,6 +77,26 @@
 			<artifactId>mule-apikit-module</artifactId>
 			<version>1.11.2</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<version>1.0.1-beta6</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-parser-apache-tika</artifactId>
+			<version>1.0.1-beta6</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-azure-ai-search</artifactId>
+			<version>1.0.1-beta6</version>
 		</dependency>
 	</dependencies>
 

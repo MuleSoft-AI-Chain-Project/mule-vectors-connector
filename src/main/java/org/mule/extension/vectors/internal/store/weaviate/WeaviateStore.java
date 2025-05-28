@@ -36,8 +36,12 @@ public class WeaviateStore extends BaseStore {
         .scheme(((WeaviateStoreConnection)storeConnection).getScheme())
         .host(((WeaviateStoreConnection)storeConnection).getHost())
         .port(((WeaviateStoreConnection)storeConnection).getPort())
+        .securedGrpc(((WeaviateStoreConnection)storeConnection).isSecuredGrpc())
+        .grpcPort(((WeaviateStoreConnection)storeConnection).getGrpcPort())
+        .useGrpcForInserts(((WeaviateStoreConnection)storeConnection).isUseGrpcForInserts())
         .avoidDups(((WeaviateStoreConnection)storeConnection).isAvoidDups())
         .consistencyLevel(((WeaviateStoreConnection)storeConnection).getConsistencyLevel())
+        .objectClass(storeName)
         .build();
   }
 

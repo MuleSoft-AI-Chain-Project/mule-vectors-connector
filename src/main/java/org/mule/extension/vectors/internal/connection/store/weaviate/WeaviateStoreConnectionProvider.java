@@ -40,6 +40,9 @@ public class WeaviateStoreConnectionProvider extends BaseStoreConnectionProvider
           new WeaviateStoreConnection(weaviateStoreConnectionParameters.getScheme(),
                                       weaviateStoreConnectionParameters.getHost(),
                                       weaviateStoreConnectionParameters.getPort(),
+                                      weaviateStoreConnectionParameters.isSecuredGrpc(),
+                                      weaviateStoreConnectionParameters.getGrpcPort(),
+                                      weaviateStoreConnectionParameters.isUseGrpcForInserts(),
                                       weaviateStoreConnectionParameters.getApiKey(),
                                       weaviateStoreConnectionParameters.isAvoidDups(),
                                       weaviateStoreConnectionParameters.getConsistencyLevel());
