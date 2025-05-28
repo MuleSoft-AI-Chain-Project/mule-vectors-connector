@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	
+	<configuration-properties file="automation-credentials.properties"/>
+	
+	<ms-vectors:storage-config name="storageLocalConfig" doc:name="MuleSoft Vectors Connector Storage config" doc:id="bb29c0d8-f00b-4963-af0a-1cb9bcf59833" >
+		<ms-vectors:local-connection workingDir="${app.home}"/>
+	</ms-vectors:storage-config>
+	<ms-vectors:storage-config name="storageS3Config" doc:name="MuleSoft Vectors Connector Document config" doc:id="48ec9e58-d4be-4831-afb8-b7160e8274a0" >
+		<ms-vectors:amazon-s3-connection awsRegion="${s3.awsDefaultRegion}" awsAccessKeyId="${s3.awsAccessKeyId}" awsSecretAccessKey="${s3.awsSecretAccessKey}"/>
+	</ms-vectors:storage-config>
+	<ms-vectors:storage-config name="storageAzureBlobConfig" doc:name="MuleSoft Vectors Connector Document config" doc:id="1df6f44a-04e1-4c4c-8ab4-09187eab50b6" >
+		<ms-vectors:azure-blob-connection azureName="${azureBlob.accountName}" azureKey="${azureBlob.accountKey}"/>
+	</ms-vectors:storage-config>
+	<ms-vectors:storage-config name="storageGCSConfig" doc:name="MuleSoft Vectors Connector Document config" doc:id="35b91155-d569-48f2-9185-ec23639fd08a" >
+		<ms-vectors:google-cloud-storage-connection projectId="${gcs.projectId}" clientId="${gcs.clientId}" clientEmail="${gcs.clientEmail}" privateKeyId="${gcs.privateKeyId}" privateKey="${gcs.privateKey}"/>
+	</ms-vectors:storage-config>
+	
+	<ms-vectors:store-config name="storeOpenSearchConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="bbd34f93-9ac1-4c8b-b629-258bfb4fbac5" >
+		<ms-vectors:open-search-connection url="${openSearch.url}" user="${openSearch.user}" password="${openSearch.password}" />
+	</ms-vectors:store-config>
+		<ms-vectors:store-config name="storePGVectorConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="8a721354-89f1-4ea1-89f5-68ddb48cd678" >
+		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
+	</ms-vectors:store-config>
+	<ms-vectors:store-config name="storeAISearchConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="ccfd5cec-a20f-4163-8d53-176d2696a7a9" >
+		<ms-vectors:ai-search-connection url="${aiSearch.url}" apiKey="${aiSearch.key}" />
+	</ms-vectors:store-config>
+		<ms-vectors:store-config name="storeChromaConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="f6c39bc9-df49-4b7f-a666-1f46f9807c63" >
+		<ms-vectors:chroma-connection url="${chroma.url}" />
+	</ms-vectors:store-config>
+	
+</mule>

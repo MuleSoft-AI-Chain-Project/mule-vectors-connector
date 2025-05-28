@@ -4,9 +4,6 @@ import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.internal.ValidationUtils;
-import dev.langchain4j.store.embedding.EmbeddingMatch;
-import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
-import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.filter.Filter;
 import org.apache.commons.io.IOUtils;
@@ -97,7 +94,6 @@ public class StoreOperations {
 
     try {
 
-      int maximumResults = maxResults.intValue();
       if (minScore == null) { minScore = Constants.EMBEDDING_SEARCH_REQUEST_DEFAULT_MIN_SCORE; }
 
       try {
@@ -162,57 +158,13 @@ public class StoreOperations {
           .createStore(false)
           .build();
 
-      EmbeddingStore<TextSegment> embeddingStore = baseStore.buildEmbeddingStore();
-
-      EmbeddingSearchRequest.EmbeddingSearchRequestBuilder searchRequestBuilder = EmbeddingSearchRequest.builder()
-          .queryEmbedding(embeddings.get(0))
-          .maxResults(maximumResults)
-          .minScore(minScore);
-
-      JSONObject jsonObject = new JSONObject();
-
-      if(searchFilterParams != null && searchFilterParams.isConditionSet()) {
-
-        OperationValidator.validateOperationType(
-            Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
-        Filter filter = searchFilterParams.buildMetadataFilter();
-        searchRequestBuilder.filter(filter);
-      }
-
-      EmbeddingSearchRequest searchRequest = searchRequestBuilder.build();
-
-      EmbeddingSearchResult<TextSegment> searchResult = embeddingStore.search(searchRequest);
-      List<EmbeddingMatch<TextSegment>> embeddingMatches = searchResult.matches();
-
-      String information = embeddingMatches.stream()
-          .map(match -> match.embedded().text())
-          .collect(joining("\n\n"));
-
-      jsonObject.put(Constants.JSON_KEY_RESPONSE, information);
-      jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-      if(textSegments.size() == 1 && textSegments.get(0).text() != null && !textSegments.get(0).text().isEmpty()) {
-
-        jsonObject.put(Constants.JSON_KEY_QUESTION, textSegments.get(0).text());
-      }
-      jsonObject.put(Constants.JSON_KEY_MAX_RESULTS, maxResults);
-      jsonObject.put(Constants.JSON_KEY_MIN_SCORE, minScore);
-
-      JSONArray sources = new JSONArray();
-
-      JSONObject contentObject;
-      for (EmbeddingMatch<TextSegment> match : embeddingMatches) {
-
-        Metadata matchMetadata = match.embedded().metadata();
-        contentObject = new JSONObject();
-        contentObject.put(Constants.JSON_KEY_EMBEDDING_ID, match.embeddingId());
-        contentObject.put(Constants.JSON_KEY_TEXT, match.embedded().text());
-        contentObject.put(Constants.JSON_KEY_SCORE, match.score());
-        JSONObject metadataObject = new JSONObject(matchMetadata.toMap());
-        contentObject.put(Constants.JSON_KEY_METADATA, metadataObject);
-        sources.put(contentObject);
-      }
-
-      jsonObject.put(Constants.JSON_KEY_SOURCES, sources);
+      JSONObject jsonObject = baseStore.query(
+          textSegments,
+          embeddings,
+          maxResults,
+          minScore,
+          searchFilterParams
+      );
 
       return createStoreResponse(
           jsonObject.toString(),
@@ -223,6 +175,13 @@ public class StoreOperations {
 
     } catch (ModuleException me) {
       throw me;
+
+    } catch (UnsupportedOperationException e) {
+
+      LOGGER.debug(e.getMessage());
+      throw new ModuleException(
+          e.getMessage(),
+          MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
 
     } catch (Exception e) {
 
@@ -448,6 +407,13 @@ public class StoreOperations {
 
     } catch (ModuleException me) {
       throw me;
+
+    } catch (UnsupportedOperationException e) {
+
+      LOGGER.debug(e.getMessage());
+      throw new ModuleException(
+          e.getMessage(),
+          MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
 
     } catch (IllegalArgumentException e) {
 

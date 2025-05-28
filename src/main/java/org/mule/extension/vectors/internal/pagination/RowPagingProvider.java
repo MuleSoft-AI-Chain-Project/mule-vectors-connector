@@ -54,8 +54,6 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
         OperationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_QUERY_ALL, storeConnection.getVectorStore());
-        OperationValidator.validateOperationType(
-            Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
 
         baseStore =  BaseStore.builder()
           .storeName(storeName)
@@ -96,6 +94,13 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
     } catch (ModuleException me) {
       throw me;
+
+    } catch (UnsupportedOperationException e) {
+
+      LOGGER.debug(e.getMessage());
+      throw new ModuleException(
+          e.getMessage(),
+          MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
 
     } catch (Exception e) {
 

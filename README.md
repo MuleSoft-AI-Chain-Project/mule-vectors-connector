@@ -49,6 +49,10 @@ to make some changes to the `pom.xml`.  For this reason, we recommend you fork t
 
 Then, follow the MuleSoft [documentation](https://docs.mulesoft.com/exchange/to-publish-assets-maven) to modify and publish the asset.
 
+### Run tests
+
+`mvn clean verify`
+
 ### Contribution
 [How to contribute](https://mac-project.ai/docs/contribute)
 

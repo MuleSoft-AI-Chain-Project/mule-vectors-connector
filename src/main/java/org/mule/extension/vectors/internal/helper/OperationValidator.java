@@ -13,11 +13,11 @@ import java.util.*;
  * </p>
  *
  * For more details, refer to the LangChain4j documentation:
- * {@link https://docs.langchain4j.dev/integrations/embedding-stores/}
+ * See <a href="https://docs.langchain4j.dev/integrations/embedding-stores/">LangChain4j documentation</a>
  *
  * <p>
  * Supported vector stores for each operation are stored in a static map:
- * <pre>
+ * {@code
  *   EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put("STORE_METADATA", new HashSet<>(Arrays.asList(
  *       Constants.VECTOR_STORE_PGVECTOR,
  *       Constants.VECTOR_STORE_ELASTICSEARCH,
@@ -26,7 +26,7 @@ import java.util.*;
  *       Constants.VECTOR_STORE_PINECONE,
  *       Constants.VECTOR_STORE_AI_SEARCH
  *   )));
- * </pre>
+ * }
  * </p>
  *
  * @see Constants
@@ -59,7 +59,7 @@ public class OperationValidator {
               Constants.VECTOR_STORE_ALLOYDB,
               Constants.VECTOR_STORE_PGVECTOR,
               Constants.VECTOR_STORE_ELASTICSEARCH,
-              Constants.VECTOR_STORE_OPENSEARCH,
+              // Constants.VECTOR_STORE_OPENSEARCH,
               Constants.VECTOR_STORE_MILVUS,
               Constants.VECTOR_STORE_MONGODB_ATLAS,
               Constants.VECTOR_STORE_CHROMA,

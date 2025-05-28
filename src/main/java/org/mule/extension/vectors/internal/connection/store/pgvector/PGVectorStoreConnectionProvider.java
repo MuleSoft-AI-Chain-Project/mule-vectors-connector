@@ -5,12 +5,21 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 @Alias("pgVector")
 @DisplayName("PGVector")
+@ExternalLib(name = "LangChain4J PGVector",
+    type=DEPENDENCY,
+    description = "LangChain4J PGVector",
+    nameRegexpMatcher = "(.*)\\.jar",
+    requiredClassName = "dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore",
+    coordinates = "dev.langchain4j:langchain4j-pgvector:1.0.1-beta6")
 public class PGVectorStoreConnectionProvider  extends BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
