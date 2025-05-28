@@ -113,10 +113,6 @@
 						<!-- LangChain Dependencies -->
 						<sharedLibrary>
 							<groupId>dev.langchain4j</groupId>
-							<artifactId>langchain4j-core</artifactId>
-						</sharedLibrary>
-						<sharedLibrary>
-							<groupId>dev.langchain4j</groupId>
 							<artifactId>langchain4j</artifactId>
 						</sharedLibrary>
 						<sharedLibrary>
@@ -304,12 +300,6 @@
 		</dependency>
 
 		<!-- LangChain Dependencies -->
-
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
