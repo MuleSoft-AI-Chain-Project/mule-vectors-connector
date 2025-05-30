@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	
+
+	<ms-vectors:embedding-config name="embeddingEinsteinConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="5364b4b7-bce5-47cd-be1d-5a0e5ededb56" >
+		<ms-vectors:einstein-connection salesforceOrg="${einstein.sfdcOrg}" clientId="${einstein.clientId}" clientSecret="${einstein.clientSecret}">
+		</ms-vectors:einstein-connection>
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingVertexAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="09d6aa29-b602-4723-8a37-6f7b04b96545" >
+		<ms-vectors:google-vertex-ai-connection projectId="${vertexai.projectId}" clientId="${vertexai.clientId}" clientEmail="${vertexai.clientEmail}" privateKeyId="${vertexai.privateKeyId}" privateKey="${vertexai.privateKey}" location="${vertexai.location}"/>
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingAzureAIVisionConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="c20d5378-6b6f-4f54-a8fe-b79dbf4c2619" >
+		<ms-vectors:azure-ai-vision-connection endpoint="${azureAIVision.endpoint}" apiKey="${azureAIVision.key}" apiVersion="${azureAIVision.apiVersion}"/>
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingOllamaConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="b3c46bce-5e22-4a99-8aec-4815fbe3a9cb" >
+		<ms-vectors:ollama-connection baseUrl="http://127.0.0.1:11434" />
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingAzureOpenAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="820379c4-408e-4e59-976b-fe35d0052f94" >
+		<ms-vectors:azure-open-ai-connection endpoint="${azureOpenai.endpoint}" apiKey="${azureOpenai.key}" apiVersion="${azureOpenai.apiVersion}"/>
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingOpenAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="1ef19946-f57e-4bbd-b4b7-f6116405c6d6" >
+		<ms-vectors:open-ai-connection apiKey="${openai.apiKey}" />
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingNomicConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="7990132e-092f-47f6-af5f-efbd0cab802a" >
+		<ms-vectors:nomic-connection apiKey="${nomic.apiKey}" />
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingMistralAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="79dca310-fe1c-4c68-b572-861bba7c8fdf" >
+		<ms-vectors:mistral-ai-connection apiKey='${mistralAi.apiKey}' />
+	</ms-vectors:embedding-config>
+	<ms-vectors:embedding-config name="embeddingHuggingFaceConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="f5d27c02-cf58-42b0-8537-d22ea9db525a" >
+		<ms-vectors:hugging-face-connection apiKey="${huggingFace.apikey}" />
+	</ms-vectors:embedding-config>
+	
+</mule>

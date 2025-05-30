@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="media-operations-load-single-exec" doc:id="6aabf796-9c31-4cb9-8371-812b935a61db" >
+		<ms-vectors:media-load-single doc:name="[Media] Load single" doc:id="8ff7e958-d1a5-400f-a7da-2a38f19759fe" config-ref="${config}" contextPath="${contextMediaPath}">
+			<ms-vectors:media-processor-parameters >
+				<ms-vectors:image-processor-parameters />
+			</ms-vectors:media-processor-parameters>
+		</ms-vectors:media-load-single>
+	</sub-flow>
+	<sub-flow name="media-operations-load-list-exec" doc:id="87ba2e16-f8f5-4076-bdc4-4f5854900c87" >
+		<ms-vectors:media-load-list doc:name="[Media] Load list" doc:id="fb02568d-6aac-4125-bfcc-37eba3602803" config-ref="${config}" contextPath="${contextMediaFolderPath}">
+			<ms-vectors:media-processor-parameters >
+				<ms-vectors:image-processor-parameters />
+			</ms-vectors:media-processor-parameters>
+		</ms-vectors:media-load-list>
+		<ee:transform doc:name="Transform Message" doc:id="abe9e776-1903-45bf-9c2d-92f954e1df90" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
