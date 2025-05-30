@@ -46,7 +46,8 @@
 	<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669" >
 		<choice doc:name="Choice" doc:id="69b9155e-c2f2-4c28-a7e4-a0d6d7e6c548" >
 			<when expression="${supportRemove}">
-				<ms-vectors:store-remove doc:name="[Store] Remove" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}" />
+				<ms-vectors:store-remove doc:name="Remove all from 'munit' collection" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}" />
+				<ms-vectors:store-remove doc:name="Remove all from 'munitremove' collection" doc:id="1fe37e30-3c22-4ee0-85a2-c8526e47b1e4" config-ref="${config}" storeName="${storeName}" />
 			</when>
 		</choice>
 	</munit:after-suite>
@@ -100,7 +101,7 @@
 	<sub-flow doc:id="b9d7a69a-fa62-4d44-b1df-52a7b220e034" name="store-operations-validate-remove-from-store">
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="c6a2522b-5bb1-4dfc-9b11-0a8efd8d6c2b" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		<choice doc:name="Choice" doc:id="0354944b-caf9-4b74-8463-86857046e872" >
-			<when expression="#[!(vars.removeAllSupported default true)]">
+			<when expression="#[!p('supportRemove')]">
 				<logger level="INFO" doc:name="Logger" doc:id="ac25914b-5672-41bb-b14f-d5d5fd1d5c3c" message="Skip validation due to unsupported operation"/>
 			</when>
 			<otherwise>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="media-operations.xml" minMuleVersion="4.9.0">
+		<munit:parameterizations >
+			<munit:parameterization name="config-storage-local" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageLocalConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="/munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="/munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="/munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="/munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-amazon-s3" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageS3Config" />
+					<munit:parameter propertyName="contextDocumentPath" value="s3://munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="s3://munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="s3://munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="s3://munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-azure-blob" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageAzureBlobConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-storage-google-storage" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storageGCSConfig" />
+					<munit:parameter propertyName="contextDocumentPath" value="gs://munit-document-samples/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="gs://munit-document-samples" />
+					<munit:parameter propertyName="contextMediaPath" value="gs://munit-image-samples/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="gs://munit-image-samples" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test name="media-operations-load-single" doc:id="588d0498-1736-4870-b4e8-9eca7cd33463" >
+		<munit:execution >
+			<flow-ref doc:name="media-operations-load-single-exec" doc:id="7442811d-82bf-41fe-8db9-f75581aafb1f" name="media-operations-load-single-exec"/>
+		</munit:execution>
+		<munit:validation >
+			<flow-ref doc:name="media-operations-validate" doc:id="22ec5268-f45d-4c2a-8cf8-c8f2b57b61c3" name="media-operations-validate"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="media-operations-load-list" doc:id="91c4b587-6b36-45f5-8ac0-19cb8cb1db07" >
+		<munit:execution >
+			<flow-ref doc:name="media-operations-load-list-exec" doc:id="6a7f6e01-ff8f-4f72-92ac-55f7b61ba1e0" name="media-operations-load-list-exec"/>
+		</munit:execution>
+		<munit:validation >
+			<flow-ref doc:name="media-operations-validate" doc:id="c72eb2df-c6f5-42e2-a773-bdd146141e95" name="media-operations-validate" />
+		</munit:validation>
+	</munit:test>
+	<sub-flow name="media-operations-validate" doc:id="8a1bdf57-e8a1-4c33-86f8-ebbe805c1f0a" >
+		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="4804a39c-0689-45a1-b17c-f0eeef8dfdae" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+	</sub-flow>
+
+</mule>
