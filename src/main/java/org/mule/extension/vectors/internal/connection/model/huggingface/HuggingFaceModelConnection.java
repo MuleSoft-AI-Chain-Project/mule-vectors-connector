@@ -114,13 +114,8 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
     if(inputs == null || inputs.isEmpty()) {
       throw new IllegalArgumentException("Input list cannot be null or empty");
     }
-    if(modelName == null || modelName.isEmpty()) {
+    if(modelName == null || modelName.trim().isEmpty()) {
       throw new IllegalArgumentException("Model name cannot be null or empty");
-    }
-    if (modelName == null || modelName.trim().isEmpty()) {
-      String errorMsg = "Model name is null or empty. Please provide a valid Hugging Face model name.";
-      LOGGER.error(errorMsg);
-      throw new RuntimeException(errorMsg);
     }
 
     try {
