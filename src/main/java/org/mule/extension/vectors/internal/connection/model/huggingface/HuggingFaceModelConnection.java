@@ -25,7 +25,8 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
   private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceModelConnection.class);
 
   private static final String AUTH_ENDPOINT = "https://huggingface.co/api/whoami-v2";
-  private static final String EMBEDDINGS_ENDPOINT = "https://api-inference.huggingface.co/pipeline/feature-extraction/";
+  private static final String INFERENCE_ENDPOINT = "https://router.huggingface.co/hf-inference/models/";
+  private static final String PIPELINE_FEATURE_EXTRACTION_PATH = "/pipeline/feature-extraction";
 
   private final String apiKey;
   private final HttpClient httpClient;
@@ -113,13 +114,14 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
     if(inputs == null || inputs.isEmpty()) {
       throw new IllegalArgumentException("Input list cannot be null or empty");
     }
-    if(modelName == null || modelName.isEmpty()) {
+    if(modelName == null || modelName.trim().isEmpty()) {
       throw new IllegalArgumentException("Model name cannot be null or empty");
     }
 
     try {
-      String url = EMBEDDINGS_ENDPOINT + modelName;
-      
+      String url = String.format("%s%s%s", INFERENCE_ENDPOINT, modelName, PIPELINE_FEATURE_EXTRACTION_PATH);
+      LOGGER.info("Generating embeddings using model: {} at URL: {}", modelName, url);
+
       Map<String, Object> requestBody = new HashMap<>();
       requestBody.put("inputs", inputs);
       
