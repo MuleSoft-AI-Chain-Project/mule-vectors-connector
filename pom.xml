@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.6.1-SNAPSHOT</version>
+    <version>0.6.2-SNAPSHOT</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -111,6 +111,10 @@
 				<configuration>
 					<sharedLibraries>
 						<!-- LangChain Dependencies -->
+						<sharedLibrary>
+							<groupId>dev.langchain4j</groupId>
+							<artifactId>langchain4j-core</artifactId>
+						</sharedLibrary>
 						<sharedLibrary>
 							<groupId>dev.langchain4j</groupId>
 							<artifactId>langchain4j</artifactId>
@@ -303,6 +307,12 @@
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j</artifactId>
 			<exclusions>
 				<exclusion>
@@ -420,14 +430,6 @@
 			<artifactId>langchain4j-community-alloydb-pg</artifactId>
 			<version>${langchain4jCommunityVersion}</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mule.connectors</groupId>
-			<artifactId>mule-file-connector</artifactId>
-			<version>1.5.3</version>
-			<classifier>mule-plugin</classifier>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
