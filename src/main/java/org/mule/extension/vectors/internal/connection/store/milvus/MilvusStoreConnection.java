@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.connection.store.milvus;
 
+import dev.langchain4j.internal.Utils;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
@@ -7,20 +8,22 @@ import org.mule.extension.vectors.internal.constant.Constants;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
 
-  private String url;
+  private String host;
+  private Integer port;
   private String token;
+  private String username;
+  private String password;
+  private String databaseName;
   private MilvusServiceClient client;
 
-  public MilvusStoreConnection(String url, String token) {
-    this.url = url;
+  public MilvusStoreConnection(String url, Integer port, String token, String username, String password, String databaseName) {
+    this.host = url;
+    this.port = port;
     this.token = token;
+    this.username = username;
+    this.password = password;
+    this.databaseName = databaseName;
   }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public String getToken() { return token; }
 
   public MilvusServiceClient getClient() {
     return client;
@@ -34,11 +37,17 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   @Override
   public void connect() {
 
-    ConnectParam connectParam = ConnectParam.newBuilder()
-        .withUri(url)
+    ConnectParam.Builder connectBuilder = ConnectParam.newBuilder()
+        .withHost((String) Utils.getOrDefault(host, "localhost"))
+        .withPort((Integer)Utils.getOrDefault(port, 19530))
         .withToken(token)
-        .build();
-    client = new MilvusServiceClient(connectParam);
+        .withAuthorization((String)Utils.getOrDefault(username, ""), (String)Utils.getOrDefault(password, ""));
+
+    if (databaseName != null) {
+      connectBuilder.withDatabaseName(databaseName);
+    }
+
+    client = new MilvusServiceClient(connectBuilder.build());
   }
 
   @Override

@@ -7,8 +7,10 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
 import io.milvus.client.MilvusServiceClient;
+import io.milvus.common.clientenum.ConsistencyLevelEnum;
 import io.milvus.orm.iterator.QueryIterator;
-import io.milvus.param.ConnectParam;
+import io.milvus.param.IndexType;
+import io.milvus.param.MetricType;
 import io.milvus.param.dml.QueryIteratorParam;
 import io.milvus.param.R;
 import io.milvus.response.QueryResultsWrapper;
@@ -26,43 +28,31 @@ public class MilvusStore extends BaseStore {
   static final String TEXT_DEFAULT_FIELD_NAME = "text";
   static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
   static final String VECTOR_DEFAULT_FIELD_NAME = "vector";
-  
-  private final String uri;
-  private final String token;
+
   private MilvusServiceClient client;
-
-  private MilvusServiceClient getClient() {
-
-    if(this.client == null || !this.client.clientIsReady()) {
-
-      // Create S3 client with your credentials
-      this.client = new MilvusServiceClient(
-          ConnectParam.newBuilder()
-              .withUri(this.uri)
-              .withToken(token)
-              .build()
-      );
-    }
-    return client;
-  }
 
   public MilvusStore(StoreConfiguration storeConfiguration, MilvusStoreConnection milvusStoreConnection, String storeName, QueryParameters queryParams, int dimension) {
 
     super(storeConfiguration, milvusStoreConnection, storeName, queryParams, dimension, true);
 
-    this.uri = milvusStoreConnection.getUrl();
-    this.token = milvusStoreConnection.getToken();
     this.client = milvusStoreConnection.getClient();
   }
 
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return MilvusEmbeddingStore.builder()
-        .uri(uri)
-        .token(token)
-        .collectionName(storeName)
-        .dimension(dimension)
-        .build();
+        .milvusClient(client)                      // Use an existing Milvus client
+        .collectionName(storeName)                 // Name of the collection
+        .dimension(dimension)                      // Dimension of vectors
+        .indexType(IndexType.FLAT)                 // Index type
+        .metricType(MetricType.COSINE)             // Metric type
+        .consistencyLevel(ConsistencyLevelEnum.EVENTUALLY)  // Consistency level
+        .autoFlushOnInsert(true)                   // Auto flush after insert
+        .idFieldName("id")                         // ID field name
+        .textFieldName("text")                     // Text field name
+        .metadataFieldName("metadata")             // Metadata field name
+        .vectorFieldName("vector")                 // Vector field name
+        .build();                                  // Build the MilvusEmbeddingStore instance
   }
 
   @Override
@@ -99,7 +89,7 @@ public class MilvusStore extends BaseStore {
             .withOutFields(outFields)
             .build();
 
-        R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
+        R<QueryIterator> queryIteratorRes = client.queryIterator(iteratorParam);
         if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
             throw new RuntimeException(queryIteratorRes.getMessage());
         }
