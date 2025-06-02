@@ -36,7 +36,12 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
           milvusStoreConnectionParameters.getToken(),
           milvusStoreConnectionParameters.getUsername(),
           milvusStoreConnectionParameters.getPassword(),
-          milvusStoreConnectionParameters.getDatabaseName());
+          milvusStoreConnectionParameters.getDatabaseName(),
+          milvusStoreConnectionParameters.getIdFieldName(),
+          milvusStoreConnectionParameters.getTextFieldName(),
+          milvusStoreConnectionParameters.getMetadataFieldName(),
+          milvusStoreConnectionParameters.getVectorFieldName()
+          );
       milvusStoreConnection.connect();
       return milvusStoreConnection;
 

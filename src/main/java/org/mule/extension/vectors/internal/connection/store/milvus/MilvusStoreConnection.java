@@ -14,15 +14,40 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   private String username;
   private String password;
   private String databaseName;
+  private String idFieldName;
+  private String textFieldName;
+  private String metadataFieldName;
+  private String vectorFieldName;
   private MilvusServiceClient client;
 
-  public MilvusStoreConnection(String url, Integer port, String token, String username, String password, String databaseName) {
+  public MilvusStoreConnection(String url, Integer port, String token, String username, String password, String databaseName,
+                               String idFieldName, String textFieldName, String metadataFieldName, String vectorFieldName) {
     this.host = url;
     this.port = port;
     this.token = token;
     this.username = username;
     this.password = password;
     this.databaseName = databaseName;
+    this.idFieldName = idFieldName;
+    this.textFieldName = textFieldName;
+    this.metadataFieldName = metadataFieldName;
+    this.vectorFieldName = vectorFieldName;
+  }
+
+  public String getIdFieldName() {
+    return idFieldName;
+  }
+
+  public String getTextFieldName() {
+    return textFieldName;
+  }
+
+  public String getMetadataFieldName() {
+    return metadataFieldName;
+  }
+
+  public String getVectorFieldName() {
+    return vectorFieldName;
   }
 
   public MilvusServiceClient getClient() {

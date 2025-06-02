@@ -1,10 +1,12 @@
 package org.mule.extension.vectors.internal.connection.store.milvus;
 
+import io.milvus.param.IndexType;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
@@ -14,7 +16,7 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 1)
-  @Example("localhost:19530")
+  @Example("localhost")
   private String host;
 
   @Parameter
@@ -48,6 +50,30 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
   @Optional
   private String databaseName;
 
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
+  @Optional(defaultValue = "id")
+  private String idFieldName;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
+  @Optional(defaultValue = "text")
+  private String textFieldName;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
+  @Optional(defaultValue = "metadata")
+  private String metadataFieldName;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
+  @Optional(defaultValue = "vector")
+  private String vectorFieldName;
+
   public String getHost() {
     return host;
   }
@@ -70,5 +96,21 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
 
   public String getDatabaseName() {
     return databaseName;
+  }
+
+  public String getIdFieldName() {
+    return idFieldName;
+  }
+
+  public String getTextFieldName() {
+    return textFieldName;
+  }
+
+  public String getMetadataFieldName() {
+    return metadataFieldName;
+  }
+
+  public String getVectorFieldName() {
+    return vectorFieldName;
   }
 }

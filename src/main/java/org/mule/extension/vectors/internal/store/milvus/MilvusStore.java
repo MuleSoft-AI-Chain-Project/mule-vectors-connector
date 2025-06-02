@@ -24,16 +24,21 @@ import java.util.*;
 
 public class MilvusStore extends BaseStore {
 
-  static final String ID_DEFAULT_FIELD_NAME = "id";
-  static final String TEXT_DEFAULT_FIELD_NAME = "text";
-  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
-  static final String VECTOR_DEFAULT_FIELD_NAME = "vector";
+  private String idFieldName;
+  private String textFieldName;
+  private String metadataFieldName;
+  private String vectorFieldName;
 
   private MilvusServiceClient client;
 
   public MilvusStore(StoreConfiguration storeConfiguration, MilvusStoreConnection milvusStoreConnection, String storeName, QueryParameters queryParams, int dimension) {
 
     super(storeConfiguration, milvusStoreConnection, storeName, queryParams, dimension, true);
+
+    this.idFieldName = milvusStoreConnection.getIdFieldName();
+    this.textFieldName = milvusStoreConnection.getTextFieldName();
+    this.metadataFieldName = milvusStoreConnection.getMetadataFieldName();
+    this.vectorFieldName = milvusStoreConnection.getVectorFieldName();
 
     this.client = milvusStoreConnection.getClient();
   }
@@ -75,13 +80,13 @@ public class MilvusStore extends BaseStore {
         super();
 
       List<String> outFields = queryParams.retrieveEmbeddings() ?
-          Arrays.asList(ID_DEFAULT_FIELD_NAME,
-                        VECTOR_DEFAULT_FIELD_NAME,
-                        TEXT_DEFAULT_FIELD_NAME,
-                        METADATA_DEFAULT_FIELD_NAME) :
-          Arrays.asList(ID_DEFAULT_FIELD_NAME,
-                        TEXT_DEFAULT_FIELD_NAME,
-                        METADATA_DEFAULT_FIELD_NAME);
+          Arrays.asList(idFieldName,
+                        vectorFieldName,
+                        textFieldName,
+                        metadataFieldName) :
+          Arrays.asList(idFieldName,
+                        textFieldName,
+                        metadataFieldName);
 
         QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
             .withCollectionName(storeName)
@@ -111,17 +116,17 @@ public class MilvusStore extends BaseStore {
         throw new NoSuchElementException();
       }
       QueryResultsWrapper.RowRecord rowRecord = currentBatch.get(currentIndex++);
-      String embeddingId = (String)rowRecord.getFieldValues().get(ID_DEFAULT_FIELD_NAME);
+      String embeddingId = (String)rowRecord.getFieldValues().get(idFieldName);
       float[] vector = null;
       if(queryParams.retrieveEmbeddings()) {
-        List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(VECTOR_DEFAULT_FIELD_NAME);
+        List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(vectorFieldName);
         vector = new float[vectorList.size()];
         for (int i = 0; i < vectorList.size(); i++) {
           vector[i] = vectorList.get(i).floatValue();
         }
       }
-      String text = (String)rowRecord.getFieldValues().get(TEXT_DEFAULT_FIELD_NAME);
-      JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(METADATA_DEFAULT_FIELD_NAME);
+      String text = (String)rowRecord.getFieldValues().get(textFieldName);
+      JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(metadataFieldName);
       JSONObject metadataObject = new JSONObject(gsonObject.toString());
 
       return new Row<TextSegment>(embeddingId,
