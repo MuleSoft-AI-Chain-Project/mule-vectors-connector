@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.connection.store.milvus;
 
+import dev.langchain4j.internal.Utils;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
@@ -7,20 +8,72 @@ import org.mule.extension.vectors.internal.constant.Constants;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
 
-  private String url;
+  private String host;
+  private Integer port;
   private String token;
+  private String username;
+  private String password;
+  private String databaseName;
+  private String indexType;
+  private String metricType;
+  private String consistencyLevel;
+  private boolean autoFlushOnInsert;
+  private String idFieldName;
+  private String textFieldName;
+  private String metadataFieldName;
+  private String vectorFieldName;
   private MilvusServiceClient client;
 
-  public MilvusStoreConnection(String url, String token) {
-    this.url = url;
+  public MilvusStoreConnection(String url, Integer port, String token, String username, String password, String databaseName,
+                               String indexType, String metricType, String consistencyLevel, boolean autoFlushOnInsert,
+                               String idFieldName, String textFieldName, String metadataFieldName, String vectorFieldName) {
+    this.host = url;
+    this.port = port;
     this.token = token;
+    this.username = username;
+    this.password = password;
+    this.databaseName = databaseName;
+    this.indexType = indexType;
+    this.metricType = metricType;
+    this.consistencyLevel = consistencyLevel;
+    this.autoFlushOnInsert = autoFlushOnInsert;
+    this.idFieldName = idFieldName;
+    this.textFieldName = textFieldName;
+    this.metadataFieldName = metadataFieldName;
+    this.vectorFieldName = vectorFieldName;
   }
 
-  public String getUrl() {
-    return url;
+  public String getIndexType() {
+    return indexType;
   }
 
-  public String getToken() { return token; }
+  public String getMetricType() {
+    return metricType;
+  }
+
+  public String getConsistencyLevel() {
+    return consistencyLevel;
+  }
+
+  public boolean isAutoFlushOnInsert() {
+    return autoFlushOnInsert;
+  }
+
+  public String getIdFieldName() {
+    return idFieldName;
+  }
+
+  public String getTextFieldName() {
+    return textFieldName;
+  }
+
+  public String getMetadataFieldName() {
+    return metadataFieldName;
+  }
+
+  public String getVectorFieldName() {
+    return vectorFieldName;
+  }
 
   public MilvusServiceClient getClient() {
     return client;
@@ -34,11 +87,17 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   @Override
   public void connect() {
 
-    ConnectParam connectParam = ConnectParam.newBuilder()
-        .withUri(url)
+    ConnectParam.Builder connectBuilder = ConnectParam.newBuilder()
+        .withHost((String) Utils.getOrDefault(host, "localhost"))
+        .withPort((Integer)Utils.getOrDefault(port, 19530))
         .withToken(token)
-        .build();
-    client = new MilvusServiceClient(connectParam);
+        .withAuthorization((String)Utils.getOrDefault(username, ""), (String)Utils.getOrDefault(password, ""));
+
+    if (databaseName != null) {
+      connectBuilder.withDatabaseName(databaseName);
+    }
+
+    client = new MilvusServiceClient(connectBuilder.build());
   }
 
   @Override
