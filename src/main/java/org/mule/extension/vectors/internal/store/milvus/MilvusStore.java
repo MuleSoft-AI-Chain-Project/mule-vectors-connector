@@ -126,8 +126,8 @@ public class MilvusStore extends BaseStore {
         }
       }
       String text = (String)rowRecord.getFieldValues().get(textFieldName);
-      JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(metadataFieldName);
-      JSONObject metadataObject = new JSONObject(gsonObject.toString());
+      Object metadataRaw = rowRecord.getFieldValues().get(metadataFieldName);
+      JSONObject metadataObject = new JSONObject(metadataRaw.toString());
 
       return new Row<TextSegment>(embeddingId,
                                   vector != null ? new Embedding(vector) : null,
