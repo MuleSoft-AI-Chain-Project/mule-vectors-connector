@@ -30,7 +30,22 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
 
     try {
 
-      MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(milvusStoreConnectionParameters.getUrl(), milvusStoreConnectionParameters.getToken());
+      MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(
+          milvusStoreConnectionParameters.getHost(),
+          milvusStoreConnectionParameters.getPort(),
+          milvusStoreConnectionParameters.getToken(),
+          milvusStoreConnectionParameters.getUsername(),
+          milvusStoreConnectionParameters.getPassword(),
+          milvusStoreConnectionParameters.getDatabaseName(),
+          milvusStoreConnectionParameters.getIndexType(),
+          milvusStoreConnectionParameters.getMetricType(),
+          milvusStoreConnectionParameters.getConsistencyLevel(),
+          milvusStoreConnectionParameters.isAutoFlushOnInsert(),
+          milvusStoreConnectionParameters.getIdFieldName(),
+          milvusStoreConnectionParameters.getTextFieldName(),
+          milvusStoreConnectionParameters.getMetadataFieldName(),
+          milvusStoreConnectionParameters.getVectorFieldName()
+          );
       milvusStoreConnection.connect();
       return milvusStoreConnection;
 

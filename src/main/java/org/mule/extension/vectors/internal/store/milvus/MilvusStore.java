@@ -7,8 +7,10 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
 import io.milvus.client.MilvusServiceClient;
+import io.milvus.common.clientenum.ConsistencyLevelEnum;
 import io.milvus.orm.iterator.QueryIterator;
-import io.milvus.param.ConnectParam;
+import io.milvus.param.IndexType;
+import io.milvus.param.MetricType;
 import io.milvus.param.dml.QueryIteratorParam;
 import io.milvus.param.R;
 import io.milvus.response.QueryResultsWrapper;
@@ -22,47 +24,50 @@ import java.util.*;
 
 public class MilvusStore extends BaseStore {
 
-  static final String ID_DEFAULT_FIELD_NAME = "id";
-  static final String TEXT_DEFAULT_FIELD_NAME = "text";
-  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
-  static final String VECTOR_DEFAULT_FIELD_NAME = "vector";
-  
-  private final String uri;
-  private final String token;
+  private String indexType;
+  private String metricType;
+  private String consistencyLevel;
+  private boolean autoFlushOnInsert;
+
+  private String idFieldName;
+  private String textFieldName;
+  private String metadataFieldName;
+  private String vectorFieldName;
+
   private MilvusServiceClient client;
-
-  private MilvusServiceClient getClient() {
-
-    if(this.client == null || !this.client.clientIsReady()) {
-
-      // Create S3 client with your credentials
-      this.client = new MilvusServiceClient(
-          ConnectParam.newBuilder()
-              .withUri(this.uri)
-              .withToken(token)
-              .build()
-      );
-    }
-    return client;
-  }
 
   public MilvusStore(StoreConfiguration storeConfiguration, MilvusStoreConnection milvusStoreConnection, String storeName, QueryParameters queryParams, int dimension) {
 
     super(storeConfiguration, milvusStoreConnection, storeName, queryParams, dimension, true);
 
-    this.uri = milvusStoreConnection.getUrl();
-    this.token = milvusStoreConnection.getToken();
+    this.indexType = milvusStoreConnection.getIndexType();
+    this.metricType = milvusStoreConnection.getMetricType();
+    this.consistencyLevel = milvusStoreConnection.getConsistencyLevel();
+    this.autoFlushOnInsert = milvusStoreConnection.isAutoFlushOnInsert();
+
+    this.idFieldName = milvusStoreConnection.getIdFieldName();
+    this.textFieldName = milvusStoreConnection.getTextFieldName();
+    this.metadataFieldName = milvusStoreConnection.getMetadataFieldName();
+    this.vectorFieldName = milvusStoreConnection.getVectorFieldName();
+
     this.client = milvusStoreConnection.getClient();
   }
 
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return MilvusEmbeddingStore.builder()
-        .uri(uri)
-        .token(token)
-        .collectionName(storeName)
-        .dimension(dimension)
-        .build();
+        .milvusClient(this.client)                                                // Use an existing Milvus client
+        .collectionName(this.storeName)                                           // Name of the collection
+        .dimension(this.dimension)                                                // Dimension of vectors
+        .indexType(IndexType.valueOf(this.indexType))                             // Index type
+        .metricType(MetricType.valueOf(this.metricType))                          // Metric type
+        .consistencyLevel(ConsistencyLevelEnum.valueOf(this.consistencyLevel))    // Consistency level
+        .autoFlushOnInsert(this.autoFlushOnInsert)                                // Auto flush after insert
+        .idFieldName(this.idFieldName)                                            // ID field name
+        .textFieldName(this.textFieldName)                                        // Text field name
+        .metadataFieldName(this.metadataFieldName)                                // Metadata field name
+        .vectorFieldName(this.vectorFieldName)                                    // Vector field name
+        .build();                                                                 // Build the MilvusEmbeddingStore instance
   }
 
   @Override
@@ -85,13 +90,13 @@ public class MilvusStore extends BaseStore {
         super();
 
       List<String> outFields = queryParams.retrieveEmbeddings() ?
-          Arrays.asList(ID_DEFAULT_FIELD_NAME,
-                        VECTOR_DEFAULT_FIELD_NAME,
-                        TEXT_DEFAULT_FIELD_NAME,
-                        METADATA_DEFAULT_FIELD_NAME) :
-          Arrays.asList(ID_DEFAULT_FIELD_NAME,
-                        TEXT_DEFAULT_FIELD_NAME,
-                        METADATA_DEFAULT_FIELD_NAME);
+          Arrays.asList(idFieldName,
+                        vectorFieldName,
+                        textFieldName,
+                        metadataFieldName) :
+          Arrays.asList(idFieldName,
+                        textFieldName,
+                        metadataFieldName);
 
         QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
             .withCollectionName(storeName)
@@ -99,7 +104,7 @@ public class MilvusStore extends BaseStore {
             .withOutFields(outFields)
             .build();
 
-        R<QueryIterator> queryIteratorRes = getClient().queryIterator(iteratorParam);
+        R<QueryIterator> queryIteratorRes = client.queryIterator(iteratorParam);
         if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
             throw new RuntimeException(queryIteratorRes.getMessage());
         }
@@ -121,18 +126,18 @@ public class MilvusStore extends BaseStore {
         throw new NoSuchElementException();
       }
       QueryResultsWrapper.RowRecord rowRecord = currentBatch.get(currentIndex++);
-      String embeddingId = (String)rowRecord.getFieldValues().get(ID_DEFAULT_FIELD_NAME);
+      String embeddingId = (String)rowRecord.getFieldValues().get(idFieldName);
       float[] vector = null;
       if(queryParams.retrieveEmbeddings()) {
-        List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(VECTOR_DEFAULT_FIELD_NAME);
+        List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(vectorFieldName);
         vector = new float[vectorList.size()];
         for (int i = 0; i < vectorList.size(); i++) {
           vector[i] = vectorList.get(i).floatValue();
         }
       }
-      String text = (String)rowRecord.getFieldValues().get(TEXT_DEFAULT_FIELD_NAME);
-      JsonObject gsonObject = (JsonObject)rowRecord.getFieldValues().get(METADATA_DEFAULT_FIELD_NAME);
-      JSONObject metadataObject = new JSONObject(gsonObject.toString());
+      String text = (String)rowRecord.getFieldValues().get(textFieldName);
+      Object metadataRaw = rowRecord.getFieldValues().get(metadataFieldName);
+      JSONObject metadataObject = new JSONObject(metadataRaw.toString());
 
       return new Row<TextSegment>(embeddingId,
                                   vector != null ? new Embedding(vector) : null,
