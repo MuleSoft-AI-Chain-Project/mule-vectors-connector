@@ -14,6 +14,10 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   private String username;
   private String password;
   private String databaseName;
+  private String indexType;
+  private String metricType;
+  private String consistencyLevel;
+  private boolean autoFlushOnInsert;
   private String idFieldName;
   private String textFieldName;
   private String metadataFieldName;
@@ -21,6 +25,7 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   private MilvusServiceClient client;
 
   public MilvusStoreConnection(String url, Integer port, String token, String username, String password, String databaseName,
+                               String indexType, String metricType, String consistencyLevel, boolean autoFlushOnInsert,
                                String idFieldName, String textFieldName, String metadataFieldName, String vectorFieldName) {
     this.host = url;
     this.port = port;
@@ -28,10 +33,30 @@ public class MilvusStoreConnection implements BaseStoreConnection {
     this.username = username;
     this.password = password;
     this.databaseName = databaseName;
+    this.indexType = indexType;
+    this.metricType = metricType;
+    this.consistencyLevel = consistencyLevel;
+    this.autoFlushOnInsert = autoFlushOnInsert;
     this.idFieldName = idFieldName;
     this.textFieldName = textFieldName;
     this.metadataFieldName = metadataFieldName;
     this.vectorFieldName = vectorFieldName;
+  }
+
+  public String getIndexType() {
+    return indexType;
+  }
+
+  public String getMetricType() {
+    return metricType;
+  }
+
+  public String getConsistencyLevel() {
+    return consistencyLevel;
+  }
+
+  public boolean isAutoFlushOnInsert() {
+    return autoFlushOnInsert;
   }
 
   public String getIdFieldName() {

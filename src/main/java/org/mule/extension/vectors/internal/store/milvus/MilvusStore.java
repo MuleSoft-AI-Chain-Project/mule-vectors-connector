@@ -24,6 +24,11 @@ import java.util.*;
 
 public class MilvusStore extends BaseStore {
 
+  private String indexType;
+  private String metricType;
+  private String consistencyLevel;
+  private boolean autoFlushOnInsert;
+
   private String idFieldName;
   private String textFieldName;
   private String metadataFieldName;
@@ -34,6 +39,11 @@ public class MilvusStore extends BaseStore {
   public MilvusStore(StoreConfiguration storeConfiguration, MilvusStoreConnection milvusStoreConnection, String storeName, QueryParameters queryParams, int dimension) {
 
     super(storeConfiguration, milvusStoreConnection, storeName, queryParams, dimension, true);
+
+    this.indexType = milvusStoreConnection.getIndexType();
+    this.metricType = milvusStoreConnection.getMetricType();
+    this.consistencyLevel = milvusStoreConnection.getConsistencyLevel();
+    this.autoFlushOnInsert = milvusStoreConnection.isAutoFlushOnInsert();
 
     this.idFieldName = milvusStoreConnection.getIdFieldName();
     this.textFieldName = milvusStoreConnection.getTextFieldName();
@@ -46,18 +56,18 @@ public class MilvusStore extends BaseStore {
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return MilvusEmbeddingStore.builder()
-        .milvusClient(this.client)                            // Use an existing Milvus client
-        .collectionName(this.storeName)                       // Name of the collection
-        .dimension(this.dimension)                            // Dimension of vectors
-        .indexType(IndexType.FLAT)                            // Index type
-        .metricType(MetricType.COSINE)                        // Metric type
-        .consistencyLevel(ConsistencyLevelEnum.EVENTUALLY)    // Consistency level
-        .autoFlushOnInsert(true)                              // Auto flush after insert
-        .idFieldName(this.idFieldName)                        // ID field name
-        .textFieldName(this.textFieldName)                    // Text field name
-        .metadataFieldName(this.metadataFieldName)            // Metadata field name
-        .vectorFieldName(this.vectorFieldName)                // Vector field name
-        .build();                                             // Build the MilvusEmbeddingStore instance
+        .milvusClient(this.client)                                                // Use an existing Milvus client
+        .collectionName(this.storeName)                                           // Name of the collection
+        .dimension(this.dimension)                                                // Dimension of vectors
+        .indexType(IndexType.valueOf(this.indexType))                             // Index type
+        .metricType(MetricType.valueOf(this.metricType))                          // Metric type
+        .consistencyLevel(ConsistencyLevelEnum.valueOf(this.consistencyLevel))    // Consistency level
+        .autoFlushOnInsert(this.autoFlushOnInsert)                                // Auto flush after insert
+        .idFieldName(this.idFieldName)                                            // ID field name
+        .textFieldName(this.textFieldName)                                        // Text field name
+        .metadataFieldName(this.metadataFieldName)                                // Metadata field name
+        .vectorFieldName(this.vectorFieldName)                                    // Vector field name
+        .build();                                                                 // Build the MilvusEmbeddingStore instance
   }
 
   @Override
