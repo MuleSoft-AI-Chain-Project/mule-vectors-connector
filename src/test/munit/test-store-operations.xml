@@ -41,13 +41,37 @@
 					<munit:parameter propertyName="supportRemove" value="true" />
 				</munit:parameters>
 			</munit:parameterization>
+			<munit:parameterization name="config-vector-milvus" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storeMilvusConfig" />
+					<munit:parameter propertyName="storeName" value="munit" />
+					<munit:parameter propertyName="minScore" value="0.1" />
+					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
+					<munit:parameter propertyName="supportRemove" value="true" />
+				</munit:parameters>
+			</munit:parameterization>
 		</munit:parameterizations>
 	</munit:config>
 	<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669" >
 		<choice doc:name="Choice" doc:id="69b9155e-c2f2-4c28-a7e4-a0d6d7e6c548" >
 			<when expression="${supportRemove}">
-				<ms-vectors:store-remove doc:name="Remove all from 'munit' collection" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}" />
-				<ms-vectors:store-remove doc:name="Remove all from 'munitremove' collection" doc:id="1fe37e30-3c22-4ee0-85a2-c8526e47b1e4" config-ref="${config}" storeName="${storeName}" />
+				<try doc:name="Try" doc:id="077eb4b2-bfd7-4a74-9814-9820465d0d7c" >
+					<ms-vectors:store-remove doc:name="Remove all from 'munit' collection" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b9be2814-67ad-4c77-8682-70f82bb3cab9" >
+							<logger level="INFO" doc:name="Logger" doc:id="bea7297c-3e30-44fe-80c7-57cd70865cd1" message="#[payload]"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				<try doc:name="Try" doc:id="735b75c6-4e34-48ee-a104-93fb74e1c8bb" >
+					<ms-vectors:store-remove doc:name="Remove all from 'munitremove' collection" doc:id="1fe37e30-3c22-4ee0-85a2-c8526e47b1e4" config-ref="${config}" storeName="${storeName}" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3d800f63-e581-4b1b-be8d-f22d692e2510" >
+							<logger level="INFO" doc:name="Logger" doc:id="c8726fc7-725a-44b7-b043-5d99615424a7" message="#[payload]"/>
+						</on-error-continue>
+					</error-handler>
+				</try>
 			</when>
 		</choice>
 	</munit:after-suite>

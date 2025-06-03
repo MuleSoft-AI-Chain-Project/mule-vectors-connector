@@ -55,9 +55,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			</ms-vectors:metadata-entries>
 		</ms-vectors:store-add>
 		<ms-vectors:query-all doc:name="[Store] Query all (Streaming)" doc:id="3dd71cc8-225a-4bb5-ba9e-8cb9d30078c1" config-ref="${config}" storeName="${storeName}" />
-		<ee:transform doc:name="Transform Message" doc:id="43150a8c-1ff4-49b6-87e7-3a76bf025c86" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="43150a8c-1ff4-49b6-87e7-3a76bf025c86">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload.payload]]></ee:set-payload>
