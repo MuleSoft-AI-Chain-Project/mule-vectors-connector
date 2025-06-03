@@ -46,18 +46,18 @@ public class MilvusStore extends BaseStore {
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return MilvusEmbeddingStore.builder()
-        .milvusClient(client)                      // Use an existing Milvus client
-        .collectionName(storeName)                 // Name of the collection
-        .dimension(dimension)                      // Dimension of vectors
-        .indexType(IndexType.FLAT)                 // Index type
-        .metricType(MetricType.COSINE)             // Metric type
-        .consistencyLevel(ConsistencyLevelEnum.EVENTUALLY)  // Consistency level
-        .autoFlushOnInsert(true)                   // Auto flush after insert
-        .idFieldName("id")                         // ID field name
-        .textFieldName("text")                     // Text field name
-        .metadataFieldName("metadata")             // Metadata field name
-        .vectorFieldName("vector")                 // Vector field name
-        .build();                                  // Build the MilvusEmbeddingStore instance
+        .milvusClient(this.client)                            // Use an existing Milvus client
+        .collectionName(this.storeName)                       // Name of the collection
+        .dimension(this.dimension)                            // Dimension of vectors
+        .indexType(IndexType.FLAT)                            // Index type
+        .metricType(MetricType.COSINE)                        // Metric type
+        .consistencyLevel(ConsistencyLevelEnum.EVENTUALLY)    // Consistency level
+        .autoFlushOnInsert(true)                              // Auto flush after insert
+        .idFieldName(this.idFieldName)                        // ID field name
+        .textFieldName(this.textFieldName)                    // Text field name
+        .metadataFieldName(this.metadataFieldName)            // Metadata field name
+        .vectorFieldName(this.vectorFieldName)                // Vector field name
+        .build();                                             // Build the MilvusEmbeddingStore instance
   }
 
   @Override
