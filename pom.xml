@@ -265,20 +265,6 @@
 			<version>2.2.21</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>io.grpc</groupId>-->
-<!--			<artifactId>grpc-netty-shaded</artifactId>-->
-<!--			<version>1.65.1</version>-->
-<!--			<scope>provided</scope>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>com.google.protobuf</groupId>-->
-<!--			<artifactId>protobuf-java-util</artifactId>-->
-<!--			<version>3.25.5</version>-->
-<!--			<scope>provided</scope>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
