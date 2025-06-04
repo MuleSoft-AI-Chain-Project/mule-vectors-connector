@@ -81,6 +81,7 @@ public class OperationValidator {
               Constants.VECTOR_STORE_CHROMA,
               // Constants.VECTOR_STORE_PINECONE,
               Constants.VECTOR_STORE_AI_SEARCH,
+              Constants.VECTOR_STORE_QDRANT,
               Constants.VECTOR_STORE_WEAVIATE,
               Constants.VECTOR_STORE_EPHEMERAL_FILE
             )));
@@ -96,6 +97,7 @@ public class OperationValidator {
                 Constants.VECTOR_STORE_CHROMA,
                 // Constants.VECTOR_STORE_PINECONE,
                 Constants.VECTOR_STORE_AI_SEARCH,
+                Constants.VECTOR_STORE_QDRANT,
                 //Constants.VECTOR_STORE_WEAVIATE, // Not supported yet.
                 Constants.VECTOR_STORE_EPHEMERAL_FILE
             )));
