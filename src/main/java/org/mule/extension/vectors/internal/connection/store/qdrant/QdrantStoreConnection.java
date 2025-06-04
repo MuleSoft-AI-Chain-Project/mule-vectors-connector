@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.connection.store.qdrant;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.qdrant.client.QdrantClient;
 import io.qdrant.client.QdrantGrpcClient;
+import io.qdrant.client.grpc.Collections;
 import io.qdrant.client.grpc.QdrantOuterClass;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
@@ -110,5 +111,26 @@ public class QdrantStoreConnection implements BaseStoreConnection {
 
     // Make it synchronous by calling get()
     healthCheckFuture.get();
+  }
+
+  public void createCollection(String storeName, int dimension) {
+
+    Collections.StrictModeConfig strictModeConfig = Collections.StrictModeConfig.newBuilder()
+        .setEnabled(false)
+        .build();
+
+    Collections.VectorsConfig vectorsConfig = Collections.VectorsConfig.newBuilder()
+        .setParams(Collections.VectorParams.newBuilder()
+                       .setSize(dimension)
+                       .setDistance(Collections.Distance.Cosine)
+                       .build())
+        .build();
+
+    this.client.createCollectionAsync(
+        Collections.CreateCollection.newBuilder()
+            .setCollectionName(storeName)
+            .setVectorsConfig(vectorsConfig)
+            .setStrictModeConfig(strictModeConfig)
+            .build());
   }
 }
