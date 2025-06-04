@@ -18,37 +18,46 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 1)
-  @Example("localhost")
-  private String host;
+  @Example("http://localhost:19530")
+  @Optional
+  private String uri;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 2)
-  @Example("19530")
-  private Integer port;
+  @Example("localhost")
+  @Optional
+  private String host;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @Placement(order = 3)
+  @Example("19530")
+  @Optional
+  private Integer port;
+
+  @Parameter
+  @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 4)
   @Optional
   private String token;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 4)
+  @Placement(order = 5)
   @Optional
   private String username;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 4)
+  @Placement(order = 6)
   @Optional
   private String password;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 5)
+  @Placement(order = 7)
   @Optional
   private String databaseName;
 
@@ -102,6 +111,10 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
   @Placement(order = 8, tab = Placement.ADVANCED_TAB)
   @Optional(defaultValue = "vector")
   private String vectorFieldName;
+
+  public String getUri() {
+    return uri;
+  }
 
   public String getHost() {
     return host;

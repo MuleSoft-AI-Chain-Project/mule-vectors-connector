@@ -31,6 +31,7 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
     try {
 
       MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(
+          milvusStoreConnectionParameters.getUri(),
           milvusStoreConnectionParameters.getHost(),
           milvusStoreConnectionParameters.getPort(),
           milvusStoreConnectionParameters.getToken(),
