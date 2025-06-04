@@ -22,7 +22,7 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		<ms-vectors:chroma-connection url="${chroma.url}" />
 	</ms-vectors:store-config>
 		<ms-vectors:store-config name="storeMilvusConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="3c79964d-ff1e-419b-9d95-77c8fde48864" >
-		<ms-vectors:milvus-connection host="${milvus.host}" port="${milvus.port}"/>
+		<ms-vectors:milvus-connection host="${milvus.host}" token="${milvus.token}" username="${milvus.username}" password="${milvus.password}" port="${milvus.port}" uri="${milvus.uri}"/>
 	</ms-vectors:store-config>
 	
 </mule>

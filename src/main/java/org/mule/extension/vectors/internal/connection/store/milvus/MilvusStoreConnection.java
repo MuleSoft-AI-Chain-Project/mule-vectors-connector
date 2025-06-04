@@ -8,6 +8,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
 
+  private String uri;
   private String host;
   private Integer port;
   private String token;
@@ -24,10 +25,11 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   private String vectorFieldName;
   private MilvusServiceClient client;
 
-  public MilvusStoreConnection(String url, Integer port, String token, String username, String password, String databaseName,
+  public MilvusStoreConnection(String uri, String host, Integer port, String token, String username, String password, String databaseName,
                                String indexType, String metricType, String consistencyLevel, boolean autoFlushOnInsert,
                                String idFieldName, String textFieldName, String metadataFieldName, String vectorFieldName) {
-    this.host = url;
+    this.uri = uri;
+    this.host = host;
     this.port = port;
     this.token = token;
     this.username = username;
@@ -87,15 +89,17 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   @Override
   public void connect() {
 
-    ConnectParam.Builder connectBuilder = ConnectParam.newBuilder()
-        .withHost((String) Utils.getOrDefault(host, "localhost"))
-        .withPort((Integer)Utils.getOrDefault(port, 19530))
+    ConnectParam.Builder connectBuilder = ConnectParam.newBuilder();
+
+    connectBuilder
         .withToken(token)
         .withAuthorization((String)Utils.getOrDefault(username, ""), (String)Utils.getOrDefault(password, ""));
 
-    if (databaseName != null) {
-      connectBuilder.withDatabaseName(databaseName);
-    }
+    if (uri != null && !uri.isBlank()) connectBuilder.withUri(uri);
+    if (host != null && !host.isBlank()) connectBuilder.withHost(host);
+    if (port != null && port != 0) connectBuilder.withPort((Integer)Utils.getOrDefault(port, 19530));
+    if (databaseName != null && !databaseName.isBlank()) connectBuilder.withDatabaseName(databaseName);
+
 
     client = new MilvusServiceClient(connectBuilder.build());
   }
