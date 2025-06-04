@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.store.qdrant;
 
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Struct;
 import com.google.protobuf.util.JsonFormat;
@@ -59,11 +60,10 @@ public class QdrantStore extends BaseStore {
       this.payloadTextKey = qdrantStoreConnection.getTextSegmentKey();
 
       if (createStore && !this.client.collectionExistsAsync(this.storeName).get() && dimension > 0) {
-        this.client.createCollectionAsync(storeName,
-                                          Collections.VectorParams.newBuilder().setDistance(Collections.Distance.Cosine)
-                                              .setSize(dimension).build())
-            .get();
+
+        qdrantStoreConnection.createCollection(storeName, dimension);
       }
+
     } catch (Exception e) {
 
       throw new ModuleException(
