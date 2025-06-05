@@ -24,5 +24,8 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		<ms-vectors:store-config name="storeMilvusConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="3c79964d-ff1e-419b-9d95-77c8fde48864" >
 		<ms-vectors:milvus-connection host="${milvus.host}" token="${milvus.token}" username="${milvus.username}" password="${milvus.password}" port="${milvus.port}" uri="${milvus.uri}"/>
 	</ms-vectors:store-config>
+	<ms-vectors:store-config name="storeQdrantConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="2bb9aae4-421c-459e-a559-f7d212be3975" >
+		<ms-vectors:qdrant-connection host="${qdrant.host}" gprcPort="${qdrant.grpcPort}" textSegmentKey="${qdrant.textKey}" apiKey="${qdrant.apiKey}" useTLS="${qdrant.useTls}"/>
+	</ms-vectors:store-config>
 	
 </mule>
