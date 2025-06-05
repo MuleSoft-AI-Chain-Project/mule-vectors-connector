@@ -36,33 +36,8 @@ public class PGVectorStore extends BaseStore {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PGVectorStore.class);
 
-  private String user;
-  private String password;
-  private String host;
-  private int port;
-  private String database;
 
   private DataSource dataSource;
-
-  public javax.sql.DataSource getDataSource() {
-
-    if(dataSource == null) {
-
-      host = ValidationUtils.ensureNotBlank(host, "host");
-      port = ValidationUtils.ensureGreaterThanZero(port, "port");
-      user = ValidationUtils.ensureNotBlank(user, "user");
-      password = ValidationUtils.ensureNotBlank(password, "password");
-      database = ValidationUtils.ensureNotBlank(database, "database");
-      PGSimpleDataSource source = new PGSimpleDataSource();
-      source.setServerNames(new String[]{host});
-      source.setPortNumbers(new int[]{port});
-      source.setDatabaseName(database);
-      source.setUser(user);
-      source.setPassword(password);
-      this.dataSource = source;
-    }
-    return dataSource;
-  }
 
   /**
    * Constructs a PGVectorVectorStore instance using configuration and query parameters.
@@ -75,21 +50,16 @@ public class PGVectorStore extends BaseStore {
 
     super(storeConfiguration, pgVectorStoreConnection, storeName, queryParams, dimension, createStore);
 
-    this.host = pgVectorStoreConnection.getHost();
-    this.port = pgVectorStoreConnection.getPort();
-    this.database = pgVectorStoreConnection.getDatabase();
-    this.user = pgVectorStoreConnection.getUser();
-    this.password = pgVectorStoreConnection.getPassword();
     this.dataSource = pgVectorStoreConnection.getDataSource();
   }
 
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return PgVectorEmbeddingStore.datasourceBuilder()
-        .datasource(getDataSource())
-        .table(storeName)
-        .dimension(dimension)
-        .createTable(createStore)
+        .datasource(this.dataSource)
+        .table(this.storeName)
+        .dimension(this.dimension)
+        .createTable(this.createStore)
         .build();
   }
 
@@ -108,24 +78,11 @@ public class PGVectorStore extends BaseStore {
     /**
      * Constructs a PgVectorMetadataIterator for fetching metadata from the database in pages.
      *
-     * @param userName The username for database access.
-     * @param password The password for database access.
-     * @param host The PostgreSQL host.
-     * @param port The PostgreSQL port.
-     * @param database The name of the database.
      * @param table The table to fetch metadata from.
      * @param pageSize The number of rows per page for pagination.
      * @throws SQLException If a database error occurs.
      */
-    private PgVectorMetadataIterator(String userName, String password, String host, int port, String database, String table, int pageSize) throws SQLException {
-
-      // Initialize the connection and the first page of data
-      PGSimpleDataSource dataSource = new PGSimpleDataSource();
-      dataSource.setServerNames(new String[]{host});
-      dataSource.setPortNumbers(new int[]{port});
-      dataSource.setDatabaseName(database);
-      dataSource.setUser(userName);
-      dataSource.setPassword(password);
+    private PgVectorMetadataIterator(String table, int pageSize) throws SQLException {
 
       connection = dataSource.getConnection();
 
@@ -227,8 +184,7 @@ public class PGVectorStore extends BaseStore {
     public RowIterator() throws SQLException {
 
       super();
-      this.iterator = new PgVectorMetadataIterator(
-          user, password, host, port, database, storeName, (int)queryParams.pageSize());
+      this.iterator = new PgVectorMetadataIterator(storeName, (int)queryParams.pageSize());
     }
 
     @Override
