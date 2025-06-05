@@ -31,26 +31,6 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     this.password = password;
   }
 
-  public String getHost() {
-    return host;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public String getDatabase() {
-    return database;
-  }
-
-  public String getUser() {
-    return user;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
   public DataSource getDataSource() {
     return dataSource;
   }
