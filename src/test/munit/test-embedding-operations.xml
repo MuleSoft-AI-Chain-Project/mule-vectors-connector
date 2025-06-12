@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config minMuleVersion="4.9.4" name="test-embedding-operations.xml">
+		<munit:parameterizations >
+			<munit:parameterization name="config-embedding-einstein" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingEinsteinConfig" />
+					<munit:parameter propertyName="textModelName" value="sfdc_ai__DefaultAzureOpenAITextEmbeddingAda_002" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="false" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-embedding-azureopenai" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingAzureOpenAIConfig" />
+					<munit:parameter propertyName="textModelName" value="text-embedding-ada-002" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="false" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-embedding-nomic" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingNomicConfig" />
+					<munit:parameter propertyName="textModelName" value="nomic-embed-text-v1" />
+					<munit:parameter propertyName="multimodalModelName" value="nomic-embed-vision-v1" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="true" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-embedding-openai" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingOpenAIConfig" />
+					<munit:parameter propertyName="textModelName" value="text-embedding-ada-002" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="false" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-embedding-huggingface" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingHuggingFaceConfig" />
+					<munit:parameter propertyName="textModelName" value="sentence-transformers/all-MiniLM-L6-v2" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="false" />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="config-embedding-mistralai" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingMistralAIConfig" />
+					<munit:parameter propertyName="textModelName" value="mistral-embed" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="false" />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test name="embedding-operations-generate-from-text" doc:id="d73c7241-7da9-4e34-8b0c-793b7d541c67" >
+		<munit:execution >
+			<flow-ref doc:name="embedding-operations-generate-from-text-exec" doc:id="43efb92b-bcdd-450e-ac53-058db49a0ad8" name="embedding-operations-generate-from-text-exec"/>
+		</munit:execution>
+		<munit:validation >
+			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="e65b3a4e-923a-4f76-8af7-aed98714d88f" name="embedding-operations-validate-generate-from"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="embedding-operations-generate-from-document" doc:id="810e1d26-76bf-4d72-b399-fe062476cc3f" >
+		<munit:execution >
+			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="1d5bcc0a-f0a4-4ed6-a16a-7fe7ecf8c4f8" name="embedding-operations-generate-from-document-exec"/>
+		</munit:execution>
+		<munit:validation >
+			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="fe5838f2-dca1-49cc-b49d-b550bbfd72b5" name="embedding-operations-validate-generate-from" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="embedding-operations-generate-from-media" doc:id="9dd8d5bd-6e4e-41b0-adcb-e0a8cb5b5ebd" ignore="#[!p('isMultimodal')]">
+		<munit:execution >
+			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="52ef2389-20ac-43d6-a93d-e6579d301fea" name="embedding-operations-generate-from-media-exec"/>
+		</munit:execution>
+		<munit:validation >
+			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="d8d0940a-a47a-47bb-b120-7c702b9ae7db" name="embedding-operations-validate-generate-from" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="embedding-operations-generate-from-binary" doc:id="a52449fc-7ca6-47af-b0eb-eea7f72673ff" ignore="#[!p('isMultimodal')]">
+		<munit:execution >
+			<flow-ref doc:name="embedding-operations-generate-from-binary-exec" doc:id="78170d3a-d85a-44ae-9dc0-4d2625451b3b" name="embedding-operations-generate-from-binary-exec"/>
+		</munit:execution>
+		<munit:validation >
+			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="b0381033-31cc-4175-a8a3-66d573b2c10c" name="embedding-operations-validate-generate-from" />
+		</munit:validation>
+	</munit:test>
+	<sub-flow name="embedding-operations-validate-generate-from" doc:id="fa574441-0280-4181-9c42-db60aa747fc8" >
+		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="79862a69-4ccd-46e7-9795-f8506178d08f" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that embeddings is not null" doc:id="c7f19ed7-2ed0-4c13-8471-44a14c0c250f" message="Payload is null" expression="#[payload.embeddings]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that text-segments is not null" doc:id="231a525b-919a-473e-b41e-1edcf986606f" message="Payload is null" expression='#[payload."text-segments"]' is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that dimension is not null and greater than 0" doc:id="fe4e6b26-9362-41eb-8894-af6995c908e6" message="Invalid dimension" expression="#[payload.dimension]" is="#[MunitTools::greaterThan(0)]"/>
+		<munit-tools:assert-equals doc:name="Assert dimension match embedding size." doc:id="c5777871-e2ee-49d6-bb0e-403369ed841a" actual="#[sizeOf(payload.embeddings[0])]" expected="#[payload.dimension]" message="Model dimension do not match embedding size."/>
+		<munit-tools:assert-equals doc:name="Assert number of embedding vectors match number of text segments." doc:id="8585ef9b-b73e-48b5-88b0-e832d82374c2" actual="#[sizeOf(payload.embeddings)]" expected='#[sizeOf(payload."text-segments")]' message="Number of embedding vectors do not match number of text segments." />
+	</sub-flow>
+
+</mule>
