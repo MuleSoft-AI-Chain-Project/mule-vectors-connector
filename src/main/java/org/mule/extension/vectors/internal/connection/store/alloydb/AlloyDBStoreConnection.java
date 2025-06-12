@@ -112,4 +112,24 @@ public class AlloyDBStoreConnection implements BaseStoreConnection {
   public AlloyDBEngine getAlloyDBEngine() {
     return alloyDBEngine;
   }
+
+  public void initialise() {
+
+
+      this.alloyDBEngine = new CustomAlloyDBEngine.Builder()
+          .projectId(projectId)
+          .region(region)
+          .cluster(cluster)
+          .instance(instance)
+          .iamAccountEmail(iamAccountEmail)
+          .host(host)
+          .ipType(ipType)
+          .port(port)
+          .database(database)
+          .user(user)
+          .password(password)
+          .build();
+
+
+  }
 }

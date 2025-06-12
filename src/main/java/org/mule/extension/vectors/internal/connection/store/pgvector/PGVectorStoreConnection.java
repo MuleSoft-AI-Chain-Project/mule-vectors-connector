@@ -4,6 +4,9 @@ import dev.langchain4j.internal.ValidationUtils;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +36,7 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     this.database = parameters.getDatabase();
     this.user = parameters.getUser();
     this.password = parameters.getPassword();
+    System.out.println("PGVectorStoreConnection constructor--");
   }
 
   public DataSource getDataSource() {
@@ -63,8 +67,7 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   }
 
   /**
-   * Changed from isValid() to validate() for MuleSoft Connector compliance.
-   * Now checks for required parameters.
+   * Changed from isValid() to validate() for MuleSoft Connector compliance. Now checks for required parameters.
    */
   @Override
   public void validate() {
@@ -85,7 +88,7 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     }
   }
 
-  private DataSource createDataSource() {
+  private void createDataSource() {
 
     host = ValidationUtils.ensureNotBlank(host, "host");
     port = ValidationUtils.ensureGreaterThanZero(port, "port");
@@ -93,11 +96,19 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     password = ValidationUtils.ensureNotBlank(password, "password");
     database = ValidationUtils.ensureNotBlank(database, "database");
     PGSimpleDataSource source = new PGSimpleDataSource();
-    source.setServerNames(new String[]{host});
-    source.setPortNumbers(new int[]{port});
+    source.setServerNames(new String[] {host});
+    source.setPortNumbers(new int[] {port});
     source.setDatabaseName(database);
     source.setUser(user);
     source.setPassword(password);
-    return source;
+    this.dataSource =  source;
+  }
+
+
+  public void dispose() throws SQLException {
+      this.dataSource.getConnection().close();
+  }
+  public void initialise()  {
+    createDataSource();
   }
 }

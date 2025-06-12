@@ -101,4 +101,44 @@ public class ElasticsearchStoreConnection implements BaseStoreConnection {
       throw new IllegalArgumentException("Either password or API Key is required for Elasticsearch connection");
     }
   }
+  public void initialise() throws IOException {
+
+
+
+    if (!Utils.isNullOrBlank(user)) {
+
+      BasicCredentialsProvider credsProv = new BasicCredentialsProvider();
+      credsProv.setCredentials(
+          AuthScope.ANY, new UsernamePasswordCredentials(user, password)
+      );
+
+      this.restClient = RestClient
+          .builder(HttpHost.create(url))
+          .setHttpClientConfigCallback(hc -> hc
+              .setDefaultCredentialsProvider(credsProv)
+          )
+          .build();
+
+    } else if (!Utils.isNullOrBlank(apiKey)) {
+
+      this.restClient = RestClient
+          .builder(HttpHost.create(url))
+          .setDefaultHeaders(new Header[] {
+              new BasicHeader("Authorization", "ApiKey " + apiKey)
+          })
+          .build();
+    }
+
+
+    // Create the transport with a Jackson mapper
+    ElasticsearchTransport transport = new RestClientTransport(
+        restClient, new JacksonJsonpMapper());
+
+    // And create the API client
+    ElasticsearchClient esClient = new ElasticsearchClient(transport);
+    if(!esClient.ping().value()) {
+
+      throw new IOException("Impossible to connect to Elasticsearch.");
+    }
+  }
 }

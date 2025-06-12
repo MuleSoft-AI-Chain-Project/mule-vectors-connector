@@ -5,6 +5,9 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
@@ -22,26 +25,28 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     requiredClassName = "dev.langchain4j.community.store.embedding.alloydb.AlloyDBEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-community-alloydb-pg:1.0.1-beta6")
 public class AlloyDBStoreConnectionProvider  implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection> {
+    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
   
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AlloyDBStoreConnectionParameters alloyDBStoreConnectionParameters;
+  private  AlloyDBStoreConnection alloyDBStoreConnection;
   
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
-    
-    try {
-      
-      AlloyDBStoreConnection alloyDBStoreConnection =
-          new AlloyDBStoreConnection(alloyDBStoreConnectionParameters);
       return alloyDBStoreConnection;
-      
-    } catch (Exception e) {
-      
-      throw new ConnectionException("Failed to connect to AlloyDB.", e);
-    }
   }
-  
 
-  
+
+
+  @Override
+  public void dispose() {
+    alloyDBStoreConnection.disconnect();
+  }
+
+  @Override
+  public void initialise()  {
+    alloyDBStoreConnection =
+        new AlloyDBStoreConnection(alloyDBStoreConnectionParameters);
+    alloyDBStoreConnection.initialise();
+  }
 }

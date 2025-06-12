@@ -124,6 +124,22 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
   }
 
+  public void initialise() {
+
+    ConnectParam.Builder connectBuilder = ConnectParam.newBuilder();
+
+    connectBuilder
+        .withToken(token)
+        .withAuthorization((String)Utils.getOrDefault(username, ""), (String)Utils.getOrDefault(password, ""));
+
+    if (uri != null && !uri.isBlank()) connectBuilder.withUri(uri);
+    if (host != null && !host.isBlank()) connectBuilder.withHost(host);
+    if (port != null && port != 0) connectBuilder.withPort((Integer)Utils.getOrDefault(port, 19530));
+    if (databaseName != null && !databaseName.isBlank()) connectBuilder.withDatabaseName(databaseName);
+
+
+    client = new MilvusServiceClient(connectBuilder.build());
+  }
 
   public boolean isValid() {
     return client.checkHealth().getStatus() == 0;

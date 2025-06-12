@@ -124,4 +124,11 @@ public class QdrantStoreConnection implements BaseStoreConnection {
             .setStrictModeConfig(strictModeConfig)
             .build());
   }
+  public void initialise() throws ConnectionException {
+      this.client = new QdrantClient(
+          QdrantGrpcClient.newBuilder(host, gprcPort, useTLS)
+              .withApiKey(apiKey)
+              .build()
+      );
+  }
 }
