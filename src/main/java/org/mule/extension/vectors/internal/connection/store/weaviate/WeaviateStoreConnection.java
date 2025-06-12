@@ -4,6 +4,8 @@ import io.pinecone.clients.Pinecone;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters;
+import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,21 +23,21 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
   private String apikey;
   private boolean avoidDups;
   private String consistencyLevel;
+  private final WeaviateStoreConnectionParameters parameters;
 
   private static final String AUTH_CHECK_ENDPOINT = "/v1/schema";
 
-  public WeaviateStoreConnection(String scheme, String host, Integer port,
-                                 boolean securedGrpc, Integer grpcPort, boolean useGrpcForInserts,
-                                 String apiKey, boolean avoidDups, String consistencyLevel) {
-    this.scheme = scheme;
-    this.host = host;
-    this.port = port;
-    this.securedGrpc = securedGrpc;
-    this.grpcPort = grpcPort;
-    this.useGrpcForInserts = useGrpcForInserts;
-    this.apikey = apiKey;
-    this.avoidDups = avoidDups;
-    this.consistencyLevel = consistencyLevel;
+  public WeaviateStoreConnection(WeaviateStoreConnectionParameters parameters) {
+    this.parameters = parameters;
+    this.scheme = parameters.getScheme();
+    this.host = parameters.getHost();
+    this.port = parameters.getPort();
+    this.securedGrpc = parameters.isSecuredGrpc();
+    this.grpcPort = parameters.getGrpcPort();
+    this.useGrpcForInserts = parameters.isUseGrpcForInserts();
+    this.apikey = parameters.getApiKey();
+    this.avoidDups = parameters.isAvoidDups();
+    this.consistencyLevel = parameters.getConsistencyLevel();
   }
 
   public String getScheme() {
@@ -74,26 +76,29 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
   }
 
   @Override
-  public void connect() throws ConnectionException {
-    try {
-      testConnection();
-    } catch (Exception e) {
-      throw new ConnectionException("Impossible to connect to Weaviate.", e);
-    }
-  }
-
-  @Override
   public void disconnect() {
     // Add disconnection logic if any.
   }
 
   @Override
-  public boolean isValid() {
-    try {
-      testConnection();
-      return true;
-    } catch (Exception e) {
-      return false;
+  public BaseStoreConnectionParameters getConnectionParameters() {
+    return parameters;
+  }
+
+  /**
+   * Changed from isValid() to validate() for MuleSoft Connector compliance.
+   * Now checks for required parameters.
+   */
+  @Override
+  public void validate() {
+    if (parameters.getScheme() == null || parameters.getScheme().isBlank()) {
+      throw new IllegalArgumentException("Scheme is required for Weaviate connection");
+    }
+    if (parameters.getHost() == null || parameters.getHost().isBlank()) {
+      throw new IllegalArgumentException("Host is required for Weaviate connection");
+    }
+    if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
+      throw new IllegalArgumentException("API Key is required for Weaviate connection");
     }
   }
 

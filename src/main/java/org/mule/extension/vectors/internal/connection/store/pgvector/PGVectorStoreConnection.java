@@ -7,6 +7,8 @@ import org.mule.runtime.api.connection.ConnectionException;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnectionParameters;
+import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -22,13 +24,15 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   private String user;
   private String password;
   private DataSource dataSource;
+  private final PGVectorStoreConnectionParameters parameters;
 
-  public PGVectorStoreConnection(String host, int port, String database, String userName, String password) {
-    this.host = host;
-    this.port = port;
-    this.database = database;
-    this.user = userName;
-    this.password = password;
+  public PGVectorStoreConnection(PGVectorStoreConnectionParameters parameters) {
+    this.parameters = parameters;
+    this.host = parameters.getHost();
+    this.port = parameters.getPort();
+    this.database = parameters.getDatabase();
+    this.user = parameters.getUser();
+    this.password = parameters.getPassword();
   }
 
   public String getHost() {
@@ -61,41 +65,6 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   }
 
   @Override
-  public void connect() throws ConnectionException {
-
-    try {
-
-      this.dataSource = createDataSource();
-      if(dataSource != null) {
-
-        Connection conn = dataSource.getConnection();
-        if (conn == null) {
-
-          throw new ConnectionException("Impossible to connect to PGVector. Cannot get a connection from the pool.");
-        } else {
-
-          conn.close();
-        }
-      } else {
-
-        throw new ConnectionException("Impossible to connect to PGVector. Cannot initiate the datasource.");
-      }
-
-    } catch (ConnectionException e) {
-
-      throw e;
-
-    } catch (SQLException e) {
-
-      throw new ConnectionException("Impossible to connect to PGVector. SQLException.", e);
-
-    } catch (Exception e) {
-
-      throw new ConnectionException("Impossible to connect to PGVector.", e);
-    }
-  }
-
-  @Override
   public void disconnect() {
 
     try {
@@ -109,24 +78,30 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   }
 
   @Override
-  public boolean isValid() {
+  public BaseStoreConnectionParameters getConnectionParameters() {
+    return parameters;
+  }
 
-    try {
-
-      Connection conn = this.dataSource.getConnection();
-      if(conn != null) {
-
-        conn.close();
-        return true;
-      } else {
-
-        return false;
-      }
-
-    } catch (Exception e) {
-
-      return false;
-
+  /**
+   * Changed from isValid() to validate() for MuleSoft Connector compliance.
+   * Now checks for required parameters.
+   */
+  @Override
+  public void validate() {
+    if (parameters.getHost() == null || parameters.getHost().isBlank()) {
+      throw new IllegalArgumentException("Host is required for PGVector connection");
+    }
+    if (parameters.getPort() <= 0) {
+      throw new IllegalArgumentException("Port is required for PGVector connection and must be > 0");
+    }
+    if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
+      throw new IllegalArgumentException("Database is required for PGVector connection");
+    }
+    if (parameters.getUser() == null || parameters.getUser().isBlank()) {
+      throw new IllegalArgumentException("User is required for PGVector connection");
+    }
+    if (parameters.getPassword() == null || parameters.getPassword().isBlank()) {
+      throw new IllegalArgumentException("Password is required for PGVector connection");
     }
   }
 

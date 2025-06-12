@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.connection.store.milvus;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
+import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -20,7 +21,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-milvus:1.0.1-beta6")
-public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
+public class MilvusStoreConnectionProvider implements BaseStoreConnectionProvider,
+    CachedConnectionProvider<BaseStoreConnection> {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private MilvusStoreConnectionParameters milvusStoreConnectionParameters;
@@ -31,20 +33,7 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
     try {
 
       MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(
-          milvusStoreConnectionParameters.getHost(),
-          milvusStoreConnectionParameters.getPort(),
-          milvusStoreConnectionParameters.getToken(),
-          milvusStoreConnectionParameters.getUsername(),
-          milvusStoreConnectionParameters.getPassword(),
-          milvusStoreConnectionParameters.getDatabaseName(),
-          milvusStoreConnectionParameters.getIndexType(),
-          milvusStoreConnectionParameters.getMetricType(),
-          milvusStoreConnectionParameters.getConsistencyLevel(),
-          milvusStoreConnectionParameters.isAutoFlushOnInsert(),
-          milvusStoreConnectionParameters.getIdFieldName(),
-          milvusStoreConnectionParameters.getTextFieldName(),
-          milvusStoreConnectionParameters.getMetadataFieldName(),
-          milvusStoreConnectionParameters.getVectorFieldName()
+          milvusStoreConnectionParameters
           );
       milvusStoreConnection.connect();
       return milvusStoreConnection;
@@ -52,26 +41,6 @@ public class MilvusStoreConnectionProvider extends BaseStoreConnectionProvider {
     } catch (Exception e) {
 
       throw new ConnectionException("Failed to connect to Milvus.", e);
-    }
-  }
-
-  @Override
-  public void disconnect(BaseStoreConnection connection) {
-
-    connection.disconnect();
-  }
-
-  @Override
-  public ConnectionValidationResult validate(BaseStoreConnection connection) {
-
-    try {
-      if (connection.isValid()) {
-        return ConnectionValidationResult.success();
-      } else {
-        return ConnectionValidationResult.failure("Failed to validate connection to Milvus", null);
-      }
-    } catch (Exception e) {
-      return ConnectionValidationResult.failure("Failed to validate connection to Milvus", e);
     }
   }
 }

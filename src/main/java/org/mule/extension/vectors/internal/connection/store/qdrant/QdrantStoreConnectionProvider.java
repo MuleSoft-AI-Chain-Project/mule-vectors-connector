@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.connection.store.qdrant;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
+import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -22,7 +23,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-qdrant:1.0.1-beta6")
-public class QdrantStoreConnectionProvider  extends BaseStoreConnectionProvider {
+public class QdrantStoreConnectionProvider implements BaseStoreConnectionProvider,
+    CachedConnectionProvider<BaseStoreConnection> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStoreConnectionProvider.class);
 
@@ -35,49 +37,12 @@ public class QdrantStoreConnectionProvider  extends BaseStoreConnectionProvider 
     try {
 
       QdrantStoreConnection qdrantStoreConnection =
-          new QdrantStoreConnection(qdrantStoreConnectionParameters.getHost(),
-                                    qdrantStoreConnectionParameters.getGprcPort(),
-                                    qdrantStoreConnectionParameters.isUseTLS(),
-                                    qdrantStoreConnectionParameters.getTextSegmentKey(),
-                                    qdrantStoreConnectionParameters.getApiKey());
-      qdrantStoreConnection.connect();
+          new QdrantStoreConnection(qdrantStoreConnectionParameters);
       return qdrantStoreConnection;
 
-    } catch (ConnectionException e) {
-
-      throw e;
-
-    } catch (Exception e) {
+    }  catch (Exception e) {
 
       throw new ConnectionException("Failed to connect to Qdrant", e);
     }
   }
-
-  @Override
-  public void disconnect(BaseStoreConnection connection) {
-
-    try {
-
-      connection.disconnect();
-    } catch (Exception e) {
-
-      LOGGER.error("Failed to close connection", e);
-    }
-  }
-
-  @Override
-  public ConnectionValidationResult validate(BaseStoreConnection connection) {
-
-    try {
-
-      if (connection.isValid()) {
-        return ConnectionValidationResult.success();
-      } else {
-        return ConnectionValidationResult.failure("Failed to validate connection to Qdrant", null);
-      }
-    } catch (Exception e) {
-      return ConnectionValidationResult.failure("Failed to validate connection to Qdrant", e);
-    }
-  }
-
 }

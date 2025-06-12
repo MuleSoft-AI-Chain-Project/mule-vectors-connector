@@ -28,11 +28,14 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
   
   private OpenSearchClient openSearchClient;
 
-  public OpenSearchStoreConnection(String url, String userName, String password, String apikey) {
-    this.url = url;
-    this.user = userName;
-    this.password = password;
-    this.apiKey = apikey;
+  private final OpenSearchStoreConnectionParameters parameters;
+
+  public OpenSearchStoreConnection(final OpenSearchStoreConnectionParameters openSearchStoreConnectionParameters) {
+    this.parameters = openSearchStoreConnectionParameters;
+    this.url = openSearchStoreConnectionParameters.getUrl();
+    this.user = openSearchStoreConnectionParameters.getUser();
+    this.password = openSearchStoreConnectionParameters.getPassword();
+    this.apiKey = openSearchStoreConnectionParameters.getApiKey();
   }
 
   public String getUrl() {
@@ -60,7 +63,6 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
     return Constants.VECTOR_STORE_OPENSEARCH;
   }
 
-  @Override
   public void connect() throws ConnectionException {
 
     try {
@@ -114,16 +116,21 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
   }
 
   @Override
-  public boolean isValid() {
+  public OpenSearchStoreConnectionParameters getConnectionParameters() {
+    return parameters;
+  }
 
-    try {
-
-      return openSearchClient.ping().value();
-
-    } catch (IOException e) {
-
-      LOGGER.error("Failed to validate connection to OpenSearch.", e);
-      return false;
+  /**
+   * Changed from isValid() to validate() for MuleSoft Connector compliance.
+   * Now checks for required parameters.
+   */
+  @Override
+  public void validate() {
+    if (parameters.getUrl() == null || parameters.getUrl().isBlank()) {
+      throw new IllegalArgumentException("URL is required for OpenSearch connection");
+    }
+    if ((parameters.getPassword() == null || parameters.getPassword().isBlank()) && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
+      throw new IllegalArgumentException("Either password or API Key is required for OpenSearch connection");
     }
   }
 }
