@@ -10,6 +10,8 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnectionParameters;
+import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 public class QdrantStoreConnection implements BaseStoreConnection {
 
@@ -22,13 +24,15 @@ public class QdrantStoreConnection implements BaseStoreConnection {
   private final String apiKey;
 
   private QdrantClient client;
+  private final QdrantStoreConnectionParameters parameters;
 
-  public QdrantStoreConnection(String host, int gprcPort, boolean useTLS, String textSegmentKey, String apiKey) {
-    this.host = host;
-    this.gprcPort = gprcPort;
-    this.useTLS = useTLS;
-    this.textSegmentKey = textSegmentKey;
-    this.apiKey = apiKey;
+  public QdrantStoreConnection(QdrantStoreConnectionParameters parameters) {
+    this.parameters = parameters;
+    this.host = parameters.getHost();
+    this.gprcPort = parameters.getGprcPort();
+    this.useTLS = parameters.isUseTLS();
+    this.textSegmentKey = parameters.getTextSegmentKey();
+    this.apiKey = parameters.getApiKey();
   }
 
   public String getHost() {
@@ -61,47 +65,34 @@ public class QdrantStoreConnection implements BaseStoreConnection {
   }
 
   @Override
-  public void connect() throws ConnectionException {
-
-    try {
-
-      this.client = new QdrantClient(
-          QdrantGrpcClient.newBuilder(host, gprcPort, useTLS)
-              .withApiKey(apiKey)
-              .build()
-      );
-
-      doHealthCheck();
-
-    } catch (ConnectionException e) {
-
-      throw e;
-    } catch (Exception e) {
-
-      throw new ConnectionException("Impossible to connect to Qdrant.", e);
-    }
-  }
-
-  @Override
   public void disconnect() {
 
     this.client.close();
   }
 
   @Override
-  public boolean isValid() {
+  public BaseStoreConnectionParameters getConnectionParameters() {
+    return parameters;
+  }
 
-    try {
-
-      doHealthCheck();
-      return true;
-
-    } catch (Exception e) {
-
-      LOGGER.error("Failed to validate connection to Qdrant.", e);
-      return false;
+  /**
+   * Changed from isValid() to validate() for MuleSoft Connector compliance.
+   * Now checks for required parameters.
+   */
+  @Override
+  public void validate() {
+    if (parameters.getHost() == null || parameters.getHost().isBlank()) {
+      throw new IllegalArgumentException("Host is required for Qdrant connection");
     }
-
+    if (parameters.getGprcPort() <= 0) {
+      throw new IllegalArgumentException("gprcPort is required for Qdrant connection and must be > 0");
+    }
+    if (parameters.getTextSegmentKey() == null || parameters.getTextSegmentKey().isBlank()) {
+      throw new IllegalArgumentException("TextSegmentKey is required for Qdrant connection");
+    }
+    if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
+      throw new IllegalArgumentException("API Key is required for Qdrant connection");
+    }
   }
 
   private void doHealthCheck() throws Exception {

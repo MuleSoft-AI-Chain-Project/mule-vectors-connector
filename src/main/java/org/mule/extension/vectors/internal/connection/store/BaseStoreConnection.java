@@ -1,14 +1,10 @@
 package org.mule.extension.vectors.internal.connection.store;
 
-import org.mule.runtime.api.connection.ConnectionException;
+import com.mulesoft.connectors.commons.template.connection.ConnectorConnection;
 
-public interface BaseStoreConnection {
+public interface BaseStoreConnection extends ConnectorConnection {
 
   String getVectorStore();
 
-  void connect() throws ConnectionException;
-
-  void disconnect();
-
-  boolean isValid();
+  BaseStoreConnectionParameters getConnectionParameters();
 }

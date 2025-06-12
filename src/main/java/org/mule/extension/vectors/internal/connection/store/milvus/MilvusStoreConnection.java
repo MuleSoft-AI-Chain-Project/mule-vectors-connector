@@ -4,6 +4,7 @@ import dev.langchain4j.internal.Utils;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
@@ -25,24 +26,24 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   private String vectorFieldName;
   private MilvusServiceClient client;
 
-  public MilvusStoreConnection(String uri, String host, Integer port, String token, String username, String password, String databaseName,
-                               String indexType, String metricType, String consistencyLevel, boolean autoFlushOnInsert,
-                               String idFieldName, String textFieldName, String metadataFieldName, String vectorFieldName) {
-    this.uri = uri;
-    this.host = host;
-    this.port = port;
-    this.token = token;
-    this.username = username;
-    this.password = password;
-    this.databaseName = databaseName;
-    this.indexType = indexType;
-    this.metricType = metricType;
-    this.consistencyLevel = consistencyLevel;
-    this.autoFlushOnInsert = autoFlushOnInsert;
-    this.idFieldName = idFieldName;
-    this.textFieldName = textFieldName;
-    this.metadataFieldName = metadataFieldName;
-    this.vectorFieldName = vectorFieldName;
+  private final MilvusStoreConnectionParameters milvusStoreConnectionParameters;
+
+  public MilvusStoreConnection(final MilvusStoreConnectionParameters milvusStoreConnectionParameters) {
+    this.milvusStoreConnectionParameters = milvusStoreConnectionParameters;
+    this.host = milvusStoreConnectionParameters.getHost();
+    this.port = milvusStoreConnectionParameters.getPort();
+    this.token = milvusStoreConnectionParameters.getToken();
+    this.username = milvusStoreConnectionParameters.getUsername();
+    this.password = milvusStoreConnectionParameters.getPassword();
+    this.databaseName = milvusStoreConnectionParameters.getDatabaseName();
+    this.indexType = milvusStoreConnectionParameters.getIndexType();
+    this.metricType = milvusStoreConnectionParameters.getMetricType();
+    this.consistencyLevel = milvusStoreConnectionParameters.getConsistencyLevel();
+    this.autoFlushOnInsert = milvusStoreConnectionParameters.isAutoFlushOnInsert();
+    this.idFieldName = milvusStoreConnectionParameters.getIdFieldName();
+    this.textFieldName = milvusStoreConnectionParameters.getTextFieldName();
+    this.metadataFieldName = milvusStoreConnectionParameters.getMetadataFieldName();
+    this.vectorFieldName = milvusStoreConnectionParameters.getVectorFieldName();
   }
 
   public String getIndexType() {
@@ -87,6 +88,11 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   }
 
   @Override
+  public BaseStoreConnectionParameters getConnectionParameters() {
+    return milvusStoreConnectionParameters;
+  }
+
+
   public void connect() {
 
     ConnectParam.Builder connectBuilder = ConnectParam.newBuilder();
@@ -114,6 +120,11 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   }
 
   @Override
+  public void validate() {
+
+  }
+
+
   public boolean isValid() {
     return client.checkHealth().getStatus() == 0;
   }

@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.connection.store.pinecone;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
+import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -22,7 +23,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-pinecone:1.0.1-beta6")
-public class PineconeStoreConnectionProvider  extends BaseStoreConnectionProvider {
+public class PineconeStoreConnectionProvider  implements BaseStoreConnectionProvider,
+    CachedConnectionProvider<BaseStoreConnection> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStoreConnectionProvider.class);
 
@@ -31,51 +33,13 @@ public class PineconeStoreConnectionProvider  extends BaseStoreConnectionProvide
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
-
     try {
-
-      PineconeStoreConnection pineconeStoreConnection =
-          new PineconeStoreConnection(pineconeStoreConnectionParameters.getCloud(),
-                                      pineconeStoreConnectionParameters.getRegion(),
-                                      pineconeStoreConnectionParameters.getApiKey());
-      pineconeStoreConnection.connect();
-      return pineconeStoreConnection;
-
-    } catch (ConnectionException e) {
-
-      throw e;
-
+      PineconeStoreConnection connection = new PineconeStoreConnection(pineconeStoreConnectionParameters);
+      return connection;
     } catch (Exception e) {
-
       throw new ConnectionException("Failed to connect to Pinecone", e);
     }
   }
 
-  @Override
-  public void disconnect(BaseStoreConnection connection) {
-
-    try {
-
-      connection.disconnect();
-    } catch (Exception e) {
-
-      LOGGER.error("Failed to close connection", e);
-    }
-  }
-
-  @Override
-  public ConnectionValidationResult validate(BaseStoreConnection connection) {
-
-    try {
-
-      if (connection.isValid()) {
-        return ConnectionValidationResult.success();
-      } else {
-        return ConnectionValidationResult.failure("Failed to validate connection to Pinecone", null);
-      }
-    } catch (Exception e) {
-      return ConnectionValidationResult.failure("Failed to validate connection to Pinecone", e);
-    }
-  }
 
 }

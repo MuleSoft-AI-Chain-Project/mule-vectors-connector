@@ -419,6 +419,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>com.mulesoft.connectors</groupId>
+            <artifactId>mule-connector-commons</artifactId>
+            <version>2.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-file-connector</artifactId>
@@ -428,6 +436,7 @@
 		</dependency>
 
 	</dependencies>
+
 
 	<repositories>
 		<repository>

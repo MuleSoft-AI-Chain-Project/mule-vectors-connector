@@ -6,6 +6,8 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnectionParameters;
+import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,10 +20,12 @@ public class AISearchStoreConnection implements BaseStoreConnection {
   
   private String url;
   private String apiKey;
+  private final AISearchStoreConnectionParameters parameters;
 
-  public AISearchStoreConnection(String url, String apiKey) {
-    this.url = url;
-    this.apiKey = apiKey;
+  public AISearchStoreConnection(AISearchStoreConnectionParameters parameters) {
+    this.parameters = parameters;
+    this.url = parameters.getUrl();
+    this.apiKey = parameters.getApiKey();
   }
 
   public String getUrl() {
@@ -38,38 +42,32 @@ public class AISearchStoreConnection implements BaseStoreConnection {
   }
 
   @Override
-  public void connect() throws ConnectionException {
-
-    try {
-
-      doAuthenticatedHttpRequest();
-    } catch (ConnectionException e) {
-
-      throw e;
-
-    } catch (Exception e) {
-
-      throw new ConnectionException("Failed to connect to AI Search.", e);
-    }
-  }
-
-  @Override
   public void disconnect() {
 
   }
 
   @Override
-  public boolean isValid() {
+  public BaseStoreConnectionParameters getConnectionParameters() {
+    return parameters;
+  }
 
+  /**
+   * Changed from isValid() to validate() for MuleSoft Connector compliance.
+   * Now checks for required parameters.
+   */
+  @Override
+  public void validate() {
     try {
-
-      doAuthenticatedHttpRequest();
-      return true;
-
+      if (url == null ) {
+        throw new IllegalArgumentException("URL is required for AI Search connection.");
+      }
+      if (apiKey == null) {
+        throw new IllegalArgumentException("API Key is required for AI Search connection.");
+      }
+      // return true;
     } catch (Exception e) {
-
       LOGGER.error("Failed to validate connection to AI Search.", e);
-      return false;
+      // return false;
     }
   }
 
