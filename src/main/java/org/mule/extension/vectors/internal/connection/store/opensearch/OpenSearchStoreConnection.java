@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.internal.connection.store.opensearch;
 
 import dev.langchain4j.internal.Utils;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 
 public class OpenSearchStoreConnection implements BaseStoreConnection {
@@ -63,11 +65,11 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
     return Constants.VECTOR_STORE_OPENSEARCH;
   }
 
-  public void connect() throws ConnectionException {
+  public void initialise() throws URISyntaxException {
 
-    try {
 
-      org.apache.hc.core5.http.HttpHost openSearchHost = org.apache.hc.core5.http.HttpHost.create(url);
+
+  HttpHost openSearchHost = HttpHost.create(url);
 
       OpenSearchTransport transport = ApacheHttpClient5TransportBuilder.builder(new HttpHost[]{openSearchHost}).setMapper(new JacksonJsonpMapper()).setHttpClientConfigCallback((httpClientBuilder) -> {
 
@@ -76,8 +78,8 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
         }
 
         if (!Utils.isNullOrBlank(user) && !Utils.isNullOrBlank(password)) {
-          org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider
-              credentialsProvider = new org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider();
+          BasicCredentialsProvider
+              credentialsProvider = new BasicCredentialsProvider();
           credentialsProvider.setCredentials(new org.apache.hc.client5.http.auth.AuthScope(openSearchHost), new org.apache.hc.client5.http.auth.UsernamePasswordCredentials(user, password.toCharArray()));
           httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
@@ -88,18 +90,8 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
 
       this.openSearchClient = new OpenSearchClient(transport);
 
-      if(!openSearchClient.ping().value()) {
 
-        throw new ConnectionException("Impossible to connect to OpenSearch. Ping to the service failed.");
-      }
 
-    } catch (ConnectionException e) {
-
-      throw e;
-    } catch (Exception e) {
-
-      throw new ConnectionException("Impossible to connect to OpenSearch.", e);
-    }
   }
 
   @Override

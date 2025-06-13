@@ -88,4 +88,10 @@ public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
       throw new IllegalArgumentException("Database is required for MongoDB Atlas connection");
     }
   }
+  public void initialise() {
+
+    this.mongoClient = MongoClients.create(mongodbUri);
+    mongoClient.listDatabaseNames().first();
+  }
+
 }

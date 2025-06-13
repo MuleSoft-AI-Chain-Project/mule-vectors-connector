@@ -5,6 +5,9 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
@@ -22,25 +25,26 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     requiredClassName = "dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-milvus:1.0.1-beta6")
 public class MilvusStoreConnectionProvider implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection> {
+    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private MilvusStoreConnectionParameters milvusStoreConnectionParameters;
-
+private  MilvusStoreConnection milvusStoreConnection;
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
+    return milvusStoreConnection;
+  }
 
-    try {
+  @Override
+  public void dispose() {
+    milvusStoreConnection.disconnect();
+  }
 
-      MilvusStoreConnection milvusStoreConnection = new MilvusStoreConnection(
-          milvusStoreConnectionParameters
-          );
-      milvusStoreConnection.connect();
-      return milvusStoreConnection;
-
-    } catch (Exception e) {
-
-      throw new ConnectionException("Failed to connect to Milvus.", e);
-    }
+  @Override
+  public void initialise() throws InitialisationException {
+    milvusStoreConnection = new MilvusStoreConnection(
+        milvusStoreConnectionParameters
+    );
+    milvusStoreConnection.initialise();
   }
 }

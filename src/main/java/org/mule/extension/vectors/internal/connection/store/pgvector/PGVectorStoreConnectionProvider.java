@@ -5,11 +5,16 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
+
+import java.sql.SQLException;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
@@ -22,25 +27,32 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     requiredClassName = "dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-pgvector:1.0.1-beta6")
 public class PGVectorStoreConnectionProvider implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection> {
+    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private PGVectorStoreConnectionParameters pgVectorStoreConnectionParameters;
+  private PGVectorStoreConnection pgVectorStoreConnection;
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
-
-    try {
-
-      PGVectorStoreConnection pgVectorStoreConnection =
-          new PGVectorStoreConnection(pgVectorStoreConnectionParameters);
       return pgVectorStoreConnection;
-
-    } catch (Exception e) {
-
-      throw new ConnectionException("Failed to connect to PGVector.", e);
-    }
   }
 
 
+  @Override
+  public void dispose() {
+    try {
+      pgVectorStoreConnection.dispose();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  @Override
+  public void initialise()  {
+    pgVectorStoreConnection =
+        new PGVectorStoreConnection(pgVectorStoreConnectionParameters);
+    pgVectorStoreConnection.initialise();
+  }
 }

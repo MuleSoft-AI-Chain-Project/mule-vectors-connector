@@ -6,6 +6,9 @@ import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreCo
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.lifecycle.Disposable;
+import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
@@ -23,18 +26,24 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     requiredClassName = "dev.langchain4j.store.embedding.mongodb.MongoDbEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-mongodb-atlas:1.0.1-beta6")
 public class MongoDBAtlasStoreConnectionProvider implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection> {
+    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private MongoDBAtlasStoreConnectionParameters mongoDBAtlasStoreConnectionParameters;
-
+  private   MongoDBAtlasStoreConnection mongoDBAtlasStoreConnection;
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
-    try {
-      MongoDBAtlasStoreConnection connection = new MongoDBAtlasStoreConnection(mongoDBAtlasStoreConnectionParameters);
-      return connection;
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to MongoDB Atlas", e);
-    }
+      return mongoDBAtlasStoreConnection;
+  }
+
+  @Override
+  public void dispose() {
+    mongoDBAtlasStoreConnection.disconnect();
+  }
+
+  @Override
+  public void initialise() throws InitialisationException {
+     mongoDBAtlasStoreConnection = new MongoDBAtlasStoreConnection(mongoDBAtlasStoreConnectionParameters);
+    mongoDBAtlasStoreConnection.initialise();
   }
 }
