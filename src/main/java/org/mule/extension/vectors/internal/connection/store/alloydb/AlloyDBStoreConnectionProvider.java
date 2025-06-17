@@ -24,8 +24,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.community.store.embedding.alloydb.AlloyDBEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-community-alloydb-pg:1.0.1-beta6")
-public class AlloyDBStoreConnectionProvider  implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
+public class AlloyDBStoreConnectionProvider implements
+    CachedConnectionProvider<BaseStoreConnection>,  BaseStoreConnectionProvider {
   
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AlloyDBStoreConnectionParameters alloyDBStoreConnectionParameters;

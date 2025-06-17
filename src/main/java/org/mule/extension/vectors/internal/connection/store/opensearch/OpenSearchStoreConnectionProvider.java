@@ -28,8 +28,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.opensearch.OpenSearchEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-opensearch:1.0.1-beta6")
-public class OpenSearchStoreConnectionProvider  implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
+public class OpenSearchStoreConnectionProvider implements
+    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OpenSearchStoreConnectionProvider.class);
 
@@ -39,13 +39,7 @@ public class OpenSearchStoreConnectionProvider  implements BaseStoreConnectionPr
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
-
-
-
-
       return openSearchStoreConnection;
-
-
   }
 
   @Override

@@ -6,6 +6,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
+import org.mule.runtime.http.api.client.HttpClient;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -24,10 +25,10 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
   private boolean avoidDups;
   private String consistencyLevel;
   private final WeaviateStoreConnectionParameters parameters;
-
+  private HttpClient httpClient;
   private static final String AUTH_CHECK_ENDPOINT = "/v1/schema";
 
-  public WeaviateStoreConnection(WeaviateStoreConnectionParameters parameters) {
+  public WeaviateStoreConnection(WeaviateStoreConnectionParameters parameters, final HttpClient httpClient) {
     this.parameters = parameters;
     this.scheme = parameters.getScheme();
     this.host = parameters.getHost();
@@ -38,8 +39,12 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
     this.apikey = parameters.getApiKey();
     this.avoidDups = parameters.isAvoidDups();
     this.consistencyLevel = parameters.getConsistencyLevel();
+    this.httpClient = httpClient;
   }
 
+  public HttpClient getHttpClient() {
+    return httpClient;
+  }
   public String getScheme() {
     return scheme;
   }

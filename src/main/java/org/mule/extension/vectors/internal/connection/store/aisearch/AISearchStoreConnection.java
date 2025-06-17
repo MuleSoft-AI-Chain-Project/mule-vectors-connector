@@ -4,6 +4,7 @@ import com.azure.search.documents.SearchServiceVersion;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnectionParameters;
@@ -21,11 +22,13 @@ public class AISearchStoreConnection implements BaseStoreConnection {
   private String url;
   private String apiKey;
   private final AISearchStoreConnectionParameters parameters;
+  private HttpClient httpClient;
 
-  public AISearchStoreConnection(AISearchStoreConnectionParameters parameters) {
+  public AISearchStoreConnection(AISearchStoreConnectionParameters parameters, HttpClient httpClient) {
     this.parameters = parameters;
     this.url = parameters.getUrl();
     this.apiKey = parameters.getApiKey();
+    this.httpClient = httpClient;
   }
 
   public String getUrl() {
@@ -115,5 +118,9 @@ public class AISearchStoreConnection implements BaseStoreConnection {
       LOGGER.error("Impossible to connect to AI Search", e);
       throw new ConnectionException("Impossible to connect to AI Search", e);
     }
+  }
+
+  public HttpClient getHttpClient() {
+    return httpClient;
   }
 }

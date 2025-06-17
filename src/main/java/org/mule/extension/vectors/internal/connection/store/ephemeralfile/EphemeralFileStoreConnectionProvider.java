@@ -5,6 +5,7 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
+import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
@@ -23,8 +24,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j:1.0.1")
-public class EphemeralFileStoreConnectionProvider  implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection> {
+public class EphemeralFileStoreConnectionProvider implements
+    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EphemeralFileStoreConnectionProvider.class);
 
@@ -44,5 +45,15 @@ public class EphemeralFileStoreConnectionProvider  implements BaseStoreConnectio
 
       throw new ConnectionException("Failed to connect to Chroma", e);
     }
+  }
+
+  @Override
+  public void dispose() {
+
+  }
+
+  @Override
+  public void initialise() throws InitialisationException {
+
   }
 }

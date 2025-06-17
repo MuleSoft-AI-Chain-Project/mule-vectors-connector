@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.connection.store.chroma;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
+import org.mule.extension.vectors.internal.connection.store.HttpBasedConnectionProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
@@ -23,7 +24,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-chroma:1.0.1-beta6")
-public class ChromaStoreConnectionProvider  implements BaseStoreConnectionProvider,
+public class ChromaStoreConnectionProvider extends HttpBasedConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStoreConnectionProvider.class);
@@ -37,8 +38,7 @@ public class ChromaStoreConnectionProvider  implements BaseStoreConnectionProvid
     try {
 
       ChromaStoreConnection chromaStoreConnection =
-          new ChromaStoreConnection(chromaStoreConnectionParameters);
-     // chromaStoreConnection.connect();
+          new ChromaStoreConnection(chromaStoreConnectionParameters, getHttpClient());
       return chromaStoreConnection;
 
     }  catch (Exception e) {

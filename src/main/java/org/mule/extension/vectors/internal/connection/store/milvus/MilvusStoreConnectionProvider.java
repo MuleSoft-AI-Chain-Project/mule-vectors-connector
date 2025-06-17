@@ -24,8 +24,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-milvus:1.0.1-beta6")
-public class MilvusStoreConnectionProvider implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
+public class MilvusStoreConnectionProvider implements
+    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private MilvusStoreConnectionParameters milvusStoreConnectionParameters;

@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.connection.store.chroma;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
@@ -20,10 +21,12 @@ public class ChromaStoreConnection implements BaseStoreConnection {
 
   private String url;
   private final ChromaStoreConnectionParameters parameters;
+  private HttpClient httpClient;
 
-  public ChromaStoreConnection(ChromaStoreConnectionParameters parameters) {
+  public ChromaStoreConnection(ChromaStoreConnectionParameters parameters, HttpClient httpClient) {
     this.parameters = parameters;
     this.url = parameters.getUrl();
+    this.httpClient = httpClient;
   }
 
   public String getUrl() {
@@ -103,5 +106,9 @@ public class ChromaStoreConnection implements BaseStoreConnection {
       LOGGER.error("Impossible to connect to Chroma", e);
       throw new ConnectionException("Impossible to connect to Chroma", e);
     }
+  }
+
+  public HttpClient getHttpClient() {
+    return httpClient;
   }
 }
