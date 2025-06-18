@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.connection.store.weaviate;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
+import org.mule.extension.vectors.internal.connection.store.HttpBasedConnectionProvider;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnectionParameters;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -25,7 +26,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-weaviate:1.0.1-beta6")
-public class WeaviateStoreConnectionProvider implements BaseStoreConnectionProvider,
+public class WeaviateStoreConnectionProvider extends HttpBasedConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeaviateStoreConnectionProvider.class);
@@ -39,7 +40,7 @@ public class WeaviateStoreConnectionProvider implements BaseStoreConnectionProvi
     try {
 
       WeaviateStoreConnection weaviateStoreConnection =
-          new WeaviateStoreConnection(weaviateStoreConnectionParameters);
+          new WeaviateStoreConnection(weaviateStoreConnectionParameters, getHttpClient());
       return weaviateStoreConnection;
 
     } catch (Exception e) {

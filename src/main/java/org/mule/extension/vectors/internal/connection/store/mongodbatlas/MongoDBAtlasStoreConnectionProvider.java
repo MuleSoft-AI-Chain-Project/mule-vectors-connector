@@ -25,8 +25,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.mongodb.MongoDbEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-mongodb-atlas:1.0.1-beta6")
-public class MongoDBAtlasStoreConnectionProvider implements BaseStoreConnectionProvider,
-    CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
+public class MongoDBAtlasStoreConnectionProvider implements
+    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private MongoDBAtlasStoreConnectionParameters mongoDBAtlasStoreConnectionParameters;
