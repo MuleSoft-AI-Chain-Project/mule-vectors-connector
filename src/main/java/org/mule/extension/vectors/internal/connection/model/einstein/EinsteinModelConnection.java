@@ -37,11 +37,13 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
 
   private String accessToken;
 
-  public EinsteinModelConnection(String salesforceOrg, String clientId, String clientSecret, HttpClient httpClient) {
+  public EinsteinModelConnection(String salesforceOrg, String clientId, String clientSecret, HttpClient httpClient)
+      throws ConnectionException {
     this.salesforceOrg = salesforceOrg;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.httpClient = httpClient;
+    this.accessToken = getAccessToken(salesforceOrg, clientId, clientSecret);
   }
 
   @Override
@@ -49,17 +51,6 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
     return Constants.EMBEDDING_MODEL_SERVICE_EINSTEIN;
   }
 
-  @Override
-  public void connect() throws ConnectionException {
-    try {
-      this.accessToken = getAccessToken(salesforceOrg, clientId, clientSecret);
-      if (this.accessToken == null) {
-        throw new ConnectionException("Failed to connect to Salesforce: HTTP " + accessToken);
-      }
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Salesforce", e);
-    }
-  }
 
   @Override
   public void disconnect() {
@@ -67,8 +58,16 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
   }
 
   @Override
-  public boolean isValid() {
-    return isAccessTokenValid();
+  public void validate() {
+    try {
+
+      isAccessTokenValid();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to validate connection to Einstein", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
+
+    }
+ ;
   }
 
   private String getOAuthURL() {
@@ -109,7 +108,7 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
     }
   }
 
-  private Boolean isAccessTokenValid() {
+  private void isAccessTokenValid() {
     String urlString = Constants.URI_HTTPS_PREFIX + salesforceOrg + "/services/oauth2/userinfo";
 
     try {
@@ -124,11 +123,14 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
           .build();
 
       HttpResponse response = httpClient.send(requestBuilder.build(), options);
-      return response.getStatusCode() == 200;
+      if(response.getStatusCode() != 200)
+        throw new ModuleException("Error while validating access token for \"EINSTEIN\" embedding model service.", MuleVectorsErrorType.INVALID_CONNECTION);
+
 
     } catch (Exception e) {
       LOGGER.error("Error while validating access token for \"EINSTEIN\" embedding model service.", e);
-      return false;
+      throw new ModuleException("Error while validating access token for \"EINSTEIN\" embedding model service.", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
     }
   }
 
@@ -156,9 +158,6 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
 
     try {
       String urlString = EINSTEIN_PLATFORM_MODELS_URL + modelName + "/embeddings";
-
-      if (accessToken == null) connect();
-
       HttpRequestBuilder requestBuilder = HttpRequest.builder()
           .method("POST")
           .uri(urlString)
@@ -179,7 +178,7 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
         return new String(response.getEntity().getBytes());
       } else if (response.getStatusCode() == 401 && !tokenExpired) {
         LOGGER.debug("Salesforce access token expired.");
-        connect();
+        this.accessToken = getAccessToken(salesforceOrg, clientId, clientSecret);
         return generateEmbeddings(inputs, modelName, true);
       } else {
         String responseBody = new String(response.getEntity().getBytes());

@@ -19,7 +19,8 @@ public class StoreErrorTypeProvider implements ErrorTypeProvider {
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
     return unmodifiableSet(new HashSet<>(asList(
-        INVALID_PARAMETERS_ERROR,
+        INVALID_CONNECTION,
+        INVALID_PARAMETER,
         STORE_OPERATIONS_FAILURE,
         STORE_SERVICES_FAILURE,
         STORE_UNSUPPORTED_OPERATION)));

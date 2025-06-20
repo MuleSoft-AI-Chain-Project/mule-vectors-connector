@@ -30,100 +30,24 @@ import org.slf4j.LoggerFactory;
 
 @Alias("ollama")
 @DisplayName("Ollama")
-public class OllamaModelConnectionProvider extends BaseModelConnectionProvider implements Startable, Stoppable {
+public class OllamaModelConnectionProvider extends BaseModelConnectionProvider  {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OllamaModelConnectionProvider.class);
 
-  private HttpClient httpClient;
-  
-  @RefName
-  private String configName;
-
-  @Inject
-  private HttpService httpService;
  
   @ParameterGroup(name = CONNECTION)
   private OllamaModelConnectionParameters ollamaModelConnectionParameters;
 
-  @Parameter
-  @Optional
-  @Expression(NOT_SUPPORTED)
-  @DisplayName("TLS Configuration")
-  @Placement(tab = Placement.SECURITY_TAB)
-  private TlsContextFactory tlsContext;
-
-  @Parameter
-  @Optional
-  @Summary("Reusable configuration element for outbound connections through a proxy")
-  @Placement(tab = "Proxy")
-  private HttpProxyConfig proxyConfig;
  
   @Override
   public BaseModelConnection connect() throws ConnectionException {
-    try {
+
       OllamaModelConnection ollamaModelConnection = new OllamaModelConnection(
           ollamaModelConnectionParameters.getBaseUrl(),
           ollamaModelConnectionParameters.getTotalTimeout(),
-          httpClient);
-          
-      ollamaModelConnection.connect();
+          getHttpClient());
+
+
       return ollamaModelConnection;
-
-    } catch (ConnectionException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Ollama", e);
     }
-  }
-
-  @Override
-  public void disconnect(BaseModelConnection connection) {
-    try {
-      connection.disconnect();
-    } catch (Exception e) {
-      LOGGER.error("Failed to close connection", e);
-    }
-  }
-
-  @Override
-  public ConnectionValidationResult validate(BaseModelConnection connection) {
-    try {
-      if (connection.isValid()) {
-        return ConnectionValidationResult.success();
-      } else {
-        return ConnectionValidationResult.failure("Failed to validate connection to Ollama", null);
-      }
-    } catch (Exception e) {
-      return ConnectionValidationResult.failure("Failed to validate connection to Ollama", e);
-    }
-  }
-
-  @Override
-  public void start() throws MuleException {
-      HttpClientConfiguration config = createClientConfiguration();
-      httpClient = httpService.getClientFactory().create(config);
-      httpClient.start();
-  }
-
-  private HttpClientConfiguration createClientConfiguration() {
-    HttpClientConfiguration.Builder builder = new HttpClientConfiguration.Builder()
-            .setName(configName);
-    if (null != tlsContext) {
-        builder.setTlsContextFactory(tlsContext);
-    } else {
-        builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
-    }
-    if (proxyConfig != null) {
-        builder.setProxyConfig(proxyConfig);
-    }
-    return builder.build();
-  }
-
-  @Override
-  public void stop() throws MuleException {
-    if (httpClient != null) {
-        httpClient.stop();
-        httpClient = null;
-    }
-  }
 }

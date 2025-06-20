@@ -19,7 +19,8 @@ public class DocumentErrorTypeProvider implements ErrorTypeProvider {
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
     return unmodifiableSet(new HashSet<>(asList(
-        INVALID_PARAMETERS_ERROR,
+        INVALID_CONNECTION,
+        INVALID_PARAMETER,
         DOCUMENT_OPERATIONS_FAILURE,
         DOCUMENT_PARSING_FAILURE,
         STORAGE_SERVICES_FAILURE)));

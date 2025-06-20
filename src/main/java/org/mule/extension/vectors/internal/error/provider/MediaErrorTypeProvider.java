@@ -19,7 +19,8 @@ public class MediaErrorTypeProvider implements ErrorTypeProvider {
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
     return unmodifiableSet(new HashSet<>(asList(
-        INVALID_PARAMETERS_ERROR,
+        INVALID_CONNECTION,
+        INVALID_PARAMETER,
         MEDIA_OPERATIONS_FAILURE,
         STORAGE_SERVICES_FAILURE)));
   }

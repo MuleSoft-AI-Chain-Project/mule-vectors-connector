@@ -5,8 +5,10 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
 import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
 
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -72,21 +74,6 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
     this.httpClient = httpClient;
   }
 
-  @Override
-  public void connect() throws ConnectionException {
-
-    try {
-
-      this.accessToken = getAccessToken();
-      if (this.accessToken == null) {
-        throw new ConnectionException("Failed to connect to Vertex AI");
-      }
-    } catch (ConnectionException ce) {
-      throw ce;
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Vertex AI.", e);
-    }
-  }
 
   @Override
   public void disconnect() {
@@ -94,12 +81,13 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
     try {
-
-      return validateAccessToken(this.accessToken);
+      getAccessToken();
+       validateAccessToken(this.accessToken);
     } catch (Exception e) {
-      return false;
+      throw new ModuleException("Failed to validate connection to VertexAI.", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
     }
   }
 

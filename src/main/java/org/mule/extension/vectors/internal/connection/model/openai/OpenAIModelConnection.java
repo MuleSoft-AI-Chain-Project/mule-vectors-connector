@@ -2,9 +2,11 @@ package org.mule.extension.vectors.internal.connection.model.openai;
 
 import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -42,28 +44,19 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
   }
 
   @Override
-  public void connect() throws ConnectionException {
-    try {
-      getModels();
-      LOGGER.debug("Connected to OpenAI");
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to OpenAI.", e);
-    }
-  }
-
-  @Override
   public void disconnect() {
     // HttpClient lifecycle is managed by the provider
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
     try {
       getModels();
-      return true;
+
     } catch (Exception e) {
       LOGGER.error("Failed to validate connection to OpenAI.", e);
-      return false;
+      throw new ModuleException("Failed to validate connection to OpenAI.", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
     }
   }
 
