@@ -80,49 +80,6 @@ public class QdrantStore extends BaseStore {
         .collectionName(storeName)
         .build();
   }
-
-  public JSONObject listSources() {
-    try {
-      // Optional max limit of 100k points.
-      int MAX_POINTS = 100000;
-
-      HashMap<String, JSONObject> sourceObjectMap = new HashMap<String, JSONObject>();
-      JSONObject jsonObject = new JSONObject();
-
-      boolean keepScrolling = true;
-      Points.PointId nextOffset = null;
-      List<Points.RetrievedPoint> points = new ArrayList<>(MAX_POINTS);
-      while (keepScrolling && points.size() < MAX_POINTS) {
-        Points.ScrollPoints.Builder request = Points.ScrollPoints.newBuilder()
-            .setCollectionName(storeName)
-            .setLimit(Math.min(queryParams.pageSize(), MAX_POINTS - points.size()));
-        if (nextOffset != null) {
-          request.setOffset(nextOffset);
-        }
-
-        Points.ScrollResponse response = client.scrollAsync(request.build()).get();
-
-        points.addAll(response.getResultList());
-        nextOffset = response.getNextPageOffset();
-        keepScrolling = nextOffset.hasNum() || nextOffset.hasUuid();
-      }
-
-      for (Points.RetrievedPoint point : points) {
-        JSONObject metadataObject = new JSONObject(JsonFactory.toJson(point.getPayloadMap()));
-        JSONObject sourceObject = getSourceObject(metadataObject);
-        addOrUpdateSourceObjectIntoSourceObjectMap(sourceObjectMap, sourceObject);
-      }
-
-      jsonObject.put(Constants.JSON_KEY_SOURCES,
-                     JsonUtils.jsonObjectCollectionToJsonArray(sourceObjectMap.values()));
-      jsonObject.put(Constants.JSON_KEY_SOURCE_COUNT, sourceObjectMap.size());
-
-      return jsonObject;
-    } catch (ExecutionException | InterruptedException | InvalidProtocolBufferException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   @Override
   public QdrantStore.RowIterator rowIterator() {
     try {
