@@ -50,16 +50,6 @@ public class AzureOpenAIModelConnection implements BaseTextModelConnection {
     return Constants.EMBEDDING_MODEL_SERVICE_AZURE_OPENAI;
   }
 
-  @Override
-  public void connect() throws ConnectionException {
-    try {
-      
-      testCredentials();
-      LOGGER.debug("Connected to Azure Open AI");
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Azure Open AI", e);
-    }
-  }
 
   @Override
   public void disconnect() {
@@ -67,14 +57,13 @@ public class AzureOpenAIModelConnection implements BaseTextModelConnection {
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
     try {
-
       testCredentials();
-      return true;
     } catch (Exception e) {
-      LOGGER.error("Failed to validate connection to Azure AI Vision", e);
-      return false;
+      LOGGER.error("Failed to validate connection to Azure Open AI", e);
+      throw new ModuleException("Failed to validate connection to  Azure Open AI", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
     }
   }
 

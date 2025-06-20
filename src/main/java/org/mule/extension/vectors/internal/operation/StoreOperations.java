@@ -117,7 +117,7 @@ public class StoreOperations {
 
             throw new ModuleException(
                 String.format("You must provide one text segment only. Received: %s", String.valueOf(jsonTextSegments.length())),
-                MuleVectorsErrorType.INVALID_PARAMETERS_ERROR);
+                MuleVectorsErrorType.INVALID_PARAMETER);
           }
         }
 
@@ -137,7 +137,7 @@ public class StoreOperations {
         if(embeddings.size() != 1) {
 
           throw new ModuleException(String.format("You must provide one embedding only. Received: %s", String.valueOf(embeddings.size())),
-                                    MuleVectorsErrorType.INVALID_PARAMETERS_ERROR);
+                                    MuleVectorsErrorType.INVALID_PARAMETER);
         }
 
         dimension = jsonContent.getInt(Constants.JSON_KEY_DIMENSION);
@@ -147,7 +147,7 @@ public class StoreOperations {
 
         throw new ModuleException(
             String.format("Error while parsing Text Segments and Embeddings input."),
-            MuleVectorsErrorType.INVALID_PARAMETERS_ERROR,
+            MuleVectorsErrorType.INVALID_PARAMETER,
             e);
       }
 

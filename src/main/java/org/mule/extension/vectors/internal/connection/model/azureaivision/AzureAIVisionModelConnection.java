@@ -5,7 +5,9 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -43,30 +45,22 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
   }
 
   @Override
-  public void connect() throws ConnectionException {
-    try {
-      // Test connection by getting models
-      getModels();
-      LOGGER.debug("Connected to Azure AI Vision");
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Azure AI Vision", e);
-    }
-  }
-
-  @Override
   public void disconnect() {
     // HttpClient lifecycle is managed by the provider
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
     try {
-      getModels();
-      return true;
-    } catch (Exception e) {
-      LOGGER.error("Failed to validate connection to Azure AI Vision", e);
-      return false;
-    }
+        getModels();
+      } catch (IOException e) {
+        throw new ModuleException("Failed to validate connection to Azure AI Vision", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
+      } catch (TimeoutException e) {
+        throw new ModuleException("Failed to validate connection to Azure AI Vision", MuleVectorsErrorType.INVALID_CONNECTION, e);
+      }
+
+
   }
 
   @Override

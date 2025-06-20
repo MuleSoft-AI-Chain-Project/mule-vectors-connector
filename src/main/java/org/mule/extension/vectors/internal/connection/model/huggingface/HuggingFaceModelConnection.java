@@ -2,9 +2,11 @@ package org.mule.extension.vectors.internal.connection.model.huggingface;
 
 import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
@@ -47,15 +49,6 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
     return Constants.EMBEDDING_MODEL_SERVICE_HUGGING_FACE;
   }
 
-  @Override
-  public void connect() throws ConnectionException {
-    try {
-      validateCredentials();
-      LOGGER.debug("Connected to Hugging Face");
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Hugging Face.", e);
-    }
-  }
 
   @Override
   public void disconnect() {
@@ -63,13 +56,14 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
     try {
       validateCredentials();
-      return true;
+
     } catch (Exception e) {
       LOGGER.error("Failed to validate connection to Hugging Face.", e);
-      return false;
+      throw new ModuleException("Failed to validate connection to Hugging Face", MuleVectorsErrorType.INVALID_CONNECTION, e);
+
     }
   }
 

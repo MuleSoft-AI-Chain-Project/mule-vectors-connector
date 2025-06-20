@@ -32,99 +32,24 @@ import org.slf4j.LoggerFactory;
 
 @Alias("nomic")
 @DisplayName("Nomic")
-public class NomicModelConnectionProvider extends BaseModelConnectionProvider implements Startable, Stoppable {
+public class NomicModelConnectionProvider extends BaseModelConnectionProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NomicModelConnectionProvider.class);
 
-    private HttpClient httpClient;
-
-    @RefName
-    private String configName;
-
-    @Inject
-    private HttpService httpService;
 
     @ParameterGroup(name = CONNECTION)
     private NomicModelConnectionParameters nomicModelConnectionParameters;
 
-    @Parameter
-    @Optional
-    @Expression(NOT_SUPPORTED)
-    @DisplayName("TLS Configuration")
-    @Placement(tab = Placement.SECURITY_TAB)
-    private TlsContextFactory tlsContext;
 
-    @Parameter
-    @Optional
-    @Summary("Reusable configuration element for outbound connections through a proxy")
-    @Placement(tab = "Proxy")
-    private HttpProxyConfig proxyConfig;
 
     @Override
     public BaseModelConnection connect() throws ConnectionException {
-        try {
+
             NomicModelConnection nomicModelConnection = new NomicModelConnection(
                 nomicModelConnectionParameters.getApiKey(),
                 nomicModelConnectionParameters.getTotalTimeout(),
-                httpClient
+                getHttpClient()
             );
-            nomicModelConnection.connect();
-            return nomicModelConnection;
-        } catch (ConnectionException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ConnectionException("Failed to connect to Nomic", e);
-        }
-    }
-
-    @Override
-    public void disconnect(BaseModelConnection connection) {
-        try {
-            connection.disconnect();
-        } catch (Exception e) {
-            LOGGER.error("Failed to close connection", e);
-        }
-    }
-
-    @Override
-    public ConnectionValidationResult validate(BaseModelConnection connection) {
-        try {
-            if (connection.isValid()) {
-                return ConnectionValidationResult.success();
-            } else {
-                return ConnectionValidationResult.failure("Failed to validate connection to Nomic", null);
-            }
-        } catch (Exception e) {
-            return ConnectionValidationResult.failure("Failed to validate connection to Nomic", e);
-        }
-    }
-
-    @Override
-    public void start() throws MuleException {
-        HttpClientConfiguration config = createClientConfiguration();
-        httpClient = httpService.getClientFactory().create(config);
-        httpClient.start();
-    }
-
-    private HttpClientConfiguration createClientConfiguration() {
-        HttpClientConfiguration.Builder builder = new HttpClientConfiguration.Builder()
-            .setName(configName);
-        if (null != tlsContext) {
-            builder.setTlsContextFactory(tlsContext);
-        } else {
-            builder.setTlsContextFactory(TlsContextFactory.builder().buildDefault());
-        }
-        if (proxyConfig != null) {
-            builder.setProxyConfig(proxyConfig);
-        }
-        return builder.build();
-    }
-
-    @Override
-    public void stop() throws MuleException {
-        if (httpClient != null) {
-            httpClient.stop();
-            httpClient = null;
-        }
+           return nomicModelConnection;
     }
 }

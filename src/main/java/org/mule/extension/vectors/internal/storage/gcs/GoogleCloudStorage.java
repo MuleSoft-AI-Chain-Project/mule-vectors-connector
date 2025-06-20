@@ -95,7 +95,7 @@ public class GoogleCloudStorage extends BaseStorage {
 
             throw new ModuleException(
                 String.format("GCS path must contain a bucket and object path: '%s'", contextPath),
-                MuleVectorsErrorType.INVALID_PARAMETERS_ERROR);
+                MuleVectorsErrorType.INVALID_PARAMETER);
         }
         Document document = ((GoogleCloudStorageConnection) storageConnection).loadDocument(this.bucket, this.objectKey, documentParser);
         MetadataUtils.addMetadataToDocument(document, fileType, this.objectKey);

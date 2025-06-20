@@ -48,7 +48,7 @@ public class RemoveFilterParameters extends MetadataFilterParameters {
     if(ids != null && !ids.isEmpty() && condition != null && condition.compareTo("") != 0) {
       throw new ModuleException(
           String.format("Ids and Metadata condition are mutually exclusive"),
-          MuleVectorsErrorType.INVALID_PARAMETERS_ERROR);
+          MuleVectorsErrorType.INVALID_PARAMETER);
     }
   }
 
