@@ -55,7 +55,7 @@ public class StorageOperations {
   @Alias("Document-load-single")
   @DisplayName("[Document] Load single")
   @Throws(DocumentErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/DocumentLoadSingleResponse.json")
+  @OutputJsonType(schema = "api/metadata/StorageLoadSingleResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
   loadSingleDocument(@Config StorageConfiguration storageConfiguration,
                      @Connection BaseStorageConnection storageConnection,

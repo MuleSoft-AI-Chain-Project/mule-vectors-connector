@@ -125,7 +125,7 @@ public class DocumentOperations {
   @Throws(DocumentErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/DocumentResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
-  chunk(@Config DocumentConfiguration documentConfiguration,
+  chunkDocument(@Config DocumentConfiguration documentConfiguration,
         @Alias("textSegment") @DisplayName("Text Segment") @InputJsonType(schema = "api/metadata/DocumentResponse.json") @Content InputStream content,
         @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
 
@@ -182,9 +182,9 @@ public class DocumentOperations {
   @Alias("Text-chunk")
   @DisplayName("[Text] Chunk")
   @Throws(DocumentErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/DocumentResponse.json")
+  @OutputJsonType(schema = "api/metadata/TextListResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
-  chunk(@Config DocumentConfiguration documentConfiguration,
+  chunkText(@Config DocumentConfiguration documentConfiguration,
         @Alias("text") @DisplayName("Text") @Content String text,
         @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
 

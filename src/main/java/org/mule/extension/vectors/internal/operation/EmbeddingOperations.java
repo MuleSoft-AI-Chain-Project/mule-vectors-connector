@@ -58,9 +58,9 @@ public class EmbeddingOperations {
    *
    * @param embeddingConfiguration the configuration for the embedding service.
    * @param modelConnection the connection to the embedding model.
-   * @param text the input text to generate embeddings from.
+   * @param inputs the input list of texts to generate embeddings from.
    * @param embeddingModelParameters parameters for the embedding model to be used.
-   * @return a {@link org.mule.runtime.extension.api.runtime.operation.Result} containing the embeddings in JSON format and metadata.
+   * @return a {@link org.mule.runtime.extension.api.runtime.operation.Result} containing the list of embeddings in JSON format and metadata.
    * @throws ModuleException if an error occurs during the embedding process.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
@@ -71,7 +71,7 @@ public class EmbeddingOperations {
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
   generateEmbeddingFromText(@Config EmbeddingConfiguration embeddingConfiguration,
                             @Connection BaseModelConnection modelConnection,
-                            @Alias("text") @DisplayName("Text") @Content String text,
+                            @Alias("inputs") @DisplayName("Input Texts") @Content List<String> inputs,
                             @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
 
     try {
@@ -95,8 +95,8 @@ public class EmbeddingOperations {
 
             EmbeddingMultimodalModel embeddingMultimodalModel = baseModel.buildEmbeddingMultimodalModel();
             LOGGER.debug(String.format("Embedding multimodal model for %s service built.", modelConnection.getEmbeddingModelService()));
-            textSegments.add(TextSegment.from(text));
-            Response<Embedding> multimodalResponse = embeddingMultimodalModel.embedText(text);
+            textSegments.add(TextSegment.from(inputs.get(0)));
+            Response<Embedding> multimodalResponse = embeddingMultimodalModel.embedText(inputs.get(0));
             embeddings.add(multimodalResponse.content());
             tokenUsage = multimodalResponse.tokenUsage() != null ?
                 new TokenUsage(multimodalResponse.tokenUsage().inputTokenCount(),
@@ -112,6 +112,9 @@ public class EmbeddingOperations {
             EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
             LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
 
+            for (String singleText : inputs) {
+              textSegments.add(TextSegment.from(singleText));
+            }
             Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
             embeddings = textResponse.content();
             tokenUsage = textResponse.tokenUsage() != null ?
@@ -130,7 +133,7 @@ public class EmbeddingOperations {
       } catch(Exception e) {
 
         throw new ModuleException(
-            String.format("Error while generating embedding from text \"%s\"", text),
+            String.format("Error while generating embedding from text \"%s\"", inputs),
             MuleVectorsErrorType.AI_SERVICES_FAILURE,
             e);
       }
@@ -181,7 +184,7 @@ public class EmbeddingOperations {
     } catch (Exception e) {
 
       throw new ModuleException(
-          String.format("Error while generating embedding from text \"%s\"", text),
+          String.format("Error while generating embedding from texts \"%s\"", inputs),
           MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE,
           e);
     }
