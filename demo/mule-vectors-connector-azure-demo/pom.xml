@@ -67,9 +67,9 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>io.github.mulesoft-ai-chain-project</groupId>
+			<groupId>com.mulesoft.connectors</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.6.20</version>
+			<version>0.7.1-SNAPSHOT-9</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>

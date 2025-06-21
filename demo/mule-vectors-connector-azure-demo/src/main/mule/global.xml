@@ -19,6 +19,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<ms-vectors:local-connection />
 	</ms-vectors:storage-config>
 	
+	<ms-vectors:document-config name="MuleSoft_Vectors_Connector_Document_config" doc:name="MuleSoft Vectors Connector Document config" doc:id="0160afbd-8d8d-43cf-9a30-7e9201edb37f" />
+	
 	<ms-vectors:embedding-config name="Azure_OpenAI_Embedding_Config" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="b55b17fd-5fbd-48ef-9f93-59ddedb27e1d" >
 		<ms-vectors:azure-open-ai-connection endpoint="${azureOpenai.endpoint}" apiKey="${azureOpenai.key}" apiVersion="${azureOpenai.apiVersion}"/>
 	</ms-vectors:embedding-config>
