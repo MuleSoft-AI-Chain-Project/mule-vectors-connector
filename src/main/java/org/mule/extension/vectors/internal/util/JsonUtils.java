@@ -77,6 +77,33 @@ public final class JsonUtils {
 
   /**
    * Converts a Document to a JSONObject containing its text segments.
+   *
+   * @param document              the Document to be processed.
+   * @return a JSONObject containing text segments and their associated metadata.
+   */
+  public static JSONObject docToTextSegmentsJson(Document document) {
+
+    List<TextSegment> textSegments = Collections.singletonList(document.toTextSegment());
+
+    // Use Streams to populate a JSONArray with segment details
+    JSONArray jsonTextSegments = IntStream.range(0, textSegments.size())
+        .mapToObj(i -> {
+          JSONObject jsonTextSegment = new JSONObject();
+          jsonTextSegment.put(Constants.JSON_KEY_TEXT, textSegments.get(i).text());
+          jsonTextSegment.put(Constants.JSON_KEY_METADATA, new JSONObject(textSegments.get(i).metadata().toMap()));
+          return jsonTextSegment;
+        })
+        .collect(JSONArray::new, JSONArray::put, JSONArray::putAll);
+
+    // Create the resulting JSON object with text segments
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put(Constants.JSON_KEY_TEXT_SEGMENTS, jsonTextSegments);
+
+    return jsonObject;
+  }
+
+  /**
+   * Converts a Document to a JSONObject containing its text segments.
    * Optionally splits the document into segments of a specified maximum size and overlap.
    *
    * @param document              the Document to be processed.

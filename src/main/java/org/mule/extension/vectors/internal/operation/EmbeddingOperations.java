@@ -11,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import dev.langchain4j.data.document.DefaultDocument;
-import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.model.output.Response;
 import org.apache.commons.io.IOUtils;
@@ -31,14 +29,12 @@ import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.model.BaseModel;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
-import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.InputJsonType;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.*;
 
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
@@ -63,7 +59,6 @@ public class EmbeddingOperations {
    * @param embeddingConfiguration the configuration for the embedding service.
    * @param modelConnection the connection to the embedding model.
    * @param text the input text to generate embeddings from.
-   * @param segmentationParameters parameters defining segmentation rules for the input text.
    * @param embeddingModelParameters parameters for the embedding model to be used.
    * @return a {@link org.mule.runtime.extension.api.runtime.operation.Result} containing the embeddings in JSON format and metadata.
    * @throws ModuleException if an error occurs during the embedding process.
@@ -77,7 +72,6 @@ public class EmbeddingOperations {
   generateEmbeddingFromText(@Config EmbeddingConfiguration embeddingConfiguration,
                             @Connection BaseModelConnection modelConnection,
                             @Alias("text") @DisplayName("Text") @Content String text,
-                            @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters,
                             @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
 
     try {
@@ -117,10 +111,6 @@ public class EmbeddingOperations {
 
             EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
             LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
-
-            textSegments = Utils.splitTextIntoTextSegments(text,
-                                                           segmentationParameters.getMaxSegmentSizeInChars(),
-                                                           segmentationParameters.getMaxOverlapSizeInChars());
 
             Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
             embeddings = textResponse.content();
@@ -215,7 +205,7 @@ public class EmbeddingOperations {
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
   generateEmbeddingFromDocument(@Config EmbeddingConfiguration embeddingConfiguration,
                                 @Connection BaseModelConnection modelConnection,
-                                @Alias("textSegments") @DisplayName("Text Segments") @InputJsonType(schema = "api/metadata/DocumentLoadSingleResponse.json") @Content InputStream content,
+                                @Alias("textSegments") @DisplayName("Text Segments") @InputJsonType(schema = "api/metadata/DocumentResponse.json") @Content InputStream content,
                                 @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
 
     try {

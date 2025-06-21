@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.extension;
 
+import org.mule.extension.vectors.internal.config.DocumentConfiguration;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.api.request.proxy.DefaultNtlmProxyConfig;
 import org.mule.extension.vectors.api.request.proxy.DefaultProxyConfig;
@@ -25,7 +26,7 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
  */
 @Xml(prefix = "ms-vectors")
 @Extension(name = "MuleSoft Vectors Connector", category = Category.SELECT)
-@Configurations({StorageConfiguration.class, EmbeddingConfiguration.class, StoreConfiguration.class})
+@Configurations({StorageConfiguration.class, DocumentConfiguration.class, EmbeddingConfiguration.class, StoreConfiguration.class})
 @ErrorTypes(MuleVectorsErrorType.class)
 @JavaVersionSupport({JAVA_17})
 @SubTypeMapping(baseType = MediaProcessorParameters.class,

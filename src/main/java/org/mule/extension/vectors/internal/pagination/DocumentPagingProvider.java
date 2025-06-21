@@ -29,14 +29,12 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
   private Iterator<Document> documentIterator;
   private StorageConfiguration storageConfiguration;
   private DocumentParameters documentParameters;
-  private SegmentationParameters segmentationParameters;
 
   public DocumentPagingProvider(StorageConfiguration storageConfiguration, DocumentParameters documentParameters,
-                                SegmentationParameters segmentationParameters, StreamingHelper streamingHelper) {
+                                StreamingHelper streamingHelper) {
 
     this.storageConfiguration = storageConfiguration;
     this.documentParameters = documentParameters;
-    this.segmentationParameters = segmentationParameters;
     this.streamingHelper = streamingHelper;
   }
 
@@ -64,10 +62,7 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
 
           if(document == null) continue; // Skip null document
 
-          JSONObject jsonObject =
-              JsonUtils.docToTextSegmentsJson(document,
-                                              segmentationParameters.getMaxSegmentSizeInChars(),
-                                              segmentationParameters.getMaxOverlapSizeInChars());
+          JSONObject jsonObject = JsonUtils.docToTextSegmentsJson(document);
 
           return createPageDocumentResponse(
               jsonObject.toString(),
