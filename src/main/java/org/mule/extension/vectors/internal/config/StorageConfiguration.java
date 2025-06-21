@@ -6,7 +6,6 @@ import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudSto
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnectionProvider;
 import org.mule.extension.vectors.internal.operation.MediaOperations;
 import org.mule.extension.vectors.internal.operation.StorageOperations;
-import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 

@@ -7,8 +7,7 @@ import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
+import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.exception.MuleException;
@@ -28,13 +27,13 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
   private BaseStorage baseStorage;
   private Iterator<Document> documentIterator;
   private StorageConfiguration storageConfiguration;
-  private DocumentParameters documentParameters;
+  private FileParameters fileParameters;
 
-  public DocumentPagingProvider(StorageConfiguration storageConfiguration, DocumentParameters documentParameters,
+  public DocumentPagingProvider(StorageConfiguration storageConfiguration, FileParameters fileParameters,
                                 StreamingHelper streamingHelper) {
 
     this.storageConfiguration = storageConfiguration;
-    this.documentParameters = documentParameters;
+    this.fileParameters = fileParameters;
     this.streamingHelper = streamingHelper;
   }
 
@@ -47,8 +46,7 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
         baseStorage = BaseStorage.builder()
             .configuration(storageConfiguration)
             .connection(connection)
-            .contextPath(documentParameters.getContextPath())
-            .fileType(documentParameters.getFileType())
+            .contextPath(fileParameters.getContextPath())
             .build();
 
         documentIterator = baseStorage.documentIterator();
@@ -67,8 +65,7 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
           return createPageDocumentResponse(
               jsonObject.toString(),
               new HashMap<String, Object>() {{
-                put("fileType", documentParameters.getFileType());
-                put("contextPath", documentParameters.getContextPath());
+                put("contextPath", fileParameters.getContextPath());
               }},
               streamingHelper
           );
@@ -88,7 +85,7 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
     } catch (Exception e) {
 
       throw new ModuleException(
-          String.format("Error while getting document from %s.", documentParameters.getContextPath()),
+          String.format("Error while getting document from %s.", fileParameters.getContextPath()),
           MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
           e);
     }

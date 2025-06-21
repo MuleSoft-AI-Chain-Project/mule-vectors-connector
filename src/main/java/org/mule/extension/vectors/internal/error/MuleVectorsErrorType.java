@@ -93,6 +93,11 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
     STORAGE_SERVICES_FAILURE(MuleErrors.CONNECTIVITY),
 
     /**
+     * The requested operation is not supported by the configured storage.
+     */
+    STORAGE_OPERATIONS_FAILURE(MuleErrors.ANY),
+
+    /**
      * The external vector store service returned an error.
      */
     STORE_SERVICES_FAILURE(MuleErrors.CONNECTIVITY);
