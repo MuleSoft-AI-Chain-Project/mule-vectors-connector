@@ -135,15 +135,9 @@ output application/json
 	<flow name="post:\parse:multipart\form-data:vectors-connector-operations-api-config" doc:id="18b85342-7e4b-4d82-b954-ce25c7ef69e9">
 		<flow-ref doc:name="parse-operation" doc:id="dbf34182-416f-4ae8-9adb-25012ff3e827" name="parse-operation" />
 	</flow>
-	<flow name="post:\load-document-from-payload:multipart\form-data:vectors-connector-operations-api-config" doc:id="a0fe98be-1342-4df4-9655-a3ec3faf5105">
-		<flow-ref doc:name="load-document-from-payload-operation" doc:id="6259493a-9a49-4093-ace2-2de31afa1e0e" name="load-document-from-payload-operation" />
+	<flow name="post:\chunk:application\json:vectors-connector-operations-api-config" doc:id="b86d48f5-3bd5-42e6-9c2c-1b717d8eb17f" >
+		<flow-ref doc:name="chunk-operation" doc:id="2721683a-04a6-4247-93ae-aa92f6cb2a3c" name="chunk-operation"/>
 	</flow>
-	<flow name="post:\load-media:vectors-connector-operations-api-config" doc:id="fddc79ae-2ce0-4c75-a519-a34a68f51bb8">
-        <flow-ref doc:name="load-single-media-operation" doc:id="6c289829-2348-45a8-a697-931924327d24" name="load-single-media-operation" />
-    </flow>
-    <flow name="post:\load-medias:vectors-connector-operations-api-config" doc:id="dcdadc46-f36c-4b2a-b84e-115518c2fc11">
-        <flow-ref doc:name="load-list-of-medias-operation" doc:id="3ddf7f44-ad24-4b21-a684-cf2eee7fc3fb" name="load-list-of-medias-operation" />
-    </flow>
 	<flow name="post:\embed-text:application\json:vectors-connector-operations-api-config" doc:id="9887f590-1a00-4325-9616-e86e57b4df08">
         <flow-ref doc:name="embed-text-operation" doc:id="4f01684f-2a54-4e18-ba86-780696a5a85b" name="embed-text-operation" />
     </flow>
