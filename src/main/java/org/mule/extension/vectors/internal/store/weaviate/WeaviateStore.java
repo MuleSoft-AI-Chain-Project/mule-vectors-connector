@@ -1,11 +1,12 @@
 package org.mule.extension.vectors.internal.store.weaviate;
 
 import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.exception.AuthenticationException;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore;
 import io.weaviate.client.base.WeaviateErrorMessage;
 import io.weaviate.client.base.http.HttpResponse;
-import io.weaviate.client.v1.auth.exception.AuthenticationException;
+
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -63,10 +64,6 @@ public class WeaviateStore extends BaseStoreService {
                     .map(Throwable::getMessage)
                     .orElse(e.getMessage());
             throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.AUTHENTICATION, e);
-        } catch (ConnectException e) {
-            throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-        } catch (IOException e) {
-            throw new ModuleException("Network error while connecting to Weaviate: " + e.getMessage(), MuleVectorsErrorType.NETWORK_ERROR, e);
         } catch (Exception e) {
             throw new ModuleException("Failed to build Weaviate embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }

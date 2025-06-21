@@ -33,6 +33,8 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * A factory for creating instances of {@link VectorStoreService}.
  * This class encapsulates the logic for instantiating the correct vector store implementation
@@ -58,7 +60,7 @@ public class VectorStoreServiceFactory {
                                                  String storeName,
                                                  QueryParameters queryParams,
                                                  int dimension,
-                                                 boolean createStore) {
+                                                 boolean createStore) throws ExecutionException, InterruptedException {
 
         LOGGER.debug("Vector Store: " + storeConnection.getVectorStore());
         switch (storeConnection.getVectorStore()) {

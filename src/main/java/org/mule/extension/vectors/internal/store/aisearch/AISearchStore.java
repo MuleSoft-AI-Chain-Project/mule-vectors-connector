@@ -19,10 +19,15 @@ import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.VectorStoreService;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.api.util.IOUtils;
+
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +38,9 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.joining;
 
@@ -49,6 +57,7 @@ public class AISearchStore extends BaseStoreService {
   private final String apiKey;
   private final String url;
   private final QueryParameters queryParams;
+  private final AISearchStoreConnection aiSearchStoreConnection;
 
 
   public AISearchStore(StoreConfiguration compositeConfiguration, AISearchStoreConnection aiSearchStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
@@ -56,6 +65,7 @@ public class AISearchStore extends BaseStoreService {
     this.url = aiSearchStoreConnection.getUrl();
     this.apiKey = aiSearchStoreConnection.getApiKey();
     this.queryParams = queryParams;
+    this.aiSearchStoreConnection = aiSearchStoreConnection;
   }
 
   @Override
@@ -90,10 +100,8 @@ public class AISearchStore extends BaseStoreService {
       return new AISearchStore.RowIterator();
     } catch (ModuleException e) {
       throw e; // Re-throw ModuleExceptions directly
-    } catch (IOException e) {
-      throw new ModuleException("Error creating Azure AI Search iterator: " + e.getMessage(), MuleVectorsErrorType.NETWORK_ERROR, e);
     } catch (Exception e) {
-      LOGGER.error("Error while creating row iterator", e);
+      LOGGER.error("Error while creating row iterator for Azure AI Search", e);
       throw new ModuleException("Failed to create Azure AI Search iterator: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
@@ -105,7 +113,7 @@ public class AISearchStore extends BaseStoreService {
     private Iterator<JSONObject> currentBatch;
     private boolean hasMore;
 
-    public RowIterator() throws IOException {
+    public RowIterator() throws Exception {
       this.nextUrl = buildInitialUrl();
       this.hasMore = true;
       fetchNextBatch();
@@ -123,33 +131,31 @@ public class AISearchStore extends BaseStoreService {
           + queryParams.pageSize() + "&$select=" + fields + "&api-version=" + API_VERSION;
     }
 
-    private void fetchNextBatch() throws IOException {
+    private void fetchNextBatch() throws Exception {
       if (nextUrl == null) {
         hasMore = false;
         return;
       }
 
       try {
-        URL url = new URL(nextUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("api-key", apiKey);
+        HttpClient httpClient = aiSearchStoreConnection.getHttpClient();
+        Map<String, String> headers = Map.of("api-key", apiKey);
 
-        int responseCode = connection.getResponseCode();
+        // The helper is now async
+        CompletableFuture<HttpResponse> futureResponse =
+            HttpRequestHelper.executeGetRequest(httpClient, nextUrl, headers, 5000);
+
+        // Block and wait for the result
+        HttpResponse response = futureResponse.get();
+
+        int responseCode = response.getStatusCode();
         if (responseCode != 200) {
-          handleHttpError(connection, responseCode);
+          handleHttpError(response, responseCode);
         }
 
-        reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder responseBuilder = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-          responseBuilder.append(line);
-        }
-        reader.close();
+        String responseBody = readInputStreamToString(response);
+        JSONObject jsonResponse = new JSONObject(responseBody);
 
-        JSONObject jsonResponse = new JSONObject(responseBuilder.toString());
         JSONArray documents = jsonResponse.getJSONArray("value");
         nextUrl = jsonResponse.optString("@odata.nextLink", null); // Get next page URL
 
@@ -160,29 +166,36 @@ public class AISearchStore extends BaseStoreService {
         currentBatch = batch.iterator();
       } catch (ConnectException e) {
         throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+      } catch (InterruptedException | ExecutionException e) {
+        Thread.currentThread().interrupt();
+        throw new ModuleException("Request to Azure AI Search failed or was interrupted: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
       }
     }
 
-    private void handleHttpError(HttpURLConnection connection, int responseCode) throws IOException {
-      try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
-        StringBuilder errorResponseBuilder = new StringBuilder();
-        String errorLine;
-        while ((errorLine = errorReader.readLine()) != null) {
-          errorResponseBuilder.append(errorLine);
+    private String readInputStreamToString(HttpResponse response) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+            return result.toString();
         }
-        String errorMessage = "Failed to fetch data: " + responseCode + " - " + errorResponseBuilder.toString();
+    }
+
+    private void handleHttpError(HttpResponse connection, int responseCode) throws IOException {
+        String errorMessage = "Failed to fetch data: " + responseCode + " - " + readInputStreamToString(connection);
         LOGGER.error(errorMessage);
 
         switch (responseCode) {
-          case 401:
-          case 403:
-            throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.AUTHENTICATION);
-          case 400:
-            throw new ModuleException("Invalid request to Azure AI Search: " + errorMessage, MuleVectorsErrorType.INVALID_REQUEST);
-          default:
-            throw new ModuleException("Azure AI Search service error: " + errorMessage, MuleVectorsErrorType.SERVICE_ERROR);
+            case 401:
+            case 403:
+                throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.AUTHENTICATION);
+            case 400:
+                throw new ModuleException("Invalid request to Azure AI Search: " + errorMessage, MuleVectorsErrorType.INVALID_REQUEST);
+            default:
+                throw new ModuleException("Azure AI Search service error: " + errorMessage, MuleVectorsErrorType.SERVICE_ERROR);
         }
-      }
     }
 
     @Override
@@ -191,7 +204,7 @@ public class AISearchStore extends BaseStoreService {
         if (currentBatch == null || (!currentBatch.hasNext() && hasMore)) {
           fetchNextBatch();
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
         throw new RuntimeException("Error fetching next batch from Azure AI Search", e);
       }
       return currentBatch != null && currentBatch.hasNext();
