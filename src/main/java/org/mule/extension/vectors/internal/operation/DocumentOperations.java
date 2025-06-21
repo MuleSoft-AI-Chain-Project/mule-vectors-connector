@@ -194,11 +194,7 @@ public class DocumentOperations {
                                                      segmentationParameters.getMaxSegmentSizeInChars(),
                                                      segmentationParameters.getMaxOverlapSizeInChars());
 
-      Document document = Document.from(textSegments.get(0).text(), textSegments.get(0).metadata());
-
-      JSONObject responseJsonObject = JsonUtils.docToTextSegmentsJson(document,
-                                                                      segmentationParameters.getMaxSegmentSizeInChars(),
-                                                                      segmentationParameters.getMaxOverlapSizeInChars());
+      JSONObject responseJsonObject = null;
 
       return createDocumentResponse(
           responseJsonObject.toString(),

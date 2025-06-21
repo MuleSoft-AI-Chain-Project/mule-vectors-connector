@@ -95,7 +95,7 @@ public class EmbeddingOperations {
 
             EmbeddingMultimodalModel embeddingMultimodalModel = baseModel.buildEmbeddingMultimodalModel();
             LOGGER.debug(String.format("Embedding multimodal model for %s service built.", modelConnection.getEmbeddingModelService()));
-            textSegments.add(TextSegment.from(inputs.get(0)));
+            textSegments.add(TextSegment.from(inputs.get(0), new Metadata().put(Constants.METADATA_KEY_INDEX, 0)));
             Response<Embedding> multimodalResponse = embeddingMultimodalModel.embedText(inputs.get(0));
             embeddings.add(multimodalResponse.content());
             tokenUsage = multimodalResponse.tokenUsage() != null ?
@@ -112,8 +112,10 @@ public class EmbeddingOperations {
             EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
             LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
 
-            for (String singleText : inputs) {
-              textSegments.add(TextSegment.from(singleText));
+            for (int i = 0; i < inputs.size(); i++) {
+              textSegments.add(TextSegment.from(
+                  inputs.get(i),
+                  new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
             }
             Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
             embeddings = textResponse.content();
