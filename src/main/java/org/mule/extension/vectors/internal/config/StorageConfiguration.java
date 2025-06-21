@@ -19,12 +19,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     GoogleCloudStorageConnectionProvider.class,
     LocalStorageConnectionProvider.class})
 @Operations({StorageOperations.class, MediaOperations.class})
-@ExternalLib(name = "LangChain4J",
-    type=DEPENDENCY,
-    description = "LangChain4J",
-    nameRegexpMatcher = "(.*)\\.jar",
-    requiredClassName = "dev.langchain4j.data.document.parser.TextDocumentParser",
-    coordinates = "dev.langchain4j:langchain4j:1.0.1")
 public class StorageConfiguration {
 
 }
