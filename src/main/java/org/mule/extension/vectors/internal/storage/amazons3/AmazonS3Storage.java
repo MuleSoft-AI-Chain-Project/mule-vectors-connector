@@ -5,6 +5,7 @@ import dev.langchain4j.data.document.BlankDocumentException;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
@@ -40,20 +41,6 @@ public class AmazonS3Storage extends BaseStorage {
 
     private S3Client s3Client;
 
-    private S3Client getS3Client() {
-
-        if(s3Client == null) {
-
-            // Create S3 client with your credentials
-            this.s3Client = S3Client.builder()
-                .region(Region.of(awsRegion))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey)))
-                .build();
-        }
-        return s3Client;
-    }
-
     private Iterator<S3Object> s3ObjectIterator;
     private ListObjectsV2Response response;
 
@@ -81,7 +68,7 @@ public class AmazonS3Storage extends BaseStorage {
             }
 
             ListObjectsV2Request listObjectsV2Request = requestBuilder.build();
-            response = getS3Client().listObjectsV2(listObjectsV2Request);
+            response = s3Client.listObjectsV2(listObjectsV2Request);
 
             // Get the list of S3 objects and create an iterator
             this.s3ObjectIterator = response.contents().iterator();
@@ -99,10 +86,14 @@ public class AmazonS3Storage extends BaseStorage {
         this.s3Client = amazonS3StorageConnection.getS3Client();
     }
 
-    public InputStream getSingleFile() {
+    public File getSingleFile() {
 
         LOGGER.debug("S3 URL: " + contextPath);
-        return ((AmazonS3StorageConnection)storageConnection).loadFile(getAWSS3Bucket(), getAWSS3ObjectKey());
+        InputStream inputStream = ((AmazonS3StorageConnection)storageConnection).loadFile(getAWSS3Bucket(), getAWSS3ObjectKey());
+        return new File(
+            inputStream,
+            getAWSS3Bucket() + "/" + getAWSS3ObjectKey(),
+            getAWSS3ObjectKey());
     }
 
     private String getAWSS3Bucket() {
@@ -158,7 +149,7 @@ public class AmazonS3Storage extends BaseStorage {
                 .bucket(bucketName)
                 .key(objectKey)
                 .build();
-            ResponseBytes<GetObjectResponse> objectBytes = getS3Client().getObjectAsBytes(getObjectRequest);
+            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
             GetObjectResponse response = objectBytes.response();
 
             String mimeType = response.contentType();
@@ -206,7 +197,7 @@ public class AmazonS3Storage extends BaseStorage {
         }
 
         @Override
-        public InputStream next() {
+        public File next() {
 
             S3Object object = getS3ObjectIterator().next();
             // Skip objects that represent folders based on size
@@ -231,7 +222,10 @@ public class AmazonS3Storage extends BaseStorage {
                     MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE,
                     e);
             }
-            return content;
+            return new File(
+                content,
+                getAWSS3Bucket() + "/" + object.key(),
+                object.key());
         }
     }
 

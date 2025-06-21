@@ -7,8 +7,10 @@ import com.google.cloud.storage.Storage;
 import dev.langchain4j.data.image.Image;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
+import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
@@ -83,7 +85,7 @@ public class GoogleCloudStorage extends BaseStorage {
         return new String[]{bucket, objectKey};
     }
 
-    public InputStream getSingleFile() {
+    public File getSingleFile() {
 
         LOGGER.debug("GCS URL: " + contextPath);
         if (Objects.equals(this.objectKey, "")) {
@@ -92,7 +94,12 @@ public class GoogleCloudStorage extends BaseStorage {
                 String.format("GCS path must contain a bucket and object path: '%s'", contextPath),
                 MuleVectorsErrorType.INVALID_PARAMETER);
         }
-        return((GoogleCloudStorageConnection) storageConnection).loadFile(this.bucket, this.objectKey);
+
+        InputStream inputStream = ((GoogleCloudStorageConnection) storageConnection).loadFile(this.bucket, this.objectKey);
+        return new File(
+            inputStream,
+            this.bucket + "/" + this.objectKey,
+            this.objectKey);
     }
 
     public Media getSingleMedia() {
@@ -200,7 +207,7 @@ public class GoogleCloudStorage extends BaseStorage {
     }
 
     @Override
-    public FileIterator documentIterator() {
+    public FileIterator fileIterator() {
         return new FileIterator();
     }
 
@@ -212,7 +219,7 @@ public class GoogleCloudStorage extends BaseStorage {
     public class FileIterator extends BaseStorage.FileIterator {
 
         @Override
-        public InputStream next() {
+        public File next() {
             Blob blob = getBlobIterator().next();
             LOGGER.debug("Processing GCS object key: " + blob.getName());
             InputStream content;
@@ -224,7 +231,10 @@ public class GoogleCloudStorage extends BaseStorage {
                     MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE,
                     e);
             }
-            return content;
+            return new File(
+                content,
+                bucket + "/" + blob.getName(),
+                blob.getName());
         }
 
         @Override

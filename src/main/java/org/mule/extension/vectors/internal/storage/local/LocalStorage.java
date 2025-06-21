@@ -4,8 +4,10 @@ import dev.langchain4j.data.document.BlankDocumentException;
 import dev.langchain4j.data.image.Image;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
+import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
@@ -48,10 +50,13 @@ public class LocalStorage extends BaseStorage {
     this.fullPath = storageConnection.getWorkingDir() != null ? storageConnection.getWorkingDir() + "/" + contextPath : contextPath;
   }
 
-  public InputStream getSingleFile() {
+  public File getSingleFile() {
 
-    Path path = Paths.get(fullPath);
-    return ((LocalStorageConnection)storageConnection).loadFile(path);
+    InputStream inputStream = ((LocalStorageConnection)storageConnection).loadFile(Paths.get(fullPath));
+    return new File(
+        inputStream,
+        fullPath,
+        Utils.getFileNameFromPath(fullPath));
   }
 
   /**
@@ -120,7 +125,7 @@ public class LocalStorage extends BaseStorage {
   }
 
   @Override
-  public FileIterator documentIterator() {
+  public FileIterator fileIterator() {
     return new FileIterator();
   }
 
@@ -156,7 +161,7 @@ public class LocalStorage extends BaseStorage {
 
     // Override next to return the next document
     @Override
-    public InputStream next() {
+    public File next() {
       if (hasNext()) {
         Path path = getPathIterator().next();
         LOGGER.debug("File: " + path.getFileName().toString());
@@ -174,7 +179,10 @@ public class LocalStorage extends BaseStorage {
               MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE,
               e);
         }
-        return content;
+        return new File(
+            content,
+            path.toString(),
+            Utils.getFileNameFromPath(path.toString()));
       }
       throw new IllegalStateException("No more files to iterate");
     }

@@ -47,16 +47,6 @@ public class DocumentPayloadParameters {
   @Optional(defaultValue = Constants.FILE_PARSER_TYPE_APACHE_TIKA)
   private String fileParserType;
 
-  @Parameter
-  @Alias("fileName")
-  @DisplayName("File name")
-  @Summary("The file name.")
-  @Placement(order = 4)
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Example("example.pdf")
-  @Optional
-  private String fileName;
-
   public InputStream getContent() {
     return content;
   }
@@ -74,16 +64,11 @@ public class DocumentPayloadParameters {
 
   public String getFileParserType() { return fileParserType; }
 
-  public String getFileName() {
-    return fileName;
-  }
-
   @Override
   public String toString() {
     return "DocumentPayloadParameters{" +
         "format='" + format + '\'' +
         ", fileParserType='" + fileParserType + '\'' +
-        ", fileName='" + fileName + '\'' +
         '}';
   }
 

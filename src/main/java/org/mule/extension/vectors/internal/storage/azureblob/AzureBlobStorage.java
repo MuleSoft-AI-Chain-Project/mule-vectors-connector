@@ -17,8 +17,10 @@ import java.util.Base64;
 import java.util.Iterator;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
+import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
@@ -105,13 +107,18 @@ public class AzureBlobStorage extends BaseStorage {
         this.blobServiceClient = azureBlobStorageConnection.getBlobServiceClient();
     }
 
-    public InputStream getSingleFile() {
+    public File getSingleFile() {
 
         String[] parts = contextPath.split("/", 2);
         String containerName = getContainerName();
         String blobName = getBlobName();
         LOGGER.debug("Blob name: " + blobName);
-        return ((AzureBlobStorageConnection)storageConnection).loadFile(containerName, blobName);
+
+        InputStream inputStream = ((AzureBlobStorageConnection)storageConnection).loadFile(containerName, blobName);
+        return new File(
+            inputStream,
+            containerName + "/" + blobName,
+            blobName);
     }
 
 
@@ -182,7 +189,7 @@ public class AzureBlobStorage extends BaseStorage {
     }
 
     @Override
-    public FileIterator documentIterator() {
+    public FileIterator fileIterator() {
         return new FileIterator();
     }
 
@@ -199,7 +206,7 @@ public class AzureBlobStorage extends BaseStorage {
         }
 
         @Override
-        public InputStream next() {
+        public File next() {
 
             BlobItem blobItem = blobIterator.next();
             LOGGER.debug("Blob name: " + blobItem.getName());
@@ -213,7 +220,10 @@ public class AzureBlobStorage extends BaseStorage {
                     MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
                     e);
             }
-            return content;
+            return new File(
+                content,
+                contextPath + "/" + blobItem.getName(),
+                blobItem.getName());
         }
     }
 

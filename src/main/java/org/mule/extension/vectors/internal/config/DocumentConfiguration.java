@@ -6,6 +6,7 @@ import org.mule.runtime.extension.api.annotation.Operations;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
+@org.mule.runtime.extension.api.annotation.Configuration(name = "documentConfig")
 @Operations({DocumentOperations.class})
 @ExternalLib(name = "LangChain4J",
     type=DEPENDENCY,

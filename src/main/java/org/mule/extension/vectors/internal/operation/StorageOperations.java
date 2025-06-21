@@ -5,6 +5,7 @@ import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StorageErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
@@ -67,14 +68,13 @@ public class StorageOperations {
           .contextPath(fileParameters.getContextPath())
           .build();
 
-      InputStream content = baseStorage.getSingleFile();
-
-      JSONObject jsonObject = null; //JsonUtils.docToTextSegmentsJson(document);
+      File file = baseStorage.getSingleFile();
 
       return createFileResponse(
-          content,
+          file.getContent(),
           new HashMap<String, Object>() {{
-            put("contextPath", fileParameters.getContextPath());
+            put("path", file.getPath());
+            put("fileName", file.getFileName());
           }});
 
     } catch (ModuleException me) {

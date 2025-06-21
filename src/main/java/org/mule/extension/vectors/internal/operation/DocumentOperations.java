@@ -84,16 +84,12 @@ public class DocumentOperations {
       DocumentParser documentParser = BaseStorage.getDocumentParser(payloadParameters.getFileParserType());
       Document document = documentParser.parse(documentStream);
 
-      MetadataUtils.addMetadataToDocument(document, payloadParameters.getFileType(), payloadParameters.getFileName());
-
       JSONObject jsonObject = JsonUtils.docToTextSegmentsJson(document);
 
       return createDocumentResponse(
           jsonObject.toString(),
           new HashMap<String, Object>() {{
             put("payloadContentFormat", payloadParameters.getFormat());
-            put("fileType", payloadParameters.getFileType());
-            put("contextPath", payloadParameters.getFileName());
           }});
 
     } catch (ModuleException me) {

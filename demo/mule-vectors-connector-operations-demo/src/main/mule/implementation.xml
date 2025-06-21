@@ -126,15 +126,18 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="post:\load-document-from-payload:multipart\form-data:vectors-connector-operations-api-config" doc:id="a0fe98be-1342-4df4-9655-a3ec3faf5105">
+    <flow name="post:\load-file:vectors-connector-operations-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e">
+        <flow-ref doc:name="load-file-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-file-operation" />
+    </flow>
+	<flow name="post:\load-file-list:vectors-connector-operations-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed">
+        <flow-ref doc:name="load-file-list-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-file-list-operation" />
+    </flow>
+	<flow name="post:\parse:multipart\form-data:vectors-connector-operations-api-config" doc:id="18b85342-7e4b-4d82-b954-ce25c7ef69e9">
+		<flow-ref doc:name="parse-operation" doc:id="dbf34182-416f-4ae8-9adb-25012ff3e827" name="parse-operation" />
+	</flow>
+	<flow name="post:\load-document-from-payload:multipart\form-data:vectors-connector-operations-api-config" doc:id="a0fe98be-1342-4df4-9655-a3ec3faf5105">
 		<flow-ref doc:name="load-document-from-payload-operation" doc:id="6259493a-9a49-4093-ace2-2de31afa1e0e" name="load-document-from-payload-operation" />
 	</flow>
-	<flow name="post:\load-document:vectors-connector-operations-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e">
-        <flow-ref doc:name="load-single-document-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-single-document-operation" />
-    </flow>
-    <flow name="post:\load-documents:vectors-connector-operations-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed">
-        <flow-ref doc:name="load-list-of-documents-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-list-of-documents-operation" />
-    </flow>
 	<flow name="post:\load-media:vectors-connector-operations-api-config" doc:id="fddc79ae-2ce0-4c75-a519-a34a68f51bb8">
         <flow-ref doc:name="load-single-media-operation" doc:id="6c289829-2348-45a8-a697-931924327d24" name="load-single-media-operation" />
     </flow>

@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.pagination;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
@@ -22,7 +23,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
 
   private StreamingHelper streamingHelper;
   private BaseStorage baseStorage;
-  private Iterator<InputStream> fileIterator;
+  private Iterator<File> fileIterator;
   private StorageConfiguration storageConfiguration;
   private FileParameters fileParameters;
 
@@ -46,20 +47,21 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
             .contextPath(fileParameters.getContextPath())
             .build();
 
-        fileIterator = baseStorage.documentIterator();
+        fileIterator = baseStorage.fileIterator();
       }
 
       while(fileIterator.hasNext()) {
 
-        InputStream content = fileIterator.next();
+        File file = fileIterator.next();
 
-        if(content == null) continue; // Skip null document
+        if(file == null) continue; // Skip null document
 
 
         return createPageFileResponse(
-            content,
+            file.getContent(),
             new HashMap<String, Object>() {{
-              put("contextPath", fileParameters.getContextPath());
+              put("path", file.getPath());
+              put("fileName", file.getFileName());
             }},
             streamingHelper
         );

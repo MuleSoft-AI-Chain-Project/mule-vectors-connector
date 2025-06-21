@@ -19,6 +19,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<ms-vectors:local-connection />
 	</ms-vectors:storage-config>
 	
+	<ms-vectors:document-config name="MuleSoft_Vectors_Connector_Document_config" doc:name="MuleSoft Vectors Connector Document config" doc:id="57b62b60-bc85-48ae-be17-bd652ba1657a" />
+	
 	<ms-vectors:embedding-config name="Einstein_Embedding_config" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="4acc0b1b-222c-4320-8dd8-bbaa907c92a7" >
 		<ms-vectors:einstein-connection salesforceOrg="${einstein.sfdcOrg}" clientId="${einstein.clientId}" clientSecret="${einstein.clientSecret}">
 		</ms-vectors:einstein-connection>
@@ -31,5 +33,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<ms-vectors:store-config name="PGVector_Store_config" doc:name="MuleSoft Vectors Connector Store config" doc:id="9b0cf438-1ad0-4fcd-a5d7-34e84ca80bf8" >
 		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
 	</ms-vectors:store-config>
+
 	
 </mule>

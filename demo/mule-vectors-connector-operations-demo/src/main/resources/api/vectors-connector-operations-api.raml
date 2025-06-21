@@ -14,10 +14,128 @@ types:
       message:
         type: string
         required: true
-        
-/load-document-from-payload:
+
+/load-file:
   post:
-    description: Loads a single document from the file system.
+    description: Loads a single file from the file system.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the file.
+        required: true
+    responses:
+      200:
+        description: Document loaded successfully.
+        body:
+          application/json:
+            example:
+              {
+                "attributes": {
+                  "fileName": "ESTA-Status-Summary.html",
+                  "otherAttributes": {},
+                  "path": "/Users/tbolis//Downloads/ESTA-Status-Summary.html"
+                }
+              }    
+      400:
+        description: Bad Request (e.g., invalid file path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+
+/load-file-list:
+  post:
+    description: Loads multiple documents from a folder.
+    queryParameters:
+      contextPath:
+        type: string
+        description: Path to the folder containing documents.
+        required: true
+    responses:
+      200:
+        description: Documents loaded successfully.
+        body:
+          application/json:
+            example:
+              [
+                {
+                  "attributes": {
+                    "fileName": "MAC SME Training.html",
+                    "otherAttributes": {},
+                    "path": "/Users/tbolis/Downloads/test/MAC SME Training.html"
+                  }
+                }
+              ]
+      400: 
+        description: Bad Request (e.g., invalid folder path or parameters).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/parse:
+  post:
+    description: Accepts a binary file and returns the extracted text content.
+    queryParameters:
+      format:
+        description: The document content format
+        type: string
+        enum: [binary, base64]
+        default: binary
+      fileParserType:
+        description: The document file type
+        type: string
+        enum: ['Apache Tika', 'Text']
+        default: 'Apache Tika'
+    body:
+      multipart/form-data:
+        properties:
+          documentBinary:
+            description: The document binary to upload.
+            type: file
+            required: false
+          documentBase64:
+            description: The document base64 to upload.
+            type: string
+            required: false
+    responses:
+      200:
+        description: Text successfully extracted from the binary file.
+        body:
+          application/json:
+            example:
+              {
+                "text-segments": [
+                  {
+                    "metadata": {
+                      "index": "0"
+                    },
+                    "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
+                  }
+                ]
+              }
+      400:
+        description: Bad Request (e.g., invalid or unsupported file).
+        body:
+          application/json:
+            type: ErrorResponse
+      500:
+        description: Internal Server Error.
+        body:
+          application/json:
+            type: ErrorResponse
+            
+/chunk-text:
+  post:
+    description: Receives a text input and returns an array of chunked texts.
     queryParameters:
       maxSegmentSize:
         type: integer
@@ -30,150 +148,34 @@ types:
         required: false
         default: 300  # Default value
     body:
-      multipart/form-data:
+      application/json:
+        type: object
         properties:
-          documentBinary:
-            description: The document binary to upload.
-            type: file
-            required: false
-          documentBase64:
-            description: The document base64 to upload.
+          text:
             type: string
-            required: false
-          format:
-            description: The document content format
-            type: string
-            enum: [binary, base64]
-            default: binary
-          fileType:
-            description: The document file type
-            type: string
-            enum: [any, text]
-            default: text
-          fileName:
-            description: The document file name
-            type: string
-            default: "example.txt"
-            required: false
+            description: The text to be chunked.
+            required: true
+        example:
+          text: "This is a long text that needs to be split into smaller chunks."
     responses:
       200:
-        description: Document loaded successfully.
+        description: Text successfully chunked.
         body:
           application/json:
+            type: object
+            properties:
+              chunks:
+                type: array
+                items:
+                  type: string
+                description: An array of text chunks.
             example:
-              {
-                "text-segments": [
-                  {
-                    "metadata": {
-                      "index": "0",
-                      "source": "s3://ms-vectors/invoicesample.pdf",
-                      "file_type": "any",
-                      "file_name": "invoicesample.pdf"
-                    },
-                    "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
-                  }
-                ]
-              }
+              chunks:
+                - "This is a long text"
+                - "that needs to be split"
+                - "into smaller chunks."
       400:
-        description: Bad Request (e.g., invalid file path or parameters).
-        body:
-          application/json:
-            type: ErrorResponse
-      500:
-        description: Internal Server Error.
-        body:
-          application/json:
-            type: ErrorResponse
-
-/load-document:
-  post:
-    description: Loads a single document from the file system.
-    queryParameters:
-      contextPath:
-        type: string
-        description: Path to the document file.
-        required: true
-      maxSegmentSize:
-        type: integer
-        description: Maximum size of each segment.
-        required: false
-        default: 0  # Default value
-      maxOverlapSize:
-        type: integer
-        description: Maximum overlap size between segments.
-        required: false
-        default: 0  # Default value
-    responses:
-      200:
-        description: Document loaded successfully.
-        body:
-          application/json:
-            example:
-              {
-                "text-segments": [
-                  {
-                    "metadata": {
-                      "index": "0",
-                      "source": "s3://ms-vectors/invoicesample.pdf",
-                      "file_type": "any",
-                      "file_name": "invoicesample.pdf"
-                    },
-                    "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
-                  }
-                ]
-              }
-      400:
-        description: Bad Request (e.g., invalid file path or parameters).
-        body:
-          application/json:
-            type: ErrorResponse
-      500:
-        description: Internal Server Error.
-        body:
-          application/json:
-            type: ErrorResponse
-
-/load-documents:
-  post:
-    description: Loads multiple documents from a folder.
-    queryParameters:
-      contextPath:
-        type: string
-        description: Path to the folder containing documents.
-        required: true
-      maxSegmentSize:
-        type: integer
-        description: Maximum size of each segment.
-        required: false
-        default: 0  # Default value
-      maxOverlapSize:
-        type: integer
-        description: Maximum overlap size between segments.
-        required: false
-        default: 0  # Default value
-    responses:
-      200:
-        description: Documents loaded successfully.
-        body:
-          application/json:
-            example:
-              [
-                {
-                  "text-segments": [
-                    {
-                      "metadata": {
-                        "index": "0",
-                        "source": "s3://ms-vectors/invoicesample.pdf",
-                        "file_type": "any",
-                        "file_name": "invoicesample.pdf"
-                      },
-                      "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
-                    }
-                  ]
-                }
-              ]
-      400:
-        description: Bad Request (e.g., invalid folder path or parameters).
+        description: Bad Request (e.g., missing or invalid input text).
         body:
           application/json:
             type: ErrorResponse
@@ -303,24 +305,21 @@ types:
   post:
     description: Adds text content to the vector store.
     queryParameters:
-      maxSegmentSize:
-        type: integer
-        description: Maximum size of each segment.
-        required: false
-        default: 0  # Default value
-      maxOverlapSize:
-        type: integer
-        description: Maximum overlap size between segments.
-        required: false
-        default: 0  # Default value
     body:
       application/json:
         type: object
         properties:
-          text:
-            type: string
-            description: The text content to add to the store.
+          inputTexts:
+            type: array
+            items:
+              type: string
+            description: An array of text contents to add to the store.
             required: true
+        example:
+          inputTexts:
+            - "This is the first text to embed."
+            - "Here is the second text."
+            - "And a third one."
     responses:
       201:
         description: Text added successfully.

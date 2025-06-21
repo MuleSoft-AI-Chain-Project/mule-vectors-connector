@@ -20,9 +20,9 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class StorageResponseAttributes implements Serializable {
 
-  private final String folderPath;
+  private final String path;
 
-  private final String filePath;
+  private final String fileName;
 
   /**
    * Additional attributes not explicitly defined as fields in this class.
@@ -39,17 +39,17 @@ public class StorageResponseAttributes implements Serializable {
    */
   public StorageResponseAttributes(Map<String, Object> requestAttributes) {
 
-    this.folderPath = requestAttributes.containsKey("folderPath") ? (String) requestAttributes.remove("folderPath") : null;
-    this.filePath = requestAttributes.containsKey("filePath") ? (String) requestAttributes.remove("filePath") : null;
+    this.path = requestAttributes.containsKey("path") ? (String) requestAttributes.remove("path") : null;
+    this.fileName = requestAttributes.containsKey("fileName") ? (String) requestAttributes.remove("fileName") : null;
     this.otherAttributes = requestAttributes;
   }
 
-  public String getFolderPath() {
-    return folderPath;
+  public String getPath() {
+    return path;
   }
 
-  public String getFilePath() {
-    return filePath;
+  public String getFileName() {
+    return fileName;
   }
 
   /**

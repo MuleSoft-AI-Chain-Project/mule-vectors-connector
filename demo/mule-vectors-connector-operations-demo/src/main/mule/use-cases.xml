@@ -5,13 +5,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
 	<flow name="add-doc-to-store-use-case" doc:id="885632fc-3930-445d-bb6d-93a19d839f26" >
-		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="ee14b4f9-f351-4293-8cbb-21dbbb76f6b5" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" />
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="7181a4d4-f5a0-4fe9-aa05-b68edb194b9a" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
+		<ms-vectors:document-parse doc:name="[Document] Parse" doc:id="680eb549-16e9-4158-be9a-22a72c183d5d" config-ref="MuleSoft_Vectors_Connector_Document_config"/>
+		<ms-vectors:document-chunk doc:name="[Document] Chunk" doc:id="0be211d6-15f9-4f4b-8550-3b714e5fa887" config-ref="MuleSoft_Vectors_Connector_Document_config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
 		<ms-vectors:embedding-generate-from-document doc:name="[Embedding] Generate from document" doc:id="03c28d70-70c2-47b5-9fc2-b89147ae72d5" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002"/>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="efb1dbd4-6a02-4d7c-a5e0-1fe29f08a351" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>
 	<flow name="add-text-to-store-use-case" doc:id="abacef92-37ce-41b3-b8da-20f47bda8c2a" >
-		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="42441873-1902-4d03-96c5-a379c7ce491b" config-ref="Einstein_Embedding_config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
-			<ms-vectors:text ><![CDATA[#[payload.text]]]></ms-vectors:text>
+		<ms-vectors:text-chunk doc:name="[Text] Chunk" doc:id="72558cdf-fe9e-4935-aee0-ceda3624bb71" config-ref="MuleSoft_Vectors_Connector_Document_config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="42441873-1902-4d03-96c5-a379c7ce491b" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
+			<ms-vectors:inputs ><![CDATA[#[[payload.text]]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="03497871-8337-43e9-8934-02a4e871c130" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>
@@ -39,8 +42,8 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 	</flow>
 	<flow name="query-by-text-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
 		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
-		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0">
-			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
+			<ms-vectors:inputs ><![CDATA[#[[payload.prompt]]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:query doc:name="[Store] Query" doc:id="40ee5ee9-ce0d-427f-b023-9ff703e947c6" config-ref="PGVector_Store_config" storeName="demo" maxResults="5" minScore="0.5">
 			<ms-vectors:text-segment-and-embedding><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
@@ -61,8 +64,8 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 	</flow>
 	<flow name="query-media-by-text-from-store-use-case" doc:id="f4a5fa27-e6ef-4c78-a80c-8a4884c105c1" >
 		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload as Object default {}]" doc:name="requestBody" doc:id="c8ce99dd-334e-4308-a9b6-78b2b5660255" variableName="requestBody" />
-		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="5656ac10-5243-4fa5-94bf-93aa116bc605" config-ref="Azure_AI_Vision_Embedding_Config" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0" embeddingModelName="2023-04-15">
-			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="5656ac10-5243-4fa5-94bf-93aa116bc605" config-ref="Azure_AI_Vision_Embedding_Config" embeddingModelName="2023-04-15">
+			<ms-vectors:inputs ><![CDATA[#[[payload.prompt]]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:query doc:name="[Store] Query" doc:id="ca6ffde2-129f-4926-b278-967890873a57" config-ref="PGVector_Store_config" storeName="demo_multimodal" maxResults="5" minScore="0.5" >
 			<ms-vectors:text-segment-and-embedding ><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>

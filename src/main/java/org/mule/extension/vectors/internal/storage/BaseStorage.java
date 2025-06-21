@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.storage;
 
-import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
@@ -11,6 +10,7 @@ import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlo
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
@@ -52,15 +52,7 @@ public abstract class BaseStorage {
     this.mediaProcessor = mediaProcessor;
   }
 
-  public InputStream getSingleFile() {
-    throw new UnsupportedOperationException("This method should be overridden by subclasses");
-  }
-
-  public static String getFolderPath() {
-    throw new UnsupportedOperationException("This method should be overridden by subclasses");
-  }
-
-  public static String getFilePath() {
+  public File getSingleFile() {
     throw new UnsupportedOperationException("This method should be overridden by subclasses");
   }
 
@@ -95,7 +87,7 @@ public abstract class BaseStorage {
     return new BaseStorage.Builder();
   }
 
-  public FileIterator documentIterator() {
+  public FileIterator fileIterator() {
     return new FileIterator();
   }
 
@@ -204,7 +196,7 @@ public abstract class BaseStorage {
     }
   }
 
-  public class FileIterator implements Iterator<InputStream> {
+  public class FileIterator implements Iterator<File> {
 
     @Override
     public boolean hasNext() {
@@ -212,7 +204,7 @@ public abstract class BaseStorage {
     }
 
     @Override
-    public InputStream next() {
+    public File next() {
       throw new UnsupportedOperationException("This method should be overridden by subclasses");
     }
   }
