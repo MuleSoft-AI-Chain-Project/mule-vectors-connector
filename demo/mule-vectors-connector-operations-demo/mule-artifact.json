@@ -1,9 +1,5 @@
 {
-  "minMuleVersion": "4.9.0",
-  "javaSpecificationVersions": [
-    "17"
-  ],
-  "api": {
-    "main": "src/main/resources/api/vectors-connector-operations-api.raml"
-  }
+    "minMuleVersion": "4.9.0",
+    "api": {"main": "src/main/resources/api/vectors-connector-operations-api.raml"},
+    "javaSpecificationVersions": ["17"]
 }
