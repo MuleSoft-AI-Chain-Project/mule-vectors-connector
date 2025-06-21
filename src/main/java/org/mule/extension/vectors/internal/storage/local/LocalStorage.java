@@ -129,11 +129,6 @@ public class LocalStorage extends BaseStorage {
     return new FileIterator();
   }
 
-  @Override
-  public MediaIterator mediaIterator() {
-    return new MediaIterator();
-  }
-
   private Iterator<Path> getPathIterator() {
     if (pathList == null) {  // Only load files if not already loaded
       try (Stream<Path> paths = Files.walk(Paths.get(fullPath))) {
@@ -185,39 +180,6 @@ public class LocalStorage extends BaseStorage {
             Utils.getFileNameFromPath(path.toString()));
       }
       throw new IllegalStateException("No more files to iterate");
-    }
-  }
-
-  public class MediaIterator extends BaseStorage.MediaIterator {
-
-    // Override hasNext to check if there are files left to process
-    @Override
-    public boolean hasNext() {
-      return getPathIterator() != null && getPathIterator().hasNext();
-    }
-
-    // Override next to return the next document
-    @Override
-    public Media next() {
-      if (hasNext()) {
-        Path path = getPathIterator().next();
-        LOGGER.debug("Media file: " + path.getFileName().toString());
-        Media media;
-        try {
-
-          media = Media.fromImage(loadImage(path));
-          MetadataUtils.addImageMetadataToMedia(media, mediaType);
-
-        } catch (Exception e) {
-
-          throw new ModuleException(
-              String.format("Error while loading file %s.", path.toString()),
-              MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
-              e);
-        }
-        return media;
-      }
-      throw new IllegalStateException("No more media files to iterate");
     }
   }
 }

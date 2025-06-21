@@ -211,11 +211,6 @@ public class GoogleCloudStorage extends BaseStorage {
         return new FileIterator();
     }
 
-    @Override
-    public MediaIterator mediaIterator() {
-        return new MediaIterator();
-    }
-
     public class FileIterator extends BaseStorage.FileIterator {
 
         @Override
@@ -235,43 +230,6 @@ public class GoogleCloudStorage extends BaseStorage {
                 content,
                 bucket + "/" + blob.getName(),
                 blob.getName());
-        }
-
-        @Override
-        public boolean hasNext() {
-            return getBlobIterator().hasNext();
-        }
-    }
-
-    public class MediaIterator extends BaseStorage.MediaIterator {
-
-        @Override
-        public Media next() {
-
-            Blob blob = getBlobIterator().next();
-            LOGGER.debug("Processing GCS object key: " + blob.getName());
-            Media media;
-            try {
-
-                switch (mediaType) {
-
-                    case Constants.MEDIA_TYPE_IMAGE:
-
-                        media = Media.fromImage(loadImage(bucket, blob.getName()));
-                        MetadataUtils.addImageMetadataToMedia(media, mediaType);
-                        break;
-
-                    default:
-                        throw new IllegalArgumentException("Unsupported Media Type: " + mediaType);
-                }
-
-            } catch (Exception e) {
-                throw new ModuleException(
-                    String.format("Error while loading media %s.", contextPath),
-                    MuleVectorsErrorType.MEDIA_OPERATIONS_FAILURE,
-                    e);
-            }
-            return media;
         }
 
         @Override

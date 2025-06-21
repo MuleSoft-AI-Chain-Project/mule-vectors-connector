@@ -121,71 +121,8 @@ public class AmazonS3Storage extends BaseStorage {
         return objectKey;
     }
 
-    public Media getSingleMedia() {
-
-        Media media;
-
-        switch (mediaType) {
-
-            case Constants.MEDIA_TYPE_IMAGE:
-
-                media = Media.fromImage(loadImage(getAWSS3Bucket(), getAWSS3ObjectKey()));
-                MetadataUtils.addImageMetadataToMedia(media, mediaType);
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unsupported Media Type: " + mediaType);
-        }
-        return media;
-    }
-
-    private Image loadImage(String bucketName, String objectKey) {
-
-        Image image;
-
-        try {
-
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(objectKey)
-                .build();
-            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
-            GetObjectResponse response = objectBytes.response();
-
-            String mimeType = response.contentType();
-            byte[] imageBytes = objectBytes.asByteArray();
-
-            String format = mimeType.contains("/") ? mimeType.substring(mimeType.indexOf("/") + 1) : null;
-            if(mediaProcessor!= null) imageBytes = mediaProcessor.process(imageBytes, format);
-            String base64Data = Base64.getEncoder().encodeToString(imageBytes);
-
-            // Encode only special characters, but keep `/`
-            String encodedObjectKey = URLEncoder.encode(objectKey, "UTF-8")
-                .replace("+", "%20") // Fix space encoding
-                .replace("%2F", "/"); // Keep `/` in the path
-
-            image = Image.builder()
-                .url("s3://" + bucketName + "/" + encodedObjectKey)
-                .mimeType(mimeType)
-                .base64Data(base64Data)
-                .build();
-
-        } catch (Exception ioe) {
-
-            throw new ModuleException(String.format("Impossible to load the image from %s", ""),
-                                      MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
-                                      ioe);
-        }
-        return image;
-    }
-
     public BaseStorage.FileIterator fileIterator() {
         return new BaseStorage.FileIterator();
-    }
-
-    @Override
-    public MediaIterator mediaIterator() {
-        return new MediaIterator();
     }
 
     public class FileIterator extends BaseStorage.FileIterator {
@@ -226,43 +163,6 @@ public class AmazonS3Storage extends BaseStorage {
                 content,
                 getAWSS3Bucket() + "/" + object.key(),
                 object.key());
-        }
-    }
-
-    public class MediaIterator extends BaseStorage.MediaIterator {
-
-        @Override
-        public boolean hasNext() {
-
-            return getS3ObjectIterator().hasNext();
-        }
-
-        @Override
-        public Media next() {
-
-            S3Object object = getS3ObjectIterator().next();
-
-            // Skip objects that represent folders based on size
-            if (object.size() == 0) {
-
-                LOGGER.info("Skipping virtual folder: " + object.key());
-                return null;
-            }
-
-            LOGGER.debug("AWS S3 Object Key: " + object.key());
-            Media media;
-            try {
-
-                media = Media.fromImage(loadImage(getAWSS3Bucket(), object.key()));
-                MetadataUtils.addImageMetadataToMedia(media, mediaType);
-
-            } catch (Exception e) {
-                throw new ModuleException(
-                    String.format("Error while loading media %s.", contextPath),
-                    MuleVectorsErrorType.MEDIA_OPERATIONS_FAILURE,
-                    e);
-            }
-            return media;
         }
     }
 }

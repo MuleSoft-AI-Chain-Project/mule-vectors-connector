@@ -37,7 +37,6 @@ public abstract class BaseStorage {
   protected String mediaType;
   protected MediaProcessor mediaProcessor;
   protected FileIterator fileIterator;
-  protected MediaIterator mediaIterator;
 
   public BaseStorage(StorageConfiguration storageConfiguration, BaseStorageConnection storageConnection, String contextPath,
                      String fileType, String mediaType, MediaProcessor mediaProcessor) {
@@ -89,10 +88,6 @@ public abstract class BaseStorage {
 
   public FileIterator fileIterator() {
     return new FileIterator();
-  }
-
-  public MediaIterator mediaIterator() {
-    return new MediaIterator();
   }
 
   public static class Builder {
@@ -205,19 +200,6 @@ public abstract class BaseStorage {
 
     @Override
     public File next() {
-      throw new UnsupportedOperationException("This method should be overridden by subclasses");
-    }
-  }
-
-  public class MediaIterator implements Iterator<Media> {
-
-    @Override
-    public boolean hasNext() {
-      throw new UnsupportedOperationException("This method should be overridden by subclasses");
-    }
-
-    @Override
-    public Media next() {
       throw new UnsupportedOperationException("This method should be overridden by subclasses");
     }
   }
