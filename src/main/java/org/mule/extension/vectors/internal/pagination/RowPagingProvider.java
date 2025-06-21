@@ -8,7 +8,9 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.service.VectorStoreService;
+import org.mule.extension.vectors.internal.service.VectorStoreServiceFactory;
+import org.mule.extension.vectors.internal.store.BaseStoreService;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -27,12 +29,12 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RowPagingProvider.class);
 
-  private Iterator<BaseStore.Row<?>> rowIterator;
+  private Iterator<BaseStoreService.Row<?>> rowIterator;
   private StoreConfiguration storeConfiguration;
   private String storeName;
   private QueryParameters queryParams;
   private StreamingHelper streamingHelper;
-  private BaseStore baseStore;
+  private VectorStoreService vectorStoreService;
 
   public RowPagingProvider(StoreConfiguration storeConfiguration,
                            String storeName,
@@ -50,27 +52,27 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
     try {
 
-      if(baseStore == null) {
+      if(vectorStoreService == null) {
 
         OperationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_QUERY_ALL, storeConnection.getVectorStore());
 
-        baseStore =  BaseStore.builder()
-          .storeName(storeName)
-          .configuration(storeConfiguration)
-          .connection(storeConnection)
-          .queryParams(queryParams)
-          .createStore(false)
-          .build();
+        vectorStoreService = VectorStoreServiceFactory.getInstance(
+                storeConfiguration,
+                storeConnection,
+                storeName,
+                queryParams,
+                0,
+                false);
 
-        rowIterator = baseStore.rowIterator();
+        rowIterator = vectorStoreService.getRowIterator();
       }
 
       while(rowIterator.hasNext()) {
 
         try {
 
-          BaseStore.Row<?> row = rowIterator.next();
+          BaseStoreService.Row<?> row = rowIterator.next();
 
           if(row == null) continue; // Skip null media
 

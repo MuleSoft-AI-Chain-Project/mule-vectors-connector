@@ -19,7 +19,8 @@ import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.service.VectorStoreService;
+import org.mule.extension.vectors.internal.service.VectorStoreServiceFactory;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -38,15 +39,20 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
+import static org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper.executeStoreOperation;
+import static org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper.parseStoreInput;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 import static org.mule.sdk.api.annotation.param.MediaType.ANY;
 
@@ -88,108 +94,22 @@ public class StoreOperations {
       @Alias("minScore") @Summary("Minimum score used to filter retrieved results (text segments).") Double minScore,
       @ParameterGroup(name = "Filter") SearchFilterParameters searchFilterParams) {
 
-    List<TextSegment> textSegments = new LinkedList<>();
-    List<Embedding> embeddings = new LinkedList<>();
-    int dimension;
+    final double finalMinScore = (minScore == null) ? Constants.EMBEDDING_SEARCH_REQUEST_DEFAULT_MIN_SCORE : minScore;
 
-    try {
+    var input = parseStoreInput(content, false, null);
 
-      if (minScore == null) { minScore = Constants.EMBEDDING_SEARCH_REQUEST_DEFAULT_MIN_SCORE; }
+    Function<VectorStoreService, JSONObject> operation =
+        (storeService) -> storeService.query(input.textSegments(), input.embeddings(), maxResults, finalMinScore, searchFilterParams);
 
-      try {
-
-        String contentString = IOUtils.toString(content, StandardCharsets.UTF_8);
-        JSONObject jsonContent = new JSONObject(contentString);
-
-        if (jsonContent.has(Constants.JSON_KEY_TEXT_SEGMENTS)) {
-
-          JSONArray jsonTextSegments = jsonContent.getJSONArray(Constants.JSON_KEY_TEXT_SEGMENTS);
-          IntStream.range(0, jsonTextSegments.length())
-              .mapToObj(jsonTextSegments::getJSONObject) // Convert index to JSONObject
-              .forEach(jsonTextSegment -> {
-                HashMap<String, Object> metadataMap =
-                    (HashMap<String, Object>) jsonTextSegment.getJSONObject(Constants.JSON_KEY_METADATA).toMap();
-                Metadata metadata = Metadata.from(metadataMap);
-                textSegments.add(new TextSegment(jsonTextSegment.getString(Constants.JSON_KEY_TEXT), metadata));
-              });
-
-          if (jsonTextSegments.length() != 1) {
-
-            throw new ModuleException(
-                String.format("You must provide one text segment only. Received: %s", String.valueOf(jsonTextSegments.length())),
-                MuleVectorsErrorType.INVALID_PARAMETER);
-          }
-        }
-
-        JSONArray jsonEmbeddings = jsonContent.getJSONArray(Constants.JSON_KEY_EMBEDDINGS);
-        IntStream.range(0, jsonEmbeddings.length())
-            .mapToObj(jsonEmbeddings::getJSONArray) // Convert index to JSONObject
-            .forEach(jsonEmbedding -> {
-
-              // Convert JSONArray to float[]
-              float[] floatArray = new float[jsonEmbedding.length()];
-              for (int i = 0; i < jsonEmbedding.length(); i++) {
-                floatArray[i] = (float) jsonEmbedding.getDouble(i);
-              }
-              embeddings.add(new Embedding(floatArray));
-            });
-
-        if(embeddings.size() != 1) {
-
-          throw new ModuleException(String.format("You must provide one embedding only. Received: %s", String.valueOf(embeddings.size())),
-                                    MuleVectorsErrorType.INVALID_PARAMETER);
-        }
-
-        dimension = jsonContent.getInt(Constants.JSON_KEY_DIMENSION);
-        ValidationUtils.ensureGreaterThanZero(dimension, Constants.JSON_KEY_DIMENSION);
-
-      } catch (Exception e) {
-
-        throw new ModuleException(
-            String.format("Error while parsing Text Segments and Embeddings input."),
-            MuleVectorsErrorType.INVALID_PARAMETER,
-            e);
-      }
-
-      BaseStore baseStore = BaseStore.builder()
-          .storeName(storeName)
-          .connection(storeConnection)
-          .dimension(dimension)
-          .createStore(false)
-          .build();
-
-      JSONObject jsonObject = baseStore.query(
-          textSegments,
-          embeddings,
-          maxResults,
-          minScore,
-          searchFilterParams
-      );
-
-      return createStoreResponse(
-          jsonObject.toString(),
-          new HashMap<String, Object>() {{
-            put("storeName", storeName);
-            put("searchFilter", searchFilterParams);
-          }});
-
-    } catch (ModuleException me) {
-      throw me;
-
-    } catch (UnsupportedOperationException e) {
-
-      LOGGER.debug(e.getMessage());
-      throw new ModuleException(
-          e.getMessage(),
-          MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
-
-    } catch (Exception e) {
-
-      throw new ModuleException(
-          String.format("Error while querying embeddings from the store %s", storeName),
-          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
-          e);
-    }
+    return executeStoreOperation(
+        storeConfiguration, storeConnection, storeName, input.dimension(), false, null,
+        operation,
+        (response) -> response,
+        new HashMap<>() {{
+          put("storeName", storeName);
+          put("searchFilter", searchFilterParams);
+        }}
+    );
   }
 
   /**
@@ -256,86 +176,27 @@ public class StoreOperations {
           @Content InputStream content,
       @ParameterGroup(name="Custom Metadata") CustomMetadata customMetadata) {
 
-    try {
+    var input = parseStoreInput(content, true, customMetadata);
 
-      String contentString = IOUtils.toString(content, StandardCharsets.UTF_8);
+    Function<VectorStoreService, List<String>> operation = (storeService) -> {
+      List<String> ids = storeService.add(input.embeddings(), input.textSegments());
+      LOGGER.info(String.format("Ingested into %s  >> %s",
+          storeName,
+          MetadataUtils.getSourceDisplayName(input.textSegments().get(0).metadata())));
+      return ids;
+    };
 
-      JSONObject jsonContent = new JSONObject(contentString);
+    Function<List<String>, JSONObject> responseBuilder = (ids) -> JsonUtils.createIngestionStatusObject(
+        input.ingestionMetadata().get(Constants.METADATA_KEY_SOURCE_ID).toString(), ids);
 
-      HashMap<String, Object> ingestionMetadataMap = MetadataUtils.getIngestionMetadata();
-
-      JSONArray jsonTextSegments = jsonContent.getJSONArray(Constants.JSON_KEY_TEXT_SEGMENTS);
-      List<TextSegment> textSegments = new LinkedList<>();
-      IntStream.range(0, jsonTextSegments.length())
-          .mapToObj(jsonTextSegments::getJSONObject) // Convert index to JSONObject
-          .forEach(jsonTextSegment -> {
-            HashMap<String, Object> metadataMap = (HashMap<String, Object>)jsonTextSegment.getJSONObject(Constants.JSON_KEY_METADATA).toMap();
-            metadataMap.putAll(ingestionMetadataMap);
-            if(customMetadata != null && customMetadata.getMetadataEntries() != null) metadataMap.putAll(customMetadata.getMetadataEntries());
-            Metadata metadata = Metadata.from(metadataMap);
-            textSegments.add(new TextSegment(jsonTextSegment.getString(Constants.JSON_KEY_TEXT), metadata));
-          });
-
-      JSONArray jsonEmbeddings = jsonContent.getJSONArray(Constants.JSON_KEY_EMBEDDINGS);
-      List<Embedding> embeddings = new LinkedList<>();
-      IntStream.range(0, jsonEmbeddings.length())
-          .mapToObj(jsonEmbeddings::getJSONArray) // Convert index to JSONObject
-          .forEach(jsonEmbedding -> {
-
-            // Convert JSONArray to float[]
-            float[] floatArray = new float[jsonEmbedding.length()];
-            for (int i = 0; i < jsonEmbedding.length(); i++) {
-              floatArray[i] = (float) jsonEmbedding.getDouble(i);
-            }
-            embeddings.add(new Embedding(floatArray));
-          });
-
-      int dimension = jsonContent.getInt(Constants.JSON_KEY_DIMENSION);
-      ValidationUtils.ensureGreaterThanZero(dimension, Constants.JSON_KEY_DIMENSION);
-
-      BaseStore baseStore = BaseStore.builder()
-          .storeName(storeName)
-          .configuration(storeConfiguration)
-          .connection(storeConnection)
-          .dimension(dimension)
-          .build();
-
-      EmbeddingStore<TextSegment> embeddingStore = baseStore.buildEmbeddingStore();
-
-      List<String> embeddingIds = new LinkedList<>();
-      try {
-        embeddingIds = embeddingStore.addAll(embeddings, textSegments);
-        LOGGER.info(String.format("Ingested into %s  >> %s",
-                                  storeName,
-                                  MetadataUtils.getSourceDisplayName(textSegments.get(0).metadata())));
-
-      } catch(Exception e) {
-
-        throw new ModuleException(
-            String.format("Error while adding data to store \"%s\"", storeName),
-            MuleVectorsErrorType.STORE_SERVICES_FAILURE,
-            e);
-      }
-
-      JSONObject jsonObject = JsonUtils.createIngestionStatusObject(
-          ingestionMetadataMap.get(Constants.METADATA_KEY_SOURCE_ID).toString(), embeddingIds);
-
-      return createStoreResponse(
-          jsonObject.toString(),
-          new HashMap<String, Object>() {{
-            put("storeName", storeName);
-          }});
-
-    } catch (ModuleException me) {
-      throw me;
-
-    } catch (Exception e) {
-
-      throw new ModuleException(
-          String.format("Error while adding data to store \"%s\"", storeName),
-          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
-          e);
-    }
+    return executeStoreOperation(
+        storeConfiguration, storeConnection, storeName, input.dimension(), true, null,
+        operation,
+        responseBuilder,
+        new HashMap<>() {{
+          put("storeName", storeName);
+        }}
+    );
   }
 
   /**
@@ -359,74 +220,23 @@ public class StoreOperations {
       String storeName,
       @ParameterGroup(name = "Filter") RemoveFilterParameters removeFilterParams) {
 
-    try {
-      OperationValidator.validateOperationType(
-          Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS, storeConnection.getVectorStore());
+    removeFilterParams.validate();
 
-      removeFilterParams.validate();
+    Function<VectorStoreService, Void> operation = (storeService) -> {
+      storeService.remove(removeFilterParams);
+      return null;
+    };
 
-      BaseStore baseStore = BaseStore.builder()
-          .storeName(storeName)
-          .configuration(storeConfiguration)
-          .connection(storeConnection)
-          .createStore(false)
-          .build();
+    Function<Void, JSONObject> responseBuilder = (v) -> new JSONObject().put(Constants.JSON_KEY_STATUS, Constants.OPERATION_STATUS_DELETED);
 
-      EmbeddingStore<TextSegment> embeddingStore = baseStore.buildEmbeddingStore();
-
-      if(removeFilterParams.isIdsSet()) {
-
-        LOGGER.info(String.format("Remove by ids %s from store/collection %s", removeFilterParams.getIds(), storeName));
-        embeddingStore.removeAll(removeFilterParams.getIds());
-      } else if(removeFilterParams.isConditionSet()) {
-
-        OperationValidator.validateOperationType(
-            Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
-
-        LOGGER.info(String.format("Remove by metadata condition %s from store/collection %s", removeFilterParams.getCondition(), storeName));
-        Filter filter = removeFilterParams.buildMetadataFilter();
-        embeddingStore.removeAll(filter);
-      } else {
-
-        OperationValidator.validateOperationType(
-            Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS_ALL, storeConnection.getVectorStore());
-
-        LOGGER.info(String.format("Remove all from store/collection %s", storeName));
-        embeddingStore.removeAll();
-      }
-
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.put(Constants.JSON_KEY_STATUS, Constants.OPERATION_STATUS_DELETED);
-
-      return createStoreResponse(
-          jsonObject.toString(),
-          new HashMap<String, Object>() {{
-            put("storeName", storeName);
-            put("removeFilter", removeFilterParams);
-          }});
-
-    } catch (ModuleException me) {
-      throw me;
-
-    } catch (UnsupportedOperationException e) {
-
-      LOGGER.debug(e.getMessage());
-      throw new ModuleException(
-          e.getMessage(),
-          MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
-
-    } catch (IllegalArgumentException e) {
-
-      LOGGER.debug(String.format("No entry to delete from %s was found filtering with the provided matching criteria.", storeName));
-      throw new ModuleException(
-          String.format("No entry to delete from %s was found filtering with the provided matching criteria.", storeName),
-          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE);
-
-    } catch (Exception e) {
-      throw new ModuleException(
-          String.format("Error while removing embeddings from the store %s", storeName),
-          MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
-          e);
-    }
+    return executeStoreOperation(
+        storeConfiguration, storeConnection, storeName, 0, false, null,
+        operation,
+        responseBuilder,
+        new HashMap<>() {{
+          put("storeName", storeName);
+          put("removeFilter", removeFilterParams);
+        }}
+    );
   }
 }

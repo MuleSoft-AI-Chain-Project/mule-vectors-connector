@@ -12,8 +12,11 @@ import java.util.NoSuchElementException;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.extension.vectors.internal.store.BaseStoreService.Row;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEmbeddingStore;
@@ -24,35 +27,67 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 
-public class AlloyDBStore extends BaseStore {
+public class AlloyDBStore extends BaseStoreService {
   
   static final String ID_DEFAULT_FIELD_NAME = "langchain_id";
   static final String TEXT_DEFAULT_FIELD_NAME = "content";
   static final String METADATA_DEFAULT_FIELD_NAME = "langchain_metadata";
   static final String VECTOR_DEFAULT_FIELD_NAME = "embedding";
 
-  private AlloyDBEngine alloyDBEngine;
+  private final AlloyDBEngine alloyDBEngine;
+  private final QueryParameters queryParams;
 
   public AlloyDBStore(StoreConfiguration compositeConfiguration, AlloyDBStoreConnection alloyDBStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
     
-    super(compositeConfiguration, alloyDBStoreConnection, storeName, queryParams, dimension, createStore);
+    super(compositeConfiguration, alloyDBStoreConnection, storeName, dimension, createStore);
     this.alloyDBEngine = alloyDBStoreConnection.getAlloyDBEngine();
+    this.queryParams = queryParams;
   }
 
+  @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
+    try {
+      if (createStore) {
 
-    if(createStore) {
-      
-      EmbeddingStoreConfig embeddingStoreConfig = EmbeddingStoreConfig
-      .builder(storeName, dimension)
-      .overwriteExisting(false)
-      .build();
+        EmbeddingStoreConfig embeddingStoreConfig = EmbeddingStoreConfig
+                .builder(storeName, dimension)
+                .overwriteExisting(false)
+                .build();
 
-      this.alloyDBEngine.initVectorStoreTable(embeddingStoreConfig);
-    } 
+        this.alloyDBEngine.initVectorStoreTable(embeddingStoreConfig);
+      }
 
-    return new AlloyDBEmbeddingStore.Builder(this.alloyDBEngine, storeName)
-        .build();
+      return new AlloyDBEmbeddingStore.Builder(this.alloyDBEngine, storeName)
+              .build();
+    } catch (Exception e) {
+        if (e.getCause() instanceof SQLException) {
+            handleSQLException((SQLException) e.getCause());
+        }
+      throw new ModuleException("Failed to build AlloyDB embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+    }
+  }
+
+  @Override
+  public Iterator<BaseStoreService.Row<?>> getRowIterator() {
+    try {
+      return new RowIterator();
+    } catch (SQLException e) {
+      handleSQLException(e);
+      return null; // Should not be reached
+    }
+  }
+
+  private void handleSQLException(SQLException e) {
+    LOGGER.error("SQL error", e);
+    String sqlState = e.getSQLState();
+    if (sqlState != null) {
+      if (sqlState.startsWith("08")) { // Connection Exception
+        throw new ModuleException("Database connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+      } else if (sqlState.equals("28P01")) { // Invalid Password
+        throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+      }
+    }
+    throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
   }
 
   /**
@@ -122,8 +157,8 @@ public class AlloyDBStore extends BaseStore {
           return resultSet != null && resultSet.next();
         }
       } catch (SQLException e) {
-        LOGGER.error("Error checking for next element", e);
-        return false;
+        handleSQLException(e);
+        return false; // Should not be reached
       }
     }
 
@@ -153,29 +188,17 @@ public class AlloyDBStore extends BaseStore {
         if (connection != null)
           connection.close();
       } catch (SQLException e) {
-        LOGGER.error("Error closing resources", e);
+        LOGGER.error("Error closing database resources", e);
       }
     }
   }
 
-  @Override
-  public RowIterator rowIterator() {
-    try {
-      return new RowIterator();
-    } catch (SQLException e) {
-      LOGGER.error("Error while creating row iterator", e);
-      throw new RuntimeException(e);
-    }
-  }
+  public class RowIterator implements Iterator<Row<?>> {
 
-  public class RowIterator extends BaseStore.RowIterator {
-
-    private PgVectorMetadataIterator iterator;
+    private final PgVectorMetadataIterator iterator;
 
     public RowIterator() throws SQLException {
-
-      super();
-      this.iterator = new PgVectorMetadataIterator(storeName, (int)queryParams.pageSize());
+      this.iterator = new PgVectorMetadataIterator(storeName, (int) queryParams.pageSize());
     }
 
     @Override
@@ -188,6 +211,9 @@ public class AlloyDBStore extends BaseStore {
       try {
 
         ResultSet resultSet = iterator.next();
+        if (resultSet == null) {
+          throw new NoSuchElementException("No more elements available");
+        }
         String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
         float[] vector = null;
         if(queryParams.retrieveEmbeddings()) {
@@ -207,8 +233,8 @@ public class AlloyDBStore extends BaseStore {
                                     new TextSegment(text, Metadata.from(metadataObject.toMap())));
 
       } catch (SQLException e) {
-        LOGGER.error("Error while fetching next row", e);
-        return null;
+        handleSQLException(e);
+        throw new NoSuchElementException("Error processing next row");
       }
     }
   }
