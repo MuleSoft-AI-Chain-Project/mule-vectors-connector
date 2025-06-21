@@ -11,20 +11,26 @@ import dev.langchain4j.store.embedding.mongodb.MongoDbEmbeddingStore;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.store.BaseStoreService;
 
 import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
-public class MongoDBAtlasStore extends BaseStore {
+public class MongoDBAtlasStore extends BaseStoreService {
 
-  private MongoClient mongoClient;
+  private final MongoClient mongoClient;
+  private final QueryParameters queryParams;
 
   public MongoDBAtlasStore(StoreConfiguration storeConfiguration, MongoDBAtlasStoreConnection mongoDBAtlasStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
 
-    super(storeConfiguration, mongoDBAtlasStoreConnection, storeName, queryParams, dimension, createStore);
+    super(storeConfiguration, mongoDBAtlasStoreConnection, storeName, dimension, createStore);
     this.mongoClient = mongoDBAtlasStoreConnection.getMongoClient();
+    this.queryParams = queryParams;
   }
 
+  @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     // Create embedding store with automatic index creation
@@ -50,7 +56,7 @@ public class MongoDBAtlasStore extends BaseStore {
   }
 
   @Override
-  public MongoDBAtlasStore.RowIterator rowIterator() {
+  public Iterator<BaseStoreService.Row<?>> getRowIterator() {
     try {
       return new MongoDBAtlasStore.RowIterator();
     } catch (Exception e) {
@@ -59,7 +65,7 @@ public class MongoDBAtlasStore extends BaseStore {
     }
   }
 
-  public class RowIterator extends BaseStore.RowIterator {
+  public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
 
     private static final String ID_FIELD = "_id";
     private static final String METADATA_FIELD = "metadata";
@@ -74,10 +80,9 @@ public class MongoDBAtlasStore extends BaseStore {
     private boolean noMoreData;
 
     public RowIterator() throws Exception {
-      super();
       this.collection = mongoClient.getDatabase(((MongoDBAtlasStoreConnection)storeConnection).getDatabase())
         .getCollection(storeName);
-      this.pageSize = queryParams.pageSize();
+      this.pageSize = (int) queryParams.pageSize();
       this.skip = 0;
       this.currentBatch = new ArrayList<>();
       this.currentIndex = 0;
@@ -113,7 +118,7 @@ public class MongoDBAtlasStore extends BaseStore {
     }
 
     @Override
-    public Row<?> next() {
+    public BaseStoreService.Row<?> next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
@@ -129,7 +134,7 @@ public class MongoDBAtlasStore extends BaseStore {
           vector[i] = vectorList.get(i).floatValue();
         }
       }
-      return new Row<>(
+      return new BaseStoreService.Row<>(
         id,
         vector != null ? new Embedding(vector) : null,
         new TextSegment(text, Metadata.from(metadataDoc))

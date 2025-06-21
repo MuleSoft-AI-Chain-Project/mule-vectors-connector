@@ -21,7 +21,8 @@ import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreCo
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+
+import org.mule.extension.vectors.internal.store.BaseStoreService;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class QdrantStore extends BaseStore {
+public class QdrantStore extends BaseStoreService {
 
   static final String ID_DEFAULT_FIELD_NAME = "embedding_id";
   static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
@@ -40,11 +41,12 @@ public class QdrantStore extends BaseStore {
   private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStore.class);
 
   private final String payloadTextKey;
-  private QdrantClient client;
+  private final QdrantClient client;
+  private final QueryParameters queryParams;
 
   public QdrantStore(StoreConfiguration storeConfiguration, QdrantStoreConnection qdrantStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
 
-    super(storeConfiguration, qdrantStoreConnection, storeName, queryParams, dimension, createStore);
+    super(storeConfiguration, qdrantStoreConnection, storeName, dimension, createStore);
 
     try {
 
@@ -53,16 +55,13 @@ public class QdrantStore extends BaseStore {
       int port = qdrantStoreConnection.getGprcPort();
       boolean useTls = qdrantStoreConnection.isUseTLS();
       this.client = qdrantStoreConnection.getClient();
-      if(client == null) {
-
-        this.client = new QdrantClient(QdrantGrpcClient.newBuilder(host, port, useTls).withApiKey(apiKey).build());
-      }
-      this.payloadTextKey = qdrantStoreConnection.getTextSegmentKey();
+      this.queryParams = queryParams;
 
       if (createStore && !this.client.collectionExistsAsync(this.storeName).get() && dimension > 0) {
 
         qdrantStoreConnection.createCollection(storeName, dimension);
       }
+      this.payloadTextKey = qdrantStoreConnection.getTextSegmentKey();
 
     } catch (Exception e) {
 
@@ -72,6 +71,7 @@ public class QdrantStore extends BaseStore {
     }
   }
 
+  @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
 
     return QdrantEmbeddingStore.builder()
@@ -80,8 +80,9 @@ public class QdrantStore extends BaseStore {
         .collectionName(storeName)
         .build();
   }
+
   @Override
-  public QdrantStore.RowIterator rowIterator() {
+  public Iterator<BaseStoreService.Row<?>> getRowIterator() {
     try {
       return new QdrantStore.RowIterator();
     } catch (Exception e) {
@@ -90,14 +91,13 @@ public class QdrantStore extends BaseStore {
     }
   }
 
-  public class RowIterator extends BaseStore.RowIterator {
+  public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
 
     private Iterator<Points.RetrievedPoint> pointIterator;
     private Points.PointId nextOffset;
     private boolean hasMorePages = true;
 
     public RowIterator() {
-      super();
       this.pointIterator = new ArrayList<Points.RetrievedPoint>().iterator();
     }
 
@@ -110,7 +110,7 @@ public class QdrantStore extends BaseStore {
     }
 
     @Override
-    public BaseStore.Row<?> next() {
+    public BaseStoreService.Row<?> next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
@@ -142,7 +142,7 @@ public class QdrantStore extends BaseStore {
           }
         }
 
-        return new BaseStore.Row<>(id,
+        return new BaseStoreService.Row<>(id,
                                    vector != null ? new Embedding(vector) : null,
                                    new TextSegment(text, Metadata.from(metadataMap)));
       } catch (Exception e) {
@@ -155,9 +155,9 @@ public class QdrantStore extends BaseStore {
       try {
         Points.ScrollPoints.Builder request = Points.ScrollPoints.newBuilder()
             .setCollectionName(storeName)
-            .setLimit(queryParams.pageSize());
+            .setLimit((int) queryParams.pageSize());
 
-        if(queryParams.retrieveEmbeddings()) {
+        if (queryParams.retrieveEmbeddings()) {
           request.setWithVectors(Points.WithVectorsSelector.newBuilder().setEnable(true).build());
         }
 

@@ -5,12 +5,23 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.azure.search.AzureAiSearchEmbeddingStore;
+import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
+import dev.langchain4j.store.embedding.EmbeddingSearchResult;
+import dev.langchain4j.store.embedding.EmbeddingMatch;
+import dev.langchain4j.store.embedding.filter.Filter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
+import org.mule.extension.vectors.internal.service.VectorStoreService;
+import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.extension.vectors.internal.constant.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +30,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
-public class AISearchStore extends BaseStore {
+import static java.util.stream.Collectors.joining;
+
+public class AISearchStore extends BaseStoreService {
 
   static final String ID_DEFAULT_FIELD_NAME = "id";
   static final String TEXT_DEFAULT_FIELD_NAME = "content";
@@ -27,32 +40,34 @@ public class AISearchStore extends BaseStore {
   static final String VECTOR_DEFAULT_FIELD_NAME = "content_vector";
 
   private static final String API_VERSION = "2024-07-01";
+  private static final Logger LOGGER = LoggerFactory.getLogger(AISearchStore.class);
 
   private final String apiKey;
   private final String url;
+  private final QueryParameters queryParams;
+
 
   public AISearchStore(StoreConfiguration compositeConfiguration, AISearchStoreConnection aiSearchStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
-
-    super(compositeConfiguration, aiSearchStoreConnection, storeName, queryParams, dimension, createStore);
-
+    super(compositeConfiguration, aiSearchStoreConnection, storeName, dimension, createStore);
     this.url = aiSearchStoreConnection.getUrl();
     this.apiKey = aiSearchStoreConnection.getApiKey();
+    this.queryParams = queryParams;
   }
 
+  @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-
     return AzureAiSearchEmbeddingStore.builder()
         .endpoint(url)
         .apiKey(apiKey)
         .indexName(storeName)
-        .dimensions(dimension > 0 ? dimension : (createStore ? dimension : 1536)) // Default dimension in case of no dimension and no need to create store
+        .dimensions(dimension > 0 ? dimension : (createStore ? 1536 : 0)) // Default dimension
         .createOrUpdateIndex(createStore)
         .filterMapper(new VectorsAzureAiSearchFilterMapper())
         .build();
   }
 
   @Override
-  public AISearchStore.RowIterator rowIterator() {
+  public Iterator<BaseStoreService.Row<?>> getRowIterator() {
     try {
       return new AISearchStore.RowIterator();
     } catch (Exception e) {
@@ -61,7 +76,7 @@ public class AISearchStore extends BaseStore {
     }
   }
 
-  public class RowIterator extends BaseStore.RowIterator {
+  public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
 
     private BufferedReader reader;
     private String nextUrl;
@@ -69,7 +84,6 @@ public class AISearchStore extends BaseStore {
     private boolean hasMore;
 
     public RowIterator() throws Exception {
-      super();
       this.nextUrl = buildInitialUrl();
       this.hasMore = true;
       fetchNextBatch();
@@ -144,7 +158,7 @@ public class AISearchStore extends BaseStore {
     }
 
     @Override
-    public Row<?> next() {
+    public BaseStoreService.Row<?> next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
@@ -164,10 +178,7 @@ public class AISearchStore extends BaseStore {
         JSONObject metadataJsonAttributes = document.optJSONObject(METADATA_DEFAULT_FIELD_NAME);
         JSONObject metadataJson = new JSONObject();
         if (metadataJsonAttributes != null) {
-          // Extract metadata attributes if available
           JSONArray attributes = metadataJsonAttributes.optJSONArray("attributes");
-           // Object to store key-value pairs from attributes
-          // Iterate over attributes array to populate sourceObject
           for (int j = 0; j < attributes.length(); j++) {
             JSONObject attribute = attributes.getJSONObject(j);
             metadataJson.put(attribute.getString("key"), attribute.get("value"));
@@ -178,7 +189,7 @@ public class AISearchStore extends BaseStore {
         }
         Metadata metadata = metadataJson != null ? Metadata.from(metadataJson.toMap()) : Metadata.from(new HashMap<>());
 
-        return new Row<>(embeddingId,
+        return new BaseStoreService.Row<>(embeddingId,
                          vector != null ? new Embedding(vector) : null,
                          new TextSegment(text, metadata));
 

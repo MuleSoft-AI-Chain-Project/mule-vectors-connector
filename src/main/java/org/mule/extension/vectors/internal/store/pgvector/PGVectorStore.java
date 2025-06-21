@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.store.BaseStoreService;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  * Represents a store for vector data using PostgreSQL with PGVector extension.
  * This class is responsible for interacting with a PostgreSQL database to store and retrieve vector metadata.
  */
-public class PGVectorStore extends BaseStore {
+public class PGVectorStore extends BaseStoreService {
 
   static final String ID_DEFAULT_FIELD_NAME = "embedding_id";
   static final String TEXT_DEFAULT_FIELD_NAME = "text";
@@ -36,31 +36,43 @@ public class PGVectorStore extends BaseStore {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PGVectorStore.class);
 
-
-  private DataSource dataSource;
+  private final DataSource dataSource;
+  private final QueryParameters queryParams;
 
   /**
    * Constructs a PGVectorVectorStore instance using configuration and query parameters.
    *
-   * @param storeName The name of the store.
    * @param storeConfiguration The configuration for connecting to the store.
-   * @param queryParams Parameters related to query configurations.
+   * @param pgVectorStoreConnection The connection to the PGVector store.
+   * @param storeName          The name of the store.
+   * @param queryParams        Parameters related to query configurations.
+   * @param dimension          The dimension of the vectors.
+   * @param createStore        Whether to create the store if it does not exist.
    */
   public PGVectorStore(StoreConfiguration storeConfiguration, PGVectorStoreConnection pgVectorStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
-
-    super(storeConfiguration, pgVectorStoreConnection, storeName, queryParams, dimension, createStore);
-
+    super(storeConfiguration, pgVectorStoreConnection, storeName, dimension, createStore);
     this.dataSource = pgVectorStoreConnection.getDataSource();
+    this.queryParams = queryParams;
   }
 
+  @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-
     return PgVectorEmbeddingStore.datasourceBuilder()
         .datasource(this.dataSource)
         .table(this.storeName)
         .dimension(this.dimension)
         .createTable(this.createStore)
         .build();
+  }
+
+  @Override
+  public Iterator<BaseStoreService.Row<?>> getRowIterator() {
+    try {
+      return new RowIterator();
+    } catch (SQLException e) {
+      LOGGER.error("Error while creating row iterator", e);
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -167,24 +179,12 @@ public class PGVectorStore extends BaseStore {
     }
   }
 
-  @Override
-  public RowIterator rowIterator() {
-    try {
-      return new RowIterator();
-    } catch (SQLException e) {
-      LOGGER.error("Error while creating row iterator", e);
-      throw new RuntimeException(e);
-    }
-  }
+  public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
 
-  public class RowIterator extends BaseStore.RowIterator {
-
-    private PgVectorMetadataIterator iterator;
+    private final PgVectorMetadataIterator iterator;
 
     public RowIterator() throws SQLException {
-
-      super();
-      this.iterator = new PgVectorMetadataIterator(storeName, (int)queryParams.pageSize());
+      this.iterator = new PgVectorMetadataIterator(storeName, (int) queryParams.pageSize());
     }
 
     @Override
@@ -193,7 +193,7 @@ public class PGVectorStore extends BaseStore {
     }
 
     @Override
-    public Row<?> next() {
+    public BaseStoreService.Row<?> next() {
       try {
 
         ResultSet resultSet = iterator.next();
@@ -211,7 +211,7 @@ public class PGVectorStore extends BaseStore {
         String text = resultSet.getString(TEXT_DEFAULT_FIELD_NAME);
         JSONObject metadataObject = new JSONObject(resultSet.getString(METADATA_DEFAULT_FIELD_NAME));
 
-        return new Row<TextSegment>(embeddingId,
+        return new BaseStoreService.Row<TextSegment>(embeddingId,
                                     vector != null ? new Embedding(vector) : null,
                                     new TextSegment(text, Metadata.from(metadataObject.toMap())));
 
