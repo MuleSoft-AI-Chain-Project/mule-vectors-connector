@@ -12,9 +12,11 @@ import java.util.NoSuchElementException;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
 import org.mule.extension.vectors.internal.store.BaseStoreService.Row;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEmbeddingStore;
@@ -44,19 +46,25 @@ public class AlloyDBStore extends BaseStoreService {
 
   @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
+    try {
+      if (createStore) {
 
-    if(createStore) {
-      
-      EmbeddingStoreConfig embeddingStoreConfig = EmbeddingStoreConfig
-      .builder(storeName, dimension)
-      .overwriteExisting(false)
-      .build();
+        EmbeddingStoreConfig embeddingStoreConfig = EmbeddingStoreConfig
+                .builder(storeName, dimension)
+                .overwriteExisting(false)
+                .build();
 
-      this.alloyDBEngine.initVectorStoreTable(embeddingStoreConfig);
-    } 
+        this.alloyDBEngine.initVectorStoreTable(embeddingStoreConfig);
+      }
 
-    return new AlloyDBEmbeddingStore.Builder(this.alloyDBEngine, storeName)
-        .build();
+      return new AlloyDBEmbeddingStore.Builder(this.alloyDBEngine, storeName)
+              .build();
+    } catch (Exception e) {
+        if (e.getCause() instanceof SQLException) {
+            handleSQLException((SQLException) e.getCause());
+        }
+      throw new ModuleException("Failed to build AlloyDB embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+    }
   }
 
   @Override
@@ -64,9 +72,22 @@ public class AlloyDBStore extends BaseStoreService {
     try {
       return new RowIterator();
     } catch (SQLException e) {
-      LOGGER.error("Error while creating row iterator", e);
-      throw new RuntimeException(e);
+      handleSQLException(e);
+      return null; // Should not be reached
     }
+  }
+
+  private void handleSQLException(SQLException e) {
+    LOGGER.error("SQL error", e);
+    String sqlState = e.getSQLState();
+    if (sqlState != null) {
+      if (sqlState.startsWith("08")) { // Connection Exception
+        throw new ModuleException("Database connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+      } else if (sqlState.equals("28P01")) { // Invalid Password
+        throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+      }
+    }
+    throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
   }
 
   /**
@@ -136,8 +157,8 @@ public class AlloyDBStore extends BaseStoreService {
           return resultSet != null && resultSet.next();
         }
       } catch (SQLException e) {
-        LOGGER.error("Error checking for next element", e);
-        return false;
+        handleSQLException(e);
+        return false; // Should not be reached
       }
     }
 
@@ -167,7 +188,7 @@ public class AlloyDBStore extends BaseStoreService {
         if (connection != null)
           connection.close();
       } catch (SQLException e) {
-        LOGGER.error("Error closing resources", e);
+        LOGGER.error("Error closing database resources", e);
       }
     }
   }
@@ -190,6 +211,9 @@ public class AlloyDBStore extends BaseStoreService {
       try {
 
         ResultSet resultSet = iterator.next();
+        if (resultSet == null) {
+          throw new NoSuchElementException("No more elements available");
+        }
         String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
         float[] vector = null;
         if(queryParams.retrieveEmbeddings()) {
@@ -209,8 +233,8 @@ public class AlloyDBStore extends BaseStoreService {
                                     new TextSegment(text, Metadata.from(metadataObject.toMap())));
 
       } catch (SQLException e) {
-        LOGGER.error("Error while fetching next row", e);
-        return null;
+        handleSQLException(e);
+        throw new NoSuchElementException("Error processing next row");
       }
     }
   }

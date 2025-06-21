@@ -2,6 +2,11 @@ package org.mule.extension.vectors.internal.store.mongodbatlas;
 
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoClient;
+import com.mongodb.MongoCommandException;
+import com.mongodb.MongoException;
+import com.mongodb.MongoSecurityException;
+import com.mongodb.MongoSocketOpenException;
+import com.mongodb.MongoSocketReadException;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -10,8 +15,10 @@ import dev.langchain4j.store.embedding.mongodb.IndexMapping;
 import dev.langchain4j.store.embedding.mongodb.MongoDbEmbeddingStore;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.*;
 import java.util.Iterator;
@@ -32,36 +39,45 @@ public class MongoDBAtlasStore extends BaseStoreService {
 
   @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
+    try {
+      // Create embedding store with automatic index creation
+      MongoDbEmbeddingStore.Builder embeddingStoreBuilder = MongoDbEmbeddingStore.builder()
+              .databaseName(((MongoDBAtlasStoreConnection) storeConnection).getDatabase())
+              .collectionName(storeName)
+              .createIndex(createStore)
+              .indexName("vector_index")
+              .fromClient(mongoClient);
 
-    // Create embedding store with automatic index creation
-    MongoDbEmbeddingStore.Builder embeddingStoreBuilder = MongoDbEmbeddingStore.builder()
-        .databaseName(((MongoDBAtlasStoreConnection)storeConnection).getDatabase())
-        .collectionName(storeName)
-        .createIndex(createStore)
-        .indexName("vector_index")
-        .fromClient(mongoClient);
+      if (createStore) {
 
-    if(createStore){
+        // Configure index mapping for vector search
+        IndexMapping indexMapping = IndexMapping.builder()
+                .dimension(dimension)
+                .metadataFieldNames(new HashSet<>())
+                .build();
 
-      // Configure index mapping for vector search
-      IndexMapping indexMapping = IndexMapping.builder()
-          .dimension(dimension)
-          .metadataFieldNames(new HashSet<>())
-          .build();
+        embeddingStoreBuilder.indexMapping(indexMapping);
+      }
 
-      embeddingStoreBuilder.indexMapping(indexMapping);
+      return embeddingStoreBuilder.build();
+    } catch (MongoSecurityException e) {
+      throw new ModuleException("MongoDB authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+    } catch (MongoCommandException e) {
+      throw new ModuleException("MongoDB command failed: " + e.getErrorMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
+    } catch (MongoException e) {
+      throw new ModuleException("Failed to build MongoDB embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
-
-    return embeddingStoreBuilder.build();
   }
 
   @Override
   public Iterator<BaseStoreService.Row<?>> getRowIterator() {
     try {
       return new MongoDBAtlasStore.RowIterator();
+    } catch (ModuleException e) {
+      throw e; // Re-throw our own exceptions
     } catch (Exception e) {
       LOGGER.error("Error while creating row iterator", e);
-      throw new RuntimeException(e);
+      throw new ModuleException("Failed to create MongoDB iterator: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
@@ -79,7 +95,7 @@ public class MongoDBAtlasStore extends BaseStoreService {
     private int currentIndex;
     private boolean noMoreData;
 
-    public RowIterator() throws Exception {
+    public RowIterator() {
       this.collection = mongoClient.getDatabase(((MongoDBAtlasStoreConnection)storeConnection).getDatabase())
         .getCollection(storeName);
       this.pageSize = (int) queryParams.pageSize();
@@ -91,17 +107,27 @@ public class MongoDBAtlasStore extends BaseStoreService {
     }
 
     private void loadNextBatch() {
-      currentBatch.clear();
-      currentIndex = 0;
-      List<org.bson.Document> batch = collection.find()
-        .skip(skip)
-        .limit(pageSize)
-        .into(new ArrayList<>());
-      if (batch.isEmpty()) {
-        noMoreData = true;
-      } else {
-        currentBatch.addAll(batch);
-        skip += batch.size();
+      try {
+        currentBatch.clear();
+        currentIndex = 0;
+        List<org.bson.Document> batch = collection.find()
+                .skip(skip)
+                .limit(pageSize)
+                .into(new ArrayList<>());
+        if (batch.isEmpty()) {
+          noMoreData = true;
+        } else {
+          currentBatch.addAll(batch);
+          skip += batch.size();
+        }
+      } catch (MongoSocketOpenException | MongoSocketReadException e) {
+        throw new ModuleException("MongoDB connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+      } catch (MongoSecurityException e) {
+        throw new ModuleException("MongoDB authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+      } catch (MongoCommandException e) {
+        throw new ModuleException("MongoDB query failed: " + e.getErrorMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
+      } catch (MongoException e) {
+        throw new ModuleException("Error fetching from MongoDB: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
       }
     }
 

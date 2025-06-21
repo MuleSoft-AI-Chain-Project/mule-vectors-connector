@@ -8,9 +8,12 @@ import dev.langchain4j.store.embedding.opensearch.OpenSearchEmbeddingStore;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch._types.Time;
 import org.opensearch.client.opensearch.core.ScrollRequest;
 import org.opensearch.client.opensearch.core.ScrollResponse;
@@ -19,6 +22,7 @@ import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,20 +51,31 @@ public class OpenSearchStore extends BaseStoreService {
 
     @Override
     public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-        return OpenSearchEmbeddingStore.builder()
-                .serverUrl(url)
-                .openSearchClient(openSearchClient)
-                .indexName(storeName)
-                .build();
+        try {
+            return OpenSearchEmbeddingStore.builder()
+                    .serverUrl(url)
+                    .openSearchClient(openSearchClient)
+                    .indexName(storeName)
+                    .build();
+        } catch (Exception e) {
+            throw new ModuleException("Failed to build OpenSearch embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        }
     }
 
     @Override
     public Iterator<BaseStoreService.Row<?>> getRowIterator() {
         try {
             return new OpenSearchStore.RowIterator();
+        } catch (OpenSearchException e) {
+            LOGGER.error("OpenSearch error while creating row iterator", e);
+            throw new ModuleException("OpenSearch service error: " + e.getMessage(), MuleVectorsErrorType.SERVICE_ERROR, e);
+        } catch (ConnectException e) {
+            throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+        } catch (IOException | URISyntaxException e) {
+            throw new ModuleException("Network or configuration error while creating OpenSearch iterator: " + e.getMessage(), MuleVectorsErrorType.NETWORK_ERROR, e);
         } catch (Exception e) {
             LOGGER.error("Error while creating row iterator", e);
-            throw new RuntimeException(e);
+            throw new ModuleException("Failed to create OpenSearch iterator: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
     }
 
@@ -78,7 +93,11 @@ public class OpenSearchStore extends BaseStoreService {
 
         @Override
         public boolean hasNext() {
-            return currentIndex < currentBatch.size() || fetchNextBatch();
+            try {
+                return currentIndex < currentBatch.size() || fetchNextBatch();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
@@ -107,46 +126,41 @@ public class OpenSearchStore extends BaseStoreService {
                     new TextSegment(text, Metadata.from(metadataObject.toMap())));
         }
 
-        private boolean fetchNextBatch() {
-            try {
-                if (scrollId == null) {
-                    SearchRequest.Builder searchRequestBuilder = new SearchRequest.Builder()
-                            .index(storeName)
-                            .size((int) queryParams.pageSize())
-                            .scroll(Time.of(t -> t.time("1m")));
+        private boolean fetchNextBatch() throws IOException {
+            if (scrollId == null) {
+                SearchRequest.Builder searchRequestBuilder = new SearchRequest.Builder()
+                        .index(storeName)
+                        .size((int) queryParams.pageSize())
+                        .scroll(Time.of(t -> t.time("1m")));
 
-                    if (queryParams.retrieveEmbeddings()) {
-                        searchRequestBuilder.source(s -> s.filter(f -> f.includes(TEXT_DEFAULT_FIELD_NAME,
-                                METADATA_DEFAULT_FIELD_NAME,
-                                VECTOR_DEFAULT_FIELD_NAME)));
-                    } else {
-                        searchRequestBuilder.source(s -> s.filter(f -> f.includes(TEXT_DEFAULT_FIELD_NAME,
-                                METADATA_DEFAULT_FIELD_NAME)));
-                    }
-
-                    SearchRequest searchRequest = searchRequestBuilder.build();
-                    SearchResponse<Map> searchResponse = openSearchClient.search(searchRequest, Map.class);
-                    currentBatch = searchResponse.hits().hits();
-                    scrollId = searchResponse.scrollId();
+                if (queryParams.retrieveEmbeddings()) {
+                    searchRequestBuilder.source(s -> s.filter(f -> f.includes(TEXT_DEFAULT_FIELD_NAME,
+                            METADATA_DEFAULT_FIELD_NAME,
+                            VECTOR_DEFAULT_FIELD_NAME)));
                 } else {
-                    ScrollRequest scrollRequest = new ScrollRequest.Builder()
-                            .scrollId(scrollId)
-                            .scroll(Time.of(t -> t.time("1m")))
-                            .build();
-                    ScrollResponse<Map> scrollResponse = openSearchClient.scroll(scrollRequest, Map.class);
-                    currentBatch = scrollResponse.hits().hits();
-                    scrollId = scrollResponse.scrollId();
+                    searchRequestBuilder.source(s -> s.filter(f -> f.includes(TEXT_DEFAULT_FIELD_NAME,
+                            METADATA_DEFAULT_FIELD_NAME)));
                 }
-                currentIndex = 0;
-                if (currentBatch.isEmpty()) {
-                    close();
-                    return false;
-                }
-                return true;
-            } catch (IOException e) {
-                LOGGER.error("Error while fetching next batch", e);
+
+                SearchRequest searchRequest = searchRequestBuilder.build();
+                SearchResponse<Map> searchResponse = openSearchClient.search(searchRequest, Map.class);
+                currentBatch = searchResponse.hits().hits();
+                scrollId = searchResponse.scrollId();
+            } else {
+                ScrollRequest scrollRequest = new ScrollRequest.Builder()
+                        .scrollId(scrollId)
+                        .scroll(Time.of(t -> t.time("1m")))
+                        .build();
+                ScrollResponse<Map> scrollResponse = openSearchClient.scroll(scrollRequest, Map.class);
+                currentBatch = scrollResponse.hits().hits();
+                scrollId = scrollResponse.scrollId();
+            }
+            currentIndex = 0;
+            if (currentBatch.isEmpty()) {
+                close();
                 return false;
             }
+            return true;
         }
 
         public void close() {

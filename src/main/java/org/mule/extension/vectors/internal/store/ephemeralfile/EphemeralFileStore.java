@@ -6,12 +6,17 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -46,16 +51,22 @@ public class EphemeralFileStore extends BaseStoreService {
 
     @Override
     public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-        return new EphemeralFileEmbeddingStore(getEphemeralFileStorePath());
+        try {
+            return new EphemeralFileEmbeddingStore(getEphemeralFileStorePath());
+        } catch (Exception e) {
+            throw new ModuleException("Failed to build Ephemeral File store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        }
     }
 
     @Override
     public Iterator<BaseStoreService.Row<?>> getRowIterator() {
         try {
             return new EphemeralFileStore.RowIterator();
+        } catch (ModuleException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.error("Error while creating row iterator", e);
-            throw new RuntimeException(e);
+            throw new ModuleException("Failed to create iterator for Ephemeral File store", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
     }
 
@@ -64,11 +75,23 @@ public class EphemeralFileStore extends BaseStoreService {
         private final JSONArray entries;
         private int currentIndex = 0;
 
-        public RowIterator() throws Exception {
-            EphemeralFileEmbeddingStore ephemeralFileEmbeddingStore = new EphemeralFileEmbeddingStore(getEphemeralFileStorePath());
-            String jsonSerializedStore = ephemeralFileEmbeddingStore.serializeToJson();
-            JSONObject jsonObject = new JSONObject(jsonSerializedStore);
-            this.entries = jsonObject.getJSONArray("entries");
+        public RowIterator() {
+            try {
+                EphemeralFileEmbeddingStore ephemeralFileEmbeddingStore = new EphemeralFileEmbeddingStore(getEphemeralFileStorePath());
+                String jsonSerializedStore = ephemeralFileEmbeddingStore.serializeToJson();
+                JSONObject jsonObject = new JSONObject(jsonSerializedStore);
+                this.entries = jsonObject.getJSONArray("entries");
+            } catch (JSONException e) {
+                throw new ModuleException("Invalid file format, failed to parse JSON: " + e.getMessage(), MuleVectorsErrorType.INVALID_FILE_FORMAT, e);
+            } catch (RuntimeException e) {
+                if (e.getCause() instanceof NoSuchFileException) {
+                    throw new ModuleException("Store file not found: " + e.getMessage(), MuleVectorsErrorType.STORE_NOT_FOUND, e);
+                } else if (e.getCause() instanceof IOException) {
+                    throw new ModuleException("Failed to read store file: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+                } else {
+                    throw new ModuleException("An unexpected error occurred while reading the store file.", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+                }
+            }
         }
 
         @Override

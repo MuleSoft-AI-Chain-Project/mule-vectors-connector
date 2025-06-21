@@ -9,8 +9,10 @@ import dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +59,19 @@ public class PGVectorStore extends BaseStoreService {
 
   @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-    return PgVectorEmbeddingStore.datasourceBuilder()
-        .datasource(this.dataSource)
-        .table(this.storeName)
-        .dimension(this.dimension)
-        .createTable(this.createStore)
-        .build();
+    try {
+      return PgVectorEmbeddingStore.datasourceBuilder()
+              .datasource(this.dataSource)
+              .table(this.storeName)
+              .dimension(this.dimension)
+              .createTable(this.createStore)
+              .build();
+    } catch (Exception e) {
+        if (e.getCause() instanceof SQLException) {
+            handleSQLException((SQLException) e.getCause());
+        }
+        throw new ModuleException("Failed to build PGVector embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+    }
   }
 
   @Override
@@ -70,9 +79,22 @@ public class PGVectorStore extends BaseStoreService {
     try {
       return new RowIterator();
     } catch (SQLException e) {
-      LOGGER.error("Error while creating row iterator", e);
-      throw new RuntimeException(e);
+        handleSQLException(e);
+        return null; // Should not be reached due to exception being thrown
     }
+  }
+
+  private void handleSQLException(SQLException e) {
+    LOGGER.error("SQL error", e);
+    String sqlState = e.getSQLState();
+    if (sqlState != null) {
+        if (sqlState.startsWith("08")) { // Connection Exception
+            throw new ModuleException("Database connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+        } else if (sqlState.equals("28P01")) { // Invalid Password
+            throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+        }
+    }
+    throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
   }
 
   /**
@@ -143,8 +165,8 @@ public class PGVectorStore extends BaseStoreService {
           return resultSet != null && resultSet.next();
         }
       } catch (SQLException e) {
-        LOGGER.error("Error checking for next element", e);
-        return false;
+        handleSQLException(e);
+        return false; // Should not be reached
       }
     }
 
@@ -174,7 +196,7 @@ public class PGVectorStore extends BaseStoreService {
         if (connection != null)
           connection.close();
       } catch (SQLException e) {
-        LOGGER.error("Error closing resources", e);
+        LOGGER.error("Error closing database resources", e);
       }
     }
   }
@@ -197,6 +219,10 @@ public class PGVectorStore extends BaseStoreService {
       try {
 
         ResultSet resultSet = iterator.next();
+        if (resultSet == null) {
+          throw new NoSuchElementException("No more elements available");
+        }
+
         String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
         float[] vector = null;
         if(queryParams.retrieveEmbeddings()) {
@@ -216,8 +242,8 @@ public class PGVectorStore extends BaseStoreService {
                                     new TextSegment(text, Metadata.from(metadataObject.toMap())));
 
       } catch (SQLException e) {
-        LOGGER.error("Error while fetching next row", e);
-        return null;
+        handleSQLException(e);
+        throw new NoSuchElementException("Error processing next row");
       }
     }
   }

@@ -9,12 +9,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,70 +60,70 @@ public class ChromaStore extends BaseStoreService {
 
     @Override
     public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-        return ChromaEmbeddingStore.builder()
-                .baseUrl(this.url)
-                .collectionName(storeName)
-                .build();
+        try {
+            return ChromaEmbeddingStore.builder()
+                    .baseUrl(this.url)
+                    .collectionName(storeName)
+                    .build();
+        } catch (Exception e) {
+            // The ChromaEmbeddingStore does not throw specific exceptions on build,
+            // but we catch potential runtime errors during initialization.
+            throw new ModuleException("Failed to build Chroma embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        }
     }
 
-    private JSONObject getJsonResponse(String collectionId, long offset, long limit) {
+    private JSONObject getJsonResponse(String collectionId, long offset, long limit) throws IOException {
 
         JSONObject jsonResponse = new JSONObject();
-        try {
 
-            String urlString = url + "/api/v1/collections/" + collectionId + "/get";
-            URL url = new URL(urlString);
+        String urlString = url + "/api/v1/collections/" + collectionId + "/get";
+        URL url = new URL(urlString);
 
-            // Open connection and configure HTTP request
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true); // Enable output for the connection
+        // Open connection and configure HTTP request
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true); // Enable output for the connection
 
-            JSONObject jsonRequest = new JSONObject();
-            jsonRequest.put("limit", limit);
-            jsonRequest.put("offset", offset);
+        JSONObject jsonRequest = new JSONObject();
+        jsonRequest.put("limit", limit);
+        jsonRequest.put("offset", offset);
 
-            JSONArray jsonInclude = new JSONArray();
-            jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
-            jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
-            if (queryParams.retrieveEmbeddings()) jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
+        JSONArray jsonInclude = new JSONArray();
+        jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
+        jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
+        if (queryParams.retrieveEmbeddings()) jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
 
-            jsonRequest.put("include", jsonInclude);
+        jsonRequest.put("include", jsonInclude);
 
-            // Write JSON body to the request output stream
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = jsonRequest.toString().getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            // Check the response code and handle accordingly
-            if (connection.getResponseCode() == 200) {
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder responseBuilder = new StringBuilder();
-                String line;
-
-                // Read response line by line
-                while ((line = in.readLine()) != null) {
-                    responseBuilder.append(line);
-                }
-                in.close();
-
-                // Parse JSON response
-                jsonResponse = new JSONObject(responseBuilder.toString());
-
-            } else {
-
-                // Log any error responses from the server
-                LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-            }
-
-        } catch (Exception e) {
-
-            // Handle any exceptions that occur during the process
-            LOGGER.error("Error getting collection segments", e);
+        // Write JSON body to the request output stream
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = jsonRequest.toString().getBytes("utf-8");
+            os.write(input, 0, input.length);
         }
+
+        // Check the response code and handle accordingly
+        if (connection.getResponseCode() == 200) {
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder responseBuilder = new StringBuilder();
+            String line;
+
+            // Read response line by line
+            while ((line = in.readLine()) != null) {
+                responseBuilder.append(line);
+            }
+            in.close();
+
+            // Parse JSON response
+            jsonResponse = new JSONObject(responseBuilder.toString());
+
+        } else {
+            // Log any error responses from the server
+            LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            throw new IOException("Server returned HTTP response code: " + connection.getResponseCode() + " for URL: " + url);
+        }
+
         return jsonResponse;
     }
 
@@ -129,44 +133,37 @@ public class ChromaStore extends BaseStoreService {
      * @param collectionId the ID of the collection.
      * @return the segment count as a {@code long}.
      */
-    private long getSegmentCount(String collectionId) {
+    private long getSegmentCount(String collectionId) throws IOException {
 
         long segmentCount = 0;
-        try {
+        String urlString = url + "/api/v1/collections/" + collectionId + "/count";
+        URL url = new URL(urlString);
 
-            String urlString = url + "/api/v1/collections/" + collectionId + "/count";
-            URL url = new URL(urlString);
+        // Open connection and configure HTTP request
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-Type", "application/json");
 
-            // Open connection and configure HTTP request
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
+        // Check the response code and handle accordingly
+        if (connection.getResponseCode() == 200) {
 
-            // Check the response code and handle accordingly
-            if (connection.getResponseCode() == 200) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder responseBuilder = new StringBuilder();
+            String line;
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder responseBuilder = new StringBuilder();
-                String line;
-
-                // Read response line by line
-                while ((line = in.readLine()) != null) {
-                    responseBuilder.append(line);
-                }
-                in.close();
-                segmentCount = Long.parseLong(responseBuilder.toString());
-
-            } else {
-
-                // Log any error responses from the server
-                LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            // Read response line by line
+            while ((line = in.readLine()) != null) {
+                responseBuilder.append(line);
             }
+            in.close();
+            segmentCount = Long.parseLong(responseBuilder.toString());
 
-        } catch (Exception e) {
-
-            // Handle any exceptions that occur during the process
-            LOGGER.error("Error getting collection count", e);
+        } else {
+            // Log any error responses from the server
+            LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            throw new IOException("Server returned HTTP response code: " + connection.getResponseCode() + " for URL: " + url);
         }
+
         LOGGER.debug("segmentCount: " + segmentCount);
         return segmentCount;
     }
@@ -177,47 +174,40 @@ public class ChromaStore extends BaseStoreService {
      * @param storeName the name of the store.
      * @return the collection ID as a {@code String}.
      */
-    private String getCollectionId(String storeName) {
+    private String getCollectionId(String storeName) throws IOException {
 
         String collectionId = "";
-        try {
+        String urlString = url + "/api/v1/collections/" + storeName;
+        URL url = new URL(urlString);
 
-            String urlString = url + "/api/v1/collections/" + storeName;
-            URL url = new URL(urlString);
+        // Open connection and configure HTTP request
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-Type", "application/json");
 
-            // Open connection and configure HTTP request
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
+        // Check the response code and handle accordingly
+        if (connection.getResponseCode() == 200) {
 
-            // Check the response code and handle accordingly
-            if (connection.getResponseCode() == 200) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder responseBuilder = new StringBuilder();
+            String line;
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder responseBuilder = new StringBuilder();
-                String line;
-
-                // Read response line by line
-                while ((line = in.readLine()) != null) {
-                    responseBuilder.append(line);
-                }
-                in.close();
-
-                // Parse JSON response
-                JSONObject jsonResponse = new JSONObject(responseBuilder.toString());
-                collectionId = jsonResponse.getString("id");
-
-            } else {
-
-                // Log any error responses from the server
-                LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            // Read response line by line
+            while ((line = in.readLine()) != null) {
+                responseBuilder.append(line);
             }
+            in.close();
 
-        } catch (Exception e) {
+            // Parse JSON response
+            JSONObject jsonResponse = new JSONObject(responseBuilder.toString());
+            collectionId = jsonResponse.getString("id");
 
-            // Handle any exceptions that occur during the process
-            LOGGER.error("Error getting collection id", e);
+        } else {
+            // Log any error responses from the server
+            LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            throw new IOException("Server returned HTTP response code: " + connection.getResponseCode() + " for URL: " + url);
         }
+
         LOGGER.debug("collectionId: " + collectionId);
         return collectionId;
     }
@@ -226,9 +216,13 @@ public class ChromaStore extends BaseStoreService {
     public Iterator<BaseStoreService.Row<?>> getRowIterator() {
         try {
             return new ChromaStore.RowIterator();
+        } catch (ConnectException e) {
+            throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+        } catch (IOException e) {
+            throw new ModuleException("Network error while creating Chroma iterator: " + e.getMessage(), MuleVectorsErrorType.NETWORK_ERROR, e);
         } catch (Exception e) {
             LOGGER.error("Error while creating row iterator", e);
-            throw new RuntimeException(e);
+            throw new ModuleException("Failed to create Chroma iterator: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
     }
 
@@ -240,7 +234,7 @@ public class ChromaStore extends BaseStoreService {
         private List<JSONArray> embeddingsObjects;
         private int currentIndex;
 
-        public RowIterator() throws Exception {
+        public RowIterator() throws IOException {
             this.idsObjects = new ArrayList<>();
             this.metadataObjects = new ArrayList<>();
             this.documentsObjects = new ArrayList<>();
@@ -249,31 +243,26 @@ public class ChromaStore extends BaseStoreService {
             loadObjects();
         }
 
-        private void loadObjects() throws Exception {
+        private void loadObjects() throws IOException {
             String collectionId = getCollectionId(storeName);
-            long segmentCount = getSegmentCount(collectionId);
-            long pageSize = queryParams.pageSize();
+            if (collectionId.isEmpty()) {
+                LOGGER.warn("Could not find collection id for store: " + storeName);
+                return;
+            }
 
-            for (long offset = 0; offset < segmentCount; offset += pageSize) {
-                JSONObject jsonResponse = getJsonResponse(collectionId, offset, pageSize);
+            long totalCount = getSegmentCount(collectionId);
+            long offset = 0;
+            long limit = (long) queryParams.pageSize();
 
-                JSONArray ids = jsonResponse.getJSONArray(ID_DEFAULT_FIELD_NAME);
-                JSONArray metadatas = jsonResponse.getJSONArray(METADATA_DEFAULT_FIELD_NAME);
-                JSONArray documents = jsonResponse.getJSONArray(TEXT_DEFAULT_FIELD_NAME);
-                JSONArray embeddings = null;
-                if(queryParams.retrieveEmbeddings()) {
-                    embeddings = jsonResponse.getJSONArray(VECTOR_DEFAULT_FIELD_NAME);
-                }
+            while (offset < totalCount) {
+                JSONObject page = getJsonResponse(collectionId, offset, limit);
+                idsObjects.addAll(page.getJSONArray(ID_DEFAULT_FIELD_NAME).toList().stream().map(Object::toString).toList());
+                documentsObjects.addAll(page.getJSONArray(TEXT_DEFAULT_FIELD_NAME).toList().stream().map(Object::toString).toList());
+                metadataObjects.addAll(page.getJSONArray(METADATA_DEFAULT_FIELD_NAME).toList().stream().map(o -> (JSONObject) o).toList());
+                if (queryParams.retrieveEmbeddings())
+                    embeddingsObjects.addAll(page.getJSONArray(VECTOR_DEFAULT_FIELD_NAME).toList().stream().map(o -> (JSONArray) o).toList());
 
-
-                for (int i = 0; i < ids.length(); i++) {
-                    this.idsObjects.add(ids.getString(i));
-                    this.metadataObjects.add(metadatas.getJSONObject(i));
-                    this.documentsObjects.add(documents.getString(i));
-                    if (embeddings != null) {
-                        this.embeddingsObjects.add(embeddings.getJSONArray(i));
-                    }
-                }
+                offset += limit;
             }
         }
 

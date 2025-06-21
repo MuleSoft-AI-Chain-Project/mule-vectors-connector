@@ -8,6 +8,7 @@ import dev.langchain4j.internal.ValidationUtils;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeServerlessIndexConfig;
+import io.grpc.StatusRuntimeException;
 import io.pinecone.clients.Index;
 import io.pinecone.clients.Pinecone;
 import io.pinecone.proto.FetchResponse;
@@ -15,11 +16,14 @@ import io.pinecone.proto.ListResponse;
 import io.pinecone.proto.Vector;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -74,9 +78,12 @@ public class PineconeStore extends BaseStoreService {
     public Iterator<BaseStoreService.Row<?>> getRowIterator() {
         try {
             return new PineconeStore.RowIterator();
+        } catch (StatusRuntimeException e) {
+            LOGGER.error("Authentication error while creating Pinecone row iterator", e);
+            throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
         } catch (Exception e) {
-            LOGGER.error("Error while creating row iterator", e);
-            throw new RuntimeException(e);
+            LOGGER.error("Error while creating Pinecone row iterator", e);
+            throw new ModuleException("Failed to create Pinecone iterator: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
     }
 
@@ -88,10 +95,16 @@ public class PineconeStore extends BaseStoreService {
         private boolean hasMorePages = true;
         private String paginationToken = null;
 
-        public RowIterator() throws Exception {
-            this.client = new Pinecone.Builder(apiKey).build();
-            this.index = client.getIndexConnection(storeName);
-            fetchNextPage(); // Load first batch
+        public RowIterator() {
+            try {
+                this.client = new Pinecone.Builder(apiKey).build();
+                this.index = client.getIndexConnection(storeName);
+                fetchNextPage(); // Load first batch
+            } catch (StatusRuntimeException e) {
+                throw new ModuleException("Authentication failed while connecting to Pinecone: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
+            } catch (Exception e) {
+                throw new ModuleException("Failed to initialize Pinecone connection: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
+            }
         }
 
         @Override
@@ -134,9 +147,11 @@ public class PineconeStore extends BaseStoreService {
                         new TextSegment(text, Metadata.from(metadataMap))
                 );
 
+            } catch (NoSuchElementException e) {
+                throw e; // rethrow to signal end of iteration
             } catch (Exception e) {
                 LOGGER.error("Error while fetching next row", e);
-                throw new NoSuchElementException("Error processing next row: " + e.getMessage());
+                throw new ModuleException("Error processing next row: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
             }
         }
 
@@ -157,9 +172,15 @@ public class PineconeStore extends BaseStoreService {
                     hasMorePages = false;
                 }
 
+            } catch (StatusRuntimeException e) {
+                LOGGER.error("Authentication error fetching Pinecone points", e);
+                throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Invalid request fetching Pinecone points", e);
+                throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
             } catch (Exception e) {
                 LOGGER.error("Error fetching Pinecone points", e);
-                throw new RuntimeException("Error fetching Pinecone points", e);
+                throw new ModuleException("Error fetching from Pinecone", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
             }
         }
 
@@ -178,9 +199,15 @@ public class PineconeStore extends BaseStoreService {
 
                 return ids;
 
+            } catch (StatusRuntimeException e) {
+                LOGGER.error("Authentication error retrieving batch of IDs", e);
+                throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Invalid request retrieving batch of IDs", e);
+                throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
             } catch (Exception e) {
                 LOGGER.error("Error retrieving next batch of IDs", e);
-                return Collections.emptyList();
+                throw new ModuleException("Error fetching from Pinecone", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
             }
         }
     }

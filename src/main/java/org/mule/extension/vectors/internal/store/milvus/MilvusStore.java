@@ -6,8 +6,10 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
+import io.grpc.StatusRuntimeException;
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.common.clientenum.ConsistencyLevelEnum;
+import io.milvus.exception.MilvusException;
 import io.milvus.orm.iterator.QueryIterator;
 import io.milvus.param.IndexType;
 import io.milvus.param.MetricType;
@@ -17,8 +19,10 @@ import io.milvus.response.QueryResultsWrapper;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -61,29 +65,41 @@ public class MilvusStore extends BaseStoreService {
 
     @Override
     public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-
-        return MilvusEmbeddingStore.builder()
-                .milvusClient(this.client)                                                // Use an existing Milvus client
-                .collectionName(this.storeName)                                           // Name of the collection
-                .dimension(this.dimension)                                                // Dimension of vectors
-                .indexType(IndexType.valueOf(this.indexType))                             // Index type
-                .metricType(MetricType.valueOf(this.metricType))                          // Metric type
-                .consistencyLevel(ConsistencyLevelEnum.valueOf(this.consistencyLevel))    // Consistency level
-                .autoFlushOnInsert(this.autoFlushOnInsert)                                // Auto flush after insert
-                .idFieldName(this.idFieldName)                                            // ID field name
-                .textFieldName(this.textFieldName)                                        // Text field name
-                .metadataFieldName(this.metadataFieldName)                                // Metadata field name
-                .vectorFieldName(this.vectorFieldName)                                    // Vector field name
-                .build();                                                                 // Build the MilvusEmbeddingStore instance
+        try {
+            return MilvusEmbeddingStore.builder()
+                    .milvusClient(this.client)                                                // Use an existing Milvus client
+                    .collectionName(this.storeName)                                           // Name of the collection
+                    .dimension(this.dimension)                                                // Dimension of vectors
+                    .indexType(IndexType.valueOf(this.indexType))                             // Index type
+                    .metricType(MetricType.valueOf(this.metricType))                          // Metric type
+                    .consistencyLevel(ConsistencyLevelEnum.valueOf(this.consistencyLevel))    // Consistency level
+                    .autoFlushOnInsert(this.autoFlushOnInsert)                                // Auto flush after insert
+                    .idFieldName(this.idFieldName)                                            // ID field name
+                    .textFieldName(this.textFieldName)                                        // Text field name
+                    .metadataFieldName(this.metadataFieldName)                                // Metadata field name
+                    .vectorFieldName(this.vectorFieldName)                                    // Vector field name
+                    .build();                                                                 // Build the MilvusEmbeddingStore instance
+        } catch (Exception e) {
+            throw new ModuleException("Failed to build Milvus embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        }
     }
 
     @Override
     public Iterator<BaseStoreService.Row<?>> getRowIterator() {
         try {
             return new MilvusStore.RowIterator();
-        } catch (Exception e) {
-            LOGGER.error("Error while creating row iterator", e);
-            throw new RuntimeException(e);
+        } catch (StatusRuntimeException e) {
+            LOGGER.error("gRPC error creating Milvus iterator", e);
+            switch (e.getStatus().getCode()) {
+                case UNAUTHENTICATED:
+                    throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
+                case INVALID_ARGUMENT:
+                    throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(), MuleVectorsErrorType.INVALID_REQUEST, e);
+                default:
+                    throw new ModuleException("Milvus service error: " + e.getStatus().getDescription(), MuleVectorsErrorType.SERVICE_ERROR, e);
+            }
+        } catch (MilvusException e) {
+            throw new ModuleException("Milvus error: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
     }
 
@@ -93,7 +109,7 @@ public class MilvusStore extends BaseStoreService {
         private List<QueryResultsWrapper.RowRecord> currentBatch;
         private int currentIndex;
 
-        public RowIterator() throws Exception {
+        public RowIterator() {
             List<String> outFields = queryParams.retrieveEmbeddings() ?
                     Arrays.asList(idFieldName,
                             vectorFieldName,
@@ -111,7 +127,7 @@ public class MilvusStore extends BaseStoreService {
 
             R<QueryIterator> queryIteratorRes = client.queryIterator(iteratorParam);
             if (queryIteratorRes.getStatus() != R.Status.Success.getCode()) {
-                throw new RuntimeException(queryIteratorRes.getMessage());
+                throw new MilvusException(queryIteratorRes.getMessage(), queryIteratorRes.getStatus());
             }
 
             this.queryIterator = queryIteratorRes.getData();
@@ -153,14 +169,28 @@ public class MilvusStore extends BaseStoreService {
             if (queryIterator == null) {
                 return false;
             }
-            currentBatch = queryIterator.next();
-            currentIndex = 0;
-            if (currentBatch.isEmpty()) {
-                queryIterator.close();
-                queryIterator = null;
-                return false;
+            try {
+                currentBatch = queryIterator.next();
+                currentIndex = 0;
+                if (currentBatch.isEmpty()) {
+                    queryIterator.close();
+                    queryIterator = null;
+                    return false;
+                }
+                return true;
+            } catch (StatusRuntimeException e) {
+                LOGGER.error("gRPC error fetching next Milvus batch", e);
+                switch (e.getStatus().getCode()) {
+                    case UNAUTHENTICATED:
+                        throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
+                    case INVALID_ARGUMENT:
+                        throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(), MuleVectorsErrorType.INVALID_REQUEST, e);
+                    default:
+                        throw new ModuleException("Milvus service error: " + e.getStatus().getDescription(), MuleVectorsErrorType.SERVICE_ERROR, e);
+                }
+            } catch (MilvusException e) {
+                throw new ModuleException("Milvus error: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
             }
-            return true;
         }
     }
 }
