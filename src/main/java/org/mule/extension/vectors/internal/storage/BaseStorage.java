@@ -22,6 +22,7 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.util.Iterator;
 
 public abstract class BaseStorage {
@@ -35,7 +36,7 @@ public abstract class BaseStorage {
   protected DocumentParser documentParser;
   protected String mediaType;
   protected MediaProcessor mediaProcessor;
-  protected DocumentIterator documentIterator;
+  protected FileIterator fileIterator;
   protected MediaIterator mediaIterator;
 
   public BaseStorage(StorageConfiguration storageConfiguration, BaseStorageConnection storageConnection, String contextPath,
@@ -51,7 +52,15 @@ public abstract class BaseStorage {
     this.mediaProcessor = mediaProcessor;
   }
 
-  public Document getSingleDocument() {
+  public InputStream getSingleFile() {
+    throw new UnsupportedOperationException("This method should be overridden by subclasses");
+  }
+
+  public static String getFolderPath() {
+    throw new UnsupportedOperationException("This method should be overridden by subclasses");
+  }
+
+  public static String getFilePath() {
     throw new UnsupportedOperationException("This method should be overridden by subclasses");
   }
 
@@ -64,21 +73,19 @@ public abstract class BaseStorage {
     return storageConnection == null ? Constants.STORAGE_TYPE_LOCAL : storageConnection.getStorageType();
   }
 
-  public static DocumentParser getDocumentParser(String fileType) {
+  public static DocumentParser getDocumentParser(String fileParserType) {
 
     DocumentParser documentParser = null;
-    switch (fileType) {
+    switch (fileParserType) {
 
-      case Constants.FILE_TYPE_TEXT:
-      case Constants.FILE_TYPE_CRAWL:
-      case Constants.FILE_TYPE_URL:
+      case Constants.FILE_PARSER_TYPE_TEXT:
         documentParser = new TextDocumentParser();
         break;
-      case Constants.FILE_TYPE_ANY:
+      case Constants.FILE_PARSER_TYPE_APACHE_TIKA:
         documentParser = new ApacheTikaDocumentParser();
         break;
       default:
-        throw new IllegalArgumentException("Unsupported File Type: " + fileType);
+        throw new IllegalArgumentException("Unsupported File Parser Type: " + fileParserType);
     }
     return documentParser;
   }
@@ -88,8 +95,8 @@ public abstract class BaseStorage {
     return new BaseStorage.Builder();
   }
 
-  public DocumentIterator documentIterator() {
-    return new DocumentIterator();
+  public FileIterator documentIterator() {
+    return new FileIterator();
   }
 
   public MediaIterator mediaIterator() {
@@ -197,7 +204,7 @@ public abstract class BaseStorage {
     }
   }
 
-  public class DocumentIterator implements Iterator<Document> {
+  public class FileIterator implements Iterator<InputStream> {
 
     @Override
     public boolean hasNext() {
@@ -205,7 +212,7 @@ public abstract class BaseStorage {
     }
 
     @Override
-    public Document next() {
+    public InputStream next() {
       throw new UnsupportedOperationException("This method should be overridden by subclasses");
     }
   }

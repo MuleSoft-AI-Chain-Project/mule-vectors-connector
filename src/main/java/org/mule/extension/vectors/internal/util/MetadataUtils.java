@@ -71,21 +71,6 @@ public class MetadataUtils {
   public static void addMetadataToDocument(Document document, String fileType) {
 
     if(!fileType.isEmpty()) document.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileType);
-
-    if (fileType.equals(Constants.FILE_TYPE_CRAWL)) {
-
-      try {
-
-        JsonNode jsonNode = JsonUtils.stringToJsonNode(document.text());
-        String source_url = jsonNode.path("url").asText();
-        String title = jsonNode.path("title").asText();
-        if(!source_url.isEmpty()) document.metadata().put(Constants.METADATA_KEY_URL, source_url);
-        if(!title.isEmpty()) document.metadata().put(Constants.METADATA_KEY_TITLE, title);
-      } catch (IOException ioe) {
-
-        LOGGER.error(ioe.getMessage() + " " + Arrays.toString(ioe.getStackTrace()));
-      }
-    }
   }
 
   /**

@@ -73,6 +73,18 @@ public final class ResponseHelper {
         .build();
   }
 
+  public static Result<InputStream, StorageResponseAttributes> createFileResponse(
+      InputStream content,
+      Map<String, Object> storageAttributes) {
+
+    return Result.<InputStream, StorageResponseAttributes>builder()
+        .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
+        .attributesMediaType(MediaType.APPLICATION_JAVA)
+        .output(content)
+        .mediaType(MediaType.BINARY)
+        .build();
+  }
+
   public static Result<InputStream, DocumentResponseAttributes> createDocumentResponse(
       String response,
       Map<String, Object> documentAttributes) {
@@ -97,17 +109,17 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static List<Result<CursorProvider, DocumentResponseAttributes>> createPageDocumentResponse(
-      String response,
-      Map<String, Object> documentAttributes,
+  public static List<Result<CursorProvider, StorageResponseAttributes>> createPageFileResponse(
+      InputStream content,
+      Map<String, Object> storageAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, DocumentResponseAttributes>> page =  new LinkedList<>();
+    List<Result<CursorProvider, StorageResponseAttributes>> page =  new LinkedList<>();
 
-    page.add(Result.<CursorProvider, DocumentResponseAttributes>builder()
-        .attributes(new DocumentResponseAttributes((HashMap<String, Object>) documentAttributes))
-        .output((CursorProvider) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
-        .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
+    page.add(Result.<CursorProvider, StorageResponseAttributes>builder()
+        .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
+        .output((CursorProvider) streamingHelper.resolveCursorProvider(content))
+        .mediaType(MediaType.BINARY)
         .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
         .build());
 

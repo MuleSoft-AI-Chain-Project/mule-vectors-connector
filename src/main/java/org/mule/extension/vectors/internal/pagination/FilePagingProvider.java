@@ -1,15 +1,11 @@
 package org.mule.extension.vectors.internal.pagination;
 
-import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.Document;
-import org.json.JSONObject;
-import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
-import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -17,20 +13,21 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
+import java.io.InputStream;
 import java.util.*;
 
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageDocumentResponse;
+import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageFileResponse;
 
-public class DocumentPagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, DocumentResponseAttributes>> {
+public class FilePagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
 
   private StreamingHelper streamingHelper;
   private BaseStorage baseStorage;
-  private Iterator<Document> documentIterator;
+  private Iterator<InputStream> fileIterator;
   private StorageConfiguration storageConfiguration;
   private FileParameters fileParameters;
 
-  public DocumentPagingProvider(StorageConfiguration storageConfiguration, FileParameters fileParameters,
-                                StreamingHelper streamingHelper) {
+  public FilePagingProvider(StorageConfiguration storageConfiguration, FileParameters fileParameters,
+                            StreamingHelper streamingHelper) {
 
     this.storageConfiguration = storageConfiguration;
     this.fileParameters = fileParameters;
@@ -38,7 +35,7 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
   }
 
   @Override
-  public List<Result<CursorProvider, DocumentResponseAttributes>> getPage(BaseStorageConnection connection) {
+  public List<Result<CursorProvider, StorageResponseAttributes>> getPage(BaseStorageConnection connection) {
 
     try {
       if(baseStorage == null) {
@@ -49,31 +46,23 @@ public class DocumentPagingProvider implements PagingProvider<BaseStorageConnect
             .contextPath(fileParameters.getContextPath())
             .build();
 
-        documentIterator = baseStorage.documentIterator();
+        fileIterator = baseStorage.documentIterator();
       }
 
-      while(documentIterator.hasNext()) {
+      while(fileIterator.hasNext()) {
 
-        try {
+        InputStream content = fileIterator.next();
 
-          Document document = documentIterator.next();
+        if(content == null) continue; // Skip null document
 
-          if(document == null) continue; // Skip null document
 
-          JSONObject jsonObject = JsonUtils.docToTextSegmentsJson(document);
-
-          return createPageDocumentResponse(
-              jsonObject.toString(),
-              new HashMap<String, Object>() {{
-                put("contextPath", fileParameters.getContextPath());
-              }},
-              streamingHelper
-          );
-
-        } catch (BlankDocumentException bde) {
-
-          // Look for next page if any on error
-        }
+        return createPageFileResponse(
+            content,
+            new HashMap<String, Object>() {{
+              put("contextPath", fileParameters.getContextPath());
+            }},
+            streamingHelper
+        );
 
       }
 

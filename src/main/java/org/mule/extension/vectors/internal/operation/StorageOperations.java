@@ -2,12 +2,13 @@ package org.mule.extension.vectors.internal.operation;
 
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StorageErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
-import org.mule.extension.vectors.internal.pagination.DocumentPagingProvider;
+import org.mule.extension.vectors.internal.pagination.FilePagingProvider;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -29,6 +30,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createDocumentResponse;
+import static org.mule.extension.vectors.internal.helper.ResponseHelper.createFileResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
@@ -48,14 +50,14 @@ public class StorageOperations {
    * @throws ModuleException if an error occurs while loading or processing the document.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
-  @Alias("Storage-load-single-file")
-  @DisplayName("[Storage] Load single file")
+  @Alias("Storage-load-file")
+  @DisplayName("[Storage] Load file")
   @Throws(StorageErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/StorageLoadSingleResponse.json")
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
-  loadSingleFile(@Config StorageConfiguration storageConfiguration,
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, StorageResponseAttributes>
+  loadFile(@Config StorageConfiguration storageConfiguration,
                      @Connection BaseStorageConnection storageConnection,
-                     @ParameterGroup(name = "Document") FileParameters fileParameters) {
+                     @ParameterGroup(name = "File") FileParameters fileParameters) {
 
     try {
 
@@ -64,12 +66,13 @@ public class StorageOperations {
           .connection(storageConnection)
           .contextPath(fileParameters.getContextPath())
           .build();
-//      Document document = baseStorage.getSingleDocument();
+
+      InputStream content = baseStorage.getSingleFile();
 
       JSONObject jsonObject = null; //JsonUtils.docToTextSegmentsJson(document);
 
-      return createDocumentResponse(
-          jsonObject.toString(),
+      return createFileResponse(
+          content,
           new HashMap<String, Object>() {{
             put("contextPath", fileParameters.getContextPath());
           }});
@@ -100,15 +103,15 @@ public class StorageOperations {
   @Alias("Storage-load-file-list")
   @DisplayName("[Storage] Load file list")
   @Throws(StorageErrorTypeProvider.class)
-  public PagingProvider<BaseStorageConnection, Result<CursorProvider, DocumentResponseAttributes>>
+  public PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>>
   loadFileList(@Config StorageConfiguration storageConfiguration,
-                   @ParameterGroup(name = "Document") FileParameters fileParameters,
+                   @ParameterGroup(name = "Container") FileParameters fileParameters,
                    StreamingHelper streamingHelper) {
 
     try {
-      return new DocumentPagingProvider(storageConfiguration,
-                                        fileParameters,
-                                        streamingHelper);
+      return new FilePagingProvider(storageConfiguration,
+                                    fileParameters,
+                                    streamingHelper);
 
     } catch (ModuleException me) {
       throw me;

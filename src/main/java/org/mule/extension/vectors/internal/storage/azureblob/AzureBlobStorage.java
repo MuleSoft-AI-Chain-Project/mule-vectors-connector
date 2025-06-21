@@ -8,15 +8,14 @@ import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.common.StorageSharedKeyCredential;
-import dev.langchain4j.data.document.BlankDocumentException;
 import dev.langchain4j.data.image.Image;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.Iterator;
 
-import dev.langchain4j.data.document.Document;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
@@ -106,15 +105,13 @@ public class AzureBlobStorage extends BaseStorage {
         this.blobServiceClient = azureBlobStorageConnection.getBlobServiceClient();
     }
 
-    public Document getSingleDocument() {
+    public InputStream getSingleFile() {
 
         String[] parts = contextPath.split("/", 2);
         String containerName = getContainerName();
         String blobName = getBlobName();
         LOGGER.debug("Blob name: " + blobName);
-        Document document = ((AzureBlobStorageConnection)storageConnection).loadDocument(containerName, blobName, documentParser);
-        MetadataUtils.addMetadataToDocument(document, fileType, blobName);
-        return document;
+        return ((AzureBlobStorageConnection)storageConnection).loadFile(containerName, blobName);
     }
 
 
@@ -185,8 +182,8 @@ public class AzureBlobStorage extends BaseStorage {
     }
 
     @Override
-    public DocumentIterator documentIterator() {
-        return new DocumentIterator();
+    public FileIterator documentIterator() {
+        return new FileIterator();
     }
 
     @Override
@@ -194,7 +191,7 @@ public class AzureBlobStorage extends BaseStorage {
         return new MediaIterator();
     }
 
-    public class DocumentIterator extends BaseStorage.DocumentIterator {
+    public class FileIterator extends BaseStorage.FileIterator {
 
         @Override
         public boolean hasNext() {
@@ -202,25 +199,21 @@ public class AzureBlobStorage extends BaseStorage {
         }
 
         @Override
-        public Document next() {
+        public InputStream next() {
 
             BlobItem blobItem = blobIterator.next();
             LOGGER.debug("Blob name: " + blobItem.getName());
-            Document document;
+            InputStream content;
             try {
-                document = ((AzureBlobStorageConnection)storageConnection).loadDocument(contextPath, blobItem.getName(), documentParser);
-            } catch(BlankDocumentException bde) {
+                content = ((AzureBlobStorageConnection)storageConnection).loadFile(contextPath, blobItem.getName());
 
-                LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
-                throw bde;
             } catch (Exception e) {
                 throw new ModuleException(
                     String.format("Error while parsing document %s.", contextPath),
                     MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
                     e);
             }
-            MetadataUtils.addMetadataToDocument(document, fileType, blobItem.getName());
-            return document;
+            return content;
         }
     }
 

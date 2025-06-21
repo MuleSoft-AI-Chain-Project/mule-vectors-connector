@@ -1,13 +1,9 @@
 package org.mule.extension.vectors.internal.storage.gcs;
 
 import com.google.api.gax.paging.Page;
-import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.image.Image;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
@@ -22,9 +18,8 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
@@ -88,7 +83,7 @@ public class GoogleCloudStorage extends BaseStorage {
         return new String[]{bucket, objectKey};
     }
 
-    public Document getSingleDocument() {
+    public InputStream getSingleFile() {
 
         LOGGER.debug("GCS URL: " + contextPath);
         if (Objects.equals(this.objectKey, "")) {
@@ -97,9 +92,7 @@ public class GoogleCloudStorage extends BaseStorage {
                 String.format("GCS path must contain a bucket and object path: '%s'", contextPath),
                 MuleVectorsErrorType.INVALID_PARAMETER);
         }
-        Document document = ((GoogleCloudStorageConnection) storageConnection).loadDocument(this.bucket, this.objectKey, documentParser);
-        MetadataUtils.addMetadataToDocument(document, fileType, this.objectKey);
-        return document;
+        return((GoogleCloudStorageConnection) storageConnection).loadFile(this.bucket, this.objectKey);
     }
 
     public Media getSingleMedia() {
@@ -207,8 +200,8 @@ public class GoogleCloudStorage extends BaseStorage {
     }
 
     @Override
-    public DocumentIterator documentIterator() {
-        return new DocumentIterator();
+    public FileIterator documentIterator() {
+        return new FileIterator();
     }
 
     @Override
@@ -216,26 +209,22 @@ public class GoogleCloudStorage extends BaseStorage {
         return new MediaIterator();
     }
 
-    public class DocumentIterator extends BaseStorage.DocumentIterator {
+    public class FileIterator extends BaseStorage.FileIterator {
 
         @Override
-        public Document next() {
+        public InputStream next() {
             Blob blob = getBlobIterator().next();
             LOGGER.debug("Processing GCS object key: " + blob.getName());
-            Document document;
+            InputStream content;
             try {
-                document = ((GoogleCloudStorageConnection) storageConnection).loadDocument(bucket, blob.getName(), documentParser);
-            } catch(BlankDocumentException bde) {
-                LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
-                throw bde;
+                content = ((GoogleCloudStorageConnection) storageConnection).loadFile(bucket, blob.getName());
             } catch (Exception e) {
                 throw new ModuleException(
-                    String.format("Error while parsing document %s.", contextPath),
-                    MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
+                    String.format("Error while loading file %s.", contextPath),
+                    MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE,
                     e);
             }
-            MetadataUtils.addMetadataToDocument(document, fileType, blob.getName());
-            return document;
+            return content;
         }
 
         @Override

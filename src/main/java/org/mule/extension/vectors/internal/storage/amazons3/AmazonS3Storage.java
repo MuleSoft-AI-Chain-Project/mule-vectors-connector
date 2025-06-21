@@ -15,6 +15,7 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.regions.Region;
 import dev.langchain4j.data.image.Image;
 
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.Iterator;
@@ -98,12 +99,10 @@ public class AmazonS3Storage extends BaseStorage {
         this.s3Client = amazonS3StorageConnection.getS3Client();
     }
 
-    public Document getSingleDocument() {
+    public InputStream getSingleFile() {
 
         LOGGER.debug("S3 URL: " + contextPath);
-        Document document = ((AmazonS3StorageConnection)storageConnection).loadDocument(getAWSS3Bucket(), getAWSS3ObjectKey(), documentParser);
-        MetadataUtils.addMetadataToDocument(document, fileType, getAWSS3ObjectKey());
-        return document;
+        return ((AmazonS3StorageConnection)storageConnection).loadFile(getAWSS3Bucket(), getAWSS3ObjectKey());
     }
 
     private String getAWSS3Bucket() {
@@ -189,9 +188,8 @@ public class AmazonS3Storage extends BaseStorage {
         return image;
     }
 
-    @Override
-    public DocumentIterator documentIterator() {
-        return new DocumentIterator();
+    public BaseStorage.FileIterator fileIterator() {
+        return new BaseStorage.FileIterator();
     }
 
     @Override
@@ -199,7 +197,7 @@ public class AmazonS3Storage extends BaseStorage {
         return new MediaIterator();
     }
 
-    public class DocumentIterator extends BaseStorage.DocumentIterator {
+    public class FileIterator extends BaseStorage.FileIterator {
 
         @Override
         public boolean hasNext() {
@@ -208,7 +206,7 @@ public class AmazonS3Storage extends BaseStorage {
         }
 
         @Override
-        public Document next() {
+        public InputStream next() {
 
             S3Object object = getS3ObjectIterator().next();
             // Skip objects that represent folders based on size
@@ -219,22 +217,21 @@ public class AmazonS3Storage extends BaseStorage {
             }
 
             LOGGER.debug("AWS S3 Object Key: " + object.key());
-            Document document;
+            InputStream content;
             try {
-                document = ((AmazonS3StorageConnection)storageConnection).loadDocument(getAWSS3Bucket(), object.key(), documentParser);
+                content = ((AmazonS3StorageConnection)storageConnection).loadFile(getAWSS3Bucket(), object.key());
             } catch(BlankDocumentException bde) {
 
-                LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", contextPath));
+                LOGGER.warn(String.format("BlankDocumentException: Error while loading file %s.", contextPath));
                 throw bde;
             } catch (Exception e) {
 
                 throw new ModuleException(
-                    String.format("Error while parsing document %s.", contextPath),
-                    MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
+                    String.format("Error while loading file %s.", contextPath),
+                    MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE,
                     e);
             }
-            MetadataUtils.addMetadataToDocument(document, fileType, object.key());
-            return document;
+            return content;
         }
     }
 

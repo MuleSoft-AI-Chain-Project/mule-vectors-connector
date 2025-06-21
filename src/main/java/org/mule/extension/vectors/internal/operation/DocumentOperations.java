@@ -81,7 +81,7 @@ public class DocumentOperations {
         throw new IllegalArgumentException("Unsupported format: " + payloadParameters.getFormat());
       }
 
-      DocumentParser documentParser = BaseStorage.getDocumentParser(payloadParameters.getFileType());
+      DocumentParser documentParser = BaseStorage.getDocumentParser(payloadParameters.getFileParserType());
       Document document = documentParser.parse(documentStream);
 
       MetadataUtils.addMetadataToDocument(document, payloadParameters.getFileType(), payloadParameters.getFileName());

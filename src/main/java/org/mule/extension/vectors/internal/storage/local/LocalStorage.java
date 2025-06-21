@@ -1,9 +1,6 @@
 package org.mule.extension.vectors.internal.storage.local;
 
 import dev.langchain4j.data.document.BlankDocumentException;
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.loader.UrlDocumentLoader;
-import dev.langchain4j.data.document.transformer.jsoup.HtmlToTextDocumentTransformer;
 import dev.langchain4j.data.image.Image;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
@@ -20,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -50,41 +48,10 @@ public class LocalStorage extends BaseStorage {
     this.fullPath = storageConnection.getWorkingDir() != null ? storageConnection.getWorkingDir() + "/" + contextPath : contextPath;
   }
 
-  public Document getSingleDocument() {
+  public InputStream getSingleFile() {
 
     Path path = Paths.get(fullPath);
-
-    Document document;
-    switch (fileType) {
-      case Constants.FILE_TYPE_CRAWL:
-      case Constants.FILE_TYPE_TEXT:
-      case Constants.FILE_TYPE_ANY:
-        document = loadDocument(path.toString(), documentParser);
-        MetadataUtils.addMetadataToDocument(document, fileType, Utils.getFileNameFromPath(fullPath));
-        break;
-      case Constants.FILE_TYPE_URL:
-        document = loadUrlDocument(contextPath);
-        break;
-      default:
-        throw new IllegalArgumentException("Unsupported File Type: " + fileType);
-    }
-    return document;
-  }
-
-  private Document loadUrlDocument(String contextPath) {
-
-    Document document;
-    try {
-      URL url = new URL(contextPath);
-      Document htmlDocument = UrlDocumentLoader.load(url, documentParser);
-      HtmlToTextDocumentTransformer transformer = new HtmlToTextDocumentTransformer(null, null, true);
-      document = transformer.transform(htmlDocument);
-      document.metadata().put(Constants.METADATA_KEY_URL, contextPath);
-      MetadataUtils.addMetadataToDocument(document, Constants.FILE_TYPE_URL, "");
-    } catch (MalformedURLException e) {
-      throw new RuntimeException("Invalid URL: " + contextPath, e);
-    }
-    return document;
+    return ((LocalStorageConnection)storageConnection).loadFile(path);
   }
 
   /**
@@ -153,8 +120,8 @@ public class LocalStorage extends BaseStorage {
   }
 
   @Override
-  public DocumentIterator documentIterator() {
-    return new DocumentIterator();
+  public FileIterator documentIterator() {
+    return new FileIterator();
   }
 
   @Override
@@ -179,7 +146,7 @@ public class LocalStorage extends BaseStorage {
     return pathIterator;
   }
 
-  public class DocumentIterator extends BaseStorage.DocumentIterator {
+  public class FileIterator extends BaseStorage.FileIterator {
 
     // Override hasNext to check if there are files left to process
     @Override
@@ -189,26 +156,25 @@ public class LocalStorage extends BaseStorage {
 
     // Override next to return the next document
     @Override
-    public Document next() {
+    public InputStream next() {
       if (hasNext()) {
         Path path = getPathIterator().next();
         LOGGER.debug("File: " + path.getFileName().toString());
-        Document document;
+        InputStream content;
         try {
-          document = loadDocument(path.toString(), documentParser);
+          content = ((LocalStorageConnection)storageConnection).loadFile(path);
         } catch(BlankDocumentException bde) {
 
-          LOGGER.warn(String.format("BlankDocumentException: Error while parsing document %s.", path.toString()));
+          LOGGER.warn(String.format("BlankDocumentException: Error while loading file %s.", path.toString()));
           throw bde;
         } catch (Exception e) {
 
           throw new ModuleException(
-              String.format("Error while parsing document %s.", path.toString()),
-              MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
+              String.format("Error while loading file %s.", path.toString()),
+              MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE,
               e);
         }
-        MetadataUtils.addMetadataToDocument(document, fileType, path.getFileName().toString());
-        return document;
+        return content;
       }
       throw new IllegalStateException("No more files to iterate");
     }
@@ -237,7 +203,7 @@ public class LocalStorage extends BaseStorage {
         } catch (Exception e) {
 
           throw new ModuleException(
-              String.format("Error while parsing document %s.", path.toString()),
+              String.format("Error while loading file %s.", path.toString()),
               MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
               e);
         }
