@@ -13,13 +13,13 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     description = "LangChain4J",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.data.document.parser.TextDocumentParser",
-    coordinates = "dev.langchain4j:langchain4j:1.0.1")
+    coordinates = "dev.langchain4j:langchain4j:1.1.0")
 @ExternalLib(name = "LangChain4J Document Parser Apache Tika",
     type=DEPENDENCY,
     description = "LangChain4J Document Parser Apache Tika",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser",
-    coordinates = "dev.langchain4j:langchain4j-document-parser-apache-tika:1.0.1-beta6")
+    coordinates = "dev.langchain4j:langchain4j-document-parser-apache-tika:1.1.0-beta7")
 public class TransformConfiguration {
 
 }
