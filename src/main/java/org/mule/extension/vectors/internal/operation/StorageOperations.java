@@ -29,8 +29,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createFileResponse;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 
 public class StorageOperations {
 
@@ -47,7 +46,7 @@ public class StorageOperations {
    *         additional metadata in {@link TransformResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or processing the document.
    */
-  @MediaType(value = APPLICATION_JSON, strict = false)
+  @MediaType(value = APPLICATION_OCTET_STREAM, strict = false)
   @Alias("Storage-load-file")
   @DisplayName("[Storage] Load file")
   @Throws(StorageErrorTypeProvider.class)

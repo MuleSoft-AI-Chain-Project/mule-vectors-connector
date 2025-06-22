@@ -32,8 +32,7 @@ import java.util.*;
 
 import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.TEXT_PLAIN;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 
 /**
  * Provides transformation operations for document parsing and text chunking within the Mule Vectors Connector.
@@ -156,7 +155,7 @@ public class TransformOperations {
     }
   }
 
-  @MediaType(value = APPLICATION_JSON, strict = false)
+  @MediaType(value = APPLICATION_OCTET_STREAM, strict = false)
   @Alias("Transform-process-media")
   @DisplayName("[Transform] Process media")
   @Throws(EmbeddingErrorTypeProvider.class)
