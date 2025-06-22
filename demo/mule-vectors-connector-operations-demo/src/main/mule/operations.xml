@@ -47,7 +47,7 @@ payload..attributes map ((item, index) -> {"attributes": item})]]></ee:set-paylo
 		</choice>
 	</flow>
 	<flow name="chunk-operation" doc:id="4e12f92b-f477-425c-9248-7111bbab1b5d" >
-		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" config-ref="Transform_config" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
 			<ms-vectors:text ><![CDATA[#[payload.text]]]></ms-vectors:text>
 		</ms-vectors:transform-chunk-text>
 	</flow>

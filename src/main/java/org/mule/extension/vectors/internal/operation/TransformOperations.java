@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 
+import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
@@ -60,7 +61,8 @@ public class TransformOperations {
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformParseDocumentResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  parseDocument(@ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
+  parseDocument(@Config TransformConfiguration transformConfiguration,
+                @ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
 
     // TODO: Remove LangChain4J dependency and directly use apache tika for parsing
 
