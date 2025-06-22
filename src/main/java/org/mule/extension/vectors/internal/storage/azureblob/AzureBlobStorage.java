@@ -99,8 +99,7 @@ public class AzureBlobStorage extends BaseStorage {
 
     public File getSingleFile() {
 
-        String[] parts = contextPath.split("/", 2);
-        String containerName = getContainerName();
+      String containerName = getContainerName();
         String blobName = getBlobName();
         LOGGER.debug("Blob name: " + blobName);
 
