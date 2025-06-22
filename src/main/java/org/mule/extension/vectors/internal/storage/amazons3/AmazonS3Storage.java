@@ -4,28 +4,16 @@ import dev.langchain4j.data.document.BlankDocumentException;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.file.File;
-import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
-import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.regions.Region;
-import dev.langchain4j.data.image.Image;
 
 import java.io.InputStream;
-import java.net.URLEncoder;
-import java.util.Base64;
 import java.util.Iterator;
 
-import dev.langchain4j.data.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -77,9 +65,9 @@ public class AmazonS3Storage extends BaseStorage {
     }
 
     public AmazonS3Storage(StorageConfiguration storageConfiguration, AmazonS3StorageConnection amazonS3StorageConnection,
-                           String contextPath, String fileType, String mediaType, MediaProcessor mediaProcessor) {
+                           String contextPath) {
 
-        super(storageConfiguration, amazonS3StorageConnection, contextPath, fileType, mediaType, mediaProcessor);
+        super(storageConfiguration, amazonS3StorageConnection, contextPath);
         this.awsAccessKeyId = amazonS3StorageConnection.getAwsAccessKeyId();
         this.awsSecretAccessKey = amazonS3StorageConnection.getAwsSecretAccessKey();
         this.awsRegion = amazonS3StorageConnection.getAwsRegion();

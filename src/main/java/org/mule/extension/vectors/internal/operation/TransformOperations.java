@@ -84,7 +84,7 @@ public class TransformOperations {
         throw new IllegalArgumentException("Unsupported format: " + payloadParameters.getFormat());
       }
 
-      DocumentParser documentParser = BaseStorage.getDocumentParser(payloadParameters.getFileParserType());
+      DocumentParser documentParser = Utils.getDocumentParser(payloadParameters.getFileParserType());
       Document document = documentParser.parse(documentStream);
 
       return createDocumentResponse(

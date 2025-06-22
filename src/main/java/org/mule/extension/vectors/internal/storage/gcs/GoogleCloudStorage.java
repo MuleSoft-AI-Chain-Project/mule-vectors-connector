@@ -2,30 +2,19 @@ package org.mule.extension.vectors.internal.storage.gcs;
 
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import dev.langchain4j.data.image.Image;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.file.File;
-import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
-import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
@@ -49,9 +38,9 @@ public class GoogleCloudStorage extends BaseStorage {
     private Storage storageService;
 
     public GoogleCloudStorage(StorageConfiguration storageConfiguration, GoogleCloudStorageConnection googleCloudStorageConnection,
-                              String contextPath, String fileType, String mediaType, MediaProcessor mediaProcessor) {
+                              String contextPath) {
 
-        super(storageConfiguration, googleCloudStorageConnection, contextPath, fileType, mediaType, mediaProcessor);
+        super(storageConfiguration, googleCloudStorageConnection, contextPath);
         this.projectId = googleCloudStorageConnection.getProjectId();
         this.clientEmail = googleCloudStorageConnection.getClientEmail();
         this.clientId = googleCloudStorageConnection.getClientId();
@@ -100,78 +89,6 @@ public class GoogleCloudStorage extends BaseStorage {
             inputStream,
             this.bucket + "/" + this.objectKey,
             this.objectKey);
-    }
-
-    public Media getSingleMedia() {
-
-        LOGGER.debug("GCS URL: " + contextPath);
-        Media media;
-        switch (mediaType) {
-
-            case Constants.MEDIA_TYPE_IMAGE:
-
-                media = Media.fromImage(loadImage(bucket, objectKey));
-                MetadataUtils.addImageMetadataToMedia(media, mediaType);
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unsupported Media Type: " + mediaType);
-        }
-        return media;
-    }
-
-    private Image loadImage(String bucketName, String objectName) {
-
-        Image image;
-        try {
-
-            // Get the blob from the bucket
-            BlobId blobId = BlobId.of(bucketName, objectName);
-            Blob blob = storageService.get(blobId);
-            // Get MIME type
-            String mimeType = blob.getContentType();
-            // Download blob into a byte array
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ReadableByteChannel readChannel = null;
-            try {
-                readChannel = blob.reader();
-                ByteBuffer buffer = ByteBuffer.allocate(8192); // Larger buffer for better performance
-                while (readChannel.read(buffer) > 0) {
-                    buffer.flip();
-                    outputStream.write(buffer.array(), 0, buffer.limit());
-                    buffer.clear();
-                }
-                byte[] imageBytes = outputStream.toByteArray();
-
-                String format = mimeType.contains("/") ? mimeType.substring(mimeType.indexOf("/") + 1) : null;
-                if(mediaProcessor!= null) imageBytes = mediaProcessor.process(imageBytes, format);
-                String base64Data = Base64.getEncoder().encodeToString(imageBytes);
-
-                // Encode only special characters, but keep `/`
-                String encodedObjectName = URLEncoder.encode(objectName, "UTF-8")
-                    .replace("+", "%20") // Fix space encoding
-                    .replace("%2F", "/"); // Keep `/` in the path
-
-                image = Image.builder()
-                    .url(Constants.GCS_PREFIX + bucketName + "/" + encodedObjectName)
-                    .mimeType(mimeType)
-                    .base64Data(base64Data)
-                    .build();
-
-            } finally {
-                if (readChannel != null) {
-                    readChannel.close();
-                }
-                outputStream.close();
-            }
-
-        } catch (Exception ioe) {
-
-            throw new ModuleException(String.format("Impossible to load the image from %s", ""),
-                                      MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
-                                      ioe);
-        }
-        return image;
     }
 
     private void fetchNextBlobPage() {

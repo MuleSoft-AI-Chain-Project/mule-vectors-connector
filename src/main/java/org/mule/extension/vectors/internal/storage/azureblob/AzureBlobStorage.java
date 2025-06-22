@@ -14,7 +14,6 @@ import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
 import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
@@ -89,9 +88,9 @@ public class AzureBlobStorage extends BaseStorage {
     }
 
     public AzureBlobStorage(StorageConfiguration storageConfiguration, AzureBlobStorageConnection azureBlobStorageConnection,
-                            String contextPath, String fileType, String mediaType, MediaProcessor mediaProcessor) {
+                            String contextPath) {
 
-        super(storageConfiguration, azureBlobStorageConnection, contextPath, fileType, mediaType, mediaProcessor);
+        super(storageConfiguration, azureBlobStorageConnection, contextPath);
         this.azureName = azureBlobStorageConnection.getAzureName();
         this.azureKey = azureBlobStorageConnection.getAzureKey();
         this.blobServiceClient = azureBlobStorageConnection.getBlobServiceClient();
