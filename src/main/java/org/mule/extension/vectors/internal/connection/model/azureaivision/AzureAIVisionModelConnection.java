@@ -6,7 +6,6 @@ import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnect
 import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
@@ -52,7 +51,7 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
   @Override
   public void validate() {
     try {
-        getModels();
+      validateCredentials();
       } catch (IOException e) {
         throw new ModuleException("Failed to validate connection to Azure AI Vision", MuleVectorsErrorType.INVALID_CONNECTION, e);
 
@@ -129,11 +128,12 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
     }
   }
 
-  private void getModels() throws IOException, TimeoutException {
+  private void validateCredentials() throws IOException, TimeoutException {
     HttpRequestBuilder requestBuilder = HttpRequest.builder()
-        .method("GET")
-        .uri(endpoint + "/computervision/models")
+        .method("POST")
+        .uri(endpoint + "/computervision/retrieval:vectorizeImage")
         .addQueryParam("api-version", apiVersion)
+        .addQueryParam("model-version", "")
         .addHeader("Ocp-Apim-Subscription-Key", apiKey);
 
     HttpRequestOptions options = HttpRequestOptions.builder()
@@ -147,7 +147,8 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
 
   private void validateResponse(HttpResponse response) {
     try {
-      if (response.getStatusCode() != 200) {
+
+      if (response.getStatusCode() != 400) { // We receive a bad request due to empty model if credentials are ok
         String errorBody = new String(response.getEntity().getBytes());
         throw new RuntimeException(String.format("Azure AI Vision API error (HTTP %d): %s", 
             response.getStatusCode(), errorBody));
