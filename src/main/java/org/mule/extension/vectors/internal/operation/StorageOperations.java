@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.operation;
 
-import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
+import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
@@ -13,7 +13,6 @@ import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
-import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -45,14 +44,13 @@ public class StorageOperations {
    * @param storageConnection      the connection to the document storage.
    * @param fileParameters     parameters for specifying the document location and type.
    * @return a {@link Result} containing the document's content as an {@link InputStream} and
-   *         additional metadata in {@link DocumentResponseAttributes}.
+   *         additional metadata in {@link TransformResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or processing the document.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
   @Alias("Storage-load-file")
   @DisplayName("[Storage] Load file")
   @Throws(StorageErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/StorageLoadSingleResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, StorageResponseAttributes>
   loadFile(@Config StorageConfiguration storageConfiguration,
                      @Connection BaseStorageConnection storageConnection,
@@ -94,7 +92,7 @@ public class StorageOperations {
    * @param fileParameters     parameters for specifying the documents' location and type.
    * @param streamingHelper        helper for managing the streaming of paginated results.
    * @return a {@link PagingProvider} for streaming the paginated documents, each as a {@link Result}
-   *         containing a {@link CursorProvider} for content and metadata in {@link DocumentResponseAttributes}.
+   *         containing a {@link CursorProvider} for content and metadata in {@link TransformResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or segmenting the documents.
    */
   @MediaType(value = ANY, strict = false)

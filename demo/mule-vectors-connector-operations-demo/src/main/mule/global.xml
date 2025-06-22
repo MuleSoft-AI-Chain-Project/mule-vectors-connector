@@ -19,7 +19,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<ms-vectors:local-connection />
 	</ms-vectors:storage-config>
 	
-	<ms-vectors:document-config name="MuleSoft_Vectors_Connector_Document_config" doc:name="MuleSoft Vectors Connector Document config" doc:id="57b62b60-bc85-48ae-be17-bd652ba1657a" />
+	<ms-vectors:transform-config name="Transform_config" doc:name="MuleSoft Vectors Connector Transform config" doc:id="57b62b60-bc85-48ae-be17-bd652ba1657a" />
 	
 	<ms-vectors:embedding-config name="Einstein_Embedding_config" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="4acc0b1b-222c-4320-8dd8-bbaa907c92a7" >
 		<ms-vectors:einstein-connection salesforceOrg="${einstein.sfdcOrg}" clientId="${einstein.clientId}" clientSecret="${einstein.clientSecret}">

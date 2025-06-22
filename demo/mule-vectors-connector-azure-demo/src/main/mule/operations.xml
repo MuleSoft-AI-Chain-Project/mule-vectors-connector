@@ -35,21 +35,21 @@ payload..attributes map ((item, index) -> {"attributes": item})]]></ee:set-paylo
 	<flow name="parse-operation" doc:id="2000264d-593b-4374-b35e-998b09fbe4f8">
 		<choice doc:name="Choice" doc:id="26fd1966-a650-458a-b073-f0dbf3b90ddb" >
 			<when expression='#[attributes.queryParams.format == "binary"]' >
-				<ms-vectors:document-parse doc:name="[Document] Parse" doc:id="28951baf-f388-4735-8da1-8388a6913b29" config-ref="MuleSoft_Vectors_Connector_Document_config" >
+				<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="28951baf-f388-4735-8da1-8388a6913b29" config-ref="Transform_config" >
 					<ms-vectors:content ><![CDATA[#[payload.parts.documentBinary.content]]]></ms-vectors:content>
-				</ms-vectors:document-parse>
+				</ms-vectors:transform-parse-document>
 			</when>
 			<otherwise >
-				<ms-vectors:document-parse doc:name="[Document] Parse" doc:id="5d9ec8e9-cc86-420d-9eb8-89a372931fe9" config-ref="MuleSoft_Vectors_Connector_Document_config" format="base64">
+				<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="5d9ec8e9-cc86-420d-9eb8-89a372931fe9" config-ref="Transform_config" format="base64">
 					<ms-vectors:content ><![CDATA[#[payload.parts.documentBase64.content]]]></ms-vectors:content>
-				</ms-vectors:document-parse>
+				</ms-vectors:transform-parse-document>
 			</otherwise>
 		</choice>
 	</flow>
 	<flow name="chunk-operation" doc:id="4e12f92b-f477-425c-9248-7111bbab1b5d" >
-		<ms-vectors:document-chunk doc:name="[Document] Chunk" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" config-ref="MuleSoft_Vectors_Connector_Document_config" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" config-ref="Transform_config" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
 			<ms-vectors:text ><![CDATA[#[payload.text]]]></ms-vectors:text>
-		</ms-vectors:document-chunk>
+		</ms-vectors:transform-chunk-text>
 	</flow>
 	<flow name="embed-text-operation" doc:id="5a413937-87e7-486f-8972-2801fdd4a40a" >
 		<ms-vectors:embedding-generate-from-text embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" doc:name="[Embedding] Generate from text" doc:id="50587321-4739-461e-9165-0eb6338624c1" config-ref="Azure_OpenAI_Embedding_Config" >

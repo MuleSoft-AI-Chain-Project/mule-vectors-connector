@@ -185,122 +185,6 @@ types:
           application/json:
             type: ErrorResponse
             
-/load-media:
-  post:
-    description: Loads a single media from the file system.
-    queryParameters:
-      contextPath:
-        type: string
-        description: Path to the media file.
-        required: true
-      targetWidth:
-        type: integer
-        description: The media target width.
-        required: false
-        default: 512  # Default value
-      targetHeight:
-        type: integer
-        description: The media target height.
-        required: false
-        default: 512  # Default value
-      compressionQuality:
-        type: number
-        description: The media compression quality.
-        required: false
-        default: 1  # Default value
-      scaleStrategy:
-        type: string
-        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
-        required: false
-        default: "FIT"  # Default value
-    responses:
-      200:
-        description: Media loaded successfully.
-        body:
-          application/json:
-            type: object
-            example:
-              {
-                "metadata": {
-                  "absolute_directory_path": "/Users/tbolis/Downloads",
-                  "source": "file:///Users/tbolis/Downloads/icon.png",
-                  "media_type": "image",
-                  "mime_type": "image/png",
-                  "file_type": "png",
-                  "file_name": "icon.png"
-                },
-                "base64Data": "iVBORw0KGgo..."
-              }
-      400:
-        description: Bad Request (e.g., invalid media path or parameters).
-        body:
-          application/json:
-            type: ErrorResponse
-      500:
-        description: Internal Server Error.
-        body:
-          application/json:
-            type: ErrorResponse
-            
-/load-medias:
-  post:
-    description: Loads multiple medias from a folder.
-    queryParameters:
-      contextPath:
-        type: string
-        description: Path to the folder containing medias.
-        required: true
-      targetWidth:
-        type: integer
-        description: The media target width.
-        required: false
-        default: 512  # Default value
-      targetHeight:
-        type: integer
-        description: The media target height.
-        required: false
-        default: 512  # Default value
-      compressionQuality:
-        type: number
-        description: The media compression quality.
-        required: false
-        default: 1  # Default value
-      scaleStrategy:
-        type: string
-        description: The media scaling strategy ("FIT", "FILL" or "STRETCH"").
-        required: false
-        default: "FIT"  # Default value
-    responses:
-      200:
-        description: Media loaded successfully.
-        body:
-          application/json:
-            type: array
-            example:
-              [
-                {
-                  "metadata": {
-                    "absolute_directory_path": "/Users/tbolis/Downloads",
-                    "source": "file:///Users/tbolis/Downloads/icon.png",
-                    "media_type": "image",
-                    "mime_type": "image/png",
-                    "file_type": "png",
-                    "file_name": "icon.png"
-                  },
-                  "base64Data": "iVBORw0KGgo..."
-                }
-              ]
-      400:
-        description: Bad Request (e.g., invalid media path or parameters).
-        body:
-          application/json:
-            type: ErrorResponse
-      500:
-        description: Internal Server Error.
-        body:
-          application/json:
-            type: ErrorResponse
-            
 /embed-text:  # New resource for adding text to the store
   post:
     description: Adds text content to the vector store.
@@ -402,7 +286,7 @@ types:
           application/json:
             type: ErrorResponse
             
-/add-media:
+/add-media-file:
   post:
     description: Loads a single media from the file system and add it to the store.
     queryParameters:
@@ -444,7 +328,7 @@ types:
           application/json:
             type: ErrorResponse
             
-/add-binary:
+/add-media-binary:
   post:
     description: Add media binary to the store.
     body:

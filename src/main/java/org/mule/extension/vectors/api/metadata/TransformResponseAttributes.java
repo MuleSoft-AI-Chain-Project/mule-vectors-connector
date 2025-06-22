@@ -19,7 +19,7 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICAT
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class DocumentResponseAttributes implements Serializable {
+public class TransformResponseAttributes implements Serializable {
 
   /**
    * The type of the file associated with the document.
@@ -27,9 +27,15 @@ public class DocumentResponseAttributes implements Serializable {
   private final String fileType;
 
   /**
-   * The context path of the document.
+   * The media type associated with the document (e.g., "text", "image").
    */
-  private final String contextPath;
+  private final String mediaType;
+
+  /**
+   * The MIME type of the document (e.g., "application/pdf").
+   */
+  private final String mimeType;
+
 
   /**
    * Additional attributes not explicitly defined as fields in this class.
@@ -37,16 +43,17 @@ public class DocumentResponseAttributes implements Serializable {
   private final HashMap<String, Object> otherAttributes;
 
   /**
-   * Constructs a {@code DocumentResponseAttributes} instance.
+   * Constructs a {@code TransformResponseAttributes} instance.
    *
    * @param requestAttributes a map containing document operation attributes.
-   *                          Expected keys include "fileType" and "contextPath",
+   *                          Expected keys include "fileType", "mediaType", and "mimeType",
    *                          which are extracted and stored in their respective fields.
    *                          Remaining entries are stored in {@code otherAttributes}.
    */
-  public DocumentResponseAttributes(HashMap<String, Object> requestAttributes) {
+  public TransformResponseAttributes(HashMap<String, Object> requestAttributes) {
     this.fileType = requestAttributes.containsKey("fileType") ? (String) requestAttributes.remove("fileType") : null;
-    this.contextPath = requestAttributes.containsKey("contextPath") ? (String) requestAttributes.remove("contextPath") : null;
+    this.mediaType = requestAttributes.containsKey("mediaType") ? (String) requestAttributes.remove("mediaType") : null;
+    this.mimeType = requestAttributes.containsKey("mimeType") ? (String) requestAttributes.remove("mimeType") : null;
     this.otherAttributes = requestAttributes;
   }
 
@@ -60,12 +67,21 @@ public class DocumentResponseAttributes implements Serializable {
   }
 
   /**
-   * Gets the context path of the document.
+   * Gets the media type of the document.
    *
-   * @return the context path, or {@code null} if not available.
+   * @return the media type, or {@code null} if not available.
    */
-  public String getContextPath() {
-    return contextPath;
+  public String getMediaType() {
+    return mediaType;
+  }
+
+  /**
+   * Gets the MIME type of the document.
+   *
+   * @return the MIME type, or {@code null} if not available.
+   */
+  public String getMimeType() {
+    return mimeType;
   }
 
   /**

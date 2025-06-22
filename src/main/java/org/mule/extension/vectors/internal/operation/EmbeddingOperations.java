@@ -6,7 +6,6 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createMu
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -23,14 +22,11 @@ import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.model.BaseModel;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
-import org.mule.runtime.extension.api.annotation.metadata.fixed.InputJsonType;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.*;
 
@@ -39,8 +35,6 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Example;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +193,7 @@ public class EmbeddingOperations {
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, MultimodalEmbeddingResponseAttributes>
   generateEmbeddingFromMedia(@Config EmbeddingConfiguration embeddingConfiguration,
                                     @Connection BaseModelConnection modelConnection,
-                                    @ParameterGroup(name = "Media") MediaBinaryParameters mediaBinaryParameters,
+                                    @ParameterGroup(name = "Media") EmbeddingMediaBinaryParameters mediaBinaryParameters,
                                     @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
 
     try {
@@ -237,26 +231,6 @@ public class EmbeddingOperations {
 
       // Convert InputStream to byte array
       byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
-
-      MediaProcessor mediaProcessor = null;
-
-      if(mediaBinaryParameters.getMediaProcessorParameters() != null) {
-
-        if(mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
-
-          ImageProcessorParameters imageProcessorParameters =
-              (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
-
-          mediaProcessor = ImageProcessor.builder()
-              .targetWidth(imageProcessorParameters.getTargetWidth())
-              .targetHeight(imageProcessorParameters.getTargetHeight())
-              .compressionQuality(imageProcessorParameters.getCompressionQuality())
-              .scaleStrategy(imageProcessorParameters.getScaleStrategy())
-              .build();
-
-          mediaBytes = mediaProcessor.process(mediaBytes);
-        }
-      }
 
       if(mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
 

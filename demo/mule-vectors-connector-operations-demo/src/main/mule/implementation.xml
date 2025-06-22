@@ -147,11 +147,11 @@ output application/json
 	<flow name="post:\add-document:vectors-connector-operations-api-config" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d">
         <flow-ref doc:name="add-doc-to-store-use-case" doc:id="46b55205-337c-41bb-8033-e15fd7656e07" name="add-doc-to-store-use-case" />
     </flow>
-    <flow name="post:\add-binary:multipart\form-data:vectors-connector-operations-api-config" doc:id="0da49e81-0c1e-48c8-9c48-81171f001d8c">
-        <flow-ref doc:name="add-binary-to-store" doc:id="c074eb60-8ed0-4401-8ed9-6a67542c158e" name="add-binary-to-store" />
+    <flow name="post:\add-media-binary:multipart\form-data:vectors-connector-operations-api-config" doc:id="0da49e81-0c1e-48c8-9c48-81171f001d8c">
+        <flow-ref doc:name="add-media-binary-to-store" doc:id="c074eb60-8ed0-4401-8ed9-6a67542c158e" name="add-media-binary-to-store" />
     </flow>
-	<flow name="post:\add-media:vectors-connector-operations-api-config" doc:id="e8959939-dac3-4d67-8490-06578ccfc849">
-        <flow-ref doc:name="add-media-to-store" doc:id="b84d7f63-2697-4f01-a5e7-60e9f59f27a8" name="add-media-to-store" />
+	<flow name="post:\add-media-file:vectors-connector-operations-api-config" doc:id="e8959939-dac3-4d67-8490-06578ccfc849">
+        <flow-ref doc:name="add-media-file-to-store" doc:id="b84d7f63-2697-4f01-a5e7-60e9f59f27a8" name="add-media-file-to-store" />
     </flow>
     <flow name="post:\query-by-text:application\json:vectors-connector-operations-api-config" doc:id="b1cb7923-f517-458b-8eba-5166052905d3">
         <flow-ref doc:name="query-by-text-from-store-use-case" doc:id="c6946da2-9869-4555-b07e-fd53db538a1a" name="query-by-text-from-store-use-case" />
