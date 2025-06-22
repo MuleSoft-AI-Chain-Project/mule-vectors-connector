@@ -4,6 +4,7 @@ import dev.langchain4j.data.document.BlankDocumentException;
 import dev.langchain4j.data.image.Image;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
+import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.file.File;
@@ -19,7 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.loadDocument;
 
 public class LocalStorage extends BaseStorage {
 

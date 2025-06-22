@@ -2,19 +2,11 @@ package org.mule.extension.vectors.internal.operation;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentParser;
-import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.output.Response;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mule.extension.vectors.api.metadata.MultimodalEmbeddingResponseAttributes;
-import org.mule.extension.vectors.api.metadata.TokenUsage;
 import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
-import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
-import org.mule.extension.vectors.internal.config.TransformConfiguration;
 
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
@@ -37,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
@@ -58,7 +49,6 @@ public class TransformOperations {
   /**
    * Parse document from a raw binary or base64-encoded content.
    *
-   * @param transformConfiguration the connector configuration to use for this operation.
    * @param payloadParameters parameters for specifying document passed as payload.
    * @return a {@link Result} containing the document's content as an {@link InputStream} and
    *         additional metadata in {@link TransformResponseAttributes}.
@@ -70,8 +60,7 @@ public class TransformOperations {
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformParseDocumentResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  parseDocument(@Config TransformConfiguration transformConfiguration,
-        @ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
+  parseDocument(@ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
 
     // TODO: Remove LangChain4J dependency and directly use apache tika for parsing
 
@@ -123,7 +112,6 @@ public class TransformOperations {
    * segments and associated metadata.
    * </p>
    *
-   * @param transformConfiguration the connector configuration to use for this operation.
    * @param text the input text to be chunked.
    * @param segmentationParameters parameters that define how the text should be segmented, including maximum segment size and overlap size.
    * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link TransformResponseAttributes}.
@@ -135,8 +123,7 @@ public class TransformOperations {
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  chunkText(@Config TransformConfiguration transformConfiguration,
-            @Alias("text") @DisplayName("Text") @Content String text,
+  chunkText(@Alias("text") @DisplayName("Text") @Content String text,
             @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
 
     // TODO: Remove LangChain4J dependency and build internal library for chunking
@@ -173,8 +160,7 @@ public class TransformOperations {
   @DisplayName("[Transform] Process media")
   @Throws(EmbeddingErrorTypeProvider.class)
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  processMedia(@Config TransformConfiguration transformConfiguration,
-               @ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
+  processMedia(@ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
 
     try {
 
