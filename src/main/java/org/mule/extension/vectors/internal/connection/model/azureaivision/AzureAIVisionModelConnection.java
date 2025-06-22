@@ -142,13 +142,19 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
         .build();
 
     HttpResponse response = httpClient.send(requestBuilder.build(), options);
-    validateResponse(response);
+
+    // We receive a bad request due to empty model if credentials are ok
+    if (response.getStatusCode() != 400) {
+      String errorBody = new String(response.getEntity().getBytes());
+      throw new RuntimeException(String.format("Azure AI Vision API error (HTTP %d): %s",
+                                               response.getStatusCode(), errorBody));
+    }
   }
 
   private void validateResponse(HttpResponse response) {
     try {
 
-      if (response.getStatusCode() != 400) { // We receive a bad request due to empty model if credentials are ok
+      if (response.getStatusCode() != 200) {
         String errorBody = new String(response.getEntity().getBytes());
         throw new RuntimeException(String.format("Azure AI Vision API error (HTTP %d): %s", 
             response.getStatusCode(), errorBody));
