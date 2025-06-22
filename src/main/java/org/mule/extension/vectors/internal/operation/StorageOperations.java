@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.operation;
 
-import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.createDocumentResponse;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createFileResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
@@ -83,7 +81,7 @@ public class StorageOperations {
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while loading and/or segmenting document at '%s'.", fileParameters.getContextPath()),
-          MuleVectorsErrorType.DOCUMENT_OPERATIONS_FAILURE,
+          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
           e);
     }
   }
@@ -119,7 +117,7 @@ public class StorageOperations {
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while loading and/or segmenting documents for path '%s'.", fileParameters.getContextPath()),
-          MuleVectorsErrorType.DOCUMENT_OPERATIONS_FAILURE,
+          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
           e);
     }
   }

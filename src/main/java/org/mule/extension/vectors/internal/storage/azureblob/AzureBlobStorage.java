@@ -1,31 +1,21 @@
 package org.mule.extension.vectors.internal.storage.azureblob;
 
-import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobItem;
-import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.common.StorageSharedKeyCredential;
-import dev.langchain4j.data.image.Image;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.URLEncoder;
-import java.util.Base64;
 import java.util.Iterator;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.file.File;
-import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
-import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +135,7 @@ public class AzureBlobStorage extends BaseStorage {
             } catch (Exception e) {
                 throw new ModuleException(
                     String.format("Error while parsing document %s.", contextPath),
-                    MuleVectorsErrorType.DOCUMENT_PARSING_FAILURE,
+                    MuleVectorsErrorType.TRANSFORM_DOCUMENT_PARSING_FAILURE,
                     e);
             }
             return new File(

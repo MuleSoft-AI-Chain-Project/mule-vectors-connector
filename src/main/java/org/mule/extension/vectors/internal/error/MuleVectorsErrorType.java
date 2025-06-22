@@ -41,7 +41,7 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
     /**
      * The document provided for parsing is malformed or in an unsupported format.
      */
-    DOCUMENT_PARSING_FAILURE(MuleErrors.VALIDATION),
+    TRANSFORM_DOCUMENT_PARSING_FAILURE(MuleErrors.VALIDATION),
 
     /**
      * The provided media data is malformed or in an unsupported format.
@@ -51,9 +51,9 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
 
     // region Operational Errors
     /**
-     * A general failure occurred during a document-related operation.
+     * A general failure occurred during a transform-related operation.
      */
-    DOCUMENT_OPERATIONS_FAILURE(MuleErrors.ANY),
+    TRANSFORM_OPERATIONS_FAILURE(MuleErrors.ANY),
 
     /**
      * A general failure occurred during a media-related operation.

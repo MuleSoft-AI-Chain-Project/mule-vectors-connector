@@ -4,12 +4,12 @@ import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.segment.TextSegment;
 import org.json.JSONArray;
-import org.mule.extension.vectors.internal.config.DocumentConfiguration;
+import org.mule.extension.vectors.internal.config.TransformConfiguration;
 
 import org.mule.extension.vectors.api.metadata.DocumentResponseAttributes;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.error.provider.DocumentErrorTypeProvider;
+import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentPayloadParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.storage.BaseStorage;
@@ -31,9 +31,9 @@ import java.util.*;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createDocumentResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
-public class DocumentOperations {
+public class TransformOperations {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentOperations.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
 
   /**
    * Parse document from a raw binary or base64-encoded content.
@@ -44,16 +44,17 @@ public class DocumentOperations {
    * @throws ModuleException if an error occurs while loading or processing the document.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
-  @Alias("Document-parse")
-  @DisplayName("[Document] Parse")
-  @Throws(DocumentErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/DocumentParseResponse.json")
+  @Alias("transform-parse-document")
+  @DisplayName("[Transform] Parse document")
+  @Throws(TransformErrorTypeProvider.class)
+  @OutputJsonType(schema = "api/metadata/TransformParseDocumentResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
-  parse(@Config DocumentConfiguration documentConfiguration,
+  parseDocument(@Config TransformConfiguration transformConfiguration,
         @ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
 
-    try {
+    // TODO: Remove LangChain4J dependency and directly use apache tika for parsing
 
+    try {
 
       InputStream documentStream;
 
@@ -88,7 +89,7 @@ public class DocumentOperations {
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while parsing document."),
-          MuleVectorsErrorType.DOCUMENT_OPERATIONS_FAILURE,
+          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
           e);
     }
   }
@@ -106,21 +107,22 @@ public class DocumentOperations {
    * @return Result containing the chunked text segments and response attributes.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
-  @Alias("Document-chunk")
-  @DisplayName("[Document] Chunk")
-  @Throws(DocumentErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/DocumentChunkResponse.json")
+  @Alias("transform-chunk-text")
+  @DisplayName("[Transform] Chunk text")
+  @Throws(TransformErrorTypeProvider.class)
+  @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, DocumentResponseAttributes>
-  chunkDocument(@Config DocumentConfiguration documentConfiguration,
+  chunkText(@Config TransformConfiguration transformConfiguration,
         @Alias("text") @DisplayName("Text") @Content String text,
         @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
+
+    // TODO: Remove LangChain4J dependency and build internal library for chunking
 
     try {
 
       List<TextSegment> textSegments = Utils.splitTextIntoTextSegments(text,
                                                      segmentationParameters.getMaxSegmentSizeInChars(),
                                                      segmentationParameters.getMaxOverlapSizeInChars());
-
 
       JSONArray responseJsonArray = new JSONArray();
 
@@ -138,7 +140,7 @@ public class DocumentOperations {
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while chunking text."),
-          MuleVectorsErrorType.DOCUMENT_OPERATIONS_FAILURE,
+          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
           e);
     }
   }
