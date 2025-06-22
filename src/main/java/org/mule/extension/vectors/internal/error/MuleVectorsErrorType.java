@@ -100,7 +100,37 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
     /**
      * The external vector store service returned an error.
      */
-    STORE_SERVICES_FAILURE(MuleErrors.CONNECTIVITY);
+    STORE_SERVICES_FAILURE(MuleErrors.CONNECTIVITY),
+
+    /**
+     * The request was rejected due to an authentication failure (e.g., invalid API key).
+     */
+    AUTHENTICATION(MuleErrors.CONNECTIVITY),
+
+    /**
+     * The request was invalid or malformed.
+     */
+    INVALID_REQUEST(MuleErrors.VALIDATION),
+
+    /**
+     * The external service reported an internal error.
+     */
+    SERVICE_ERROR(MuleErrors.CONNECTIVITY),
+
+    /**
+     * A network-level error occurred while communicating with the external service.
+     */
+    NETWORK_ERROR(MuleErrors.CONNECTIVITY),
+
+    /**
+     * The specified vector store (e.g., file, index) could not be found.
+     */
+    STORE_NOT_FOUND(MuleErrors.VALIDATION),
+
+    /**
+     * The format of a file-based vector store is invalid or corrupt.
+     */
+    INVALID_FILE_FORMAT(MuleErrors.VALIDATION);
     // endregion
 
     private final ErrorTypeDefinition<? extends Enum<?>> parent;
