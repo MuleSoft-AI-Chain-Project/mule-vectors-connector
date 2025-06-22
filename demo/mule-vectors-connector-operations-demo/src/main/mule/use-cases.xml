@@ -6,7 +6,7 @@
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 	<flow name="add-doc-to-store-use-case" doc:id="885632fc-3930-445d-bb6d-93a19d839f26" >
-		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="25873dff-acf4-4368-a5cd-50e68e8f0e60" config-ref="Local_Storage_config" contextPath="attributes.queryParams.contextPath"/>
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="25873dff-acf4-4368-a5cd-50e68e8f0e60" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
 		<set-variable value="#[attributes.path]" doc:name="Set path" doc:id="fe8b9573-5801-4c8c-bbaa-f1363412c3a0" variableName="path" />
 		<set-variable value="#[attributes.fileName]" doc:name="Set fileName" doc:id="148d0551-598e-47c2-a16d-2a0c3d44c65a" variableName="fileName"/>
 		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="680eb549-16e9-4158-be9a-22a72c183d5d" config-ref="Transform_config"/>

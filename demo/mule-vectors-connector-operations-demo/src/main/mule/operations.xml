@@ -53,7 +53,7 @@ payload..attributes map ((item, index) -> {"attributes": item})]]></ee:set-paylo
 	</flow>
 	<flow name="embed-text-operation" doc:id="5a413937-87e7-486f-8972-2801fdd4a40a" >
 		<ms-vectors:embedding-generate-from-text embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" doc:name="[Embedding] Generate from text" doc:id="50587321-4739-461e-9165-0eb6338624c1" config-ref="Einstein_Embedding_config" >
-			<ms-vectors:inputs ><![CDATA[#[[payload.text]]]]></ms-vectors:inputs>
+			<ms-vectors:inputs ><![CDATA[#[payload.inputTexts]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<logger level="INFO" doc:name="Log attributes" doc:id="ac60e6e6-96ae-4ba4-ba60-be2df13e8d89" message="#[%dw 2.0&#10;output application/json&#10;---&#10;attributes]"/>
 	</flow>

@@ -6,11 +6,11 @@
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 	<flow name="add-doc-to-store-use-case" doc:id="885632fc-3930-445d-bb6d-93a19d839f26" >
-		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="25873dff-acf4-4368-a5cd-50e68e8f0e60" config-ref="Local_Storage_config" contextPath="attributes.queryParams.contextPath"/>
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="25873dff-acf4-4368-a5cd-50e68e8f0e60" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
 		<set-variable value="#[attributes.path]" doc:name="Set path" doc:id="fe8b9573-5801-4c8c-bbaa-f1363412c3a0" variableName="path" />
 		<set-variable value="#[attributes.fileName]" doc:name="Set fileName" doc:id="148d0551-598e-47c2-a16d-2a0c3d44c65a" variableName="fileName"/>
 		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="680eb549-16e9-4158-be9a-22a72c183d5d" config-ref="Transform_config"/>
-		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="0be211d6-15f9-4f4b-8550-3b714e5fa887" config-ref="Transform_config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="0be211d6-15f9-4f4b-8550-3b714e5fa887" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="2835a3fe-28e1-4407-b4c0-ff681923d8ea" config-ref="Azure_OpenAI_Embedding_Config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002"/>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="efb1dbd4-6a02-4d7c-a5e0-1fe29f08a351" config-ref="AISearch_Store_Config" storeName="demo">
 			<ms-vectors:metadata-entries >
@@ -20,7 +20,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 		</ms-vectors:store-add>
 	</flow>
 	<flow name="add-text-to-store-use-case" doc:id="abacef92-37ce-41b3-b8da-20f47bda8c2a" >
-		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="72558cdf-fe9e-4935-aee0-ceda3624bb71" config-ref="Transform_config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="72558cdf-fe9e-4935-aee0-ceda3624bb71" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="42441873-1902-4d03-96c5-a379c7ce491b" config-ref="Azure_OpenAI_Embedding_Config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
 			<ms-vectors:inputs ><![CDATA[#[[payload.text]]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
@@ -30,7 +30,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="7181a4d4-f5a0-4fe9-aa05-b68edb194b9a" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]" />
 		<set-variable value="#[attributes.path]" doc:name="Set path" doc:id="745969da-e671-441f-8a59-aa837fca781e" variableName="path" />
 		<set-variable value="#[attributes.fileName]" doc:name="Set fileName" doc:id="978d6791-fc05-41cf-b33d-862698627878" variableName="fileName" />
-		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="d4755123-dcc2-41ce-b7f7-7f7c4c4a1679" config-ref="Transform_config">
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="d4755123-dcc2-41ce-b7f7-7f7c4c4a1679">
 			<ms-vectors:media-processor-parameters>
 				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
 			</ms-vectors:media-processor-parameters>
@@ -48,7 +48,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 	</flow>
 	<flow name="add-media-binary-to-store" doc:id="a54f174c-17ee-472f-90cd-63bec46831f2" >
 		<set-variable value='#[%dw 2.0&#10;output text&#10;---&#10;(payload default {}).parts.imageLabel.content default ""]' doc:name="Set imageLabel" doc:id="19c42a52-4c7f-4dff-b3ac-01c493a61656" variableName="imageLabel" />
-		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="8426c4ba-e905-400c-ab3c-7fd424e146fe" config-ref="Transform_config">
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="8426c4ba-e905-400c-ab3c-7fd424e146fe">
 			<ms-vectors:binary><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
 			<ms-vectors:media-processor-parameters>
 				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
@@ -72,7 +72,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 	</flow>
 	<flow name="query-by-binary-from-store-use-case" doc:id="ddd93b08-af85-402b-b94a-3dee3b7b2ce2" >
 		<set-variable value='#[%dw 2.0&#10;output text&#10;---&#10;(payload default {}).parts.imageLabel.content default ""]' doc:name="Set imageLabel" doc:id="8cc60aee-b833-48ce-94c8-abed11047ffe" variableName="imageLabel"/>
-		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="4f991c9a-a120-4f63-a89e-c546879c4ea9" config-ref="Transform_config">
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="4f991c9a-a120-4f63-a89e-c546879c4ea9">
 			<ms-vectors:binary ><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
 			<ms-vectors:media-processor-parameters >
 				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
