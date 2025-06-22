@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>com.mulesoft.connectors</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.7.1-SNAPSHOT-17</version>
+			<version>0.7.2</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
