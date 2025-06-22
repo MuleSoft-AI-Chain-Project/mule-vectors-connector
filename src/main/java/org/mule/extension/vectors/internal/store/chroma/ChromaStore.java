@@ -9,297 +9,234 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.BaseStore;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
- * ChromaStore is a specialized implementation of {@link BaseStore} designed to interact with
+ * ChromaStore is a specialized implementation of {@link BaseStoreService} designed to interact with
  * the Chroma database for managing vector data and sources.
  */
-public class ChromaStore extends BaseStore {
+public class ChromaStore extends BaseStoreService {
 
-  static final String ID_DEFAULT_FIELD_NAME = "ids";
-  static final String TEXT_DEFAULT_FIELD_NAME = "documents";
-  static final String METADATA_DEFAULT_FIELD_NAME = "metadatas";
-  static final String VECTOR_DEFAULT_FIELD_NAME = "embeddings";
+    static final String ID_DEFAULT_FIELD_NAME = "id";
+    static final String TEXT_DEFAULT_FIELD_NAME = "documents";
+    static final String METADATA_DEFAULT_FIELD_NAME = "metadatas";
+    static final String VECTOR_DEFAULT_FIELD_NAME = "embedding";
 
-  private final String url;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStore.class);
 
-  /**
-   * Initializes a new instance of ChromaStore.
-   *
-   * @param storeName     the name of the vector store.
-   * @param storeConfiguration the configuration object containing necessary settings.
-   * @param queryParams   parameters related to query configurations.
-   */
-  public ChromaStore(StoreConfiguration storeConfiguration, ChromaStoreConnection chromaStoreConnection, String storeName, QueryParameters queryParams, int dimension) {
+    private final ChromaStoreConnection chromaStoreConnection;
+    private final QueryParameters queryParams;
+    private final String collectionId;
 
-    super(storeConfiguration, chromaStoreConnection, storeName, queryParams, dimension, true);
-
-    this.url = chromaStoreConnection.getUrl();
-  }
-
-  public EmbeddingStore<TextSegment> buildEmbeddingStore() {
-
-    return ChromaEmbeddingStore.builder()
-        .baseUrl(this.url)
-        .collectionName(storeName)
-        .build();
-  }
-
-  private JSONObject getJsonResponse(String collectionId, long offset, long limit) {
-
-    JSONObject jsonResponse = new JSONObject();
-    try {
-
-      String urlString = url + "/api/v1/collections/" + collectionId + "/get";
-      URL url = new URL(urlString);
-
-      // Open connection and configure HTTP request
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("POST");
-      connection.setRequestProperty("Content-Type", "application/json");
-      connection.setDoOutput(true); // Enable output for the connection
-
-      JSONObject jsonRequest = new JSONObject();
-      jsonRequest.put("limit", limit);
-      jsonRequest.put("offset", offset);
-
-      JSONArray jsonInclude = new JSONArray();
-      jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
-      jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
-      if(queryParams.retrieveEmbeddings()) jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
-
-      jsonRequest.put("include", jsonInclude);
-
-      // Write JSON body to the request output stream
-      try (OutputStream os = connection.getOutputStream()) {
-        byte[] input = jsonRequest.toString().getBytes("utf-8");
-        os.write(input, 0, input.length);
-      }
-
-      // Check the response code and handle accordingly
-      if (connection.getResponseCode() == 200) {
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder responseBuilder = new StringBuilder();
-        String line;
-
-        // Read response line by line
-        while ((line = in.readLine()) != null) {
-          responseBuilder.append(line);
+    /**
+     * Initializes a new instance of ChromaStore.
+     *
+     * @param storeConfiguration the configuration object containing necessary settings.
+     * @param chromaStoreConnection the connection object for ChromaDB
+     * @param storeName          the name of the vector store.
+     * @param queryParams        parameters related to query configurations.
+     * @param dimension          the dimension of the vectors.
+     * @param createStore        flag to create the store if it does not exist.
+     */
+    public ChromaStore(StoreConfiguration storeConfiguration, ChromaStoreConnection chromaStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
+        super(storeConfiguration, chromaStoreConnection, storeName, dimension, createStore);
+        this.chromaStoreConnection = chromaStoreConnection;
+        this.queryParams = queryParams;
+        try {
+            this.collectionId = getCollectionId();
+        } catch (IOException e) {
+            throw new ModuleException("Failed to get collection ID from Chroma", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
-        in.close();
-
-        // Parse JSON response
-        jsonResponse = new JSONObject(responseBuilder.toString());
-
-      } else {
-
-        // Log any error responses from the server
-        LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-      }
-
-    } catch (Exception e) {
-
-      // Handle any exceptions that occur during the process
-      LOGGER.error("Error getting collection segments", e);
-    }
-    return jsonResponse;
-  }
-
-  /**
-   * Retrieves the total number of segments in the specified collection.
-   *
-   * @param collectionId the ID of the collection.
-   * @return the segment count as a {@code long}.
-   */
-  private long getSegmentCount(String collectionId) {
-
-    long segmentCount = 0;
-    try {
-
-      String urlString = url + "/api/v1/collections/" + collectionId + "/count";
-      URL url = new URL(urlString);
-
-      // Open connection and configure HTTP request
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("GET");
-      connection.setRequestProperty("Content-Type", "application/json");
-
-      // Check the response code and handle accordingly
-      if (connection.getResponseCode() == 200) {
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder responseBuilder = new StringBuilder();
-        String line;
-
-        // Read response line by line
-        while ((line = in.readLine()) != null) {
-          responseBuilder.append(line);
-        }
-        in.close();
-        segmentCount = Long.parseLong(responseBuilder.toString());
-
-      } else {
-
-        // Log any error responses from the server
-        LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-      }
-
-    } catch (Exception e) {
-
-      // Handle any exceptions that occur during the process
-      LOGGER.error("Error getting collection count", e);
-    }
-    LOGGER.debug("segmentCount: " + segmentCount);
-    return segmentCount;
-  }
-
-  /**
-   * Retrieves the collection ID for a given store name.
-   *
-   * @param storeName the name of the store.
-   * @return the collection ID as a {@code String}.
-   */
-  private String getCollectionId(String storeName) {
-
-    String collectionId = "";
-    try {
-
-      String urlString = url + "/api/v1/collections/" + storeName;
-      URL url = new URL(urlString);
-
-      // Open connection and configure HTTP request
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("GET");
-      connection.setRequestProperty("Content-Type", "application/json");
-
-      // Check the response code and handle accordingly
-      if (connection.getResponseCode() == 200) {
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder responseBuilder = new StringBuilder();
-        String line;
-
-        // Read response line by line
-        while ((line = in.readLine()) != null) {
-          responseBuilder.append(line);
-        }
-        in.close();
-
-        // Parse JSON response
-        JSONObject jsonResponse = new JSONObject(responseBuilder.toString());
-        collectionId = jsonResponse.getString("id");
-
-      } else {
-
-        // Log any error responses from the server
-        LOGGER.error("Error: " + connection.getResponseCode() + " " + connection.getResponseMessage());
-    }
-
-    } catch (Exception e) {
-
-      // Handle any exceptions that occur during the process
-      LOGGER.error("Error getting collection id", e);
-    }
-    LOGGER.debug("collectionId: " + collectionId);
-    return collectionId;
-  }
-
-  @Override
-  public ChromaStore.RowIterator rowIterator() {
-    try {
-      return new ChromaStore.RowIterator();
-    } catch (Exception e) {
-      LOGGER.error("Error while creating row iterator", e);
-      throw new RuntimeException(e);
-    }
-  }
-
-  public class RowIterator extends BaseStore.RowIterator {
-
-    private List<String> idsObjects;
-    private List<JSONObject> metadataObjects;
-    private List<String> documentsObjects;
-    private List<JSONArray> embeddingsObjects;
-    private int currentIndex;
-
-    public RowIterator() throws Exception {
-      super();
-      this.idsObjects = new ArrayList<>();
-      this.metadataObjects = new ArrayList<>();
-      this.documentsObjects = new ArrayList<>();
-      this.embeddingsObjects = new ArrayList<>();
-      this.currentIndex = 0;
-      loadObjects();
-    }
-
-    private void loadObjects() throws Exception {
-      String collectionId = getCollectionId(storeName);
-      long segmentCount = getSegmentCount(collectionId);
-      long offset = 0;
-
-      while (offset < segmentCount) {
-        JSONObject jsonResponse = getJsonResponse(collectionId, offset, queryParams.pageSize());
-        JSONArray jsonArrayIds = jsonResponse.getJSONArray(ID_DEFAULT_FIELD_NAME); 
-        JSONArray jsonArrayMetadatas = jsonResponse.getJSONArray(METADATA_DEFAULT_FIELD_NAME);
-        JSONArray jsonArrayDocuments = jsonResponse.getJSONArray(TEXT_DEFAULT_FIELD_NAME);
-        JSONArray jsonArrayEmbeddings = queryParams.retrieveEmbeddings() ? jsonResponse.getJSONArray(VECTOR_DEFAULT_FIELD_NAME) : null;
-        for (int i = 0; i < jsonArrayIds.length(); i++) {
-          idsObjects.add(jsonArrayIds.getString(i));
-          metadataObjects.add(jsonArrayMetadatas.getJSONObject(i));
-          documentsObjects.add(jsonArrayDocuments.getString(i));
-          if(queryParams.retrieveEmbeddings()) embeddingsObjects.add(jsonArrayEmbeddings.getJSONArray(i));
-        }
-        offset += jsonArrayIds.length();
-      }
     }
 
     @Override
-    public boolean hasNext() {
-      return currentIndex < metadataObjects.size();
+    public EmbeddingStore<TextSegment> buildEmbeddingStore() {
+        return ChromaEmbeddingStore.builder()
+                .baseUrl(this.chromaStoreConnection.getUrl())
+                .collectionName(this.storeName)
+                .build();
+    }
+
+    private String getJsonResponse(String endpoint, String jsonBody) {
+        try {
+            HttpClient httpClient = chromaStoreConnection.getHttpClient();
+            CompletableFuture<HttpResponse> futureResponse;
+            if (jsonBody != null) {
+                futureResponse = HttpRequestHelper.executePostRequest(httpClient, chromaStoreConnection.getUrl() + endpoint, null, jsonBody.getBytes(), 5000);
+            } else {
+                futureResponse = HttpRequestHelper.executeGetRequest(httpClient, chromaStoreConnection.getUrl() + endpoint, null, 5000);
+            }
+
+            HttpResponse response = futureResponse.get(); // Block for the result
+
+            int responseCode = response.getStatusCode();
+            String responseBody = readInputStreamToString(response);
+
+            if (responseCode != 200) {
+                LOGGER.error("Chroma API request failed with status code {}: {}", responseCode, responseBody);
+                throw new ModuleException("Chroma API request failed: " + responseBody, MuleVectorsErrorType.STORE_SERVICES_FAILURE);
+            }
+            return responseBody;
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new ModuleException("Request to Chroma failed or was interrupted", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        } catch (IOException e) {
+            throw new ModuleException("Error reading response from Chroma", MuleVectorsErrorType.NETWORK_ERROR, e);
+        }
+    }
+
+    private String readInputStreamToString(HttpResponse response) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+            return result.toString();
+        }
+    }
+
+    private int getSegmentCount() throws IOException {
+        if (collectionId == null) return 0;
+        String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId, new JSONObject().toString());
+        JSONObject collection = new JSONObject(jsonResponse);
+        return collection.optInt("count", 0);
+    }
+
+    private String getCollectionId() throws IOException {
+        String jsonResponse = getJsonResponse("/api/v1/collections?name=" + storeName, null);
+        JSONArray collections = new JSONArray(jsonResponse);
+        if (collections.length() > 0) {
+            return collections.getJSONObject(0).getString("id");
+        } else {
+            // If the collection does not exist, Langchain4j will create it.
+            return null;
+        }
     }
 
     @Override
-    public Row<?> next() {
-      if (!hasNext()) {
-        throw new NoSuchElementException();
-      }
-      try {
+    public Iterator<BaseStoreService.Row<?>> getRowIterator() {
+        try {
+            return new RowIterator();
+        } catch (IOException e) {
+            throw new ModuleException("Error creating Chroma iterator", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        }
+    }
 
-        String embeddingId = idsObjects.get(currentIndex);
-        JSONObject metadataObject = metadataObjects.get(currentIndex);
-        String text = documentsObjects.get(currentIndex);
+    public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
+        private final List<String> ids = new ArrayList<>();
+        private final List<JSONObject> metadata = new ArrayList<>();
+        private final List<String> documents = new ArrayList<>();
+        private final List<JSONArray> embeddings = new ArrayList<>();
+        private int totalCount = 0;
+        private int currentPage = 0;
+        private int pageIndex = 0;
 
-        float[] vector = null;
-        if(queryParams.retrieveEmbeddings()) {
-
-          JSONArray vectorArray = embeddingsObjects.get(currentIndex);
-          vector = new float[vectorArray.length()];
-          for (int j = 0; j < vectorArray.length(); j++) {
-            vector[j] = vectorArray.getFloat(j);
-          }
+        public RowIterator() throws IOException {
+            this.totalCount = getSegmentCount();
+            loadNextPage();
         }
 
-        currentIndex++;
+        private void loadNextPage() throws IOException {
+            if (ids.size() >= totalCount) {
+                return;
+            }
 
-        return new Row<>(embeddingId,
-                         vector != null ? new Embedding(vector) : null,
-                         new TextSegment(text, Metadata.from(metadataObject.toMap())));
-      } catch (Exception e) {
-        LOGGER.error("Error while fetching next row", e);
-        throw new NoSuchElementException("No more elements available");
-      }
+            JSONObject jsonRequest = new JSONObject();
+            jsonRequest.put("limit", queryParams.pageSize());
+            jsonRequest.put("offset", (long) currentPage * queryParams.pageSize());
+
+            JSONArray jsonInclude = new JSONArray();
+            jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
+            jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
+            if (queryParams.retrieveEmbeddings()) {
+                jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
+            }
+            jsonRequest.put("include", jsonInclude);
+
+            String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId + "/get", jsonRequest.toString());
+
+            JSONObject responseObject = new JSONObject(jsonResponse);
+
+            // Clear old data
+            ids.clear();
+            metadata.clear();
+            documents.clear();
+            embeddings.clear();
+            pageIndex = 0;
+
+            // Populate with new data
+            responseObject.optJSONArray(ID_DEFAULT_FIELD_NAME).forEach(id -> ids.add(id.toString()));
+            responseObject.optJSONArray(METADATA_DEFAULT_FIELD_NAME).forEach(meta -> metadata.add((JSONObject) meta));
+            responseObject.optJSONArray(TEXT_DEFAULT_FIELD_NAME).forEach(doc -> documents.add(doc.toString()));
+            if (queryParams.retrieveEmbeddings()) {
+                responseObject.optJSONArray(VECTOR_DEFAULT_FIELD_NAME).forEach(emb -> embeddings.add((JSONArray) emb));
+            }
+            currentPage++;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return (currentPage * queryParams.pageSize() + pageIndex) < totalCount;
+        }
+
+        @Override
+        public BaseStoreService.Row<?> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            if (pageIndex >= ids.size()) {
+                try {
+                    loadNextPage();
+                } catch (IOException e) {
+                    throw new ModuleException("Failed to load next page from Chroma", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+                }
+            }
+
+            String id = ids.get(pageIndex);
+            Map<String, Object> metadataMap = metadata.get(pageIndex).toMap();
+            String text = documents.get(pageIndex);
+            JSONArray vectorArray = queryParams.retrieveEmbeddings() ? embeddings.get(pageIndex) : null;
+
+            Embedding embedding = null;
+            if (vectorArray != null) {
+                float[] vector = new float[vectorArray.length()];
+                for (int i = 0; i < vectorArray.length(); i++) {
+                    vector[i] = (float) vectorArray.getDouble(i);
+                }
+                embedding = new Embedding(vector);
+            }
+
+            TextSegment textSegment = new TextSegment(text, Metadata.from(metadataMap));
+
+            pageIndex++;
+
+            return new BaseStoreService.Row<>(id, embedding, textSegment);
+        }
     }
-  }
 }
