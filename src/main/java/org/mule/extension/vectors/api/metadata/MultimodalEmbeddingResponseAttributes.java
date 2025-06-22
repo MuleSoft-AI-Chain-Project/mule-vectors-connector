@@ -10,8 +10,8 @@ import java.util.HashMap;
  */
 public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttributes {
 
-  private String filename;
   private String mimeType;
+  private String mediaType;
 
   /**
    * Constructs an {@code EmbeddingResponseAttributes} instance.
@@ -24,18 +24,18 @@ public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttr
   public MultimodalEmbeddingResponseAttributes(HashMap<String, Object> requestAttributes) {
 
     super(requestAttributes);
-    this.filename = requestAttributes.containsKey("filename") ? (String) requestAttributes.remove("filename") : null;
     this.mimeType = requestAttributes.containsKey("mimeType") ? (String) requestAttributes.remove("mimeType") : null;
+    this.mediaType = requestAttributes.containsKey("mediaType") ? (String) requestAttributes.remove("mediaType") : null;
     otherAttributes = requestAttributes;
   }
 
   /**
-   * Gets the name of the embedding model.
+   * Gets the media type of the embedding model.
    *
-   * @return the embedding model name, or {@code null} if not available.
+   * @return the media type, or {@code null} if not available.
    */
-  public String getFilename() {
-    return filename;  
+  public String getMediaType() {
+    return mediaType;
   }
 
   /**

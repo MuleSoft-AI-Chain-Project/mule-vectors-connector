@@ -258,6 +258,7 @@ public class EmbeddingOperations {
       HashMap<String, Object> attributes = new HashMap<String, Object>() {{
         put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
         put("embeddingModelDimension", multimodalEmbeddingModel.dimension());
+        put("mediaType", mediaBinaryParameters.getMediaType());
       }};
       if(tokenUsage != null) {
 
