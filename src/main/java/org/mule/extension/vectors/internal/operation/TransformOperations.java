@@ -15,7 +15,6 @@ import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProv
 import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.storage.BaseStorage;
 import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
@@ -34,6 +33,7 @@ import java.util.*;
 import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.TEXT_PLAIN;
 
 /**
  * Provides transformation operations for document parsing and text chunking within the Mule Vectors Connector.
@@ -55,11 +55,10 @@ public class TransformOperations {
    *         additional metadata in {@link TransformResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or processing the document.
    */
-  @MediaType(value = APPLICATION_JSON, strict = false)
+  @MediaType(value = TEXT_PLAIN, strict = false)
   @Alias("Transform-parse-document")
   @DisplayName("[Transform] Parse document")
   @Throws(TransformErrorTypeProvider.class)
-  @OutputJsonType(schema = "api/metadata/TransformParseDocumentResponse.json")
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
   parseDocument(@Config TransformConfiguration transformConfiguration,
                 @ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
@@ -89,7 +88,7 @@ public class TransformOperations {
       DocumentParser documentParser = Utils.getDocumentParser(payloadParameters.getFileParserType());
       Document document = documentParser.parse(documentStream);
 
-      return createDocumentResponse(
+      return createParsedDocumentResponse(
           document.text(),
           new HashMap<String, Object>() {{
             put("payloadContentFormat", payloadParameters.getFormat());
@@ -142,7 +141,7 @@ public class TransformOperations {
         responseJsonArray.put(textSegment.text());
       }
 
-      return createDocumentResponse(
+      return createChunkedTextResponse(
           responseJsonArray.toString(),
           new HashMap<String, Object>() {});
 

@@ -85,7 +85,19 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static Result<InputStream, TransformResponseAttributes> createDocumentResponse(
+  public static Result<InputStream, TransformResponseAttributes> createParsedDocumentResponse(
+      String response,
+      Map<String, Object> documentAttributes) {
+
+    return Result.<InputStream, TransformResponseAttributes>builder()
+        .attributes(new TransformResponseAttributes((HashMap<String, Object>) documentAttributes))
+        .attributesMediaType(MediaType.APPLICATION_JAVA)
+        .output(toInputStream(response, StandardCharsets.UTF_8))
+        .mediaType(MediaType.TEXT)
+        .build();
+  }
+
+  public static Result<InputStream, TransformResponseAttributes> createChunkedTextResponse(
       String response,
       Map<String, Object> documentAttributes) {
 
