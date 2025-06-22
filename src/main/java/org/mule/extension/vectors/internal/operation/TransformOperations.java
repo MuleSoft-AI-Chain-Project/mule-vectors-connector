@@ -31,6 +31,14 @@ import java.util.*;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createDocumentResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
+/**
+ * Provides transformation operations for document parsing and text chunking within the Mule Vectors Connector.
+ * <p>
+ * This class contains operations to parse documents from various payload formats and to segment text into chunks
+ * according to configurable parameters. These operations are typically used in data processing and integration flows
+ * where document ingestion and text segmentation are required.
+ * </p>
+ */
 public class TransformOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
@@ -38,7 +46,8 @@ public class TransformOperations {
   /**
    * Parse document from a raw binary or base64-encoded content.
    *
-   * @param payloadParameters parameters for specifying document passed as payload .
+   * @param transformConfiguration the connector configuration to use for this operation.
+   * @param payloadParameters parameters for specifying document passed as payload.
    * @return a {@link Result} containing the document's content as an {@link InputStream} and
    *         additional metadata in {@link DocumentResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or processing the document.
@@ -95,16 +104,18 @@ public class TransformOperations {
   }
 
   /**
-   * Chunk a text into multiple text segments based on the provided  parameters.
+   * Chunks the provided text into multiple segments based on the segmentation parameters.
    * <p>
-   * This operation expects an input text string.
-   * It chunks each the text into smaller text segments based on the parameters provided, and returns
-   * the result as an JSON document with the chunked text segments and metadata.
+   * This operation splits the input text into smaller segments according to the maximum segment size and overlap size
+   * specified in the segmentation parameters. The result is returned as a JSON document containing the chunked text
+   * segments and associated metadata.
    * </p>
    *
-   * @param text the input text to chunk.
-   * @param segmentationParameters Parameters that define how the document should be segmented.
-   * @return Result containing the chunked text segments and response attributes.
+   * @param transformConfiguration the connector configuration to use for this operation.
+   * @param text the input text to be chunked.
+   * @param segmentationParameters parameters that define how the text should be segmented, including maximum segment size and overlap size.
+   * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link DocumentResponseAttributes}.
+   * @throws ModuleException if an error occurs during text chunking.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
   @Alias("transform-chunk-text")
