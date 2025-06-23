@@ -1,17 +1,17 @@
 package org.mule.extension.vectors.internal.connection.store.alloydb;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.store.alloydb.CustomAlloyDBEngine;
-import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.extension.api.annotation.param.display.Password;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine;
-import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 public class AlloyDBStoreConnection implements BaseStoreConnection {
@@ -106,6 +106,11 @@ public class AlloyDBStoreConnection implements BaseStoreConnection {
     }
     if (parameters.getPassword() == null) {
       throw new IllegalArgumentException("Password is required for AlloyDB connection");
+    }
+    try {
+      this.alloyDBEngine.getConnection();
+    } catch (SQLException e) {
+      throw new ModuleException("Failed to connect to Alloy DB", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

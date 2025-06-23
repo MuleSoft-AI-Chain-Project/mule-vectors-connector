@@ -4,17 +4,14 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import io.milvus.client.MilvusServiceClient;
-import io.milvus.param.ConnectParam;
-import org.bson.BsonDocument;
-import org.bson.BsonInt64;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
 
@@ -86,6 +83,11 @@ public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
     }
     if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
       throw new IllegalArgumentException("Database is required for MongoDB Atlas connection");
+    }
+    try {
+      mongoClient.listDatabaseNames().first();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to MongoDB Atlas store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
   public void initialise() {

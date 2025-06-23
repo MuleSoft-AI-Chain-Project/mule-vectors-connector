@@ -7,7 +7,8 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.transport.OpenSearchTransport;
@@ -67,9 +68,7 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
 
   public void initialise() throws URISyntaxException {
 
-
-
-  HttpHost openSearchHost = HttpHost.create(url);
+      HttpHost openSearchHost = HttpHost.create(url);
 
       OpenSearchTransport transport = ApacheHttpClient5TransportBuilder.builder(new HttpHost[]{openSearchHost}).setMapper(new JacksonJsonpMapper()).setHttpClientConfigCallback((httpClientBuilder) -> {
 
@@ -85,12 +84,10 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
         }
 
         httpClientBuilder.setConnectionManager(PoolingAsyncClientConnectionManagerBuilder.create().build());
-        return httpClientBuilder;
-      }).build();
+          return httpClientBuilder;
+        }).build();
 
       this.openSearchClient = new OpenSearchClient(transport);
-
-
 
   }
 
@@ -123,6 +120,11 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
     }
     if ((parameters.getPassword() == null || parameters.getPassword().isBlank()) && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
       throw new IllegalArgumentException("Either password or API Key is required for OpenSearch connection");
+    }
+    try {
+      this.openSearchClient.ping();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to validate connection to OpenSearch.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 }

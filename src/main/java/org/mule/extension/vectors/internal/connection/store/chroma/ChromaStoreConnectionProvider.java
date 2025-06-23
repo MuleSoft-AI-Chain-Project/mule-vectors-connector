@@ -5,7 +5,6 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 import org.mule.extension.vectors.internal.connection.store.HttpBasedConnectionProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;

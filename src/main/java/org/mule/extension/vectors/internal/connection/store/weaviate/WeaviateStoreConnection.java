@@ -7,6 +7,12 @@ import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.client.HttpRequestOptions;
+import org.mule.runtime.http.api.domain.message.request.HttpRequest;
+import org.mule.runtime.http.api.domain.message.request.HttpRequestBuilder;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -105,6 +111,11 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
     if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
       throw new IllegalArgumentException("API Key is required for Weaviate connection");
     }
+    try {
+      testConnection();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to Weaviate store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+    }
   }
 
   private void testConnection() throws Exception {
@@ -114,26 +125,26 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
     } else {
       urlString = String.format("%s://%s%s", scheme, host, AUTH_CHECK_ENDPOINT);
     }
-    URL url = new URL(urlString);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestMethod("GET");
-    conn.setConnectTimeout(5000);
-    conn.setReadTimeout(5000);
-    if (apikey != null && !apikey.isEmpty()) {
-      conn.setRequestProperty("Authorization", "Bearer " + apikey);
+
+    HttpRequestBuilder requestBuilder = HttpRequest.builder()
+      .method("GET")
+      .uri(urlString)
+      .addHeader("Authorization", "Bearer " + apikey)
+      .addHeader("Content-Type", "application/json")
+      .addHeader("Accept", "application/json");
+
+    HttpRequestOptions options = HttpRequestOptions.builder()
+        .responseTimeout(30000)
+        .followsRedirect(false)
+        .build();
+
+    HttpResponse connectionResponse = httpClient.send(requestBuilder.build(), options);
+
+    if (connectionResponse.getStatusCode() != 200) {
+      String errorBody = new String(connectionResponse.getEntity().getBytes());
+      String errorMsg = String.format("Unable to connect to Weaviate. Status: %d - %s", 
+          connectionResponse.getStatusCode(), errorBody);
+      throw new ConnectionException(errorMsg);
     }
-    int responseCode = conn.getResponseCode();
-    if (responseCode != 200) {
-      InputStream errorStream = conn.getErrorStream();
-      String errorBody = "";
-      if (errorStream != null) {
-        byte[] bytes = errorStream.readAllBytes();
-        errorBody = new String(bytes, StandardCharsets.UTF_8);
-      }
-      conn.disconnect();
-      String msg = String.format("Weaviate auth check failed with status code: %d. Response: %s", responseCode, errorBody);
-      throw new Exception(msg);
-    }
-    conn.disconnect();
   }
 }

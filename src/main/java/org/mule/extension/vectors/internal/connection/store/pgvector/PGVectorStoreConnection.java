@@ -3,10 +3,8 @@ package org.mule.extension.vectors.internal.connection.store.pgvector;
 import dev.langchain4j.internal.ValidationUtils;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.lifecycle.Disposable;
-import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +83,11 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     }
     if (parameters.getPassword() == null || parameters.getPassword().isBlank()) {
       throw new IllegalArgumentException("Password is required for PGVector connection");
+    }
+    try {
+      this.dataSource.getConnection();
+    } catch (SQLException e) {
+      throw new ModuleException("Failed to connect to PG Vector", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

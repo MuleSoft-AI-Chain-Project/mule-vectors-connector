@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class QdrantStoreConnection implements BaseStoreConnection {
 
@@ -92,6 +94,11 @@ public class QdrantStoreConnection implements BaseStoreConnection {
     }
     if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
       throw new IllegalArgumentException("API Key is required for Qdrant connection");
+    }
+    try {
+      doHealthCheck();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to Qdrant store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

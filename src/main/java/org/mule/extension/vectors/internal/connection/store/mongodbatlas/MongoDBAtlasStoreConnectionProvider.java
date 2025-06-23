@@ -2,7 +2,6 @@ package org.mule.extension.vectors.internal.connection.store.mongodbatlas;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
-import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
