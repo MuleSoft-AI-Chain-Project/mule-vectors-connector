@@ -4,11 +4,14 @@ import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
+import org.mule.runtime.http.api.domain.entity.multipart.MultipartHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.request.HttpRequestBuilder;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -25,6 +28,12 @@ public class HttpRequestHelper {
 
     public static CompletableFuture<HttpResponse> executePostRequest(HttpClient httpClient, String url, Map<String, String> headers, byte[] body, int timeout) {
         HttpRequest request = buildPostRequest(url, headers, body);
+        HttpRequestOptions options = getRequestOptions(timeout);
+        return httpClient.sendAsync(request, options);
+    }
+
+    public static CompletableFuture<HttpResponse> executeMultipartPostRequest(HttpClient httpClient, String url, Map<String, String> headers, List<HttpPart> parts, int timeout) {
+        HttpRequest request = buildMultipartPostRequest(url, headers, parts);
         HttpRequestOptions options = getRequestOptions(timeout);
         return httpClient.sendAsync(request, options);
     }
@@ -55,6 +64,20 @@ public class HttpRequestHelper {
                 .uri(url)
                 .headers(finalHeaders)
                 .entity(new ByteArrayHttpEntity(body))
+                .build();
+    }
+
+    private static HttpRequest buildMultipartPostRequest(String url, Map<String, String> headers, List<HttpPart> parts) {
+        MultiMap<String, String> finalHeaders = new MultiMap<>();
+        if (headers != null) {
+            finalHeaders.putAll(new MultiMap<>(headers));
+        }
+
+        return HttpRequest.builder()
+                .method("POST")
+                .uri(url)
+                .headers(finalHeaders)
+                .entity(new MultipartHttpEntity(parts))
                 .build();
     }
 
