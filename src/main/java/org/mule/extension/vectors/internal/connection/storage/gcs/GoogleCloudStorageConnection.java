@@ -9,6 +9,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 
@@ -76,18 +77,16 @@ public class GoogleCloudStorageConnection implements BaseStorageConnection {
                 .toString();
     }
 
-    @Override
-    public void connect() throws ConnectionException {
-        try {
+
+    public void initialise() throws IOException {
+
             ServiceAccountCredentials
                 serviceAccountCredentials = ServiceAccountCredentials.fromStream(new ByteArrayInputStream(buildJsonCredentials().getBytes()));
             this.storageService = StorageOptions.newBuilder()
                     .setCredentials(serviceAccountCredentials)
                     .build()
                     .getService();
-        } catch (Exception e) {
-            throw new ConnectionException("Failed to connect to Google Cloud Storage.", e);
-        }
+
     }
 
     @Override
@@ -102,9 +101,8 @@ public class GoogleCloudStorageConnection implements BaseStorageConnection {
     }
 
     @Override
-    public boolean isValid() {
+    public void validate() {
         this.storageService.list();
-        return true;
     }
 
     public InputStream loadFile(String bucket, String objectName) {
