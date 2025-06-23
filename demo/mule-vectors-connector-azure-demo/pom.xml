@@ -14,7 +14,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<app.runtime>4.9.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
-		<langchain4jVersion>1.0.0-beta6</langchain4jVersion>
 	</properties>
 
 	<build>
@@ -67,9 +66,9 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>io.github.mulesoft-ai-chain-project</groupId>
+			<groupId>com.mulesoft.connectors</groupId>
 			<artifactId>mule4-vectors-connector</artifactId>
-			<version>0.6.20</version>
+			<version>0.7.2</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
@@ -81,22 +80,22 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
-			<version>1.0.1-beta6</version>
+			<version>1.1.0-beta7</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-parser-apache-tika</artifactId>
-			<version>1.0.1-beta6</version>
+			<version>1.1.0-beta7</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-azure-ai-search</artifactId>
-			<version>1.0.1-beta6</version>
+			<version>1.1.0-beta7</version>
 		</dependency>
 	</dependencies>
 

@@ -3,7 +3,7 @@ package org.mule.extension.vectors.internal.helper.parameter;
 import java.io.InputStream;
 
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.helper.provider.FileTypeProvider;
+import org.mule.extension.vectors.internal.helper.provider.FileParserTypeProvider;
 import org.mule.extension.vectors.internal.helper.provider.PayloadContentTypeProvider;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -38,24 +38,14 @@ public class DocumentPayloadParameters {
   private String format;
 
   @Parameter
-  @Alias("fileType")
-  @DisplayName("File Type")
-  @Summary("The supported types of file.")
+  @Alias("fileParserType")
+  @DisplayName("File Parser type")
+  @Summary("The file parser types.")
   @Placement(order = 3)
   @Expression(ExpressionSupport.SUPPORTED)
-  @OfValues(FileTypeProvider.class)
-  @Optional(defaultValue = Constants.FILE_TYPE_TEXT)
-  private String fileType;
-
-  @Parameter
-  @Alias("fileName")
-  @DisplayName("File name")
-  @Summary("The file name.")
-  @Placement(order = 4)
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Example("example.pdf")
-  @Optional
-  private String fileName;
+  @OfValues(FileParserTypeProvider.class)
+  @Optional(defaultValue = Constants.FILE_PARSER_TYPE_APACHE_TIKA)
+  private String fileParserType;
 
   public InputStream getContent() {
     return content;
@@ -66,19 +56,19 @@ public class DocumentPayloadParameters {
   }
 
   public String getFileType() {
-    return fileType;
+
+    return fileParserType.equals(Constants.FILE_PARSER_TYPE_TEXT) ?
+        Constants.FILE_TYPE_TEXT :
+        Constants.FILE_TYPE_ANY;
   }
 
-  public String getFileName() {
-    return fileName;
-  }
+  public String getFileParserType() { return fileParserType; }
 
   @Override
   public String toString() {
     return "DocumentPayloadParameters{" +
         "format='" + format + '\'' +
-        ", fileType='" + fileType + '\'' +
-        ", fileName='" + fileName + '\'' +
+        ", fileParserType='" + fileParserType + '\'' +
         '}';
   }
 

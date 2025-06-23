@@ -9,16 +9,14 @@ import org.mule.runtime.extension.api.values.ValueBuilder;
 import org.mule.runtime.extension.api.values.ValueProvider;
 import org.mule.runtime.extension.api.values.ValueResolvingException;
 
-public class FileTypeProvider implements ValueProvider {
+public class FileParserTypeProvider implements ValueProvider {
 
   @Override
   public Set<Value> resolve() throws ValueResolvingException {
 
     return ValueBuilder.getValuesFor(
-            Constants.FILE_TYPE_ANY,
-            Constants.FILE_TYPE_TEXT,
-            Constants.FILE_TYPE_URL,
-            Constants.FILE_TYPE_CRAWL);
+            Constants.FILE_PARSER_TYPE_APACHE_TIKA,
+            Constants.FILE_PARSER_TYPE_TEXT);
   }
 
 }

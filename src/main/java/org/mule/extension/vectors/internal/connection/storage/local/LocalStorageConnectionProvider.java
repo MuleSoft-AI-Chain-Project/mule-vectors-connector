@@ -14,12 +14,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
 @Alias("local")
 @DisplayName("Local")
-@ExternalLib(name = "LangChain4J Document Transformer Jsoup",
-    type=DEPENDENCY,
-    description = "LangChain4J Document Transformer Jsoup",
-    nameRegexpMatcher = "(.*)\\.jar",
-    requiredClassName = "dev.langchain4j.data.document.transformer.jsoup.HtmlToTextDocumentTransformer",
-    coordinates = "dev.langchain4j:langchain4j-document-transformer-jsoup:1.0.1-beta6")
 public class LocalStorageConnectionProvider extends BaseStorageConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

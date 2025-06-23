@@ -6,6 +6,10 @@ import org.mule.runtime.api.connection.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -65,6 +69,19 @@ public class LocalStorageConnection implements BaseStorageConnection {
 
     if (!isDirectory(workingDirPath)) {
       throw new ConnectionException(format("Provided workingDir '%s' is not a directory", workingDirPath.toAbsolutePath()));
+    }
+  }
+
+  public InputStream loadFile(Path path) {
+
+    if (!Files.isRegularFile(path, new LinkOption[0])) {
+      throw new IllegalArgumentException(String.format("'%s' is not a file", new Object[]{path}));
+    } else {
+      try {
+        return  Files.newInputStream(path);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }

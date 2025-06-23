@@ -1,9 +1,13 @@
 package org.mule.extension.vectors.internal.util;
 
 import dev.langchain4j.data.document.DefaultDocument;
+import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.parser.TextDocumentParser;
+import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.segment.TextSegment;
+import org.mule.extension.vectors.internal.constant.Constants;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -209,5 +213,22 @@ public class Utils {
       textSegments.add(TextSegment.from(text));
     }
     return textSegments;
+  }
+
+  public static DocumentParser getDocumentParser(String fileParserType) {
+
+    DocumentParser documentParser = null;
+    switch (fileParserType) {
+
+      case Constants.FILE_PARSER_TYPE_TEXT:
+        documentParser = new TextDocumentParser();
+        break;
+      case Constants.FILE_PARSER_TYPE_APACHE_TIKA:
+        documentParser = new ApacheTikaDocumentParser();
+        break;
+      default:
+        throw new IllegalArgumentException("Unsupported File Parser Type: " + fileParserType);
+    }
+    return documentParser;
   }
 }

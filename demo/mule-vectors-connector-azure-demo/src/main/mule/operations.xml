@@ -1,59 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
-	<flow name="load-document-from-payload" doc:id="ec70f8ab-6553-4a19-a5ec-109c6254f602" >
-		<ms-vectors:document-load-from-payload doc:name="[Document] Load from payload" doc:id="44108a74-cd69-44df-afbf-74f59b33ae29" maxSegmentSizeInChar="1500" maxOverlapSizeInChars="150" fileName="example.pdf"/>
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<flow name="load-file-operation" doc:id="4bc1532b-bb2d-452c-8f1a-81c9a696816b" >
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="225cee0d-94ef-454f-a0d6-ee76db2ad77c" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
+		<ee:transform doc:name="Transform Message" doc:id="8f1b490f-73de-4bfc-9b9c-00b5094728ea" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"payload": payload,
+	"attributes": attributes
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
-	<flow name="load-single-document-operation" doc:id="4bc1532b-bb2d-452c-8f1a-81c9a696816b" >
-		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="9e0f2c9c-cc1e-4c1e-8447-34a179a3f091" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
-	</flow>
-	<flow name="load-list-of-documents-operation" doc:id="a7a0965f-91a0-43ca-94ef-7e2790c71010" >
-		<ms-vectors:document-load-list doc:name="[Document] Load list" doc:id="7e830099-1d02-4215-bda8-4f85dbe500e0" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]"/>
+	<flow name="load-file-list-operation" doc:id="a7a0965f-91a0-43ca-94ef-7e2790c71010" >
+		<ms-vectors:storage-load-file-list doc:name="[Storage] Load file list" doc:id="d4513319-57ed-48ba-9c66-abfd511f0517" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
 		<ee:transform doc:name="Transform Message" doc:id="f2fac866-8bdd-4749-86c3-eca56dc9d573" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload.payload]]></ee:set-payload>
+payload..attributes map ((item, index) -> {"attributes": item})]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="load-single-media-operation" doc:id="6c5b03e6-93bb-4955-9dd0-4e765f773fb5" >
-		<ms-vectors:media-load-single doc:name="[Media] Load single" doc:id="0d72f0c5-4d40-4b4c-be1e-f4920a029d61" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]">
-			<ms-vectors:media-processor-parameters >
-				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]'/>
-			</ms-vectors:media-processor-parameters>
-		</ms-vectors:media-load-single>
+	<flow name="parse-operation" doc:id="2000264d-593b-4374-b35e-998b09fbe4f8">
+		<choice doc:name="Choice" doc:id="26fd1966-a650-458a-b073-f0dbf3b90ddb" >
+			<when expression='#[attributes.queryParams.format == "binary"]' >
+				<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="28951baf-f388-4735-8da1-8388a6913b29" config-ref="Transform_config" >
+					<ms-vectors:content ><![CDATA[#[payload.parts.documentBinary.content]]]></ms-vectors:content>
+				</ms-vectors:transform-parse-document>
+			</when>
+			<otherwise >
+				<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="5d9ec8e9-cc86-420d-9eb8-89a372931fe9" config-ref="Transform_config" format="base64">
+					<ms-vectors:content ><![CDATA[#[payload.parts.documentBase64.content]]]></ms-vectors:content>
+				</ms-vectors:transform-parse-document>
+			</otherwise>
+		</choice>
 	</flow>
-	<flow name="load-list-of-medias-operation" doc:id="a868fb40-dabc-45a2-b631-23da03e90f20">
-		<ms-vectors:media-load-list doc:name="[Media] Load single" doc:id="24836a98-9a51-49a0-9c7d-ed70cf7b757b" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]">
-			<ms-vectors:media-processor-parameters>
-				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
-			</ms-vectors:media-processor-parameters>
-		</ms-vectors:media-load-list>
-		<ee:transform doc:name="Transform Message" doc:id="df58d4da-1707-48b2-a24b-a07f03385c81" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload.payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+	<flow name="chunk-operation" doc:id="4e12f92b-f477-425c-9248-7111bbab1b5d" >
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
+			<ms-vectors:text ><![CDATA[#[payload.text]]]></ms-vectors:text>
+		</ms-vectors:transform-chunk-text>
 	</flow>
 	<flow name="embed-text-operation" doc:id="5a413937-87e7-486f-8972-2801fdd4a40a" >
-		<ms-vectors:embedding-generate-from-text embeddingModelName="text-embedding-ada-002" doc:name="[Embedding] Generate from text" doc:id="50587321-4739-461e-9165-0eb6338624c1" config-ref="Azure_OpenAI_Embedding_Config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" >
-			<ms-vectors:text ><![CDATA[#[payload.text]]]></ms-vectors:text>
+		<ms-vectors:embedding-generate-from-text embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" doc:name="[Embedding] Generate from text" doc:id="50587321-4739-461e-9165-0eb6338624c1" config-ref="Azure_OpenAI_Embedding_Config" >
+			<ms-vectors:inputs ><![CDATA[#[payload.inputTexts]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<logger level="INFO" doc:name="Log attributes" doc:id="ac60e6e6-96ae-4ba4-ba60-be2df13e8d89" message="#[%dw 2.0&#10;output application/json&#10;---&#10;attributes]"/>
 	</flow>
 	<flow name="remove-from-store" doc:id="1162301b-2e97-4183-804c-4a2f6f27c0b3" >
 		<choice doc:name="Choice" doc:id="d409615a-3189-4ca9-996c-a0c33635211e" >
-			<when expression="#[payload.ids != null and sizeOf(payload.ids) &gt; 0]">
+			<when expression="#[payload.ids != null]">
 				<ms-vectors:store-remove doc:name="[Store] Remove by Ids" doc:id="156137d3-b051-4e93-86b6-83ff2d69788b" config-ref="AISearch_Store_Config" storeName="demo" ids="#[payload.ids]">
 		</ms-vectors:store-remove>
 			</when>
@@ -69,7 +75,7 @@ payload.payload]]></ee:set-payload>
 		</choice>
 	</flow>
 	<flow name="query-all" doc:id="29674354-cab0-4cb9-8c98-6294ef79ef0e" >
-		<ms-vectors:query-all doc:name="[Store] Query all" doc:id="c5042047-0c0d-4486-b9b8-3314aa57157f" config-ref="AISearch_Store_Config" storeName="demo" retrieveEmbeddings="#[attributes.queryParams.retrieveEmbeddings default false]"/>
+		<ms-vectors:query-all doc:name="[Store] Query all" doc:id="c5042047-0c0d-4486-b9b8-3314aa57157f" config-ref="AISearch_Store_Config" storeName="demo" retrieveEmbeddings="true"/>
 		<ee:transform doc:name="Transform Message" doc:id="675afdc7-f754-4bf5-beb9-b730f80935e7" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

@@ -126,43 +126,43 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="post:\load-document:vectors-connector-azure-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e">
-        <flow-ref doc:name="load-single-document-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-single-document-operation" />
+    <flow name="post:\load-file:vectors-connector-azure-api-config" doc:id="1b2954fa-9d5d-4c90-ab55-479293f5aa0e">
+        <flow-ref doc:name="load-file-operation" doc:id="db4f0180-5dd0-4152-ae2a-1862256f4b9d" name="load-file-operation" />
     </flow>
-    <flow name="post:\load-documents:vectors-connector-azure-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed">
-        <flow-ref doc:name="load-list-of-documents-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-list-of-documents-operation" />
+	<flow name="post:\load-file-list:vectors-connector-azure-api-config" doc:id="4a047ab5-50b3-4bed-90d0-88c95cfe67ed">
+        <flow-ref doc:name="load-file-list-operation" doc:id="ee9f3ff3-8149-46f2-8c26-b21f280acd66" name="load-file-list-operation" />
     </flow>
-    <flow name="post:\load-media:vectors-connector-azure-api-config" doc:id="fddc79ae-2ce0-4c75-a519-a34a68f51bb8">
-        <flow-ref doc:name="load-single-media-operation" doc:id="6c289829-2348-45a8-a697-931924327d24" name="load-single-media-operation" />
-    </flow>
-    <flow name="post:\load-medias:vectors-connector-azure-api-config" doc:id="dcdadc46-f36c-4b2a-b84e-115518c2fc11">
-        <flow-ref doc:name="load-list-of-medias-operation" doc:id="3ddf7f44-ad24-4b21-a684-cf2eee7fc3fb" name="load-list-of-medias-operation" />
-    </flow>
-    <flow name="post:\embed-text:application\json:vectors-connector-azure-api-config" doc:id="9887f590-1a00-4325-9616-e86e57b4df08">
+	<flow name="post:\parse:multipart\form-data:vectors-connector-azure-api-config" doc:id="18b85342-7e4b-4d82-b954-ce25c7ef69e9">
+		<flow-ref doc:name="parse-operation" doc:id="dbf34182-416f-4ae8-9adb-25012ff3e827" name="parse-operation" />
+	</flow>
+	<flow name="post:\chunk:application\json:vectors-connector-azure-api-config" doc:id="b86d48f5-3bd5-42e6-9c2c-1b717d8eb17f" >
+		<flow-ref doc:name="chunk-operation" doc:id="2721683a-04a6-4247-93ae-aa92f6cb2a3c" name="chunk-operation"/>
+	</flow>
+	<flow name="post:\embed-text:application\json:vectors-connector-azure-api-config" doc:id="9887f590-1a00-4325-9616-e86e57b4df08">
         <flow-ref doc:name="embed-text-operation" doc:id="4f01684f-2a54-4e18-ba86-780696a5a85b" name="embed-text-operation" />
     </flow>
     <flow name="post:\add-text:application\json:vectors-connector-azure-api-config" doc:id="a1dc1dc4-86c0-4489-b89a-8c68883416e6">
         <flow-ref doc:name="add-text-to-store-use-case" doc:id="219e02f2-c0c3-4ae4-912b-51e63289b1cb" name="add-text-to-store-use-case" />
     </flow>
-    <flow name="post:\add-document:vectors-connector-azure-api-config" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d">
+	<flow name="post:\add-document:vectors-connector-azure-api-config" doc:id="ebbc156c-6c12-4a34-9a05-267e1c0dd09d">
         <flow-ref doc:name="add-doc-to-store-use-case" doc:id="46b55205-337c-41bb-8033-e15fd7656e07" name="add-doc-to-store-use-case" />
     </flow>
-    <flow name="post:\add-binary:multipart\form-data:vectors-connector-azure-api-config" doc:id="0da49e81-0c1e-48c8-9c48-81171f001d8c">
-        <flow-ref doc:name="add-binary-to-store" doc:id="c074eb60-8ed0-4401-8ed9-6a67542c158e" name="add-binary-to-store" />
+    <flow name="post:\add-media-binary:multipart\form-data:vectors-connector-azure-api-config" doc:id="0da49e81-0c1e-48c8-9c48-81171f001d8c">
+        <flow-ref doc:name="add-media-binary-to-store" doc:id="c074eb60-8ed0-4401-8ed9-6a67542c158e" name="add-media-binary-to-store" />
     </flow>
-    <flow name="post:\add-media:vectors-connector-azure-api-config" doc:id="e8959939-dac3-4d67-8490-06578ccfc849">
-        <flow-ref doc:name="add-media-to-store" doc:id="b84d7f63-2697-4f01-a5e7-60e9f59f27a8" name="add-media-to-store" />
+	<flow name="post:\add-media-file:vectors-connector-azure-api-config" doc:id="e8959939-dac3-4d67-8490-06578ccfc849">
+        <flow-ref doc:name="add-media-file-to-store" doc:id="b84d7f63-2697-4f01-a5e7-60e9f59f27a8" name="add-media-file-to-store" />
     </flow>
     <flow name="post:\query-by-text:application\json:vectors-connector-azure-api-config" doc:id="b1cb7923-f517-458b-8eba-5166052905d3">
         <flow-ref doc:name="query-by-text-from-store-use-case" doc:id="c6946da2-9869-4555-b07e-fd53db538a1a" name="query-by-text-from-store-use-case" />
     </flow>
-    <flow name="post:\query-media-by-text:application\json:vectors-connector-azure-api-config" doc:id="2e69023c-a2e4-41cc-8288-ed17d9d78f34">
+	<flow name="post:\query-media-by-text:application\json:vectors-connector-azure-api-config" doc:id="2e69023c-a2e4-41cc-8288-ed17d9d78f34">
 		<flow-ref doc:name="query-media-by-text-from-store-use-case" doc:id="313fade4-4588-48a8-899c-66e7f27da016" name="query-media-by-text-from-store-use-case" />
 	</flow>
 	<flow name="post:\query-by-binary:multipart\form-data:vectors-connector-azure-api-config" doc:id="d54b2d1f-2350-40b0-b775-4384128209c4">
         <flow-ref doc:name="query-by-binary-from-store-use-case" doc:id="d6a498c7-b5e4-4668-9c24-10a6e7a24e56" name="query-by-binary-from-store-use-case" />
     </flow>
-    <flow name="post:\query-all:vectors-connector-azure-api-config" doc:id="7ca72fd0-623e-4548-9431-4696576ab702" >
+	<flow name="post:\query-all:vectors-connector-azure-api-config" doc:id="7ca72fd0-623e-4548-9431-4696576ab702" >
 		<flow-ref doc:name="query-all" doc:id="95b18ec3-ff6a-4ce9-8cd4-60ccd6e8bd1d" name="query-all"/>
 	</flow>
     <flow name="delete:\remove:application\json:vectors-connector-azure-api-config">

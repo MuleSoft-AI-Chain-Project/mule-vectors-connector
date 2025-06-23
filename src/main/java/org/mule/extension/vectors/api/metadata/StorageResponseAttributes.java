@@ -6,70 +6,54 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
- * Represents the attributes of a document operation response.
+ * Represents the attributes of a storage operation response.
  * <p>
- * This class contains metadata about a document, such as its file type,
+ * This class contains metadata about a file, such as its
  * context path, and any additional attributes.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class DocumentResponseAttributes implements Serializable {
+public class StorageResponseAttributes implements Serializable {
 
-  /**
-   * The type of the file associated with the document.
-   */
-  private final String fileType;
+  private final String path;
 
-  /**
-   * The context path of the document.
-   */
-  private final String contextPath;
+  private final String fileName;
 
   /**
    * Additional attributes not explicitly defined as fields in this class.
    */
-  private final HashMap<String, Object> otherAttributes;
+  private final Map<String, Object> otherAttributes;
 
   /**
    * Constructs a {@code DocumentResponseAttributes} instance.
    *
-   * @param requestAttributes a map containing document operation attributes.
+   * @param requestAttributes a map containing storage operation attributes.
    *                          Expected keys include "fileType" and "contextPath",
    *                          which are extracted and stored in their respective fields.
    *                          Remaining entries are stored in {@code otherAttributes}.
    */
-  public DocumentResponseAttributes(HashMap<String, Object> requestAttributes) {
-    this.fileType = requestAttributes.containsKey("fileType") ? (String) requestAttributes.remove("fileType") : null;
-    this.contextPath = requestAttributes.containsKey("contextPath") ? (String) requestAttributes.remove("contextPath") : null;
+  public StorageResponseAttributes(Map<String, Object> requestAttributes) {
+
+    this.path = requestAttributes.containsKey("path") ? (String) requestAttributes.remove("path") : null;
+    this.fileName = requestAttributes.containsKey("fileName") ? (String) requestAttributes.remove("fileName") : null;
     this.otherAttributes = requestAttributes;
   }
 
-  /**
-   * Gets the file type of the document.
-   *
-   * @return the file type, or {@code null} if not available.
-   */
-  public String getFileType() {
-    return fileType;
+  public String getPath() {
+    return path;
+  }
+
+  public String getFileName() {
+    return fileName;
   }
 
   /**
-   * Gets the context path of the document.
-   *
-   * @return the context path, or {@code null} if not available.
-   */
-  public String getContextPath() {
-    return contextPath;
-  }
-
-  /**
-   * Gets additional attributes of the document.
+   * Gets additional attributes of the file.
    * <p>
    * These are attributes not explicitly defined in this class.
    *

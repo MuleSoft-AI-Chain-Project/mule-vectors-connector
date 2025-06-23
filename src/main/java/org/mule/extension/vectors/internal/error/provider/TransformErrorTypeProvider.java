@@ -13,16 +13,14 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.*;
 
-public class DocumentErrorTypeProvider implements ErrorTypeProvider {
+public class TransformErrorTypeProvider implements ErrorTypeProvider {
 
   @SuppressWarnings("rawtypes")
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
     return unmodifiableSet(new HashSet<>(asList(
-        INVALID_CONNECTION,
         INVALID_PARAMETER,
-        DOCUMENT_OPERATIONS_FAILURE,
-        DOCUMENT_PARSING_FAILURE,
-        STORAGE_SERVICES_FAILURE)));
+        TRANSFORM_OPERATIONS_FAILURE,
+        TRANSFORM_DOCUMENT_PARSING_FAILURE)));
   }
 }

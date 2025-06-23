@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.6.20</version>
+    <version>0.7.2</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -80,8 +80,8 @@
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>	
-		<langchain4jBomVersion>1.0.1</langchain4jBomVersion>
-		<langchain4jCommunityVersion>1.0.1-beta6</langchain4jCommunityVersion>
+		<langchain4jBomVersion>1.1.0</langchain4jBomVersion>
+		<langchain4jCommunityVersion>1.1.0-beta7</langchain4jCommunityVersion>
 		<mule.sdk.api.version>0.11.4</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
