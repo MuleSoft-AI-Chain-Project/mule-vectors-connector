@@ -6,25 +6,20 @@
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="media-operations-load-single-exec" doc:id="6aabf796-9c31-4cb9-8371-812b935a61db" >
-		<ms-vectors:media-load-single doc:name="[Media] Load single" doc:id="8ff7e958-d1a5-400f-a7da-2a38f19759fe" config-ref="${config}" contextPath="${contextMediaPath}">
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="4f8934c7-817f-4528-be24-85b5fe433b3b" config-ref="${config}" contextPath="${contextMediaPath}"/>
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="9201cc00-1421-4015-83b9-87cec8ca4a72">
 			<ms-vectors:media-processor-parameters >
 				<ms-vectors:image-processor-parameters />
 			</ms-vectors:media-processor-parameters>
-		</ms-vectors:media-load-single>
+		</ms-vectors:transform-process-media>
 	</sub-flow>
 	<sub-flow name="media-operations-load-list-exec" doc:id="87ba2e16-f8f5-4076-bdc4-4f5854900c87" >
-		<ms-vectors:media-load-list doc:name="[Media] Load list" doc:id="fb02568d-6aac-4125-bfcc-37eba3602803" config-ref="${config}" contextPath="${contextMediaFolderPath}">
-			<ms-vectors:media-processor-parameters >
-				<ms-vectors:image-processor-parameters />
-			</ms-vectors:media-processor-parameters>
-		</ms-vectors:media-load-list>
-		<ee:transform doc:name="Transform Message" doc:id="abe9e776-1903-45bf-9c2d-92f954e1df90" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload.payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		<ms-vectors:storage-load-file-list doc:name="[Storage] Load file list" doc:id="42b17f88-57be-4ca6-9d5f-0ee52ae6f4e7" config-ref="${config}" contextPath="${contextMediaFolderPath}"/>
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="5f427ed2-96ba-460b-be0c-6b7f9a8b0545">
+				<ms-vectors:binary ><![CDATA[#[payload.payload[0]]]]></ms-vectors:binary>
+			<ms-vectors:media-processor-parameters>
+					<ms-vectors:image-processor-parameters />
+				</ms-vectors:media-processor-parameters>
+			</ms-vectors:transform-process-media>
 	</sub-flow>
 </mule>

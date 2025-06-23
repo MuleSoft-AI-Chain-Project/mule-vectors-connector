@@ -110,7 +110,7 @@ public class AmazonS3Storage extends BaseStorage {
     }
 
     public BaseStorage.FileIterator fileIterator() {
-        return new BaseStorage.FileIterator();
+        return new FileIterator();
     }
 
     public class FileIterator extends BaseStorage.FileIterator {

@@ -32,6 +32,7 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
   public MilvusStoreConnection(final MilvusStoreConnectionParameters milvusStoreConnectionParameters) {
     this.milvusStoreConnectionParameters = milvusStoreConnectionParameters;
+    this.uri = milvusStoreConnectionParameters.getUri();
     this.host = milvusStoreConnectionParameters.getHost();
     this.port = milvusStoreConnectionParameters.getPort();
     this.token = milvusStoreConnectionParameters.getToken();
@@ -94,24 +95,6 @@ public class MilvusStoreConnection implements BaseStoreConnection {
     return milvusStoreConnectionParameters;
   }
 
-
-  public void connect() {
-
-    ConnectParam.Builder connectBuilder = ConnectParam.newBuilder();
-
-    connectBuilder
-        .withToken(token)
-        .withAuthorization((String)Utils.getOrDefault(username, ""), (String)Utils.getOrDefault(password, ""));
-
-    if (uri != null && !uri.isBlank()) connectBuilder.withUri(uri);
-    if (host != null && !host.isBlank()) connectBuilder.withHost(host);
-    if (port != null && port != 0) connectBuilder.withPort((Integer)Utils.getOrDefault(port, 19530));
-    if (databaseName != null && !databaseName.isBlank()) connectBuilder.withDatabaseName(databaseName);
-
-
-    client = new MilvusServiceClient(connectBuilder.build());
-  }
-
   @Override
   public void disconnect() {
 
@@ -148,7 +131,6 @@ public class MilvusStoreConnection implements BaseStoreConnection {
     if (host != null && !host.isBlank()) connectBuilder.withHost(host);
     if (port != null && port != 0) connectBuilder.withPort((Integer)Utils.getOrDefault(port, 19530));
     if (databaseName != null && !databaseName.isBlank()) connectBuilder.withDatabaseName(databaseName);
-
 
     client = new MilvusServiceClient(connectBuilder.build());
   }
