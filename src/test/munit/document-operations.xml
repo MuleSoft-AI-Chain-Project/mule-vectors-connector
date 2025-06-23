@@ -6,17 +6,15 @@
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="document-operations-load-single-exec" doc:id="ee915d69-8229-48a2-a638-4f7d6c55fa22" >
-		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="e0c84701-cd41-4324-bdda-63fe74dd1a4b" config-ref="${config}" fileType="any" contextPath="${contextDocumentPath}" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" />
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="88a2c073-19aa-4090-b4d2-7c5c4535e644" config-ref="${config}" contextPath="${contextDocumentPath}"/>
+		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="670e9a92-9529-4f07-b03c-3e35f6ccd78a" config-ref="transform_config"/>
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="b52f7ea6-7d40-406b-9725-c23450e34f05" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100"/>
 	</sub-flow>
 	<sub-flow name="document-operations-load-list-exec" doc:id="6e2d7fe3-acd7-4c97-9b40-d12ac9f5f328" >
-		<ms-vectors:document-load-list doc:name="[Document] Load list" doc:id="9eba6d6a-d878-4349-b26b-1c1e076bbbbb" config-ref="${config}" fileType="any" contextPath="${contextDocumentFolderPath}" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" />
-		<ee:transform doc:name="Transform Message" doc:id="d97b7d8f-3220-4752-8e61-ef6e905d85e0" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload.payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		<ms-vectors:storage-load-file-list doc:name="[Storage] Load file list" doc:id="4c303de0-5ba8-4646-af99-b2aec604eac5" config-ref="${config}" contextPath="${contextDocumentFolderPath}"/>
+		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="9c323811-6928-49d3-848a-ca0f8c66d2f8" config-ref="transform_config">
+				<ms-vectors:content><![CDATA[#[payload.payload[0]]]]></ms-vectors:content>
+			</ms-vectors:transform-parse-document>
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="19c11768-73ba-46e1-9d92-f3d9155ffb4b" maxSegmentSizeInChar="1000" maxOverlapSizeInChars="100" />
 	</sub-flow>
 </mule>
