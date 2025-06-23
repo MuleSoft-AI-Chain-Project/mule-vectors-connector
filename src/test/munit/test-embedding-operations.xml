@@ -74,28 +74,12 @@
 			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="e65b3a4e-923a-4f76-8af7-aed98714d88f" name="embedding-operations-validate-generate-from"/>
 		</munit:validation>
 	</munit:test>
-	<munit:test name="embedding-operations-generate-from-document" doc:id="810e1d26-76bf-4d72-b399-fe062476cc3f" >
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="1d5bcc0a-f0a4-4ed6-a16a-7fe7ecf8c4f8" name="embedding-operations-generate-from-document-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="fe5838f2-dca1-49cc-b49d-b550bbfd72b5" name="embedding-operations-validate-generate-from" />
-		</munit:validation>
-	</munit:test>
 	<munit:test name="embedding-operations-generate-from-media" doc:id="9dd8d5bd-6e4e-41b0-adcb-e0a8cb5b5ebd" ignore="#[!p('isMultimodal')]">
 		<munit:execution >
 			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="52ef2389-20ac-43d6-a93d-e6579d301fea" name="embedding-operations-generate-from-media-exec"/>
 		</munit:execution>
 		<munit:validation >
 			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="d8d0940a-a47a-47bb-b120-7c702b9ae7db" name="embedding-operations-validate-generate-from" />
-		</munit:validation>
-	</munit:test>
-	<munit:test name="embedding-operations-generate-from-binary" doc:id="a52449fc-7ca6-47af-b0eb-eea7f72673ff" ignore="#[!p('isMultimodal')]">
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-binary-exec" doc:id="78170d3a-d85a-44ae-9dc0-4d2625451b3b" name="embedding-operations-generate-from-binary-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="b0381033-31cc-4175-a8a3-66d573b2c10c" name="embedding-operations-validate-generate-from" />
 		</munit:validation>
 	</munit:test>
 	<sub-flow name="embedding-operations-validate-generate-from" doc:id="fa574441-0280-4181-9c42-db60aa747fc8" >

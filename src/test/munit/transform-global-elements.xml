@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	<ms-vectors:transform-config name="transform_config" doc:name="MuleSoft Vectors Connector Transform config" doc:id="63e9407c-c0ec-4164-89a0-1148eb53d79b" />
+</mule>

@@ -65,8 +65,8 @@
 	</munit:test>
 	<sub-flow name="media-operations-validate" doc:id="8a1bdf57-e8a1-4c33-86f8-ebbe805c1f0a" >
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="4804a39c-0689-45a1-b17c-f0eeef8dfdae" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that base64Data is not null" doc:id="0c37e4b2-c5d5-4fec-aa0e-74a1b60f22fe" message="Payload is null" expression="#[payload.base64Data]" is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that metadata is not null" doc:id="d6ec6d6a-4307-4c98-b866-b58501f63836" message="Payload is null" expression="#[payload.metadata]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="0c37e4b2-c5d5-4fec-aa0e-74a1b60f22fe" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that attributes is not null" doc:id="d6ec6d6a-4307-4c98-b866-b58501f63836" message="Payload is null" expression="#[attributes]" is="#[MunitTools::notNullValue()]" />
 	</sub-flow>
 
 </mule>

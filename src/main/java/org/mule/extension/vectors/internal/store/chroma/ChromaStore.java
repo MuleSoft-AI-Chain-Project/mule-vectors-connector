@@ -41,10 +41,10 @@ import java.util.concurrent.ExecutionException;
  */
 public class ChromaStore extends BaseStoreService {
 
-    static final String ID_DEFAULT_FIELD_NAME = "id";
+    static final String ID_DEFAULT_FIELD_NAME = "ids";
     static final String TEXT_DEFAULT_FIELD_NAME = "documents";
     static final String METADATA_DEFAULT_FIELD_NAME = "metadatas";
-    static final String VECTOR_DEFAULT_FIELD_NAME = "embedding";
+    static final String VECTOR_DEFAULT_FIELD_NAME = "embeddings";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStore.class);
 
@@ -122,20 +122,16 @@ public class ChromaStore extends BaseStoreService {
 
     private int getSegmentCount() throws IOException {
         if (collectionId == null) return 0;
-        String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId, new JSONObject().toString());
-        JSONObject collection = new JSONObject(jsonResponse);
-        return collection.optInt("count", 0);
+        String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId + "/count", null);
+        Integer count = Integer.parseInt(jsonResponse.toString());
+        LOGGER.debug("Segment count {}", count);
+        return count;
     }
 
     private String getCollectionId() throws IOException {
-        String jsonResponse = getJsonResponse("/api/v1/collections?name=" + storeName, null);
-        JSONArray collections = new JSONArray(jsonResponse);
-        if (collections.length() > 0) {
-            return collections.getJSONObject(0).getString("id");
-        } else {
-            // If the collection does not exist, Langchain4j will create it.
-            return null;
-        }
+        String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
+        JSONObject collection = new JSONObject(jsonResponse);
+        return collection.getString("id");
     }
 
     @Override
@@ -201,7 +197,7 @@ public class ChromaStore extends BaseStoreService {
 
         @Override
         public boolean hasNext() {
-            return (currentPage * queryParams.pageSize() + pageIndex) < totalCount;
+            return (((currentPage-1) * queryParams.pageSize()) + pageIndex) < totalCount;
         }
 
         @Override
