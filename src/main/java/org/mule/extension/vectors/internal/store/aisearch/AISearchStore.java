@@ -71,11 +71,15 @@ public class AISearchStore extends BaseStoreService {
   @Override
   public EmbeddingStore<TextSegment> buildEmbeddingStore() {
     try {
+      if(createStore && dimension == 0) {
+        throw new ModuleException("Dimension cannot be 0 when creating or updating index", MuleVectorsErrorType.INVALID_REQUEST);
+      }
       return AzureAiSearchEmbeddingStore.builder()
               .endpoint(url)
               .apiKey(apiKey)
               .indexName(storeName)
-              .dimensions(dimension > 0 ? dimension : (createStore ? 1536 : 0)) // Default dimension
+              // Default dimension 1536. Required but ignored since used only for delete and query all operations
+              .dimensions(dimension > 0 ? dimension : 1536)
               .createOrUpdateIndex(createStore)
               .filterMapper(new VectorsAzureAiSearchFilterMapper())
               .build();
