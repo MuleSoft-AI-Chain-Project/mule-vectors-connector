@@ -45,8 +45,7 @@ public class AmazonS3StorageConnection implements BaseStorageConnection {
     return Constants.STORAGE_TYPE_AWS_S3;
   }
 
-  @Override
-  public void connect() {
+  public void initialise() {
 
     this.s3Client = S3Client.builder()
         .region(Region.of(awsRegion))
@@ -65,10 +64,9 @@ public class AmazonS3StorageConnection implements BaseStorageConnection {
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
 
     this.s3Client.listBuckets();
-    return true;
   }
 
   public InputStream loadFile(String bucket, String key) {

@@ -36,9 +36,13 @@ public class LocalStorageConnection implements BaseStorageConnection {
     return Constants.STORAGE_TYPE_LOCAL;
   }
 
-  @Override
-  public void connect() throws ConnectionException {
-    validateWorkingDir();
+
+  public void initialise() {
+    try {
+      validateWorkingDir();
+    } catch (ConnectionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -47,8 +51,12 @@ public class LocalStorageConnection implements BaseStorageConnection {
   }
 
   @Override
-  public boolean isValid() {
-    return true;
+  public void validate() {
+    try {
+      validateWorkingDir();
+    } catch (ConnectionException e) {
+//      throw new RuntimeException(e);
+    }
   }
 
   private void validateWorkingDir() throws ConnectionException {

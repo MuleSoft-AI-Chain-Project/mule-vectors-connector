@@ -38,8 +38,8 @@ public class AzureBlobStorageConnection implements BaseStorageConnection {
   @Override
   public String getStorageType() { return Constants.STORAGE_TYPE_AZURE_BLOB; }
 
-  @Override
-  public void connect() {
+
+  public void initialise() {
 
     this.blobServiceClient = new BlobServiceClientBuilder()
         .endpoint(String.format("https://%s.blob.core.windows.net/", azureName))
@@ -54,10 +54,9 @@ public class AzureBlobStorageConnection implements BaseStorageConnection {
   }
 
   @Override
-  public boolean isValid() {
+  public void validate() {
 
     this.blobServiceClient.listBlobContainers();
-    return true;
   }
 
   public InputStream loadFile(String containerName, String blobName) {
