@@ -5,60 +5,59 @@ import org.mule.extension.vectors.internal.helper.provider.MediaTypeProvider;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 
-public class MediaParameters {
+import java.io.InputStream;
+
+public class EmbeddingMediaBinaryParameters {
 
   @Parameter
-  @Alias("contextPath")
-  @DisplayName("Context Path")
-  @Summary("The context path.")
+  @Alias("binary")
+  @DisplayName("Binary")
+  @Summary("The media binary.")
   @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
-  private String contextPath;
+  private @Content InputStream binaryInputStream;
+
+  @Parameter
+  @Alias("label")
+  @DisplayName("Media Label")
+  @Summary("Short text describing the image. " +
+      "Not all models allow to generate embedding for a combination of label and image.")
+  @Placement(order = 2)
+  @Example("An image of a sunset")
+  @Expression(ExpressionSupport.SUPPORTED)
+  private @Content String label;
 
   @Parameter
   @Alias("mediaType")
   @DisplayName("Media Type")
   @Summary("The supported types of media.")
-  @Placement(order = 2)
+  @Placement(order = 3)
   @Expression(ExpressionSupport.SUPPORTED)
   @OfValues(MediaTypeProvider.class)
   @Optional(defaultValue = Constants.MEDIA_TYPE_IMAGE)
   private String mediaType;
 
-  @Parameter
-  @Alias("mediaProcessorParameters")
-  @DisplayName("Processor Settings")
-  @Summary("The context path.")
-  @Placement(order = 3)
-  @Expression(ExpressionSupport.NOT_SUPPORTED)
-  private MediaProcessorParameters mediaProcessorParameters = new ImageProcessorParameters();
-
-
   public String getMediaType() {
     return mediaType;
   }
 
-  public String getContextPath() {
-    return contextPath;
-  }
+  public InputStream getBinaryInputStream() { return binaryInputStream;}
 
-  public MediaProcessorParameters getMediaProcessorParameters() {
-    return mediaProcessorParameters;
-  }
+  public String getLabel() { return label; }
 
   @Override
   public String toString() {
     return "MediaParameters{" +
-        "contextPath='" + contextPath + '\'' +
-        ", mediaType='" + mediaType + '\'' +
-        ", mediaProcessorParameters=" + mediaProcessorParameters +
+        "mediaType='" + mediaType + '\'' +
         '}';
   }
 }

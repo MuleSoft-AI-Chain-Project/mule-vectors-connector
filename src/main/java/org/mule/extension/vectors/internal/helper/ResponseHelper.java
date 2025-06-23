@@ -73,61 +73,68 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static Result<InputStream, DocumentResponseAttributes> createDocumentResponse(
+  public static Result<InputStream, StorageResponseAttributes> createFileResponse(
+      InputStream content,
+      Map<String, Object> storageAttributes) {
+
+    return Result.<InputStream, StorageResponseAttributes>builder()
+        .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
+        .attributesMediaType(MediaType.APPLICATION_JAVA)
+        .output(content)
+        .mediaType(MediaType.BINARY)
+        .build();
+  }
+
+  public static Result<InputStream, TransformResponseAttributes> createParsedDocumentResponse(
       String response,
       Map<String, Object> documentAttributes) {
 
-    return Result.<InputStream, DocumentResponseAttributes>builder()
-        .attributes(new DocumentResponseAttributes((HashMap<String, Object>) documentAttributes))
+    return Result.<InputStream, TransformResponseAttributes>builder()
+        .attributes(new TransformResponseAttributes((HashMap<String, Object>) documentAttributes))
+        .attributesMediaType(MediaType.APPLICATION_JAVA)
+        .output(toInputStream(response, StandardCharsets.UTF_8))
+        .mediaType(MediaType.TEXT)
+        .build();
+  }
+
+  public static Result<InputStream, TransformResponseAttributes> createChunkedTextResponse(
+      String response,
+      Map<String, Object> documentAttributes) {
+
+    return Result.<InputStream, TransformResponseAttributes>builder()
+        .attributes(new TransformResponseAttributes((HashMap<String, Object>) documentAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
         .output(toInputStream(response, StandardCharsets.UTF_8))
         .mediaType(MediaType.APPLICATION_JSON)
         .build();
   }
 
-  public static Result<InputStream, MediaResponseAttributes> createMediaResponse(
-      String response,
-      Map<String, Object> mediaAttributes) {
-
-    return Result.<InputStream, MediaResponseAttributes>builder()
-        .attributes(new MediaResponseAttributes((HashMap<String, Object>) mediaAttributes))
-        .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(toInputStream(response, StandardCharsets.UTF_8))
-        .mediaType(MediaType.APPLICATION_JSON)
-        .build();
-  }
-
-  public static List<Result<CursorProvider, DocumentResponseAttributes>> createPageDocumentResponse(
-      String response,
-      Map<String, Object> documentAttributes,
+  public static List<Result<CursorProvider, StorageResponseAttributes>> createPageFileResponse(
+      InputStream content,
+      Map<String, Object> storageAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, DocumentResponseAttributes>> page =  new LinkedList<>();
+    List<Result<CursorProvider, StorageResponseAttributes>> page =  new LinkedList<>();
 
-    page.add(Result.<CursorProvider, DocumentResponseAttributes>builder()
-        .attributes(new DocumentResponseAttributes((HashMap<String, Object>) documentAttributes))
-        .output((CursorProvider) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
-        .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
+    page.add(Result.<CursorProvider, StorageResponseAttributes>builder()
+        .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
+        .output((CursorProvider) streamingHelper.resolveCursorProvider(content))
+        .mediaType(MediaType.BINARY)
         .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
         .build());
 
     return page;
   }
 
-  public static List<Result<CursorProvider, MediaResponseAttributes>> createPageMediaResponse(
-      String response,
-      Map<String, Object> mediaAttributes,
-      StreamingHelper streamingHelper) {
+  public static Result<InputStream, TransformResponseAttributes> createProcessedMediaResponse(
+      InputStream content,
+      Map<String, Object> transformAttributes) {
 
-    List<Result<CursorProvider, MediaResponseAttributes>> page =  new LinkedList<>();
-
-    page.add(Result.<CursorProvider, MediaResponseAttributes>builder()
-                 .attributes(new MediaResponseAttributes((HashMap<String, Object>) mediaAttributes))
-                 .output((CursorProvider) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
-                 .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
-                 .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
-                 .build());
-
-    return page;
+    return Result.<InputStream, TransformResponseAttributes>builder()
+        .attributes(new TransformResponseAttributes((HashMap<String, Object>) transformAttributes))
+        .attributesMediaType(MediaType.APPLICATION_JAVA)
+        .output(content)
+        .mediaType(MediaType.BINARY)
+        .build();
   }
 }

@@ -25,7 +25,7 @@ public class DocumentsOutputTypeMetadataResolver  implements OutputTypeResolver<
 
     InputStream resourceAsStream = Thread.currentThread()
         .getContextClassLoader()
-        .getResourceAsStream("api/metadata/DocumentLoadListResponse.json");
+        .getResourceAsStream("api/metadata/StorageLoadListResponse.json");
 
     Optional<MetadataType> metadataType = new JsonTypeLoader(IOUtils.toString(resourceAsStream))
         .load(null, "Load Documents Response");

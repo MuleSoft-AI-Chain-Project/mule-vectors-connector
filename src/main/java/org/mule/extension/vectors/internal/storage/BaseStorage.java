@@ -1,9 +1,5 @@
 package org.mule.extension.vectors.internal.storage;
 
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.DocumentParser;
-import dev.langchain4j.data.document.parser.TextDocumentParser;
-import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
@@ -11,9 +7,8 @@ import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlo
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.media.Media;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
 import org.mule.extension.vectors.internal.storage.local.LocalStorage;
@@ -31,56 +26,17 @@ public abstract class BaseStorage {
   protected StorageConfiguration storageConfiguration;
   protected BaseStorageConnection storageConnection;
   protected String contextPath;
-  protected String fileType;
-  protected DocumentParser documentParser;
-  protected String mediaType;
-  protected MediaProcessor mediaProcessor;
-  protected DocumentIterator documentIterator;
-  protected MediaIterator mediaIterator;
+  protected FileIterator fileIterator;
 
-  public BaseStorage(StorageConfiguration storageConfiguration, BaseStorageConnection storageConnection, String contextPath,
-                     String fileType, String mediaType, MediaProcessor mediaProcessor) {
+  public BaseStorage(StorageConfiguration storageConfiguration, BaseStorageConnection storageConnection, String contextPath) {
 
     this.storageConfiguration = storageConfiguration;
     this.storageConnection = storageConnection;
     this.contextPath = contextPath;
-    this.fileType = fileType;
-    this.mediaType = mediaType;
-    if (fileType != null)
-      this.documentParser = getDocumentParser(fileType);
-    this.mediaProcessor = mediaProcessor;
   }
 
-  public Document getSingleDocument() {
+  public File getSingleFile() {
     throw new UnsupportedOperationException("This method should be overridden by subclasses");
-  }
-
-  public Media getSingleMedia() {
-    throw new UnsupportedOperationException("This method should be overridden by subclasses");
-  }
-
-  public String getStorageType() {
-
-    return storageConnection == null ? Constants.STORAGE_TYPE_LOCAL : storageConnection.getStorageType();
-  }
-
-  public static DocumentParser getDocumentParser(String fileType) {
-
-    DocumentParser documentParser = null;
-    switch (fileType) {
-
-      case Constants.FILE_TYPE_TEXT:
-      case Constants.FILE_TYPE_CRAWL:
-      case Constants.FILE_TYPE_URL:
-        documentParser = new TextDocumentParser();
-        break;
-      case Constants.FILE_TYPE_ANY:
-        documentParser = new ApacheTikaDocumentParser();
-        break;
-      default:
-        throw new IllegalArgumentException("Unsupported File Type: " + fileType);
-    }
-    return documentParser;
   }
 
   public static BaseStorage.Builder builder() {
@@ -88,12 +44,8 @@ public abstract class BaseStorage {
     return new BaseStorage.Builder();
   }
 
-  public DocumentIterator documentIterator() {
-    return new DocumentIterator();
-  }
-
-  public MediaIterator mediaIterator() {
-    return new MediaIterator();
+  public FileIterator fileIterator() {
+    return new FileIterator();
   }
 
   public static class Builder {
@@ -101,9 +53,6 @@ public abstract class BaseStorage {
     private StorageConfiguration storageConfiguration;
     private BaseStorageConnection storageConnection;
     private String contextPath;
-    private String fileType;
-    private String mediaType;
-    private MediaProcessor mediaProcessor;
 
     public Builder() {
 
@@ -124,21 +73,6 @@ public abstract class BaseStorage {
       return this;
     }
 
-    public BaseStorage.Builder fileType(String fileType) {
-      this.fileType = fileType;
-      return this;
-    }
-
-    public BaseStorage.Builder mediaType(String mediaType) {
-      this.mediaType = mediaType;
-      return this;
-    }
-
-    public BaseStorage.Builder mediaProcessor(MediaProcessor mediaProcessor) {
-      this.mediaProcessor = mediaProcessor;
-      return this;
-    }
-
     public BaseStorage build() {
 
       BaseStorage baseStorage;
@@ -152,27 +86,23 @@ public abstract class BaseStorage {
 
           case Constants.STORAGE_TYPE_LOCAL:
 
-            baseStorage = new LocalStorage(storageConfiguration, (LocalStorageConnection) storageConnection, contextPath,
-                                           fileType, mediaType, mediaProcessor);
+            baseStorage = new LocalStorage(storageConfiguration, (LocalStorageConnection) storageConnection, contextPath);
             break;
 
           case Constants.STORAGE_TYPE_AWS_S3:
 
-            baseStorage = new AmazonS3Storage(storageConfiguration, (AmazonS3StorageConnection) storageConnection, contextPath,
-                                              fileType, mediaType, mediaProcessor);
+            baseStorage = new AmazonS3Storage(storageConfiguration, (AmazonS3StorageConnection) storageConnection, contextPath);
             break;
 
           case Constants.STORAGE_TYPE_AZURE_BLOB:
 
-            baseStorage = new AzureBlobStorage(storageConfiguration, (AzureBlobStorageConnection) storageConnection, contextPath,
-                                               fileType, mediaType, mediaProcessor);
+            baseStorage = new AzureBlobStorage(storageConfiguration, (AzureBlobStorageConnection) storageConnection, contextPath);
             break;
 
           case Constants.STORAGE_TYPE_GCS:
 
             baseStorage =
-                new GoogleCloudStorage(storageConfiguration, (GoogleCloudStorageConnection) storageConnection, contextPath,
-                                       fileType, mediaType, mediaProcessor);
+                new GoogleCloudStorage(storageConfiguration, (GoogleCloudStorageConnection) storageConnection, contextPath);
             break;
 
           default:
@@ -197,7 +127,7 @@ public abstract class BaseStorage {
     }
   }
 
-  public class DocumentIterator implements Iterator<Document> {
+  public class FileIterator implements Iterator<File> {
 
     @Override
     public boolean hasNext() {
@@ -205,20 +135,7 @@ public abstract class BaseStorage {
     }
 
     @Override
-    public Document next() {
-      throw new UnsupportedOperationException("This method should be overridden by subclasses");
-    }
-  }
-
-  public class MediaIterator implements Iterator<Media> {
-
-    @Override
-    public boolean hasNext() {
-      throw new UnsupportedOperationException("This method should be overridden by subclasses");
-    }
-
-    @Override
-    public Media next() {
+    public File next() {
       throw new UnsupportedOperationException("This method should be overridden by subclasses");
     }
   }

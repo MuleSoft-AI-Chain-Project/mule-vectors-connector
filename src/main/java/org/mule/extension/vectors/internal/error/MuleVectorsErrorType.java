@@ -41,7 +41,7 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
     /**
      * The document provided for parsing is malformed or in an unsupported format.
      */
-    DOCUMENT_PARSING_FAILURE(MuleErrors.VALIDATION),
+    TRANSFORM_DOCUMENT_PARSING_FAILURE(MuleErrors.VALIDATION),
 
     /**
      * The provided media data is malformed or in an unsupported format.
@@ -51,9 +51,9 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
 
     // region Operational Errors
     /**
-     * A general failure occurred during a document-related operation.
+     * A general failure occurred during a transform-related operation.
      */
-    DOCUMENT_OPERATIONS_FAILURE(MuleErrors.ANY),
+    TRANSFORM_OPERATIONS_FAILURE(MuleErrors.ANY),
 
     /**
      * A general failure occurred during a media-related operation.
@@ -91,6 +91,11 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
      * The external storage service (e.g., S3, Azure Blob) returned an error.
      */
     STORAGE_SERVICES_FAILURE(MuleErrors.CONNECTIVITY),
+
+    /**
+     * The requested operation is not supported by the configured storage.
+     */
+    STORAGE_OPERATIONS_FAILURE(MuleErrors.ANY),
 
     /**
      * The external vector store service returned an error.

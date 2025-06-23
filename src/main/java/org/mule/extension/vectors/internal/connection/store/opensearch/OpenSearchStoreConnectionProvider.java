@@ -27,7 +27,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     description = "LangChain4J OpenSearch",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.opensearch.OpenSearchEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-opensearch:1.0.1-beta6")
+    coordinates = "dev.langchain4j:langchain4j-opensearch:1.1.0-beta7")
 public class OpenSearchStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 

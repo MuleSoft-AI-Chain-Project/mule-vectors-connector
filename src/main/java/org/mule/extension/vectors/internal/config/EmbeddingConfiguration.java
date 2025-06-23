@@ -33,7 +33,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     description = "LangChain4J",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.data.document.DocumentSplitter",
-    coordinates = "dev.langchain4j:langchain4j:1.0.1")
+    coordinates = "dev.langchain4j:langchain4j:1.1.0")
 public class EmbeddingConfiguration {
 
 

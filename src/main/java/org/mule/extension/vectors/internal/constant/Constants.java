@@ -10,14 +10,11 @@ public class Constants {
   public static final String PAYLOAD_CONTENT_TYPE_BASE64 = "base64";
   public static final String PAYLOAD_CONTENT_TYPE_BINARY = "binary";
 
+  public static final String FILE_PARSER_TYPE_APACHE_TIKA = "Apache Tika";
+  public static final String FILE_PARSER_TYPE_TEXT = "Text";
+
   public static final String FILE_TYPE_ANY = "any";
   public static final String FILE_TYPE_TEXT = "text";
-  public static final String FILE_TYPE_CRAWL = "crawl";
-  public static final String FILE_TYPE_URL = "url";
-  public static final String FILE_TYPE_PNG = "png";
-  public static final String FILE_TYPE_BMP = "bmp";
-  public static final String FILE_TYPE_JPEG = "jpeg";
-  public static final String FILE_TYPE_GIF = "gif";
 
   public static final String MEDIA_TYPE_IMAGE = "image";
   public static final String MEDIA_TYPE_VIDEO = "video";
@@ -57,8 +54,6 @@ public class Constants {
   public static final String VECTOR_STORE_WEAVIATE = "WEAVIATE";
   public static final String VECTOR_STORE_EPHEMERAL_FILE = "EPHEMERAL_FILE";
 
-  public static final String STORE_SCHEMA_METADATA_FIELD_NAME = "metadata";
-
   public static final String METADATA_KEY_SOURCE_ID = "source_id";
   public static final String METADATA_KEY_INDEX = "index";
   public static final String METADATA_KEY_FILE_NAME = "file_name";
@@ -89,8 +84,6 @@ public class Constants {
 
   public static final String JSON_KEY_SOURCES = "sources";
   public static final String JSON_KEY_TEXT_SEGMENTS = "text-segments";
-  public static final String JSON_KEY_SEGMENT_COUNT = "segmentCount";
-  public static final String JSON_KEY_SOURCE_COUNT = "sourceCount";
   public static final String JSON_KEY_STORE_NAME = "storeName";
   public static final String JSON_KEY_TEXT = "text";
   public static final String JSON_KEY_STATUS = "status";
@@ -111,9 +104,5 @@ public class Constants {
   public static final String OPERATION_STATUS_UPDATED = "updated";
   public static final String OPERATION_STATUS_DELETED = "deleted";
 
-  public static final String PARAM_DISPLAY_NAME_STORAGE_OVERRIDE = "Storage (Override Module Configuration)";
-
   public static final String URI_HTTPS_PREFIX = "https://";
-
-  public static final String HTTP_METHOD_POST = "POST";
 }
