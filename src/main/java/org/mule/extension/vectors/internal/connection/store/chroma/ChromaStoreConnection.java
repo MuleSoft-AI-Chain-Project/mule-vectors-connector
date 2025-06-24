@@ -1,15 +1,17 @@
 package org.mule.extension.vectors.internal.connection.store.chroma;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.http.api.client.HttpClient;
-import org.mule.runtime.http.api.client.HttpRequestOptions;
-import org.mule.runtime.http.api.domain.message.request.HttpRequest;
-import org.mule.runtime.http.api.domain.message.request.HttpRequestBuilder;
-import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
@@ -49,6 +51,13 @@ public class ChromaStoreConnection implements BaseStoreConnection {
     return parameters;
   }
 
+  private Map<String, String> buildHeaders(String contentType) {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-Type", contentType);
+    headers.put("Accept", contentType);
+    return headers;
+  }
+
   /**
    * Changed from isValid() to validate() for MuleSoft Connector compliance.
    * Now checks for required parameters.
@@ -57,47 +66,28 @@ public class ChromaStoreConnection implements BaseStoreConnection {
   public void validate() {
     try {
       if (url == null) {
-        throw new IllegalArgumentException("URL is required for Chroma connection.");
+        throw new ModuleException("URL is required for Chroma connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
       }
-      doHttpRequest();
+      doHttpRequest().get();
     } catch (Exception e) {
       throw new ModuleException("Failed to connect to Chroma", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 
-  private void doHttpRequest() throws ConnectionException {
-
-    try {
-
-        HttpRequestBuilder requestBuilder = HttpRequest.builder()
-          .method("GET")
-          .uri(url + API_ENDPOINT)
-          .addHeader("Content-Type", "application/json")
-          .addHeader("Accept", "application/json");
-
-        HttpRequestOptions options = HttpRequestOptions.builder()
-            .responseTimeout(30000)
-            .followsRedirect(false)
-            .build();
-
-        HttpResponse connectionResponse = httpClient.send(requestBuilder.build(), options);
-
-        if (connectionResponse.getStatusCode() != 200) {
-          String errorBody = new String(connectionResponse.getEntity().getBytes());
-          String errorMsg = String.format("Unable to connect to Chroma. Status: %d - %s", 
-              connectionResponse.getStatusCode(), errorBody);
-          LOGGER.error(errorMsg);
-          throw new ConnectionException(errorMsg);
-        }
-    } catch (ConnectionException e) {
-
-      throw e;
-
-    } catch (Exception e) {
-
-      LOGGER.error("Impossible to connect to Chroma", e);
-      throw new ConnectionException("Impossible to connect to Chroma", e);
-    }
+  private CompletableFuture<Void> doHttpRequest() throws ConnectionException {
+    return HttpRequestHelper.executeGetRequest(httpClient, url + API_ENDPOINT, buildHeaders("application/json"), 30000)
+        .thenAccept(connectionResponse -> {
+          if (connectionResponse.getStatusCode() != 200) {
+            try {
+              String errorBody = new String(connectionResponse.getEntity().getBytes());
+              String errorMsg = String.format("Unable to connect to Chroma. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
+              LOGGER.error(errorMsg);
+              throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+            } catch (IOException e) {
+              throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+             }
+          }
+        });
   }
 
   public HttpClient getHttpClient() {

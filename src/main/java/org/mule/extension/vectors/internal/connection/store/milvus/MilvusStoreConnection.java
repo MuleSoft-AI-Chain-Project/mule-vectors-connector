@@ -107,10 +107,10 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (milvusStoreConnectionParameters.getUri() == null || milvusStoreConnectionParameters.getUri().isBlank()) {
-      throw new IllegalArgumentException("URI is required for Milvus connection");
+      throw new ModuleException("URI is required for Milvus connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if ((milvusStoreConnectionParameters.getToken() == null || milvusStoreConnectionParameters.getToken().isBlank())) {
-      throw new IllegalArgumentException("Token is required for Milvus connection");
+      throw new ModuleException("Token is required for Milvus connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     try {
       client.checkHealth().getStatus();

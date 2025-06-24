@@ -70,19 +70,19 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new IllegalArgumentException("Host is required for PGVector connection");
+      throw new ModuleException("Host is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPort() <= 0) {
-      throw new IllegalArgumentException("Port is required for PGVector connection and must be > 0");
+      throw new ModuleException("Port is required for PGVector connection and must be > 0", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
-      throw new IllegalArgumentException("Database is required for PGVector connection");
+      throw new ModuleException("Database is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getUser() == null || parameters.getUser().isBlank()) {
-      throw new IllegalArgumentException("User is required for PGVector connection");
+      throw new ModuleException("User is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPassword() == null || parameters.getPassword().isBlank()) {
-      throw new IllegalArgumentException("Password is required for PGVector connection");
+      throw new ModuleException("Password is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     try {
       this.dataSource.getConnection();

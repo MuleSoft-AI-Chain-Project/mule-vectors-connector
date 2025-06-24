@@ -95,10 +95,10 @@ public class ElasticsearchStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getUrl() == null || parameters.getUrl().isBlank()) {
-      throw new IllegalArgumentException("URL is required for Elasticsearch connection");
+      throw new ModuleException("URL is required for Elasticsearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if ((parameters.getPassword() == null || parameters.getPassword().isBlank()) && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
-      throw new IllegalArgumentException("Either password or API Key is required for Elasticsearch connection");
+      throw new ModuleException("Either password or API Key is required for Elasticsearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }  
     try {
       this.restClient.getNodes();

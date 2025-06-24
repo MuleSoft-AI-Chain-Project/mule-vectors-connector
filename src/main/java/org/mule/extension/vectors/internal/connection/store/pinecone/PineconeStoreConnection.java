@@ -62,13 +62,13 @@ public class PineconeStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getCloud() == null || parameters.getCloud().isBlank()) {
-      throw new IllegalArgumentException("Cloud is required for Pinecone connection");
+      throw new ModuleException("Cloud is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getRegion() == null || parameters.getRegion().isBlank()) {
-      throw new IllegalArgumentException("Region is required for Pinecone connection");
+      throw new ModuleException("Region is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
-      throw new IllegalArgumentException("API Key is required for Pinecone connection");
+      throw new ModuleException("API Key is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     try {
       client.listIndexes();

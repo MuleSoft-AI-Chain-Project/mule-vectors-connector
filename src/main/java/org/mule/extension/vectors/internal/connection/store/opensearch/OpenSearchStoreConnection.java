@@ -116,10 +116,10 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getUrl() == null || parameters.getUrl().isBlank()) {
-      throw new IllegalArgumentException("URL is required for OpenSearch connection");
+      throw new ModuleException("URL is required for OpenSearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if ((parameters.getPassword() == null || parameters.getPassword().isBlank()) && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
-      throw new IllegalArgumentException("Either password or API Key is required for OpenSearch connection");
+      throw new ModuleException("Either password or API Key is required for OpenSearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     try {
       this.openSearchClient.ping();
