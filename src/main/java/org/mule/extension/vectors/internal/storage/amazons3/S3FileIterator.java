@@ -1,11 +1,17 @@
 package org.mule.extension.vectors.internal.storage.amazons3;
 
+import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.File;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import static java.lang.String.format;
 
 public class S3FileIterator implements FileIterator {
     private final AmazonS3Storage s3Client;
@@ -31,8 +37,11 @@ public class S3FileIterator implements FileIterator {
                 // Skip virtual folders
                 continue;
             }
-            InputStream content = s3Client.loadFile(bucket, object.key());
-            return new File(content, bucket + "/" + object.key(), object.key());
+            ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.loadFile(bucket, object.key());
+            HashMap<String, Object> metadata = new HashMap(){{
+                put(Constants.METADATA_KEY_SOURCE, format("s3://%s/%s", bucket, object.key()));
+            }};
+            return new File(responseInputStream, bucket + "/" + object.key(), object.key(), responseInputStream.response().contentType(), metadata);
         }
         return null;
     }

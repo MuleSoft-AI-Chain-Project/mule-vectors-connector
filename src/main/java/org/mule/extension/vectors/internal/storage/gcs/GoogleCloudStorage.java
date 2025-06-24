@@ -37,13 +37,13 @@ public class GoogleCloudStorage {
         this.storageService = googleCloudStorageConnection.getStorageService();
     }
 
-    public InputStream loadFile(String bucket, String objectName) {
+    public Blob loadFile(String bucket, String objectName) {
         Blob blob = this.storageService.get(bucket, objectName);
         if (blob == null) {
             throw new IllegalArgumentException("Object gs://" + bucket + "/" + objectName + " couldn't be found.");
         }
         try {
-            return Channels.newInputStream(blob.reader());
+            return blob;
         } catch (Exception e) {
             throw new RuntimeException("Failed to load document", e);
         }

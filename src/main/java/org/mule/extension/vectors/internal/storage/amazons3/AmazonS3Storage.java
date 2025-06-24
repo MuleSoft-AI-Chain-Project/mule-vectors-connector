@@ -5,11 +5,9 @@ import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3S
 import org.mule.extension.vectors.internal.data.file.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -29,7 +27,7 @@ public class AmazonS3Storage {
         this.s3Client = amazonS3StorageConnection.getS3Client();
     }
 
-    public InputStream loadFile(String bucket, String key) {
+    public ResponseInputStream<GetObjectResponse> loadFile(String bucket, String key) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
