@@ -9,7 +9,8 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StorageErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
 import org.mule.extension.vectors.internal.pagination.FilePagingProvider;
-import org.mule.extension.vectors.internal.storage.BaseStorage;
+import org.mule.extension.vectors.internal.service.StorageServiceFactory;
+import org.mule.extension.vectors.internal.service.storage.StorageService;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
@@ -50,31 +51,21 @@ public class StorageOperations {
   @Alias("Storage-load-file")
   @DisplayName("[Storage] Load file")
   @Throws(StorageErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, StorageResponseAttributes>
+  public Result<InputStream, StorageResponseAttributes>
   loadFile(@Config StorageConfiguration storageConfiguration,
-                     @Connection BaseStorageConnection storageConnection,
-                     @ParameterGroup(name = "File") FileParameters fileParameters) {
-
+           @Connection BaseStorageConnection storageConnection,
+           @ParameterGroup(name = "File") FileParameters fileParameters) {
     try {
-
-      BaseStorage baseStorage = BaseStorage.builder()
-          .configuration(storageConfiguration)
-          .connection(storageConnection)
-          .contextPath(fileParameters.getContextPath())
-          .build();
-
-      File file = baseStorage.getSingleFile();
-
+      StorageService storageService = StorageServiceFactory.getService(storageConfiguration, storageConnection);
+      File file = storageService.getFile(fileParameters.getContextPath());
       return createFileResponse(
           file.getContent(),
           new HashMap<String, Object>() {{
             put("path", file.getPath());
             put("fileName", file.getFileName());
           }});
-
     } catch (ModuleException me) {
       throw me;
-
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while loading and/or segmenting document at '%s'.", fileParameters.getContextPath()),
@@ -100,17 +91,10 @@ public class StorageOperations {
   @Throws(StorageErrorTypeProvider.class)
   public PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>>
   loadFileList(@Config StorageConfiguration storageConfiguration,
-                   @ParameterGroup(name = "Container") FileParameters fileParameters,
-                   StreamingHelper streamingHelper) {
-
+               @ParameterGroup(name = "Container") FileParameters fileParameters,
+               StreamingHelper streamingHelper) {
     try {
-      return new FilePagingProvider(storageConfiguration,
-                                    fileParameters,
-                                    streamingHelper);
-
-    } catch (ModuleException me) {
-      throw me;
-
+      return new FilePagingProvider(storageConfiguration, fileParameters.getContextPath(), streamingHelper);
     } catch (Exception e) {
       throw new ModuleException(
           String.format("Error while loading and/or segmenting documents for path '%s'.", fileParameters.getContextPath()),
