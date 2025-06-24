@@ -1,19 +1,22 @@
 package org.mule.extension.vectors.internal.connection.store.aisearch;
 
 import com.azure.search.documents.SearchServiceVersion;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class AISearchStoreConnection implements BaseStoreConnection {
 
@@ -54,70 +57,50 @@ public class AISearchStoreConnection implements BaseStoreConnection {
     return parameters;
   }
 
+  private Map<String, String> buildHeaders(String contentType) {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-Type", contentType);
+    headers.put("api-key", apiKey);
+    return headers;
+  }
+
   /**
    * Changed from isValid() to validate() for MuleSoft Connector compliance.
    * Now checks for required parameters.
    */
   @Override
   public void validate() {
+    if (url == null ) {
+      throw new ModuleException("URL is required for AI Search connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    if (apiKey == null) {
+      throw new ModuleException("API Key is required for AI Search connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
     try {
-      if (url == null ) {
-        throw new IllegalArgumentException("URL is required for AI Search connection.");
-      }
-      if (apiKey == null) {
-        throw new IllegalArgumentException("API Key is required for AI Search connection.");
-      }
-      // return true;
+      doAuthenticatedHttpRequest().get();
     } catch (Exception e) {
-      LOGGER.error("Failed to validate connection to AI Search.", e);
-      // return false;
+      throw new ModuleException("Failed to connect to AI search", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 
-  private void doAuthenticatedHttpRequest() throws ConnectionException {
-
-    try {
-
+  private CompletableFuture<Void> doAuthenticatedHttpRequest() throws ConnectionException {
       // Construct the endpoint URL
       String endpoint = url + "?api-version=" + 
           SearchServiceVersion.getLatest().toString().substring(1).replace("_", "-");
 
-      // Create URL object
-      URL url = new URL(endpoint);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-      // Set request method to GET
-      connection.setRequestMethod("GET");
-
-      // Set headers
-      connection.setRequestProperty("Content-Type", "application/json");
-      connection.setRequestProperty("api-key", apiKey);
-
-      // Get the response code
-      int responseCode = connection.getResponseCode();
-      if (responseCode != 200) {
-        // Read error response
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
-          String inputLine;
-          StringBuilder response = new StringBuilder();
-          while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+      return HttpRequestHelper.executeGetRequest(httpClient, endpoint, buildHeaders("application/json"), 30000)
+        .thenAccept(connectionResponse -> {
+          if (connectionResponse.getStatusCode() != 200) {
+            try {
+              String errorBody = new String(connectionResponse.getEntity().getBytes());
+              String errorMsg = String.format("Unable to connect to AI search. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
+              LOGGER.error(errorMsg);
+              throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+            } catch (IOException e) {
+              throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+             }
           }
-          // Print the error response
-          LOGGER.error("Error (HTTP " + responseCode + "): " + response.toString());
-          throw new ConnectionException("Impossible to connect to AI Search. " + "Error (HTTP " + responseCode + "): " + response.toString());
-        }
-      }
-
-    } catch (ConnectionException e) {
-
-      throw e;
-
-    } catch (Exception e) {
-
-      LOGGER.error("Impossible to connect to AI Search", e);
-      throw new ConnectionException("Impossible to connect to AI Search", e);
-    }
+        });
   }
 
   public HttpClient getHttpClient() {

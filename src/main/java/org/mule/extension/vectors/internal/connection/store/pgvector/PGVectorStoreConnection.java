@@ -3,10 +3,8 @@ package org.mule.extension.vectors.internal.connection.store.pgvector;
 import dev.langchain4j.internal.ValidationUtils;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.api.lifecycle.Disposable;
-import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,19 +70,24 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new IllegalArgumentException("Host is required for PGVector connection");
+      throw new ModuleException("Host is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPort() <= 0) {
-      throw new IllegalArgumentException("Port is required for PGVector connection and must be > 0");
+      throw new ModuleException("Port is required for PGVector connection and must be > 0", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
-      throw new IllegalArgumentException("Database is required for PGVector connection");
+      throw new ModuleException("Database is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getUser() == null || parameters.getUser().isBlank()) {
-      throw new IllegalArgumentException("User is required for PGVector connection");
+      throw new ModuleException("User is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPassword() == null || parameters.getPassword().isBlank()) {
-      throw new IllegalArgumentException("Password is required for PGVector connection");
+      throw new ModuleException("Password is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    try {
+      this.dataSource.getConnection();
+    } catch (SQLException e) {
+      throw new ModuleException("Failed to connect to PG Vector", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

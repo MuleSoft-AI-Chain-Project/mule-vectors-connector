@@ -6,6 +6,8 @@ import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
 
@@ -104,7 +106,17 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
   @Override
   public void validate() {
-
+    if (milvusStoreConnectionParameters.getUri() == null || milvusStoreConnectionParameters.getUri().isBlank()) {
+      throw new ModuleException("URI is required for Milvus connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    if ((milvusStoreConnectionParameters.getToken() == null || milvusStoreConnectionParameters.getToken().isBlank())) {
+      throw new ModuleException("Token is required for Milvus connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    try {
+      client.checkHealth().getStatus();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to Milvus store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+    }
   }
 
   public void initialise() {

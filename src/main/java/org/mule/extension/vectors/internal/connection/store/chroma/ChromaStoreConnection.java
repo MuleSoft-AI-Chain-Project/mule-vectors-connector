@@ -1,17 +1,20 @@
 package org.mule.extension.vectors.internal.connection.store.chroma;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class ChromaStoreConnection implements BaseStoreConnection {
 
@@ -48,6 +51,13 @@ public class ChromaStoreConnection implements BaseStoreConnection {
     return parameters;
   }
 
+  private Map<String, String> buildHeaders(String contentType) {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Content-Type", contentType);
+    headers.put("Accept", contentType);
+    return headers;
+  }
+
   /**
    * Changed from isValid() to validate() for MuleSoft Connector compliance.
    * Now checks for required parameters.
@@ -56,56 +66,28 @@ public class ChromaStoreConnection implements BaseStoreConnection {
   public void validate() {
     try {
       if (url == null) {
-        throw new IllegalArgumentException("URL is required for Chroma connection.");
+        throw new ModuleException("URL is required for Chroma connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
       }
-      doHttpRequest();
-      // return true;
+      doHttpRequest().get();
     } catch (Exception e) {
-      LOGGER.error("Failed to validate connection to Chroma.", e);
-      // return false;
+      throw new ModuleException("Failed to connect to Chroma", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 
-  private void doHttpRequest() throws ConnectionException {
-
-    try {
-
-      // Create URL object
-      URL healthUrl = new URL(url + API_ENDPOINT);
-      HttpURLConnection connection = (HttpURLConnection) healthUrl.openConnection();
-
-      // Set request method to GET
-      connection.setRequestMethod("GET");
-
-      // Set headers
-      connection.setRequestProperty("Content-Type", "application/json");
-      connection.setRequestProperty("Accept", "application/json");
-
-      // Get the response code
-      int responseCode = connection.getResponseCode();
-      if (responseCode != 200) {
-        // Read error response
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()))) {
-          String inputLine;
-          StringBuilder response = new StringBuilder();
-          while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+  private CompletableFuture<Void> doHttpRequest() throws ConnectionException {
+    return HttpRequestHelper.executeGetRequest(httpClient, url + API_ENDPOINT, buildHeaders("application/json"), 30000)
+        .thenAccept(connectionResponse -> {
+          if (connectionResponse.getStatusCode() != 200) {
+            try {
+              String errorBody = new String(connectionResponse.getEntity().getBytes());
+              String errorMsg = String.format("Unable to connect to Chroma. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
+              LOGGER.error(errorMsg);
+              throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+            } catch (IOException e) {
+              throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+             }
           }
-          // Print the error response
-          LOGGER.error("Error (HTTP " + responseCode + "): " + response.toString());
-          throw new ConnectionException("Impossible to connect to Chroma. " + "Error (HTTP " + responseCode + "): " + response.toString());
-        }
-      }
-
-    } catch (ConnectionException e) {
-
-      throw e;
-
-    } catch (Exception e) {
-
-      LOGGER.error("Impossible to connect to Chroma", e);
-      throw new ConnectionException("Impossible to connect to Chroma", e);
-    }
+        });
   }
 
   public HttpClient getHttpClient() {

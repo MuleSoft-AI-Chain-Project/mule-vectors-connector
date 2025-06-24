@@ -9,7 +9,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 import org.elasticsearch.client.RestClient;
@@ -18,7 +17,8 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,15 +95,18 @@ public class ElasticsearchStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getUrl() == null || parameters.getUrl().isBlank()) {
-      throw new IllegalArgumentException("URL is required for Elasticsearch connection");
+      throw new ModuleException("URL is required for Elasticsearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if ((parameters.getPassword() == null || parameters.getPassword().isBlank()) && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
-      throw new IllegalArgumentException("Either password or API Key is required for Elasticsearch connection");
+      throw new ModuleException("Either password or API Key is required for Elasticsearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }  
+    try {
+      this.restClient.getNodes();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to Elastic search", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
   public void initialise() throws IOException {
-
-
 
     if (!Utils.isNullOrBlank(user)) {
 

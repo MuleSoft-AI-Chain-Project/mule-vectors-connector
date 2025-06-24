@@ -4,17 +4,14 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import io.milvus.client.MilvusServiceClient;
-import io.milvus.param.ConnectParam;
-import org.bson.BsonDocument;
-import org.bson.BsonInt64;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
 
@@ -76,16 +73,21 @@ public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new IllegalArgumentException("Host is required for MongoDB Atlas connection");
+      throw new ModuleException("Host is required for MongoDB Atlas connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getUser() == null || parameters.getUser().isBlank()) {
-      throw new IllegalArgumentException("User is required for MongoDB Atlas connection");
+      throw new ModuleException("User is required for MongoDB Atlas connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPassword() == null || parameters.getPassword().isBlank()) {
-      throw new IllegalArgumentException("Password is required for MongoDB Atlas connection");
+      throw new ModuleException("Password is required for MongoDB Atlas connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
-      throw new IllegalArgumentException("Database is required for MongoDB Atlas connection");
+      throw new ModuleException("Database is required for MongoDB Atlas connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    try {
+      mongoClient.listDatabaseNames().first();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to MongoDB Atlas store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
   public void initialise() {

@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class QdrantStoreConnection implements BaseStoreConnection {
 
@@ -82,16 +84,21 @@ public class QdrantStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new IllegalArgumentException("Host is required for Qdrant connection");
+      throw new ModuleException("Host is required for Qdrant connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getGprcPort() <= 0) {
-      throw new IllegalArgumentException("gprcPort is required for Qdrant connection and must be > 0");
+      throw new ModuleException("gprcPort is required for Qdrant connection and must be > 0", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getTextSegmentKey() == null || parameters.getTextSegmentKey().isBlank()) {
-      throw new IllegalArgumentException("TextSegmentKey is required for Qdrant connection");
+      throw new ModuleException("TextSegmentKey is required for Qdrant connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
-      throw new IllegalArgumentException("API Key is required for Qdrant connection");
+      throw new ModuleException("API Key is required for Qdrant connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    try {
+      doHealthCheck();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to Qdrant store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

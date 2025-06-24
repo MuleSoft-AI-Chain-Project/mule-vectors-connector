@@ -74,6 +74,11 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
      * The requested operation is not supported by the configured vector store.
      */
     STORE_UNSUPPORTED_OPERATION(MuleErrors.ANY),
+
+     /**
+     * A general failure occured during a vection store connection.
+     */
+    STORE_CONNECTION_FAILURE(MuleErrors.ANY),
     // endregion
 
     // region External Service Errors

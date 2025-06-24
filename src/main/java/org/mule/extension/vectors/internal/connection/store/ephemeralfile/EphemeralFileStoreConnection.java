@@ -3,6 +3,8 @@ package org.mule.extension.vectors.internal.connection.store.ephemeralfile;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnectionParameters;

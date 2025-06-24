@@ -3,9 +3,10 @@ package org.mule.extension.vectors.internal.connection.store.pinecone;
 import io.pinecone.clients.Pinecone;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnectionParameters;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class PineconeStoreConnection implements BaseStoreConnection {
 
@@ -13,6 +14,7 @@ public class PineconeStoreConnection implements BaseStoreConnection {
   private String region;
   private String apiKey;
   private final PineconeStoreConnectionParameters parameters;
+  private Pinecone client;
 
   public PineconeStoreConnection(PineconeStoreConnectionParameters parameters) {
     this.parameters = parameters;
@@ -31,6 +33,10 @@ public class PineconeStoreConnection implements BaseStoreConnection {
 
   public String getApiKey() {
     return apiKey;
+  }
+
+  public Pinecone getClient() {
+    return client;
   }
 
   @Override
@@ -56,13 +62,22 @@ public class PineconeStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getCloud() == null || parameters.getCloud().isBlank()) {
-      throw new IllegalArgumentException("Cloud is required for Pinecone connection");
+      throw new ModuleException("Cloud is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getRegion() == null || parameters.getRegion().isBlank()) {
-      throw new IllegalArgumentException("Region is required for Pinecone connection");
+      throw new ModuleException("Region is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
-      throw new IllegalArgumentException("API Key is required for Pinecone connection");
+      throw new ModuleException("API Key is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
+    try {
+      client.listIndexes();
+    } catch (Exception e) {
+      throw new ModuleException("Failed to connect to Pinecone store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+    }
+  }
+
+  public void initialise() {
+    client = (new Pinecone.Builder(apiKey)).build();
   }
 }

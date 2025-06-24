@@ -1,17 +1,17 @@
 package org.mule.extension.vectors.internal.connection.store.alloydb;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.store.alloydb.CustomAlloyDBEngine;
-import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.extension.api.annotation.param.display.Password;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine;
-import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 public class AlloyDBStoreConnection implements BaseStoreConnection {
@@ -78,34 +78,39 @@ public class AlloyDBStoreConnection implements BaseStoreConnection {
   @Override
   public void validate() {
     if (parameters.getProjectId() == null ) {
-      throw new IllegalArgumentException("Project ID is required for AlloyDB connection");
+      throw new ModuleException("Project ID is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getRegion() == null ) {
-      throw new IllegalArgumentException("Region is required for AlloyDB connection");
+      throw new ModuleException("Region is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getCluster() == null) {
-      throw new IllegalArgumentException("Cluster is required for AlloyDB connection");
+      throw new ModuleException("Cluster is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getInstance() == null ) {
-      throw new IllegalArgumentException("Instance is required for AlloyDB connection");
+      throw new ModuleException("Instance is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getIamAccountEmail() == null ) {
-      throw new IllegalArgumentException("IAM Account Email is required for AlloyDB connection");
+      throw new ModuleException("IAM Account Email is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getHost() == null ) {
-      throw new IllegalArgumentException("Host is required for AlloyDB connection");
+      throw new ModuleException("Host is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPort() <= 0) {
-      throw new IllegalArgumentException("Port is required for AlloyDB connection and must be > 0");
+      throw new ModuleException("Port is required for AlloyDB connection and must be > 0", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getDatabase() == null ) {
-      throw new IllegalArgumentException("Database is required for AlloyDB connection");
+      throw new ModuleException("Database is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getUser() == null ) {
-      throw new IllegalArgumentException("User is required for AlloyDB connection");
+      throw new ModuleException("User is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPassword() == null) {
-      throw new IllegalArgumentException("Password is required for AlloyDB connection");
+      throw new ModuleException("Password is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
+    try {
+      this.alloyDBEngine.getConnection();
+    } catch (SQLException e) {
+      throw new ModuleException("Failed to connect to Alloy DB", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

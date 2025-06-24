@@ -28,18 +28,14 @@ public class PineconeStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStoreConnectionProvider.class);
+  private PineconeStoreConnection connection;
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private PineconeStoreConnectionParameters pineconeStoreConnectionParameters;
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
-    try {
-      PineconeStoreConnection connection = new PineconeStoreConnection(pineconeStoreConnectionParameters);
-      return connection;
-    } catch (Exception e) {
-      throw new ConnectionException("Failed to connect to Pinecone", e);
-    }
+    return connection;
   }
 
 
@@ -50,6 +46,7 @@ public class PineconeStoreConnectionProvider implements
 
   @Override
   public void initialise() throws InitialisationException {
-
+    connection = new PineconeStoreConnection(pineconeStoreConnectionParameters);
+    connection.initialise();
   }
 }
