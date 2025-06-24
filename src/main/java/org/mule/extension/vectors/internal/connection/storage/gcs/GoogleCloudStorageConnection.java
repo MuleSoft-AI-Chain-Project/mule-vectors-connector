@@ -105,16 +105,5 @@ public class GoogleCloudStorageConnection implements BaseStorageConnection {
         this.storageService.list();
     }
 
-    public InputStream loadFile(String bucket, String objectName) {
-        Blob blob = this.storageService.get(bucket, objectName);
-        if (blob == null) {
-            throw new IllegalArgumentException("Object gs://" + bucket + "/" + objectName + " couldn't be found.");
-        }
-        try {
-            return Channels.newInputStream(blob.reader());
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load document", e);
-        }
-    }
 }

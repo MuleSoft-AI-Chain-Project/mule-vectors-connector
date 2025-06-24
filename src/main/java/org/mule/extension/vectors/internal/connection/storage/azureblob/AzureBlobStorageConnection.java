@@ -59,12 +59,5 @@ public class AzureBlobStorageConnection implements BaseStorageConnection {
     this.blobServiceClient.listBlobContainers();
   }
 
-  public InputStream loadFile(String containerName, String blobName) {
 
-    BlobClient blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName);
-    BlobProperties properties = blobClient.getProperties();
-    BlobInputStream blobInputStream = blobClient.openInputStream();
-
-    return blobInputStream;
-  }
 }
