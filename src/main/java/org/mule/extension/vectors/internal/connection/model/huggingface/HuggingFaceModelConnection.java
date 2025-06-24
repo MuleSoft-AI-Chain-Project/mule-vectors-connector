@@ -14,11 +14,15 @@ import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Alias("huggingFace")
 @DisplayName("Hugging Face")
@@ -33,11 +37,13 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
   private final String apiKey;
   private final HttpClient httpClient;
   private final long timeout;
+  private final ObjectMapper objectMapper;
 
   public HuggingFaceModelConnection(String apiKey, long timeout, HttpClient httpClient) {
     this.apiKey = apiKey;
     this.timeout = timeout;
     this.httpClient = httpClient;
+    this.objectMapper = new ObjectMapper();
   }
 
   public String getApiKey() {
@@ -49,7 +55,6 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
     return Constants.EMBEDDING_MODEL_SERVICE_HUGGING_FACE;
   }
 
-
   @Override
   public void disconnect() {
     // HttpClient lifecycle is managed by the provider
@@ -58,98 +63,95 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
   @Override
   public void validate() {
     try {
-      validateCredentials();
-
-    } catch (Exception e) {
-      LOGGER.error("Failed to validate connection to Hugging Face.", e);
-      throw new ModuleException("Failed to validate connection to Hugging Face", MuleVectorsErrorType.INVALID_CONNECTION, e);
-
+      validateCredentialsAsync().get();
+    } catch (InterruptedException | ExecutionException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException("Failed to validate connection to Hugging Face", MuleVectorsErrorType.INVALID_CONNECTION, e.getCause());
     }
   }
 
-  private void validateCredentials() throws ConnectionException {
-    try {
-      HttpRequest request = HttpRequest.builder()
-          .method("GET")
-          .uri(AUTH_ENDPOINT)
-          .addHeader("Authorization", "Bearer " + apiKey)
-          .build();
-
-      HttpRequestOptions options = HttpRequestOptions.builder()
-          .responseTimeout((int)timeout)
-          .followsRedirect(false)
-          .build();
-
-      HttpResponse response = httpClient.send(request, options);
-
-      if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
-        LOGGER.error("Authentication failed. Please check your credentials.");
-        throw new ConnectionException("Invalid credentials");
-      }
-
-      if (response.getStatusCode() != 200) {
-        String errorBody = new String(response.getEntity().getBytes());
-        String errorMsg = String.format("Unexpected response code: %d - %s", 
-            response.getStatusCode(), errorBody);
-        LOGGER.error(errorMsg);
-        throw new ConnectionException(errorMsg);
-      }
-
-    } catch (ConnectionException e) {
-      throw e;
-    } catch (Exception e) {
-      LOGGER.error("Failed to validate credentials", e);
-      throw new ConnectionException("Failed to validate credentials", e);
-    }
+  private CompletableFuture<Void> validateCredentialsAsync() {
+    return HttpRequestHelper.executeGetRequest(httpClient, AUTH_ENDPOINT, buildAuthHeaders(), (int) timeout)
+        .thenAccept(response -> {
+          int statusCode = response.getStatusCode();
+          if (statusCode == 401 || statusCode == 403) {
+            LOGGER.error("Authentication failed. Please check your credentials.");
+            throw new ModuleException("Invalid credentials", MuleVectorsErrorType.INVALID_CONNECTION);
+          }
+          if (statusCode != 200) {
+            handleErrorResponse(response, "Failed to validate credentials");
+          }
+        });
   }
 
   @Override
   public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-    if(inputs == null || inputs.isEmpty()) {
+    if (inputs == null || inputs.isEmpty()) {
       throw new IllegalArgumentException("Input list cannot be null or empty");
     }
-    if(modelName == null || modelName.trim().isEmpty()) {
+    if (modelName == null || modelName.trim().isEmpty()) {
       throw new IllegalArgumentException("Model name cannot be null or empty");
     }
-
     try {
-      String url = String.format("%s%s%s", INFERENCE_ENDPOINT, modelName, PIPELINE_FEATURE_EXTRACTION_PATH);
-      LOGGER.info("Generating embeddings using model: {} at URL: {}", modelName, url);
-
-      Map<String, Object> requestBody = new HashMap<>();
-      requestBody.put("inputs", inputs);
-      
-      ObjectMapper mapper = new ObjectMapper();
-      byte[] jsonBody = mapper.writeValueAsBytes(requestBody);
-
-      HttpRequest request = HttpRequest.builder()
-          .method("POST")
-          .uri(url)
-          .addHeader("Authorization", "Bearer " + apiKey)
-          .addHeader("Content-Type", "application/json")
-          .entity(new ByteArrayHttpEntity(jsonBody))
-          .build();
-
-      HttpRequestOptions options = HttpRequestOptions.builder()
-          .responseTimeout((int)timeout)
-          .followsRedirect(false)
-          .build();
-
-      HttpResponse response = httpClient.send(request, options);
-
-      if (response.getStatusCode() != 200) {
-        String errorBody = new String(response.getEntity().getBytes());
-        String errorMsg = String.format("Error generating embeddings. Status: %d - %s", 
-            response.getStatusCode(), errorBody);
-        LOGGER.error(errorMsg);
-        throw new RuntimeException(errorMsg);
+      return generateTextEmbeddingsAsync(inputs, modelName).get();
+    } catch (InterruptedException | ExecutionException e) {
+      Thread.currentThread().interrupt();
+      if (e.getCause() instanceof ModuleException) {
+        throw (ModuleException) e.getCause();
       }
+      throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+    }
+  }
 
+  private CompletableFuture<String> generateTextEmbeddingsAsync(List<String> inputs, String modelName) {
+    String url = buildInferenceUrl(modelName);
+    try {
+      byte[] body = buildEmbeddingsPayload(inputs);
+      Map<String, String> headers = buildAuthHeaders();
+      headers.put("Content-Type", "application/json");
+
+      return HttpRequestHelper.executePostRequest(httpClient, url, headers, body, (int) timeout)
+          .thenApply(this::handleEmbeddingResponse);
+    } catch (JsonProcessingException e) {
+      return CompletableFuture.failedFuture(new ModuleException("Failed to create request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
+    }
+  }
+
+  private String handleEmbeddingResponse(HttpResponse response) {
+    if (response.getStatusCode() != 200) {
+      return handleErrorResponse(response, "Error generating embeddings");
+    }
+    try {
       return new String(response.getEntity().getBytes());
+    } catch (IOException e) {
+      throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+    }
+  }
+  
+  private String buildInferenceUrl(String modelName) {
+    return INFERENCE_ENDPOINT + modelName + PIPELINE_FEATURE_EXTRACTION_PATH;
+  }
 
-    } catch (Exception e) {
-      LOGGER.error("Error generating embeddings", e);
-      throw new RuntimeException("Failed to generate embeddings", e);
+  private byte[] buildEmbeddingsPayload(List<String> inputs) throws JsonProcessingException {
+    Map<String, Object> requestBody = new HashMap<>();
+    requestBody.put("inputs", inputs);
+    return objectMapper.writeValueAsBytes(requestBody);
+  }
+  
+  private Map<String, String> buildAuthHeaders() {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Authorization", "Bearer " + apiKey);
+    return headers;
+  }
+  
+  private String handleErrorResponse(HttpResponse response, String message) {
+    try {
+      String errorBody = new String(response.getEntity().getBytes());
+      String errorMsg = String.format("%s. Status: %d - %s", message, response.getStatusCode(), errorBody);
+      LOGGER.error(errorMsg);
+      throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
+    } catch (IOException e) {
+      throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
     }
   }
 }
