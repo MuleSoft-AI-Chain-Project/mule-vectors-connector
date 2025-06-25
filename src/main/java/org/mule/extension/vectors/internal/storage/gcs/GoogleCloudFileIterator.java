@@ -6,6 +6,7 @@ import org.mule.extension.vectors.internal.data.file.File;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,7 +62,7 @@ public class GoogleCloudFileIterator implements FileIterator {
     @Override
     public File next() {
         Blob blob = getBlobIterator().next();
-        InputStream content = gcsClient.loadFile(bucket, blob.getName());
+        InputStream content = Channels.newInputStream(blob.reader());
         HashMap<String, Object> metadata = new HashMap(){{
             put(Constants.METADATA_KEY_SOURCE, "gs://" + blob.getBucket() + "/" + blob.getName());
             put("bucket", blob.getBucket());
