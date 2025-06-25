@@ -80,16 +80,5 @@ public class LocalStorageConnection implements BaseStorageConnection {
     }
   }
 
-  public InputStream loadFile(Path path) {
 
-    if (!Files.isRegularFile(path, new LinkOption[0])) {
-      throw new IllegalArgumentException(String.format("'%s' is not a file", new Object[]{path}));
-    } else {
-      try {
-        return  Files.newInputStream(path);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
 }
