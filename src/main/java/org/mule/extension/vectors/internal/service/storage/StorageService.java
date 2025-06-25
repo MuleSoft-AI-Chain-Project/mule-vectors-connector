@@ -5,5 +5,5 @@ import org.mule.extension.vectors.internal.storage.FileIterator;
 
 public interface StorageService {
     File getFile(String path);
-    FileIterator getFileIterator(String directory);
+    FileIterator getFileIterator(String contextPath);
 } 

@@ -14,13 +14,13 @@ import java.util.Iterator;
 import java.util.List;
 
 public class AzureBlobStorage {
+
+    public static final String HTTPS_S_BLOB_CORE_WINDOWS_NET = "https://%s.blob.core.windows.net/";
     public final String azureName;
-    private final String azureKey;
     private final BlobServiceClient blobServiceClient;
 
-    public AzureBlobStorage(StorageConfiguration storageConfiguration, AzureBlobStorageConnection azureBlobStorageConnection, String contextPath) {
+    public AzureBlobStorage(StorageConfiguration storageConfiguration, AzureBlobStorageConnection azureBlobStorageConnection) {
         this.azureName = azureBlobStorageConnection.getAzureName();
-        this.azureKey = azureBlobStorageConnection.getAzureKey();
         this.blobServiceClient = azureBlobStorageConnection.getBlobServiceClient();
     }
 
@@ -30,19 +30,8 @@ public class AzureBlobStorage {
         BlobInputStream blobInputStream = blobClient.openInputStream();
         return blobInputStream;
     }
-
-    public List<BlobItem> listFiles(String containerName, String prefix) {
-        List<BlobItem> result = new ArrayList<>();
-        Iterator<BlobItem> iterator = blobServiceClient.getBlobContainerClient(containerName)
-                .listBlobs(new ListBlobsOptions().setPrefix(prefix), null).iterator();
-        while (iterator.hasNext()) {
-            result.add(iterator.next());
-        }
-        return result;
-    }
-
     public static String parseContainer(String azureBlobStorageUrl, String azureName) {
-        String endpoint = String.format("https://%s.blob.core.windows.net/", azureName);
+        String endpoint = String.format(HTTPS_S_BLOB_CORE_WINDOWS_NET, azureName);
         if (azureBlobStorageUrl.startsWith(endpoint)) {
             azureBlobStorageUrl = azureBlobStorageUrl.substring(endpoint.length());
         }
@@ -50,11 +39,15 @@ public class AzureBlobStorage {
     }
 
     public static String parseBlobName(String azureBlobStorageUrl, String azureName) {
-        String endpoint = String.format("https://%s.blob.core.windows.net/", azureName);
+        String endpoint = String.format(HTTPS_S_BLOB_CORE_WINDOWS_NET, azureName);
         if (azureBlobStorageUrl.startsWith(endpoint)) {
             azureBlobStorageUrl = azureBlobStorageUrl.substring(endpoint.length());
         }
         int slashIndex = azureBlobStorageUrl.indexOf("/");
         return slashIndex != -1 ? azureBlobStorageUrl.substring(slashIndex + 1) : "";
+    }
+
+    public BlobServiceClient getBlobServiceClient() {
+        return blobServiceClient;
     }
 }

@@ -25,10 +25,9 @@ public class AzureBlobStorageService implements StorageService {
     }
 
     @Override
-    public FileIterator getFileIterator(String directory) {
-        String container = AzureBlobStorage.parseContainer(directory, azureClient.azureName);
-        String prefix = AzureBlobStorage.parseBlobName(directory, azureClient.azureName);
-        List<BlobItem> objects = azureClient.listFiles(container, prefix);
-        return new AzureBlobFileIterator(azureClient, container, objects);
+    public FileIterator getFileIterator(String contextPath) {
+        String container = AzureBlobStorage.parseContainer(contextPath, azureClient.azureName);
+        String prefix = AzureBlobStorage.parseBlobName(contextPath, azureClient.azureName);
+        return new AzureBlobFileIterator(azureClient, container, prefix);
     }
 } 

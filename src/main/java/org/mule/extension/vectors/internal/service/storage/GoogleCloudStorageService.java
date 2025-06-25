@@ -19,17 +19,16 @@ public class GoogleCloudStorageService implements StorageService {
     public File getFile(String path) {
         String[] bucketAndObject = GoogleCloudStorage.parseContextPath(path);
         String bucket = bucketAndObject[0];
-        String objectName = bucketAndObject[1];
-        InputStream content = gcsClient.loadFile(bucket, objectName);
-        return new File(content, bucket + "/" + objectName, objectName);
+        String objectKey = bucketAndObject[1];
+        InputStream content = gcsClient.loadFile(bucket, objectKey);
+        return new File(content, bucket + "/" + objectKey, objectKey);
     }
 
     @Override
-    public FileIterator getFileIterator(String directory) {
-        String[] bucketAndPrefix = GoogleCloudStorage.parseContextPath(directory);
+    public FileIterator getFileIterator(String contextPath) {
+        String[] bucketAndPrefix = GoogleCloudStorage.parseContextPath(contextPath);
         String bucket = bucketAndPrefix[0];
         String prefix = bucketAndPrefix[1];
-        List<Blob> objects = gcsClient.listFiles(bucket, prefix);
-        return new GoogleCloudFileIterator(gcsClient, bucket, objects);
+        return new GoogleCloudFileIterator(gcsClient, bucket, prefix);
     }
 } 
