@@ -4,8 +4,10 @@ import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.InputStream;
 
@@ -23,7 +25,7 @@ public class AmazonS3Storage {
         this.s3Client = amazonS3StorageConnection.getS3Client();
     }
 
-    public InputStream loadFile(String bucket, String key) {
+    public ResponseInputStream<GetObjectResponse> loadFile(String bucket, String key) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)

@@ -18,6 +18,7 @@ public class AzureBlobStorage {
     public static final String HTTPS_S_BLOB_CORE_WINDOWS_NET = "https://%s.blob.core.windows.net/";
     public final String azureName;
     private final BlobServiceClient blobServiceClient;
+    BlobClient blobClient;
 
     public AzureBlobStorage(StorageConfiguration storageConfiguration, AzureBlobStorageConnection azureBlobStorageConnection) {
         this.azureName = azureBlobStorageConnection.getAzureName();
@@ -25,11 +26,15 @@ public class AzureBlobStorage {
     }
 
     public InputStream loadFile(String containerName, String blobName) {
-        BlobClient blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName);
+        blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName);
         BlobProperties properties = blobClient.getProperties();
         BlobInputStream blobInputStream = blobClient.openInputStream();
         return blobInputStream;
     }
+    public BlobClient getBlonbClient() {
+        return blobClient;
+    }
+
     public static String parseContainer(String azureBlobStorageUrl, String azureName) {
         String endpoint = String.format(HTTPS_S_BLOB_CORE_WINDOWS_NET, azureName);
         if (azureBlobStorageUrl.startsWith(endpoint)) {

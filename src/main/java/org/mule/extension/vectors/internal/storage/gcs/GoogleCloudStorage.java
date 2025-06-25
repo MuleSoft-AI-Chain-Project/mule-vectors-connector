@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.storage.gcs;
 
+import com.azure.storage.blob.BlobClient;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
@@ -27,13 +28,17 @@ public class GoogleCloudStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(GoogleCloudStorage.class);
 
     private final Storage storageService;
+    Blob blob;
 
     public GoogleCloudStorage(StorageConfiguration storageConfiguration, GoogleCloudStorageConnection googleCloudStorageConnection) {
         this.storageService = googleCloudStorageConnection.getStorageService();
     }
+    public Blob getBlob(){
+        return blob;
+    }
 
     public InputStream loadFile(String bucket, String objectName) {
-        Blob blob = this.storageService.get(bucket, objectName);
+        blob = this.storageService.get(bucket, objectName);
         if (blob == null) {
             throw new IllegalArgumentException("Object gs://" + bucket + "/" + objectName + " couldn't be found.");
         }

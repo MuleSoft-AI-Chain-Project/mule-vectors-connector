@@ -46,6 +46,8 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
             new HashMap<String, Object>() {{
               put("path", file.getPath());
               put("fileName", file.getFileName());
+              put("mimeType", file.getMimeType());
+              put("metadata", file.getMetadata());
             }},
             streamingHelper
         );
