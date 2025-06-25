@@ -14,21 +14,19 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
-
 import java.util.*;
-
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageFileResponse;
 
 public class FilePagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
 
   private final StorageConfiguration storageConfiguration;
-  private final String conextPath;
+  private final String contextPath;
   private final StreamingHelper streamingHelper;
   private FileIterator fileIterator;
 
   public FilePagingProvider(StorageConfiguration storageConfiguration, String directory, StreamingHelper streamingHelper) {
     this.storageConfiguration = storageConfiguration;
-    this.conextPath = directory;
+    this.contextPath = directory;
     this.streamingHelper = streamingHelper;
   }
 
@@ -38,7 +36,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
       if (fileIterator == null) {
         StorageService storageService = StorageServiceFactory.getService(
             storageConfiguration, connection);
-        fileIterator = storageService.getFileIterator(conextPath);
+        fileIterator = storageService.getFileIterator(contextPath);
       }
       while (fileIterator.hasNext()) {
         File file = fileIterator.next();
@@ -57,7 +55,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
       throw me;
     } catch (Exception e) {
       throw new ModuleException(
-          String.format("Error while getting document from %s.", conextPath),
+          String.format("Error while getting document from %s.", contextPath),
           MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
           e);
     }
