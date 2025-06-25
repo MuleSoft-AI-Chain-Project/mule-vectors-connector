@@ -48,24 +48,6 @@ public class GoogleCloudStorage {
             throw new RuntimeException("Failed to load document", e);
         }
     }
-
-    public List<Blob> listFiles(String bucket, String prefix) {
-        List<Blob> result = new ArrayList<>();
-        Page<Blob> blobPage;
-        if (prefix == null || prefix.isEmpty()) {
-            blobPage = this.storageService.list(bucket);
-        } else {
-            String prefixWithSlash = prefix.endsWith("/") ? prefix : prefix + "/";
-            blobPage = this.storageService.list(bucket, Storage.BlobListOption.prefix(prefixWithSlash));
-        }
-        for (Blob blob : blobPage.iterateAll()) {
-            if (!(blob.getName().endsWith("/") && blob.getSize() == 0)) {
-                result.add(blob);
-            }
-        }
-        return result;
-    }
-
     public static String[] parseContextPath(String contextPath) {
         if (!contextPath.toLowerCase().startsWith(Constants.GCS_PREFIX)) {
             throw new IllegalArgumentException(String.format("Invalid GCS path: '%s'. Path must start with '%s' and contain both bucket and object key.", contextPath, Constants.GCS_PREFIX));
@@ -81,5 +63,9 @@ public class GoogleCloudStorage {
             objectKey = pathWithoutPrefix.substring(firstSlashIndex + 1);
         }
         return new String[]{bucket, objectKey};
+    }
+
+    public Storage getStorageService() {
+        return storageService;
     }
 }

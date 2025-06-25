@@ -17,29 +17,23 @@ import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
 import org.mule.extension.vectors.internal.storage.local.LocalStorage;
 
 public class StorageServiceFactory {
-    public static StorageService getService(StorageConfiguration config, BaseStorageConnection connection) {
+    public static StorageService getService(StorageConfiguration config, BaseStorageConnection connection, String contextPath) {
         if (connection instanceof AmazonS3StorageConnection) {
-            // TODO: Use actual contextPath as needed
-            String contextPath = "";
             AmazonS3Storage s3Client = new AmazonS3Storage(config, (AmazonS3StorageConnection) connection, contextPath);
             return new S3StorageService(s3Client);
         }
         if (connection instanceof AzureBlobStorageConnection) {
-            String contextPath = "";
             AzureBlobStorage azureClient = new AzureBlobStorage(config, (AzureBlobStorageConnection) connection, contextPath);
             return new AzureBlobStorageService(azureClient);
         }
         if (connection instanceof GoogleCloudStorageConnection) {
-            String contextPath = "";
             GoogleCloudStorage gcsClient = new GoogleCloudStorage(config, (GoogleCloudStorageConnection) connection, contextPath);
             return new GoogleCloudStorageService(gcsClient);
         }
         if (connection instanceof LocalStorageConnection) {
-            String contextPath = "";
             LocalStorage localClient = new LocalStorage(config, (LocalStorageConnection) connection, contextPath);
             return new LocalStorageService(localClient);
         }
-        // TODO: Add other backends
         throw new IllegalArgumentException("Unsupported storage type");
     }
 } 

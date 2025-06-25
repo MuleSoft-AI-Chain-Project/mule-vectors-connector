@@ -25,7 +25,6 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public FileIterator getFileIterator(String directory) {
-        List<Path> files = localClient.listFiles(directory);
-        return new LocalFileIterator(localClient, files);
+        return new LocalFileIterator(localClient, directory);
     }
 } 

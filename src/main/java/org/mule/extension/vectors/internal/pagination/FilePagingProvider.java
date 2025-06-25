@@ -37,7 +37,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
     try {
       if (fileIterator == null) {
         StorageService storageService = StorageServiceFactory.getService(
-            storageConfiguration, connection);
+            storageConfiguration, connection, directory);
         fileIterator = storageService.getFileIterator(directory);
       }
       while (fileIterator.hasNext()) {

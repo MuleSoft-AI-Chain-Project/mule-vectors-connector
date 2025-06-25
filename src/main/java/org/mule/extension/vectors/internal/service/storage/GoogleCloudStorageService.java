@@ -19,9 +19,10 @@ public class GoogleCloudStorageService implements StorageService {
     public File getFile(String path) {
         String[] bucketAndObject = GoogleCloudStorage.parseContextPath(path);
         String bucket = bucketAndObject[0];
-        String objectName = bucketAndObject[1];
-        InputStream content = gcsClient.loadFile(bucket, objectName);
-        return new File(content, bucket + "/" + objectName, objectName);
+        String objectKey = bucketAndObject[1];
+        InputStream content = gcsClient.loadFile(bucket, objectKey);
+        System.out.println( "GCP content: " + content+":: "+ bucket + "/" + objectKey + "::"+ objectKey + "::");
+        return new File(content, bucket + "/" + objectKey, objectKey);
     }
 
     @Override
@@ -29,7 +30,6 @@ public class GoogleCloudStorageService implements StorageService {
         String[] bucketAndPrefix = GoogleCloudStorage.parseContextPath(directory);
         String bucket = bucketAndPrefix[0];
         String prefix = bucketAndPrefix[1];
-        List<Blob> objects = gcsClient.listFiles(bucket, prefix);
-        return new GoogleCloudFileIterator(gcsClient, bucket, objects);
+        return new GoogleCloudFileIterator(gcsClient, bucket, prefix);
     }
 } 

@@ -30,4 +30,5 @@ public class S3StorageService implements StorageService {
         List<S3Object> objects = s3Client.listFiles(bucket, prefix);
         return new S3FileIterator(s3Client, bucket, objects);
     }
+
 } 
