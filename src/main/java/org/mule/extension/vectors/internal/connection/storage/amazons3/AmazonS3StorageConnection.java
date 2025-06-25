@@ -69,5 +69,28 @@ public class AmazonS3StorageConnection implements BaseStorageConnection {
     this.s3Client.listBuckets();
   }
 
+  public InputStream loadFile(String bucket, String key) {
 
+    try {
+
+      if (bucket == null) {
+        throw new IllegalArgumentException("Bucket must not be null");
+      }
+      if (key == null) {
+        throw new IllegalArgumentException("Key must not be null");
+      }
+
+      GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+          .bucket(bucket)
+          .key(key)
+          .build();
+
+      return s3Client.getObject(getObjectRequest);
+
+    } catch (S3Exception e) {
+      throw new RuntimeException(e);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load document", e);
+    }
+  }
 }
