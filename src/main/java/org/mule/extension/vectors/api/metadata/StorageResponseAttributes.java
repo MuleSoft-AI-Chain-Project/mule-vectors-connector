@@ -23,7 +23,9 @@ public class StorageResponseAttributes implements Serializable {
   private final String path;
 
   private final String fileName;
+  private final String mimeType;
 
+  private final Map<String, Object> metadata;
   /**
    * Additional attributes not explicitly defined as fields in this class.
    */
@@ -41,6 +43,8 @@ public class StorageResponseAttributes implements Serializable {
 
     this.path = requestAttributes.containsKey("path") ? (String) requestAttributes.remove("path") : null;
     this.fileName = requestAttributes.containsKey("fileName") ? (String) requestAttributes.remove("fileName") : null;
+    this.mimeType = requestAttributes.containsKey("mimeType") ? (String) requestAttributes.remove("mimeType") : null;
+    this.metadata = requestAttributes.containsKey("metadata") ? (Map<String, Object>) requestAttributes.remove("metadata") : null;
     this.otherAttributes = requestAttributes;
   }
 
@@ -51,7 +55,9 @@ public class StorageResponseAttributes implements Serializable {
   public String getFileName() {
     return fileName;
   }
+  public String getMimeType() { return mimeType; }
 
+  public Map<String, Object> getMetadata() { return metadata; }
   /**
    * Gets additional attributes of the file.
    * <p>

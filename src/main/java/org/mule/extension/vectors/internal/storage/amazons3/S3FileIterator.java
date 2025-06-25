@@ -1,11 +1,15 @@
 package org.mule.extension.vectors.internal.storage.amazons3;
 
+import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.File;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import java.io.InputStream;
+import static java.lang.String.format;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Collections;
 import java.util.NoSuchElementException;
@@ -56,7 +60,10 @@ public class S3FileIterator implements FileIterator {
     public File next() {
         if (!hasNext()) throw new NoSuchElementException();
         S3Object object = getS3ObjectIterator().next();
-        InputStream content = s3Client.loadFile(bucket, object.key());
-        return new File(content, bucket + "/" + object.key(), object.key());
+        ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.loadFile(bucket, object.key());
+        HashMap<String, Object> metadata = new HashMap(){{
+            put(Constants.METADATA_KEY_SOURCE, format("s3://%s/%s", bucket, object.key()));
+        }};
+        return new File(responseInputStream, bucket + "/" + object.key(), object.key(), responseInputStream.response().contentType(), metadata);
     }
 } 

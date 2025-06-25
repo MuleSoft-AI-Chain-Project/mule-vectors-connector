@@ -1,11 +1,13 @@
 package org.mule.extension.vectors.internal.storage.gcs;
 
+import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.File;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
@@ -60,6 +62,15 @@ public class GoogleCloudFileIterator implements FileIterator {
     public File next() {
         Blob blob = getBlobIterator().next();
         InputStream content = gcsClient.loadFile(bucket, blob.getName());
-        return new File(content, bucket + "/" + blob.getName(), blob.getName());
+        HashMap<String, Object> metadata = new HashMap(){{
+            put(Constants.METADATA_KEY_SOURCE, "gs://" + blob.getBucket() + "/" + blob.getName());
+            put("bucket", blob.getBucket());
+            put("name", blob.getName());
+            put("contentType", blob.getContentType());
+            put("size", blob.getSize());
+            put("createTime", blob.getCreateTimeOffsetDateTime().toString());
+            put("updateTime", blob.getUpdateTimeOffsetDateTime().toString());
+        }};
+        return new File(content, bucket + "/" + blob.getName(), blob.getName(), blob.getContentType(), metadata);
     }
 } 

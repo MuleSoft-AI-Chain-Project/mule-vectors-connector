@@ -63,6 +63,8 @@ public class StorageOperations {
           new HashMap<String, Object>() {{
             put("path", file.getPath());
             put("fileName", file.getFileName());
+            put("mimeType", file.getMimeType());
+            put("metadata", file.getMetadata());
           }});
     } catch (ModuleException me) {
       throw me;
