@@ -22,7 +22,7 @@ public class AmazonS3Storage {
     private final String awsRegion;
     private final S3Client s3Client;
 
-    public AmazonS3Storage(StorageConfiguration storageConfiguration, AmazonS3StorageConnection amazonS3StorageConnection, String contextPath) {
+    public AmazonS3Storage(StorageConfiguration storageConfiguration, AmazonS3StorageConnection amazonS3StorageConnection) {
         this.awsAccessKeyId = amazonS3StorageConnection.getAwsAccessKeyId();
         this.awsSecretAccessKey = amazonS3StorageConnection.getAwsSecretAccessKey();
         this.awsRegion = amazonS3StorageConnection.getAwsRegion();

@@ -27,13 +27,10 @@ public class GoogleCloudStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(GoogleCloudStorage.class);
 
     public final String projectId;
-    public final String bucket;
     private final Storage storageService;
 
-    public GoogleCloudStorage(StorageConfiguration storageConfiguration, GoogleCloudStorageConnection googleCloudStorageConnection, String contextPath) {
+    public GoogleCloudStorage(StorageConfiguration storageConfiguration, GoogleCloudStorageConnection googleCloudStorageConnection) {
         this.projectId = googleCloudStorageConnection.getProjectId();
-        String[] bucketAndObjectKey = parseContextPath(contextPath);
-        this.bucket = bucketAndObjectKey[0];
         this.storageService = googleCloudStorageConnection.getStorageService();
     }
 

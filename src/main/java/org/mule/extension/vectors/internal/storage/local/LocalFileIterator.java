@@ -11,18 +11,18 @@ import java.util.NoSuchElementException;
 
 public class LocalFileIterator implements FileIterator {
     private final LocalStorage localClient;
-    private final String directory;
+    private final String fullPath;
     private Iterator<Path> pathIterator;
 
     public LocalFileIterator(LocalStorage localClient, String directory) {
         this.localClient = localClient;
-        this.directory = directory;
+        this.fullPath = directory;
         this.pathIterator = null;
     }
 
     private void fetchNextPathIterator() {
         try {
-            DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(directory), Files::isRegularFile);
+            DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(fullPath), Files::isRegularFile);
             pathIterator = stream.iterator();
         } catch (IOException e) {
             pathIterator = Collections.emptyIterator();
@@ -45,7 +45,7 @@ public class LocalFileIterator implements FileIterator {
     public File next() {
         if (!hasNext()) throw new NoSuchElementException();
         Path path = getPathIterator().next();
-        InputStream content = localClient.loadFile(path);
+        InputStream content = localClient.loadSpecificFile(path);
         return new File(content, path.toString(), LocalStorage.parseFileName(path.toString()));
     }
 } 

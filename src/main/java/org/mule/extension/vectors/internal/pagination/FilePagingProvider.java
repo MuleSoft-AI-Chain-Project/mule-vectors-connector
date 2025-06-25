@@ -22,13 +22,13 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPa
 public class FilePagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
 
   private final StorageConfiguration storageConfiguration;
-  private final String directory;
+  private final String conextPath;
   private final StreamingHelper streamingHelper;
   private FileIterator fileIterator;
 
   public FilePagingProvider(StorageConfiguration storageConfiguration, String directory, StreamingHelper streamingHelper) {
     this.storageConfiguration = storageConfiguration;
-    this.directory = directory;
+    this.conextPath = directory;
     this.streamingHelper = streamingHelper;
   }
 
@@ -37,8 +37,8 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
     try {
       if (fileIterator == null) {
         StorageService storageService = StorageServiceFactory.getService(
-            storageConfiguration, connection, directory);
-        fileIterator = storageService.getFileIterator(directory);
+            storageConfiguration, connection);
+        fileIterator = storageService.getFileIterator(conextPath);
       }
       while (fileIterator.hasNext()) {
         File file = fileIterator.next();
@@ -57,7 +57,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
       throw me;
     } catch (Exception e) {
       throw new ModuleException(
-          String.format("Error while getting document from %s.", directory),
+          String.format("Error while getting document from %s.", conextPath),
           MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
           e);
     }

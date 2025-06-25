@@ -56,7 +56,7 @@ public class StorageOperations {
            @Connection BaseStorageConnection storageConnection,
            @ParameterGroup(name = "File") FileParameters fileParameters) {
     try {
-      StorageService storageService = StorageServiceFactory.getService(storageConfiguration, storageConnection, fileParameters.getContextPath());
+      StorageService storageService = StorageServiceFactory.getService(storageConfiguration, storageConnection);
       File file = storageService.getFile(fileParameters.getContextPath());
       return createFileResponse(
           file.getContent(),

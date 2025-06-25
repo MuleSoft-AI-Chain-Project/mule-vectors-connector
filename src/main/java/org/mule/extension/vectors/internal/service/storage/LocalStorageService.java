@@ -17,14 +17,15 @@ public class LocalStorageService implements StorageService {
     }
 
     @Override
-    public File getFile(String path) {
-        Path filePath = Paths.get(path);
-        InputStream content = localClient.loadFile(filePath);
-        return new File(content, path, LocalStorage.parseFileName(path));
+    public File getFile(String contextPath) {
+        InputStream content = localClient.loadFile(contextPath);
+        return new File(content, contextPath, LocalStorage.parseFileName(contextPath));
     }
 
     @Override
-    public FileIterator getFileIterator(String directory) {
-        return new LocalFileIterator(localClient, directory);
+    public FileIterator getFileIterator(String contextPath)
+    {
+        String fullPath = this.localClient.getConnection().getWorkingDir() != null ? this.localClient.getConnection().getWorkingDir() + "/" + contextPath : contextPath;
+        return new LocalFileIterator(localClient, fullPath);
     }
 } 

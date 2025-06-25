@@ -15,21 +15,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LocalStorage {
-    public final String fullPath;
     private final LocalStorageConnection storageConnection;
 
-    public LocalStorage(StorageConfiguration storageConfiguration, LocalStorageConnection storageConnection, String contextPath) {
+    public LocalStorage(StorageConfiguration storageConfiguration, LocalStorageConnection storageConnection) {
         this.storageConnection = storageConnection;
-        this.fullPath = storageConnection.getWorkingDir() != null ? storageConnection.getWorkingDir() + "/" + contextPath : contextPath;
+
     }
+public LocalStorageConnection getConnection(){
+        return  this.storageConnection;
+}
+    public InputStream loadFile(String contextPath) {
+        String fullPath = storageConnection.getWorkingDir() != null ? storageConnection.getWorkingDir() + "/" + contextPath : contextPath;
+        return loadSpecificFile(Path.of(fullPath));
 
-    public InputStream loadFile(Path path) {
+    }
+    public InputStream loadSpecificFile(Path path) {
 
-        if (!Files.isRegularFile(Paths.get(fullPath), new LinkOption[0])) {
+        if (!Files.isRegularFile(path, new LinkOption[0])) {
             throw new IllegalArgumentException(String.format("'%s' is not a file", new Object[]{path}));
         } else {
             try {
-                return  Files.newInputStream(Paths.get(fullPath));
+                return  Files.newInputStream(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

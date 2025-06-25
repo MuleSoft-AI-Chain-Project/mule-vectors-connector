@@ -18,7 +18,7 @@ public class AzureBlobStorage {
     private final String azureKey;
     private final BlobServiceClient blobServiceClient;
 
-    public AzureBlobStorage(StorageConfiguration storageConfiguration, AzureBlobStorageConnection azureBlobStorageConnection, String contextPath) {
+    public AzureBlobStorage(StorageConfiguration storageConfiguration, AzureBlobStorageConnection azureBlobStorageConnection) {
         this.azureName = azureBlobStorageConnection.getAzureName();
         this.azureKey = azureBlobStorageConnection.getAzureKey();
         this.blobServiceClient = azureBlobStorageConnection.getBlobServiceClient();
