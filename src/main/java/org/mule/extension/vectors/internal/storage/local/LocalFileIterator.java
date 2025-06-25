@@ -45,7 +45,7 @@ public class LocalFileIterator implements FileIterator {
     public File next() {
         if (!hasNext()) throw new NoSuchElementException();
         Path path = getPathIterator().next();
-        InputStream content = localClient.loadSpecificFile(path);
+        InputStream content = localClient.loadFile(path);
         return new File(content, path.toString(), LocalStorage.parseFileName(path.toString()));
     }
 } 

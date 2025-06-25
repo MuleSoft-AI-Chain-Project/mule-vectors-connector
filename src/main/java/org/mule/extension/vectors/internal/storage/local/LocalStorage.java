@@ -24,12 +24,7 @@ public class LocalStorage {
 public LocalStorageConnection getConnection(){
         return  this.storageConnection;
 }
-    public InputStream loadFile(String contextPath) {
-        String fullPath = storageConnection.getWorkingDir() != null ? storageConnection.getWorkingDir() + "/" + contextPath : contextPath;
-        return loadSpecificFile(Path.of(fullPath));
-
-    }
-    public InputStream loadSpecificFile(Path path) {
+    public InputStream loadFile(Path path) {
 
         if (!Files.isRegularFile(path, new LinkOption[0])) {
             throw new IllegalArgumentException(String.format("'%s' is not a file", new Object[]{path}));

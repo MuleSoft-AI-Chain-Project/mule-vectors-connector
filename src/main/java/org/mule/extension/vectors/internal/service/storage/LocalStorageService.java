@@ -18,7 +18,8 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public File getFile(String contextPath) {
-        InputStream content = localClient.loadFile(contextPath);
+        String fullPath = localClient.getConnection().getWorkingDir() != null ?  localClient.getConnection().getWorkingDir() + "/" + contextPath : contextPath;
+        InputStream content = localClient.loadFile(Path.of(fullPath));
         return new File(content, contextPath, LocalStorage.parseFileName(contextPath));
     }
 

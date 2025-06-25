@@ -26,11 +26,9 @@ public class GoogleCloudStorage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GoogleCloudStorage.class);
 
-    public final String projectId;
     private final Storage storageService;
 
     public GoogleCloudStorage(StorageConfiguration storageConfiguration, GoogleCloudStorageConnection googleCloudStorageConnection) {
-        this.projectId = googleCloudStorageConnection.getProjectId();
         this.storageService = googleCloudStorageConnection.getStorageService();
     }
 

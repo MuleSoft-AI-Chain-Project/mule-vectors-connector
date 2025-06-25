@@ -27,8 +27,7 @@ public class S3StorageService implements StorageService {
     public FileIterator getFileIterator(String contextPath) {
         String bucket = AmazonS3Storage.parseBucket(contextPath);
         String prefix = AmazonS3Storage.parseKey(contextPath);
-        List<S3Object> objects = s3Client.listFiles(bucket, prefix);
-        return new S3FileIterator(s3Client, bucket, objects);
+        return new S3FileIterator(s3Client, bucket, prefix);
     }
 
 } 
