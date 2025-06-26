@@ -33,18 +33,12 @@ payload..attributes map ((item, index) -> {"attributes": item})]]></ee:set-paylo
 		</ee:transform>
 	</flow>
 	<flow name="parse-operation" doc:id="2000264d-593b-4374-b35e-998b09fbe4f8">
-		<choice doc:name="Choice" doc:id="26fd1966-a650-458a-b073-f0dbf3b90ddb" >
-			<when expression='#[attributes.queryParams.format == "binary"]' >
-				<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="28951baf-f388-4735-8da1-8388a6913b29" config-ref="Transform_config" >
-					<ms-vectors:content ><![CDATA[#[payload.parts.documentBinary.content]]]></ms-vectors:content>
-				</ms-vectors:transform-parse-document>
-			</when>
-			<otherwise >
-				<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="5d9ec8e9-cc86-420d-9eb8-89a372931fe9" config-ref="Transform_config" format="base64">
-					<ms-vectors:content ><![CDATA[#[payload.parts.documentBase64.content]]]></ms-vectors:content>
-				</ms-vectors:transform-parse-document>
-			</otherwise>
-		</choice>
+		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="fb6d3548-fefc-47c8-8e7b-43ecbbaf4bf2" >
+			<ms-vectors:document-binary ><![CDATA[#[payload.parts.documentBinary.content]]]></ms-vectors:document-binary>
+			<ms-vectors:document-parser-parameters >
+				<ms-vectors:multiformat-document-parser-parameters />
+			</ms-vectors:document-parser-parameters>
+		</ms-vectors:transform-parse-document>
 	</flow>
 	<flow name="chunk-operation" doc:id="4e12f92b-f477-425c-9248-7111bbab1b5d" >
 		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
