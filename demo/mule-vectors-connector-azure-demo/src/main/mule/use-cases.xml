@@ -10,7 +10,11 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="25873dff-acf4-4368-a5cd-50e68e8f0e60" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
 		<set-variable value="#[attributes.path]" doc:name="Set path" doc:id="fe8b9573-5801-4c8c-bbaa-f1363412c3a0" variableName="path" />
 		<set-variable value="#[attributes.fileName]" doc:name="Set fileName" doc:id="148d0551-598e-47c2-a16d-2a0c3d44c65a" variableName="fileName"/>
-		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="680eb549-16e9-4158-be9a-22a72c183d5d" config-ref="Transform_config"/>
+		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="02d3eb25-7e20-45f2-b836-3bb8610c4257" config-ref="Transform_config">
+			<ms-vectors:document-parser-parameters >
+				<ms-vectors:multiformat-document-parser-parameters />
+			</ms-vectors:document-parser-parameters>
+		</ms-vectors:transform-parse-document>
 		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="0be211d6-15f9-4f4b-8550-3b714e5fa887" maxSegmentSizeInChar="#[vars.requestQueryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[vars.requestQueryParams.maxOverlapSize default 0]"/>
 		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="2835a3fe-28e1-4407-b4c0-ff681923d8ea" config-ref="Azure_OpenAI_Embedding_Config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002"/>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="efb1dbd4-6a02-4d7c-a5e0-1fe29f08a351" config-ref="AISearch_Store_Config" storeName="demo">

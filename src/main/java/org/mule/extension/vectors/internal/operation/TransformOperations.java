@@ -1,7 +1,5 @@
 package org.mule.extension.vectors.internal.operation;
 
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.segment.TextSegment;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -12,6 +10,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
+import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
@@ -46,52 +45,32 @@ public class TransformOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
 
-  /**
-   * Parse document from a raw binary or base64-encoded content.
-   *
-   * @param payloadParameters parameters for specifying document passed as payload.
-   * @return a {@link Result} containing the document's content as an {@link InputStream} and
-   *         additional metadata in {@link TransformResponseAttributes}.
-   * @throws ModuleException if an error occurs while loading or processing the document.
-   */
+/**
+ * Parse document from a raw binary or base64-encoded content.
+ *
+ * @param transformConfiguration the configuration for the transformation.
+ * @param documentStream the input stream containing the document to parse.
+ * @param documentParser the parser to use for extracting text from the document.
+ * @return a {@link Result} containing the document's content as an {@link InputStream} and
+ *         additional metadata in {@link TransformResponseAttributes}.
+ * @throws ModuleException if an error occurs while loading or processing the document.
+ */
   @MediaType(value = TEXT_PLAIN, strict = false)
   @Alias("Transform-parse-document")
   @DisplayName("[Transform] Parse document")
   @Throws(TransformErrorTypeProvider.class)
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
   parseDocument(@Config TransformConfiguration transformConfiguration,
-                @ParameterGroup(name = "Payload") DocumentPayloadParameters payloadParameters) {
-
-    // TODO: Remove LangChain4J dependency and directly use apache tika for parsing
+                @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
+                @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
 
     try {
 
-      InputStream documentStream;
-
-      LOGGER.debug(String.format("Payload Parameters: %s", payloadParameters));
-
-      if (Constants.PAYLOAD_CONTENT_TYPE_BASE64.equalsIgnoreCase(payloadParameters.getFormat())) {
-
-        byte[] decoded = Base64.getDecoder().decode(payloadParameters.getContent().toString());
-        documentStream = new ByteArrayInputStream(decoded);
-
-      } else if (Constants.PAYLOAD_CONTENT_TYPE_BINARY.equalsIgnoreCase(payloadParameters.getFormat())) {
-
-        documentStream = payloadParameters.getContent(); // Use as-is
-
-      } else {
-
-        throw new IllegalArgumentException("Unsupported format: " + payloadParameters.getFormat());
-      }
-
-      DocumentParser documentParser = Utils.getDocumentParser(payloadParameters.getFileParserType());
-      Document document = documentParser.parse(documentStream);
+      String text = documentParserParameters.getDocumentParser().parse(documentStream);
 
       return createParsedDocumentResponse(
-          document.text(),
-          new HashMap<String, Object>() {{
-            put("payloadContentFormat", payloadParameters.getFormat());
-          }});
+          text,
+          new HashMap<String, Object>() {{}});
 
     } catch (ModuleException me) {
       throw me;
