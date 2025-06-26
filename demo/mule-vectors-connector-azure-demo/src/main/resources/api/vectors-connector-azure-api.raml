@@ -85,16 +85,6 @@ types:
   post:
     description: Accepts a binary file and returns the extracted text content.
     queryParameters:
-      format:
-        description: The document content format
-        type: string
-        enum: [binary, base64]
-        default: binary
-      fileParserType:
-        description: The document file type
-        type: string
-        enum: ['Apache Tika', 'Text']
-        default: 'Apache Tika'
     body:
       multipart/form-data:
         properties:
@@ -102,26 +92,13 @@ types:
             description: The document binary to upload.
             type: file
             required: false
-          documentBase64:
-            description: The document base64 to upload.
-            type: string
-            required: false
     responses:
       200:
         description: Text successfully extracted from the binary file.
         body:
-          application/json:
+          plain/text:
             example:
-              {
-                "text-segments": [
-                  {
-                    "metadata": {
-                      "index": "0"
-                    },
-                    "text": "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
-                  }
-                ]
-              }
+              "Denny Gunawan\n\n221 Queen St\nMelbourne VIC 3000\n\n$39.60123 Somewhere St, Melbourne VIC 3000\n(03) 1234 5678\n\nInvoice Number: #20130304\n\nOrganic Items Price/kg Quantity(kg) Subtotal\n\nApple $5.00 1 $5.00\n\nOrange $1.99 2 $3.98\n\nWatermelon $1.69 3 $5.07\n\nMango $9.56 2 $19.12\n\nPeach $2.99 1 $2.99\n\nSubtotal..."
       400:
         description: Bad Request (e.g., invalid or unsupported file).
         body:

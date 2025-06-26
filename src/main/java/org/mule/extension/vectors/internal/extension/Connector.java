@@ -8,8 +8,10 @@ import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.parameter.ImageProcessorParameters;
-import org.mule.extension.vectors.internal.helper.parameter.MediaProcessorParameters;
+import org.mule.extension.vectors.internal.helper.document.DocumentParser;
+import org.mule.extension.vectors.internal.helper.document.MultiformatDocumentParser;
+import org.mule.extension.vectors.internal.helper.document.TextDocumentParser;
+import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
@@ -29,6 +31,8 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 @Configurations({StorageConfiguration.class, TransformConfiguration.class, EmbeddingConfiguration.class, StoreConfiguration.class})
 @ErrorTypes(MuleVectorsErrorType.class)
 @JavaVersionSupport({JAVA_17})
+@SubTypeMapping(baseType = DocumentParserParameters.class,
+    subTypes = {MultiformatDocumentParserParameters.class, TextDocumentParserParameters.class})
 @SubTypeMapping(baseType = MediaProcessorParameters.class,
     subTypes = {ImageProcessorParameters.class})
 @SubTypeMapping(baseType = HttpProxyConfig.class, subTypes = {DefaultProxyConfig.class, DefaultNtlmProxyConfig.class})
