@@ -5,6 +5,7 @@ import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
 import org.mule.extension.vectors.internal.service.StorageServiceFactory;
 import org.mule.extension.vectors.internal.service.storage.StorageService;
 import org.mule.extension.vectors.internal.storage.FileIterator;
@@ -43,12 +44,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
         if (file == null) continue;
         return createPageFileResponse(
             file.getContent(),
-            new HashMap<String, Object>() {{
-              put("path", file.getPath());
-              put("fileName", file.getFileName());
-              put("mimeType", file.getMimeType());
-              put("metadata", file.getMetadata());
-            }},
+            StoreOperationsHelper.getMetadataMap(file),
             streamingHelper
         );
       }
