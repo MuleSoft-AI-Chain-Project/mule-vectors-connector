@@ -1,13 +1,5 @@
 package org.mule.extension.vectors.internal.operation;
 
-import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.internal.ValidationUtils;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.filter.Filter;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
@@ -15,12 +7,10 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StoreErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
 import org.mule.extension.vectors.internal.service.VectorStoreService;
-import org.mule.extension.vectors.internal.service.VectorStoreServiceFactory;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -38,19 +28,10 @@ import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.joining;
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
 import static org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper.executeStoreOperation;
 import static org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper.parseStoreInput;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;

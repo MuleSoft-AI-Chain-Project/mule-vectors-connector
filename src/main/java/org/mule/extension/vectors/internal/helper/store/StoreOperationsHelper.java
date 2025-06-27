@@ -11,6 +11,7 @@ import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
@@ -27,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -135,5 +137,14 @@ public class StoreOperationsHelper {
                     MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
                     e);
         }
+    }
+
+    public static Map<String, Object> getMetadataMap(File file){
+       return new HashMap<String, Object>() {{
+            put("path", file.getPath());
+            put("fileName", file.getFileName());
+            put("mimeType", file.getMimeType());
+            put("metadata", file.getMetadata());
+        }};
     }
 } 

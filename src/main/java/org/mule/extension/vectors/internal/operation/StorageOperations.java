@@ -8,6 +8,7 @@ import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StorageErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
+import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
 import org.mule.extension.vectors.internal.pagination.FilePagingProvider;
 import org.mule.extension.vectors.internal.service.StorageServiceFactory;
 import org.mule.extension.vectors.internal.service.storage.StorageService;
@@ -60,12 +61,7 @@ public class StorageOperations {
       File file = storageService.getFile(fileParameters.getContextPath());
       return createFileResponse(
           file.getContent(),
-          new HashMap<String, Object>() {{
-            put("path", file.getPath());
-            put("fileName", file.getFileName());
-            put("mimeType", file.getMimeType());
-            put("metadata", file.getMetadata());
-          }});
+          StoreOperationsHelper.getMetadataMap(file));
     } catch (ModuleException me) {
       throw me;
     } catch (Exception e) {
