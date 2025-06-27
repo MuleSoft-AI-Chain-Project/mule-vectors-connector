@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.model.azureopenai;
+package org.mule.extension.vectors.internal.model.azureaivision;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -6,7 +6,7 @@ import dev.langchain4j.model.output.Response;
 import dev.langchain4j.model.output.TokenUsage;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.connection.model.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
 
@@ -14,15 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AzureOpenAIService implements EmbeddingService {
+public class AzureAIVisionService implements EmbeddingService {
 
-  private AzureOpenAIModelConnection azureOpenAIModelConnection;
+  private AzureAIVisionModelConnection azureAIVisionModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;
   private Integer dimensions;
   private static final int BATCH_SIZE = 16;
 
-  public AzureOpenAIService(AzureOpenAIModelConnection azureOpenAIModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
-    this.azureOpenAIModelConnection = azureOpenAIModelConnection;
+  public AzureAIVisionService(AzureAIVisionModelConnection azureAIVisionModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
+    this.azureAIVisionModelConnection = azureAIVisionModelConnection;
     this.embeddingModelParameters = embeddingModelParameters;
     this.dimensions = dimensions;
   }
@@ -39,7 +39,7 @@ public class AzureOpenAIService implements EmbeddingService {
         List<String> batch = texts.subList(x, Math.min(x + BATCH_SIZE, texts.size()));
 
         // Generate embeddings for current batch
-        String response = (String) this.azureOpenAIModelConnection.generateTextEmbeddings(batch, embeddingModelParameters.getEmbeddingModelName());
+        String response = (String) this.azureAIVisionModelConnection.generateTextEmbeddings(batch, embeddingModelParameters.getEmbeddingModelName());
         JSONObject jsonResponse = new JSONObject(response);
 
         // Accumulate token usage
@@ -79,3 +79,4 @@ public class AzureOpenAIService implements EmbeddingService {
     return null;
   }
 }
+
