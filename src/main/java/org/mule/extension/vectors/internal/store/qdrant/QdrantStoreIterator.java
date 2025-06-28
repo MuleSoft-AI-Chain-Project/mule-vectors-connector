@@ -1,6 +1,11 @@
 package org.mule.extension.vectors.internal.store.qdrant;
 
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Struct;
+import com.google.protobuf.Value;
+import com.google.protobuf.util.JsonFormat;
+import io.qdrant.client.grpc.JsonWithInt;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.service.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.store.VectorStoreRow;
@@ -144,6 +149,57 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new ModuleException("Thread was interrupted while fetching Qdrant points", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+    }
+  }
+
+}
+
+final class JsonFactory {
+
+  public static String toJson(Map<String, JsonWithInt.Value> map)
+      throws InvalidProtocolBufferException {
+
+    Struct.Builder structBuilder = Struct.newBuilder();
+    map.forEach((key, value) -> structBuilder.putFields(key, toProtobufValue(value)));
+    return JsonFormat.printer().print(structBuilder.build());
+  }
+
+  private static Value toProtobufValue(io.qdrant.client.grpc.JsonWithInt.Value value) {
+    switch (value.getKindCase()) {
+      case NULL_VALUE:
+        return Value.newBuilder().setNullValueValue(0).build();
+
+      case BOOL_VALUE:
+        return Value.newBuilder().setBoolValue(value.getBoolValue()).build();
+
+      case STRING_VALUE:
+        return Value.newBuilder().setStringValue(value.getStringValue()).build();
+
+      case INTEGER_VALUE:
+        return Value.newBuilder().setNumberValue(value.getIntegerValue()).build();
+
+      case DOUBLE_VALUE:
+        return Value.newBuilder().setNumberValue(value.getDoubleValue()).build();
+
+      case STRUCT_VALUE:
+        Struct.Builder structBuilder = Struct.newBuilder();
+        value.getStructValue()
+            .getFieldsMap()
+            .forEach(
+                (key, val) -> {
+                  structBuilder.putFields(key, toProtobufValue(val));
+                });
+        return Value.newBuilder().setStructValue(structBuilder).build();
+
+      case LIST_VALUE:
+        Value.Builder listBuilder = Value.newBuilder();
+        value.getListValue().getValuesList().stream()
+            .map(JsonFactory::toProtobufValue)
+            .forEach(listBuilder.getListValueBuilder()::addValues);
+        return listBuilder.build();
+
+      default:
+        throw new IllegalArgumentException("Unsupported payload value type: " + value.getKindCase());
     }
   }
 }
