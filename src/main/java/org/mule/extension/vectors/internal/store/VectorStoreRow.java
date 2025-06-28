@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.store;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.internal.ValidationUtils;
+import org.apache.poi.ss.usermodel.Row;
 
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ public class VectorStoreRow<Embedded> {
     if (this == o) {
       return true;
     } else if (o != null && this.getClass() == o.getClass()) {
-      BaseStoreService.Row<?> that = (BaseStoreService.Row)o;
+      VectorStoreRow that = (VectorStoreRow)o;
       return Objects.equals(this.id, that.id) && Objects.equals(this.embedding, that.embedding) && Objects.equals(this.embedded, that.embedded);
     } else {
       return false;
