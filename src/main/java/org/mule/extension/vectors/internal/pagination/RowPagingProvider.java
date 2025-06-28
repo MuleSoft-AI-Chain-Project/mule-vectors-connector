@@ -9,8 +9,9 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.VectorStoreService;
-import org.mule.extension.vectors.internal.service.VectorStoreServiceFactory;
-import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.extension.vectors.internal.service.VectorStoreServiceProviderFactory;
+import org.mule.extension.vectors.internal.service.VectoreStoreIterator;
+import org.mule.extension.vectors.internal.store.VectorStoreRow;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -29,7 +30,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RowPagingProvider.class);
 
-  private Iterator<BaseStoreService.Row<?>> rowIterator;
+  private VectoreStoreIterator rowIterator;
   private StoreConfiguration storeConfiguration;
   private String storeName;
   private QueryParameters queryParams;
@@ -52,28 +53,25 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
     try {
 
-      if(vectorStoreService == null) {
+      if(rowIterator == null) {
 
         OperationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_QUERY_ALL, storeConnection.getVectorStore());
 
-        vectorStoreService = VectorStoreServiceFactory.getInstance(
+        rowIterator = VectorStoreServiceProviderFactory.getInstance(
                 storeConfiguration,
                 storeConnection,
                 storeName,
                 queryParams,
                 0,
-                false);
-
-        rowIterator = vectorStoreService.getRowIterator();
+                false).getFileIterator();
       }
 
       while(rowIterator.hasNext()) {
 
         try {
 
-          BaseStoreService.Row<?> row = rowIterator.next();
-
+          VectorStoreRow<?> row = (VectorStoreRow<?>) rowIterator.next();
           if(row == null) continue; // Skip null media
 
           JSONObject jsonObject = JsonUtils.rowToJson(row);

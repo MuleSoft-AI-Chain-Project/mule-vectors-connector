@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
+import org.mule.extension.vectors.internal.store.VectorStoreRow;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -157,7 +158,7 @@ public final class JsonUtils {
     return jsonObject;
   }
 
-    public static JSONObject rowToJson(BaseStoreService.Row<?> row) {
+    public static JSONObject rowToJson( VectorStoreRow<?> row) {
 
       JSONObject jsonObject = new JSONObject();
       if(row.getEmbedding() != null) jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));

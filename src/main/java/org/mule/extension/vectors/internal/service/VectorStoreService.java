@@ -49,10 +49,4 @@ public interface VectorStoreService {
      */
     void remove(RemoveFilterParameters removeFilterParams);
 
-    /**
-     * Returns an iterator to stream all rows from the vector store.
-     *
-     * @return An iterator for {@link BaseStoreService.Row}.
-     */
-    Iterator<BaseStoreService.Row<?>> getRowIterator();
 } 

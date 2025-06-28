@@ -1,19 +1,15 @@
 package org.mule.extension.vectors.internal.store.pgvector;
 
-import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.embedding.Embedding;
+
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.internal.ValidationUtils;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,17 +69,6 @@ public class PGVectorStore extends BaseStoreService {
         throw new ModuleException("Failed to build PGVector embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
-
-  @Override
-  public Iterator<BaseStoreService.Row<?>> getRowIterator() {
-    try {
-      return new RowIterator();
-    } catch (SQLException e) {
-        handleSQLException(e);
-        return null; // Should not be reached due to exception being thrown
-    }
-  }
-
   private void handleSQLException(SQLException e) {
     LOGGER.error("SQL error", e);
     String sqlState = e.getSQLState();
@@ -201,50 +186,4 @@ public class PGVectorStore extends BaseStoreService {
     }
   }
 
-  public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
-
-    private final PgVectorMetadataIterator iterator;
-
-    public RowIterator() throws SQLException {
-      this.iterator = new PgVectorMetadataIterator(storeName, (int) queryParams.pageSize());
-    }
-
-    @Override
-    public boolean hasNext() {
-      return iterator.hasNext();
-    }
-
-    @Override
-    public BaseStoreService.Row<?> next() {
-      try {
-
-        ResultSet resultSet = iterator.next();
-        if (resultSet == null) {
-          throw new NoSuchElementException("No more elements available");
-        }
-
-        String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
-        float[] vector = null;
-        if(queryParams.retrieveEmbeddings()) {
-          String vectorString = resultSet.getString(VECTOR_DEFAULT_FIELD_NAME);
-          String[] vectorStringArray =
-              vectorString.replace("{", "").replace("}", "").replace("[", "").replace("]", "").split(",");
-          vector = new float[vectorStringArray.length];
-          for (int i = 0; i < vectorStringArray.length; i++) {
-            vector[i] = Float.parseFloat(vectorStringArray[i].trim());
-          }
-        }
-        String text = resultSet.getString(TEXT_DEFAULT_FIELD_NAME);
-        JSONObject metadataObject = new JSONObject(resultSet.getString(METADATA_DEFAULT_FIELD_NAME));
-
-        return new BaseStoreService.Row<TextSegment>(embeddingId,
-                                    vector != null ? new Embedding(vector) : null,
-                                    new TextSegment(text, Metadata.from(metadataObject.toMap())));
-
-      } catch (SQLException e) {
-        handleSQLException(e);
-        throw new NoSuchElementException("Error processing next row");
-      }
-    }
-  }
 }

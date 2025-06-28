@@ -11,11 +11,12 @@ import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.VectorStoreService;
-import org.mule.extension.vectors.internal.service.VectorStoreServiceFactory;
+import org.mule.extension.vectors.internal.service.VectorStoreServiceProviderFactory;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -27,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -112,12 +114,12 @@ public class StoreOperationsHelper {
             HashMap<String, Object> attributes) throws ModuleException {
 
         try {
-            VectorStoreService vectorStoreService = VectorStoreServiceFactory.getInstance(storeConfiguration,
-                    storeConnection,
-                    storeName,
-                    queryParams,
-                    dimension,
-                    createStore);
+            VectorStoreService vectorStoreService = VectorStoreServiceProviderFactory.getInstance(storeConfiguration,
+                                                                                                  storeConnection,
+                                                                                                  storeName,
+                                                                                                  queryParams,
+                                                                                                  dimension,
+                                                                                                  createStore).getService();
 
             T operationResult = operation.apply(vectorStoreService);
             JSONObject jsonObject = responseBuilder.apply(operationResult);
@@ -135,5 +137,14 @@ public class StoreOperationsHelper {
                     MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
                     e);
         }
+    }
+
+    public static Map<String, Object> getMetadataMap(File file){
+       return new HashMap<String, Object>() {{
+            put("path", file.getPath());
+            put("fileName", file.getFileName());
+            put("mimeType", file.getMimeType());
+            put("metadata", file.getMetadata());
+        }};
     }
 } 
