@@ -1,35 +1,16 @@
 package org.mule.extension.vectors.internal.store.pinecone;
-
-import com.google.protobuf.Value;
-import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.internal.ValidationUtils;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeServerlessIndexConfig;
-import io.grpc.StatusRuntimeException;
-import io.pinecone.clients.Index;
-import io.pinecone.clients.Pinecone;
-import io.pinecone.proto.FetchResponse;
-import io.pinecone.proto.ListResponse;
-import io.pinecone.proto.Vector;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.store.BaseStoreService;
-import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 public class PineconeStore extends BaseStoreService {
 
@@ -74,160 +55,5 @@ public class PineconeStore extends BaseStoreService {
                         .build();
     }
 
-    @Override
-    public Iterator<BaseStoreService.Row<?>> getRowIterator() {
-        try {
-            return new PineconeStore.RowIterator();
-        } catch (StatusRuntimeException e) {
-            LOGGER.error("Authentication error while creating Pinecone row iterator", e);
-            throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
-        } catch (Exception e) {
-            LOGGER.error("Error while creating Pinecone row iterator", e);
-            throw new ModuleException("Failed to create Pinecone iterator: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-        }
-    }
 
-    public class RowIterator implements Iterator<BaseStoreService.Row<?>> {
-
-        private final Pinecone client;
-        private final Index index;
-        private Iterator<io.pinecone.proto.Vector> vectorIterator = Collections.emptyIterator();
-        private boolean hasMorePages = true;
-        private String paginationToken = null;
-
-        public RowIterator() {
-            try {
-                this.client = new Pinecone.Builder(apiKey).build();
-                this.index = client.getIndexConnection(storeName);
-                fetchNextPage(); // Load first batch
-            } catch (StatusRuntimeException e) {
-                throw new ModuleException("Authentication failed while connecting to Pinecone: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
-            } catch (Exception e) {
-                throw new ModuleException("Failed to initialize Pinecone connection: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            if (!vectorIterator.hasNext() && hasMorePages) {
-                fetchNextPage();
-            }
-            return vectorIterator.hasNext();
-        }
-
-        @Override
-        public BaseStoreService.Row<?> next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            try {
-                Vector entry = vectorIterator.next();
-                String id = entry.getId();
-                String text = "";
-
-                Map<String, Object> metadataMap = entry.getMetadata().getFieldsMap().entrySet().stream()
-                        .filter(e -> !"text_segment".equals(e.getKey())) // Exclude key "text_segment"
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> ProtobufValueConverter.convertProtobufValue(e.getValue())));
-
-                text = entry.getMetadata().getFieldsMap().get("text_segment").getStringValue();
-
-                float[] vector = null;
-
-                if (queryParams.retrieveEmbeddings()) {
-                    List<Float> floatList = entry.getValuesList();  // Assuming this is your List<Float>
-                    vector = new float[floatList.size()];
-                    for (int i = 0; i < floatList.size(); i++) {
-                        vector[i] = floatList.get(i);  // Unbox each Float to primitive float
-                    }
-                }
-
-                return new BaseStoreService.Row<>(
-                        id,
-                        vector != null ? new Embedding(vector) : null,
-                        new TextSegment(text, Metadata.from(metadataMap))
-                );
-
-            } catch (NoSuchElementException e) {
-                throw e; // rethrow to signal end of iteration
-            } catch (Exception e) {
-                LOGGER.error("Error while fetching next row", e);
-                throw new ModuleException("Error processing next row: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-            }
-        }
-
-        private void fetchNextPage() {
-            try {
-                if (!hasMorePages) return;
-
-                List<String> idBatch = getNextBatchOfIds((int) queryParams.pageSize());
-                if (idBatch.isEmpty()) {
-                    hasMorePages = false;
-                    return;
-                }
-
-                FetchResponse response = index.fetch(idBatch, "ns0mc_" + storeName);
-                if (response.getVectorsCount() > 0) {
-                    vectorIterator = response.getVectorsMap().values().iterator();
-                } else {
-                    hasMorePages = false;
-                }
-
-            } catch (StatusRuntimeException e) {
-                LOGGER.error("Authentication error fetching Pinecone points", e);
-                throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
-            } catch (IllegalArgumentException e) {
-                LOGGER.error("Invalid request fetching Pinecone points", e);
-                throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
-            } catch (Exception e) {
-                LOGGER.error("Error fetching Pinecone points", e);
-                throw new ModuleException("Error fetching from Pinecone", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-            }
-        }
-
-        private List<String> getNextBatchOfIds(int limit) {
-            try {
-                ListResponse listResponse = paginationToken == null
-                        ? index.list("ns0mc_" + storeName, limit)
-                        : index.list(paginationToken, limit);
-
-                List<String> ids = listResponse.getVectorsList().stream()
-                        .map(vector -> vector.getId())
-                        .collect(Collectors.toList());
-
-                paginationToken = listResponse.getPagination().getNext();
-                hasMorePages = paginationToken != null && !paginationToken.isEmpty();
-
-                return ids;
-
-            } catch (StatusRuntimeException e) {
-                LOGGER.error("Authentication error retrieving batch of IDs", e);
-                throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
-            } catch (IllegalArgumentException e) {
-                LOGGER.error("Invalid request retrieving batch of IDs", e);
-                throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
-            } catch (Exception e) {
-                LOGGER.error("Error retrieving next batch of IDs", e);
-                throw new ModuleException("Error fetching from Pinecone", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-            }
-        }
-    }
-
-    public static class ProtobufValueConverter {
-        public static Object convertProtobufValue(Value value) {
-            if (value == null) return null;
-            if (value.hasStringValue()) return value.getStringValue();
-            if (value.hasNumberValue()) {
-                double num = value.getNumberValue();
-                return num == (long) num ? (long) num : num;
-            }
-            if (value.hasBoolValue()) return value.getBoolValue();
-            if (value.hasListValue()) {
-                return value.getListValue().getValuesList().stream()
-                        .map(ProtobufValueConverter::convertProtobufValue)
-                        .collect(Collectors.toList());
-            }
-            if (value.hasStructValue()) return value.getStructValue().getFieldsMap();
-            return null;
-        }
-    }
 }
