@@ -55,11 +55,8 @@ public class ChromaStore extends BaseStoreService {
         super(storeConfiguration, chromaStoreConnection, storeName, dimension, createStore);
         this.chromaStoreConnection = chromaStoreConnection;
         this.queryParams = queryParams;
-        try {
-            this.collectionId = getCollectionId();
-        } catch (IOException e) {
-            throw new ModuleException("Failed to get collection ID from Chroma", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-        }
+        this.collectionId = getCollectionId();
+
     }
 
     @Override
@@ -117,10 +114,17 @@ public class ChromaStore extends BaseStoreService {
         return count;
     }
 
-    private String getCollectionId() throws IOException {
-        String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
-        JSONObject collection = new JSONObject(jsonResponse);
-        return collection.getString("id");
+    private String getCollectionId()   {
+        try{
+            String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
+            JSONObject collection = new JSONObject(jsonResponse);
+            return collection.getString("id");
+        } catch (Exception e){
+            if(!this.createStore)
+            throw new ModuleException("Failed to get collection ID from Chroma", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        }
+        return "";
+
     }
 
 }
