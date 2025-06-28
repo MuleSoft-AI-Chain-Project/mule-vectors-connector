@@ -46,15 +46,19 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
   public ChromaStoreIterator(
       ChromaStoreConnection chromaStoreConnection,
       String storeName,
-      QueryParameters queryParams,
-      String collectionId
-  ) throws IOException {
+      QueryParameters queryParams
+  ) throws ModuleException {
     this.chromaStoreConnection = chromaStoreConnection;
     this.storeName = storeName;
     this.queryParams = queryParams;
-    this.collectionId = collectionId;
-    this.totalCount = getSegmentCount();
-    loadNextPage();
+    try{
+      this.collectionId = getCollectionId();
+      this.totalCount = getSegmentCount();
+      loadNextPage();
+    } catch (IOException e){
+      throw new ModuleException("Chroma API request failed: ",  MuleVectorsErrorType.STORE_SERVICES_FAILURE, e );
+    }
+
   }
 
   private String getJsonResponse(String endpoint, String jsonBody) {
@@ -103,7 +107,11 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     LOGGER.debug("Segment count {}", count);
     return count;
   }
-
+  private String getCollectionId() throws IOException {
+    String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
+    JSONObject collection = new JSONObject(jsonResponse);
+    return collection.getString("id");
+  }
   private void loadNextPage() throws IOException {
     if (ids.size() >= totalCount) {
       return;

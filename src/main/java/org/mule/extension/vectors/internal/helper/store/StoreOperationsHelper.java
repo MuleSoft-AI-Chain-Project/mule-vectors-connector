@@ -16,7 +16,7 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.VectorStoreService;
-import org.mule.extension.vectors.internal.service.VectorStoreServiceFactory;
+import org.mule.extension.vectors.internal.service.VectorStoreServiceProviderFactory;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -114,12 +114,12 @@ public class StoreOperationsHelper {
             HashMap<String, Object> attributes) throws ModuleException {
 
         try {
-            VectorStoreService vectorStoreService = VectorStoreServiceFactory.getInstance(storeConfiguration,
-                    storeConnection,
-                    storeName,
-                    queryParams,
-                    dimension,
-                    createStore);
+            VectorStoreService vectorStoreService = VectorStoreServiceProviderFactory.getInstance(storeConfiguration,
+                                                                                                  storeConnection,
+                                                                                                  storeName,
+                                                                                                  queryParams,
+                                                                                                  dimension,
+                                                                                                  createStore).getService();
 
             T operationResult = operation.apply(vectorStoreService);
             JSONObject jsonObject = responseBuilder.apply(operationResult);
