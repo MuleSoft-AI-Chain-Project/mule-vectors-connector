@@ -46,6 +46,26 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
         this.httpClient = httpClient;
     }
 
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+
+    public String getApiVersion() {
+        return this.apiVersion;
+    }
+
+    public String getApiKey() {
+        return this.apiKey;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public long getTimeout() {
+        return this.timeout;
+    }
+
     @Override
     public String getEmbeddingModelService() {
         return Constants.EMBEDDING_MODEL_SERVICE_AZURE_AI_VISION;

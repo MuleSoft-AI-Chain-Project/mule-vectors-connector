@@ -25,6 +25,7 @@ import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProv
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.model.BaseModel;
 import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
+import org.mule.extension.vectors.internal.service.embedding.EmbeddingServiceFactoryBuilder;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
@@ -69,69 +70,83 @@ public class EmbeddingOperations {
 
     try {
 
-      BaseModel baseModel = BaseModel.builder()
-          .configuration(embeddingConfiguration)
-          .connection(modelConnection)
-          .embeddingModelParameters(embeddingModelParameters)
-          .build();
+      // BaseModel baseModel = BaseModel.builder()
+      //     .configuration(embeddingConfiguration)
+      //     .connection(modelConnection)
+      //     .embeddingModelParameters(embeddingModelParameters)
+      //     .build();
 
       List<TextSegment> textSegments = new LinkedList<>();
       List<Embedding> embeddings = new LinkedList<>();
       TokenUsage tokenUsage = null;
       int dimension = 0;
 
-      try {
-
-        switch(embeddingModelParameters.getEmbeddingModelType()) {
-
-          case MULTIMODAL:
-
-            EmbeddingMultimodalModel embeddingMultimodalModel = baseModel.buildEmbeddingMultimodalModel();
-            LOGGER.debug(String.format("Embedding multimodal model for %s service built.", modelConnection.getEmbeddingModelService()));
-            textSegments.add(TextSegment.from(inputs.get(0), new Metadata().put(Constants.METADATA_KEY_INDEX, 0)));
-            Response<Embedding> multimodalResponse = embeddingMultimodalModel.embedText(inputs.get(0));
-            embeddings.add(multimodalResponse.content());
-            tokenUsage = multimodalResponse.tokenUsage() != null ?
-                new TokenUsage(multimodalResponse.tokenUsage().inputTokenCount(),
-                               multimodalResponse.tokenUsage().outputTokenCount(),
-                               multimodalResponse.tokenUsage().totalTokenCount())
-                : null;
-            dimension = embeddingMultimodalModel.dimension();
-            break;
-
-          case TEXT:
-          default:
-
-            EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
-            LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
-
-            for (int i = 0; i < inputs.size(); i++) {
-              textSegments.add(TextSegment.from(
-                  inputs.get(i),
-                  new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
-            }
-            Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
-            embeddings = textResponse.content();
-            tokenUsage = textResponse.tokenUsage() != null ?
-                new TokenUsage(textResponse.tokenUsage().inputTokenCount() != null ? textResponse.tokenUsage().inputTokenCount() : 0,
-                               textResponse.tokenUsage().outputTokenCount() != null ? textResponse.tokenUsage().outputTokenCount() : 0,
-                               textResponse.tokenUsage().totalTokenCount() != null ? textResponse.tokenUsage().totalTokenCount(): 0)
-                : null;
-            dimension = embeddingModel.dimension();
-            break;
-        }
-
-      }  catch(ModuleException e) {
-
-        throw e;
-
-      } catch(Exception e) {
-
-        throw new ModuleException(
-            String.format("Error while generating embedding from text \"%s\"", inputs),
-            MuleVectorsErrorType.AI_SERVICES_FAILURE,
-            e);
+      for (int i = 0; i < inputs.size(); i++) {
+        textSegments.add(TextSegment.from(
+            inputs.get(i),
+            new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
       }
+      Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection).getServiceProvider().getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
+
+      embeddings = embeddingsResponse.content();
+      tokenUsage = embeddingsResponse.tokenUsage() != null ?
+          new TokenUsage(embeddingsResponse.tokenUsage().inputTokenCount() != null ? embeddingsResponse.tokenUsage().inputTokenCount() : 0,
+                          embeddingsResponse.tokenUsage().outputTokenCount() != null ? embeddingsResponse.tokenUsage().outputTokenCount() : 0,
+                          embeddingsResponse.tokenUsage().totalTokenCount() != null ? embeddingsResponse.tokenUsage().totalTokenCount(): 0)
+          : null;
+
+      // try {
+
+      //   switch(embeddingModelParameters.getEmbeddingModelType()) {
+
+      //     case MULTIMODAL:
+
+      //       EmbeddingMultimodalModel embeddingMultimodalModel = baseModel.buildEmbeddingMultimodalModel();
+      //       LOGGER.debug(String.format("Embedding multimodal model for %s service built.", modelConnection.getEmbeddingModelService()));
+      //       textSegments.add(TextSegment.from(inputs.get(0), new Metadata().put(Constants.METADATA_KEY_INDEX, 0)));
+      //       Response<Embedding> multimodalResponse = embeddingMultimodalModel.embedText(inputs.get(0));
+      //       embeddings.add(multimodalResponse.content());
+      //       tokenUsage = multimodalResponse.tokenUsage() != null ?
+      //           new TokenUsage(multimodalResponse.tokenUsage().inputTokenCount(),
+      //                          multimodalResponse.tokenUsage().outputTokenCount(),
+      //                          multimodalResponse.tokenUsage().totalTokenCount())
+      //           : null;
+      //       dimension = embeddingMultimodalModel.dimension();
+      //       break;
+
+      //     case TEXT:
+      //     default:
+
+      //       EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
+      //       LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
+
+      //       for (int i = 0; i < inputs.size(); i++) {
+      //         textSegments.add(TextSegment.from(
+      //             inputs.get(i),
+      //             new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
+      //       }
+      //       Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
+      //       embeddings = textResponse.content();
+      //       tokenUsage = textResponse.tokenUsage() != null ?
+      //           new TokenUsage(textResponse.tokenUsage().inputTokenCount() != null ? textResponse.tokenUsage().inputTokenCount() : 0,
+      //                          textResponse.tokenUsage().outputTokenCount() != null ? textResponse.tokenUsage().outputTokenCount() : 0,
+      //                          textResponse.tokenUsage().totalTokenCount() != null ? textResponse.tokenUsage().totalTokenCount(): 0)
+      //           : null;
+      //       dimension = embeddingModel.dimension();
+      //       break;
+      //   }
+
+      // }  catch(ModuleException e) {
+
+      //   throw e;
+
+      // } catch(Exception e) {
+
+      //   throw new ModuleException(
+      //       String.format("Error while generating embedding from text \"%s\"", inputs),
+      //       MuleVectorsErrorType.AI_SERVICES_FAILURE,
+      //       e);
+      // }
 
       JSONObject jsonObject = new JSONObject();
 
