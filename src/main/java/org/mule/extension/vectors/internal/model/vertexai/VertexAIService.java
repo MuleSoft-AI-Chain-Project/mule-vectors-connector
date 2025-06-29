@@ -57,15 +57,15 @@ public class VertexAIService implements EmbeddingService {
                 for (int j = 0; j < values.length(); j++) {
                     vector.add((float) values.getDouble(j));
                 }
-                
-                allEmbeddings.add(Embedding.from(vector));
+                embeddings.add(Embedding.from(vector));
             }
+            allEmbeddings.addAll(embeddings);
         } catch (Exception e) {
             LOGGER.error("Error generating embeddings", e);
             throw new RuntimeException("Failed to generate embeddings", e);
         }
-        return Response.from(allEmbeddings);
       }
+      return Response.from(allEmbeddings);
     }
 
     @Override
