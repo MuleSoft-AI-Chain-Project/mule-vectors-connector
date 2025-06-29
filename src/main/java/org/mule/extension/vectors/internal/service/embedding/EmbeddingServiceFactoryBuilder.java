@@ -29,27 +29,35 @@ public class EmbeddingServiceFactoryBuilder {
 
       case Constants.EMBEDDING_MODEL_SERVICE_AZURE_OPENAI:
         serviceProvider = new AzureopenAIServiceProvider();
+        break;
       
       case Constants.EMBEDDING_MODEL_SERVICE_EINSTEIN:
         serviceProvider = new EinsteinServiceProvider();
+        break;
 
       case Constants.EMBEDDING_MODEL_SERVICE_HUGGING_FACE:
         serviceProvider = new HuggingFaceServiceProvider();
+        break;
       
       case Constants.EMBEDDING_MODEL_SERVICE_MISTRAL_AI:
         serviceProvider = new MistralAIServiceProvider();
+        break;
 
       case Constants.EMBEDDING_MODEL_SERVICE_NOMIC:
         serviceProvider = new NomicServiceProvider();
+        break;
 
       case Constants.EMBEDDING_MODEL_SERVICE_OLLAMA:
         serviceProvider = new OllamaServiceProvider();
+        break;
 
       case Constants.EMBEDDING_MODEL_SERVICE_OPENAI:
         serviceProvider = new OpenAIServiceProvider();
+        break;
 
       case Constants.EMBEDDING_MODEL_SERVICE_VERTEX_AI:
         serviceProvider = new VertexAIServiceProvider();
+        break;
     }
     return serviceProvider;
   }
