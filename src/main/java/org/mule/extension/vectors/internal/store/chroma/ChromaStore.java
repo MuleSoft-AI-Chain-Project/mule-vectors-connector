@@ -106,14 +106,6 @@ public class ChromaStore extends BaseStoreService {
         }
     }
 
-    private int getSegmentCount() throws IOException {
-        if (collectionId == null) return 0;
-        String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId + "/count", null);
-        Integer count = Integer.parseInt(jsonResponse.toString());
-        LOGGER.debug("Segment count {}", count);
-        return count;
-    }
-
     private String getCollectionId()   {
         try{
             String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
