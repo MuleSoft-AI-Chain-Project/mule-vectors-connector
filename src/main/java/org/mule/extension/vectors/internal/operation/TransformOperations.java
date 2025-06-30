@@ -44,6 +44,7 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 public class TransformOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
+  private final org.mule.extension.vectors.internal.service.TransformService transformService = new org.mule.extension.vectors.internal.service.TransformService();
 
 /**
  * Parse document from a raw binary or base64-encoded content.
@@ -63,24 +64,7 @@ public class TransformOperations {
   parseDocument(@Config TransformConfiguration transformConfiguration,
                 @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
                 @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
-
-    try {
-
-      String text = documentParserParameters.getDocumentParser().parse(documentStream);
-
-      return createParsedDocumentResponse(
-          text,
-          new HashMap<String, Object>() {{}});
-
-    } catch (ModuleException me) {
-      throw me;
-
-    } catch (Exception e) {
-      throw new ModuleException(
-          String.format("Error while parsing document."),
-          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-          e);
-    }
+    return transformService.parseDocument(transformConfiguration, documentStream, documentParserParameters);
   }
 
   /**
@@ -104,34 +88,7 @@ public class TransformOperations {
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
   chunkText(@Alias("text") @DisplayName("Text") @Content String text,
             @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
-
-    // TODO: Remove LangChain4J dependency and build internal library for chunking
-
-    try {
-
-      List<TextSegment> textSegments = Utils.splitTextIntoTextSegments(text,
-                                                     segmentationParameters.getMaxSegmentSizeInChars(),
-                                                     segmentationParameters.getMaxOverlapSizeInChars());
-
-      JSONArray responseJsonArray = new JSONArray();
-
-      for(TextSegment textSegment : textSegments){
-        responseJsonArray.put(textSegment.text());
-      }
-
-      return createChunkedTextResponse(
-          responseJsonArray.toString(),
-          new HashMap<String, Object>() {});
-
-    } catch (ModuleException me) {
-      throw me;
-
-    } catch (Exception e) {
-      throw new ModuleException(
-          String.format("Error while chunking text."),
-          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-          e);
-    }
+    return transformService.chunkText(text, segmentationParameters);
   }
 
   @MediaType(value = APPLICATION_OCTET_STREAM, strict = false)
@@ -140,48 +97,6 @@ public class TransformOperations {
   @Throws(EmbeddingErrorTypeProvider.class)
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
   processMedia(@ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
-
-    try {
-
-      // Convert InputStream to byte array
-      byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
-
-      MediaProcessor mediaProcessor = null;
-
-      if(mediaBinaryParameters.getMediaProcessorParameters() != null) {
-
-        if(mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
-
-          ImageProcessorParameters imageProcessorParameters =
-              (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
-
-          mediaProcessor = ImageProcessor.builder()
-              .targetWidth(imageProcessorParameters.getTargetWidth())
-              .targetHeight(imageProcessorParameters.getTargetHeight())
-              .compressionQuality(imageProcessorParameters.getCompressionQuality())
-              .scaleStrategy(imageProcessorParameters.getScaleStrategy())
-              .build();
-
-          mediaBytes = mediaProcessor.process(mediaBytes);
-        }
-      }
-
-      return createProcessedMediaResponse(
-          new ByteArrayInputStream(mediaBytes),
-          new HashMap<String, Object>() {{
-            put("mediaType", mediaBinaryParameters.getMediaType());
-          }}
-      );
-
-    } catch(ModuleException me) {
-
-      throw me;
-
-    } catch (Exception e) {
-      throw new ModuleException(
-          "Error while processing media",
-          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-          e);
-    }
+    return transformService.processMedia(mediaBinaryParameters);
   }
 }
