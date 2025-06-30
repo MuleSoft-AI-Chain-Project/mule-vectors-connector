@@ -8,8 +8,7 @@ package org.mule.extension.vectors.internal.connection.model.vertexai;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
@@ -36,7 +35,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class VertexAIModelConnection implements BaseTextModelConnection, BaseImageModelConnection {
+public class VertexAIModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VertexAIModelConnection.class);
 
@@ -47,9 +46,6 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
     private static final String AUDIENCE = "https://oauth2.googleapis.com/token";
     private static final String[] SCOPES = {"https://www.googleapis.com/auth/cloud-platform"};
     private static final String JWT_HEADER = "{\"alg\":\"RS256\",\"typ\":\"JWT\"}";
-
-    // Vertex AI Constants
-    private static final String VERTEX_AI_ENDPOINT_FORMAT = "https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict";
 
     // Security Constants
     private static final String RSA_ALGORITHM = "RSA";
@@ -82,6 +78,42 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
         this.objectMapper = new ObjectMapper();
     }
 
+    public String getLocation() {
+        return this.location;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public String getProjectId() {
+        return this.projectId;
+    }
+
+    public String getPrivateKeyId() {
+        return privateKeyId;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return this.objectMapper;
+    }
+
+    public long getTotalTimeout() {
+        return timeout;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
     @Override
     public void disconnect() {
         // HttpClient lifecycle is managed by the provider
@@ -97,27 +129,7 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
         }
     }
 
-    public String getPrivateKeyId() {
-        return privateKeyId;
-    }
-
-    public String getPrivateKey() {
-        return privateKey;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public long getTotalTimeout() {
-        return timeout;
-    }
-
-    public int getBatchSize() {
-        return batchSize;
-    }
-
-    private CompletableFuture<String> getOrRefreshToken() {
+    public CompletableFuture<String> getOrRefreshToken() {
         String currentToken = accessToken.get();
         if (currentToken != null) {
             return validateAccessTokenAsync(currentToken).thenCompose(isValid -> {
@@ -174,70 +186,6 @@ public class VertexAIModelConnection implements BaseTextModelConnection, BaseIma
                     });
         } catch (Exception e) {
             return CompletableFuture.failedFuture(new ModuleException("Failed to create JWT for access token", MuleVectorsErrorType.INVALID_CONNECTION, e));
-        }
-    }
-
-    @Override
-    public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-        return executeEmbeddingRequest(buildTextPayload(inputs, modelName), modelName);
-    }
-
-    @Override
-    public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {
-        return executeEmbeddingRequest(buildImagePayload(imageBytesList), modelName);
-    }
-    
-    private String executeEmbeddingRequest(String payload, String modelName) {
-        try {
-            return getOrRefreshToken()
-                    .thenCompose(token -> {
-                        String url = String.format(VERTEX_AI_ENDPOINT_FORMAT, location, projectId, location, modelName);
-                        Map<String, String> headers = Map.of("Authorization", "Bearer " + token, "Content-Type", "application/json");
-                        return HttpRequestHelper.executePostRequest(httpClient, url, headers, payload.getBytes(StandardCharsets.UTF_8), (int) timeout);
-                    })
-                    .thenApply(this::handleEmbeddingResponse).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            if (e.getCause() instanceof ModuleException) {
-                throw (ModuleException) e.getCause();
-            }
-            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private String handleEmbeddingResponse(HttpResponse response) {
-        if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Failed to generate embeddings");
-        }
-        try {
-            return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private String buildTextPayload(List<String> inputs, String modelName) {
-        List<Map<String, String>> instances = inputs.stream()
-                .map(input -> Map.of(modelName.startsWith("text") ? "content" : "text", input))
-                .collect(Collectors.toList());
-        return buildPayload(instances);
-    }
-    
-    private String buildImagePayload(List<byte[]> imageBytesList) {
-        List<Map<String, Map<String, String>>> instances = imageBytesList.stream()
-                .map(imageBytes -> {
-                    String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
-                    return Map.of("image", Map.of("bytesBase64Encoded", encodedImage));
-                })
-                .collect(Collectors.toList());
-        return buildPayload(instances);
-    }
-
-    private String buildPayload(List<?> instances) {
-        try {
-            return objectMapper.writeValueAsString(Map.of("instances", instances));
-        } catch (JsonProcessingException e) {
-            throw new ModuleException("Failed to build request payload", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e);
         }
     }
     

@@ -8,7 +8,8 @@ package org.mule.extension.vectors.internal.connection.model.azureopenai;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
@@ -28,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class AzureOpenAIModelConnection implements BaseTextModelConnection {
+public class AzureOpenAIModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIModelConnection.class);
 
@@ -46,6 +47,26 @@ public class AzureOpenAIModelConnection implements BaseTextModelConnection {
         this.timeout = timeout;
         this.httpClient = httpClient;
         this.objectMapper = new ObjectMapper();
+    }
+
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+
+    public String getApiVersion() {
+        return this.apiVersion;
+    }
+
+    public String getApiKey() {
+        return this.apiKey;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public long getTimeout() {
+        return this.timeout;
     }
 
     @Override
@@ -88,47 +109,6 @@ public class AzureOpenAIModelConnection implements BaseTextModelConnection {
                         handleErrorResponse(response, "Failed to validate credentials");
                     }
                 });
-    }
-
-    @Override
-    public Object generateTextEmbeddings(List<String> inputs, String deploymentName) {
-        if (inputs == null || inputs.isEmpty()) {
-            throw new IllegalArgumentException("Input list cannot be null or empty");
-        }
-        if (deploymentName == null || deploymentName.isEmpty()) {
-            throw new IllegalArgumentException("Deployment name cannot be null or empty");
-        }
-        try {
-            return generateTextEmbeddingsAsync(inputs, deploymentName).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            if (e.getCause() instanceof ModuleException) {
-                throw (ModuleException) e.getCause();
-            }
-            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private CompletableFuture<String> generateTextEmbeddingsAsync(List<String> inputs, String deploymentName) {
-        String url = buildUrlForDeployment(deploymentName);
-        try {
-            byte[] body = buildTextEmbeddingPayload(inputs);
-            return HttpRequestHelper.executePostRequest(httpClient, url, buildHeaders(), body, (int) timeout)
-                    .thenApply(this::handleEmbeddingResponse);
-        } catch (JsonProcessingException e) {
-            return CompletableFuture.failedFuture(new ModuleException("Failed to create request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
-        }
-    }
-
-    private String handleEmbeddingResponse(HttpResponse response) {
-        if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Error generating embeddings");
-        }
-        try {
-            return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
     }
 
     private String buildUrlForDeployment(String deploymentName) {

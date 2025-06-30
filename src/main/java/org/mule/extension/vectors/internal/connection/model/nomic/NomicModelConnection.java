@@ -8,8 +8,7 @@ package org.mule.extension.vectors.internal.connection.model.nomic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
@@ -34,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 
 @Alias("nomic")
 @DisplayName("Nomic")
-public class NomicModelConnection implements BaseTextModelConnection, BaseImageModelConnection {
+public class NomicModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NomicModelConnection.class);
     private static final String BASE_URL = "https://api-atlas.nomic.ai/v1/";
@@ -55,6 +54,14 @@ public class NomicModelConnection implements BaseTextModelConnection, BaseImageM
 
     public String getApiKey() {
         return apiKey;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public long getTimeout() {
+        return this.timeout;
     }
     
     @Override
@@ -92,88 +99,11 @@ public class NomicModelConnection implements BaseTextModelConnection, BaseImageM
         }
     }
 
-    @Override
-    public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {
-        if (imageBytesList == null || imageBytesList.isEmpty()) {
-            throw new IllegalArgumentException("No images provided for embedding.");
-        }
-        try {
-            return generateImageEmbeddingsAsync(imageBytesList, modelName).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            if (e.getCause() instanceof ModuleException) {
-                throw (ModuleException) e.getCause();
-            }
-            throw new ModuleException("Failed to generate image embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private CompletableFuture<String> generateImageEmbeddingsAsync(List<byte[]> imageBytesList, String modelName) {
-        List<HttpPart> parts = buildImageMultipartPayload(imageBytesList, modelName);
-        return HttpRequestHelper.executeMultipartPostRequest(httpClient, IMAGE_EMBEDDING_URL, buildAuthHeaders(), parts, (int) timeout)
-                .thenApply(this::handleEmbeddingResponse);
-    }
-
-
-    @Override
-    public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-        try {
-            return generateTextEmbeddingsAsync(inputs, modelName).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            if (e.getCause() instanceof ModuleException) {
-                throw (ModuleException) e.getCause();
-            }
-            throw new ModuleException("Failed to generate text embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-    
-    private CompletableFuture<String> generateTextEmbeddingsAsync(List<String> inputs, String modelName) {
-        try {
-            byte[] body = buildTextEmbeddingsPayload(inputs, modelName);
-            return HttpRequestHelper.executePostRequest(httpClient, TEXT_EMBEDDING_URL, buildAuthHeaders(), body, (int) timeout)
-                    .thenApply(this::handleEmbeddingResponse);
-        } catch (JsonProcessingException e) {
-            return CompletableFuture.failedFuture(new ModuleException("Failed to create text embedding request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
-        }
-    }
-
-    private String handleEmbeddingResponse(HttpResponse response) {
-        if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Failed to generate embeddings");
-        }
-        try {
-            return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
     private byte[] buildValidationPayload() throws JsonProcessingException {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("task_type", "search_document");
         requestBody.put("texts", new ArrayList<>());
         requestBody.put("max_tokens_per_text", 0);
-        return objectMapper.writeValueAsBytes(requestBody);
-    }
-    
-    private List<HttpPart> buildImageMultipartPayload(List<byte[]> imageBytesList, String modelName) {
-        List<HttpPart> parts = new ArrayList<>();
-        byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-        parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
-
-        int index = 0;
-        for (byte[] imageBytes : imageBytesList) {
-            String fileName = "image_" + index++ + ".png";
-            parts.add(new HttpPart("images", fileName, imageBytes, "image/png", imageBytes.length));
-        }
-        return parts;
-    }
-
-    private byte[] buildTextEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", modelName);
-        requestBody.put("texts", inputs);
         return objectMapper.writeValueAsBytes(requestBody);
     }
 

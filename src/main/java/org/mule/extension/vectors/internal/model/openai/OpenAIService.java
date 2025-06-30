@@ -7,16 +7,28 @@ import dev.langchain4j.model.output.TokenUsage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.connection.model.openai.OpenAIModelConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OpenAIService implements EmbeddingService {
 
@@ -26,10 +38,78 @@ public class OpenAIService implements EmbeddingService {
     private Integer dimensions;
     private static final int BATCH_SIZE = 16;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String EMBEDDINGS_ENDPOINT = "https://api.openai.com/v1/embeddings";
+
     public OpenAIService(OpenAIModelConnection openAIModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
         this.openAIModelConnection = openAIModelConnection;
         this.embeddingModelParameters = embeddingModelParameters;
         this.dimensions = dimensions;
+    }
+
+    public Object generateTextEmbeddings(List<String> inputs, String modelName) {
+        if (inputs == null || inputs.isEmpty()) {
+            throw new IllegalArgumentException("Input list cannot be null or empty");
+        }
+        if (modelName == null || modelName.isEmpty()) {
+            throw new IllegalArgumentException("Model name cannot be null or empty");
+        }
+
+        try {
+            return generateTextEmbeddingsAsync(inputs, modelName).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            if (e.getCause() instanceof ModuleException) {
+                throw (ModuleException) e.getCause();
+            }
+            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+        }
+    }
+
+    private CompletableFuture<String> generateTextEmbeddingsAsync(List<String> inputs, String modelName) {
+        try {
+            byte[] jsonBody = buildEmbeddingsPayload(inputs, modelName);
+            Map<String, String> headers = buildAuthHeaders();
+            headers.put("Content-Type", "application/json");
+
+            return HttpRequestHelper.executePostRequest(this.openAIModelConnection.getHttpClient(), EMBEDDINGS_ENDPOINT, headers, jsonBody, (int) this.openAIModelConnection.getTimeout())
+                    .thenApply(response -> {
+                        if (response.getStatusCode() != 200) {
+                            return handleErrorResponse(response, "Error generating embeddings");
+                        }
+                        try {
+                            return new String(response.getEntity().getBytes());
+                        } catch (IOException e) {
+                            throw new ModuleException("Failed to read response entity", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+                        }
+                    });
+        } catch (JsonProcessingException e) {
+            return CompletableFuture.failedFuture(new ModuleException("Failed to create request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
+        }
+    }
+    
+    private byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("input", inputs);
+        requestBody.put("model", modelName);
+        return objectMapper.writeValueAsBytes(requestBody);
+    }
+
+    private Map<String, String> buildAuthHeaders() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + this.openAIModelConnection.getApiKey());
+        return headers;
+    }
+
+    private String handleErrorResponse(HttpResponse response, String message) {
+        try {
+            String errorBody = new String(response.getEntity().getBytes());
+            String errorMsg = String.format("%s. Status: %d - %s", message, response.getStatusCode(), errorBody);
+            LOGGER.error(errorMsg);
+            throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
+        } catch (IOException e) {
+            throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+        }
     }
 
     @Override
@@ -42,7 +122,7 @@ public class OpenAIService implements EmbeddingService {
             for (int x = 0; x < texts.size(); x += BATCH_SIZE) {
                 List<String> batch = texts.subList(x, Math.min(x + BATCH_SIZE, texts.size()));
                 try {
-                    String responseText = (String) openAIModelConnection.generateTextEmbeddings(batch, embeddingModelParameters.getEmbeddingModelName());
+                    String responseText = (String) generateTextEmbeddings(batch, embeddingModelParameters.getEmbeddingModelName());
                     JSONObject jsonResponse = new JSONObject(responseText);
 
                     tokenUsage += jsonResponse.getJSONObject("usage").getInt("total_tokens");

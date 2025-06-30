@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class AzureAIVisionService implements EmbeddingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NomicService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AzureAIVisionService.class);
     private AzureAIVisionModelConnection azureAIVisionModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
     private Integer dimensions;
@@ -177,7 +177,9 @@ public class AzureAIVisionService implements EmbeddingService {
 
     @Override
     public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-        return null;
+        LOGGER.warn(String.format("Azure AI Vision %s model doesn't support generating embedding for a combination of image and text. " +
+                                  "The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName()));
+        return embedImage(imageBytes);
     }
 }
 
