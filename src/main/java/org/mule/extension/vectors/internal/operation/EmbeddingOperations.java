@@ -23,8 +23,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.model.BaseModel;
-import org.mule.extension.vectors.internal.model.multimodal.EmbeddingMultimodalModel;
+import org.mule.extension.vectors.internal.service.embedding.EmbeddingServiceFactoryBuilder;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
@@ -69,69 +68,24 @@ public class EmbeddingOperations {
 
     try {
 
-      BaseModel baseModel = BaseModel.builder()
-          .configuration(embeddingConfiguration)
-          .connection(modelConnection)
-          .embeddingModelParameters(embeddingModelParameters)
-          .build();
-
       List<TextSegment> textSegments = new LinkedList<>();
       List<Embedding> embeddings = new LinkedList<>();
       TokenUsage tokenUsage = null;
       int dimension = 0;
 
-      try {
-
-        switch(embeddingModelParameters.getEmbeddingModelType()) {
-
-          case MULTIMODAL:
-
-            EmbeddingMultimodalModel embeddingMultimodalModel = baseModel.buildEmbeddingMultimodalModel();
-            LOGGER.debug(String.format("Embedding multimodal model for %s service built.", modelConnection.getEmbeddingModelService()));
-            textSegments.add(TextSegment.from(inputs.get(0), new Metadata().put(Constants.METADATA_KEY_INDEX, 0)));
-            Response<Embedding> multimodalResponse = embeddingMultimodalModel.embedText(inputs.get(0));
-            embeddings.add(multimodalResponse.content());
-            tokenUsage = multimodalResponse.tokenUsage() != null ?
-                new TokenUsage(multimodalResponse.tokenUsage().inputTokenCount(),
-                               multimodalResponse.tokenUsage().outputTokenCount(),
-                               multimodalResponse.tokenUsage().totalTokenCount())
-                : null;
-            dimension = embeddingMultimodalModel.dimension();
-            break;
-
-          case TEXT:
-          default:
-
-            EmbeddingModel embeddingModel = baseModel.buildEmbeddingModel();
-            LOGGER.debug(String.format("Embedding text model for %s service built.", modelConnection.getEmbeddingModelService()));
-
-            for (int i = 0; i < inputs.size(); i++) {
-              textSegments.add(TextSegment.from(
-                  inputs.get(i),
-                  new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
-            }
-            Response<List<Embedding>> textResponse = embeddingModel.embedAll(textSegments);
-            embeddings = textResponse.content();
-            tokenUsage = textResponse.tokenUsage() != null ?
-                new TokenUsage(textResponse.tokenUsage().inputTokenCount() != null ? textResponse.tokenUsage().inputTokenCount() : 0,
-                               textResponse.tokenUsage().outputTokenCount() != null ? textResponse.tokenUsage().outputTokenCount() : 0,
-                               textResponse.tokenUsage().totalTokenCount() != null ? textResponse.tokenUsage().totalTokenCount(): 0)
-                : null;
-            dimension = embeddingModel.dimension();
-            break;
-        }
-
-      }  catch(ModuleException e) {
-
-        throw e;
-
-      } catch(Exception e) {
-
-        throw new ModuleException(
-            String.format("Error while generating embedding from text \"%s\"", inputs),
-            MuleVectorsErrorType.AI_SERVICES_FAILURE,
-            e);
+      for (int i = 0; i < inputs.size(); i++) {
+        textSegments.add(TextSegment.from(
+            inputs.get(i),
+            new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
       }
+      Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection).getServiceProvider().getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
+
+      embeddings = embeddingsResponse.content();
+      tokenUsage = embeddingsResponse.tokenUsage() != null ?
+          new TokenUsage(embeddingsResponse.tokenUsage().inputTokenCount() != null ? embeddingsResponse.tokenUsage().inputTokenCount() : 0,
+                          embeddingsResponse.tokenUsage().outputTokenCount() != null ? embeddingsResponse.tokenUsage().outputTokenCount() : 0,
+                          embeddingsResponse.tokenUsage().totalTokenCount() != null ? embeddingsResponse.tokenUsage().totalTokenCount(): 0)
+          : null;
 
       JSONObject jsonObject = new JSONObject();
 
@@ -158,6 +112,7 @@ public class EmbeddingOperations {
 
       jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, jsonEmbeddings);
 
+      dimension = embeddings.get(0).vector().length;
       jsonObject.put(Constants.JSON_KEY_DIMENSION, dimension);
 
 
@@ -198,20 +153,35 @@ public class EmbeddingOperations {
 
     try {
 
-
-      BaseModel baseModel = BaseModel.builder()
-          .configuration(embeddingConfiguration)
-          .connection(modelConnection)
-          .embeddingModelParameters(embeddingModelParameters)
-          .build();
-
-      // Assuming you have a multimodal embedding model method
-      EmbeddingMultimodalModel multimodalEmbeddingModel = (EmbeddingMultimodalModel) baseModel.buildEmbeddingMultimodalModel();
-
       List<TextSegment> textSegments = new LinkedList<>();
       TokenUsage tokenUsage = null;
-
+      int multimodalEmbeddingModelDimension = 0;
       JSONObject jsonObject = new JSONObject();
+
+      JSONArray jsonEmbeddings = new JSONArray();
+
+      // Convert InputStream to byte array
+      byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
+
+      if(mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
+
+        Response<Embedding> response = mediaBinaryParameters.getLabel() != null && !mediaBinaryParameters.getLabel().isEmpty() ?
+            new EmbeddingServiceFactoryBuilder(modelConnection).getServiceProvider().getBuilder(modelConnection, embeddingModelParameters).build().embedTextAndImage(mediaBinaryParameters.getLabel(), mediaBytes) :
+            new EmbeddingServiceFactoryBuilder(modelConnection).getServiceProvider().getBuilder(modelConnection, embeddingModelParameters).build().embedImage(mediaBytes);
+        Embedding embedding = response.content();
+        tokenUsage = response.tokenUsage() != null ?
+            new TokenUsage(response.tokenUsage().inputTokenCount() != null ? response.tokenUsage().inputTokenCount() : 0,
+                           response.tokenUsage().outputTokenCount() != null ? response.tokenUsage().outputTokenCount() : 0,
+                           response.tokenUsage().totalTokenCount() != null ? response.tokenUsage().totalTokenCount(): 0)
+            : null;
+        jsonEmbeddings.put(embedding.vector());
+        multimodalEmbeddingModelDimension = embedding.dimension();
+      } else {
+
+        throw new ModuleException(
+            String.format("Media type %s not supported.", mediaBinaryParameters.getMediaType()),
+            MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE);
+      }
 
       textSegments.add(TextSegment.from(mediaBinaryParameters.getLabel()));
       JSONArray jsonTextSegments = IntStream.range(0, textSegments.size())
@@ -227,37 +197,13 @@ public class EmbeddingOperations {
 
       jsonObject.put(Constants.JSON_KEY_TEXT_SEGMENTS, jsonTextSegments);
 
-      JSONArray jsonEmbeddings = new JSONArray();
-
-      // Convert InputStream to byte array
-      byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
-
-      if(mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
-
-        Response<Embedding> response = mediaBinaryParameters.getLabel() != null && !mediaBinaryParameters.getLabel().isEmpty() ?
-            multimodalEmbeddingModel.embedTextAndImage(mediaBinaryParameters.getLabel(), mediaBytes) :
-            multimodalEmbeddingModel.embedImage(mediaBytes);
-        Embedding embedding = response.content();
-        tokenUsage = response.tokenUsage() != null ?
-            new TokenUsage(response.tokenUsage().inputTokenCount() != null ? response.tokenUsage().inputTokenCount() : 0,
-                           response.tokenUsage().outputTokenCount() != null ? response.tokenUsage().outputTokenCount() : 0,
-                           response.tokenUsage().totalTokenCount() != null ? response.tokenUsage().totalTokenCount(): 0)
-            : null;
-        jsonEmbeddings.put(embedding.vector());
-      } else {
-
-        throw new ModuleException(
-            String.format("Media type %s not supported.", mediaBinaryParameters.getMediaType()),
-            MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE);
-      }
-
       jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, jsonEmbeddings);
+      jsonObject.put(Constants.JSON_KEY_DIMENSION,multimodalEmbeddingModelDimension);
 
-      jsonObject.put(Constants.JSON_KEY_DIMENSION, multimodalEmbeddingModel.dimension());
-
+      int finalMultimodalEmbeddingModelDimension = multimodalEmbeddingModelDimension;
       HashMap<String, Object> attributes = new HashMap<String, Object>() {{
         put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
-        put("embeddingModelDimension", multimodalEmbeddingModel.dimension());
+        put("embeddingModelDimension", finalMultimodalEmbeddingModelDimension);
         put("mediaType", mediaBinaryParameters.getMediaType());
       }};
       if(tokenUsage != null) {

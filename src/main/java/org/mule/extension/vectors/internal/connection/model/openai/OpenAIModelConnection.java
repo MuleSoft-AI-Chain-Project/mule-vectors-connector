@@ -8,7 +8,8 @@ package org.mule.extension.vectors.internal.connection.model.openai;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
@@ -30,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 @Alias("openAI")
 @DisplayName("OpenAI")
-public class OpenAIModelConnection implements BaseTextModelConnection {
+public class OpenAIModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnection.class);
     private static final String MODELS_ENDPOINT = "https://api.openai.com/v1/models";
@@ -46,6 +47,18 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
         this.timeout = timeout;
         this.httpClient = httpClient;
         this.objectMapper = new ObjectMapper();
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public String getApiKey() {
+        return this.apiKey;
     }
 
     @Override
@@ -80,55 +93,6 @@ public class OpenAIModelConnection implements BaseTextModelConnection {
                         handleErrorResponse(response, "Failed to validate credentials");
                     }
                 });
-    }
-
-    @Override
-    public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-        if (inputs == null || inputs.isEmpty()) {
-            throw new IllegalArgumentException("Input list cannot be null or empty");
-        }
-        if (modelName == null || modelName.isEmpty()) {
-            throw new IllegalArgumentException("Model name cannot be null or empty");
-        }
-
-        try {
-            return generateTextEmbeddingsAsync(inputs, modelName).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            if (e.getCause() instanceof ModuleException) {
-                throw (ModuleException) e.getCause();
-            }
-            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private CompletableFuture<String> generateTextEmbeddingsAsync(List<String> inputs, String modelName) {
-        try {
-            byte[] jsonBody = buildEmbeddingsPayload(inputs, modelName);
-            Map<String, String> headers = buildAuthHeaders();
-            headers.put("Content-Type", "application/json");
-
-            return HttpRequestHelper.executePostRequest(httpClient, EMBEDDINGS_ENDPOINT, headers, jsonBody, (int) timeout)
-                    .thenApply(response -> {
-                        if (response.getStatusCode() != 200) {
-                            return handleErrorResponse(response, "Error generating embeddings");
-                        }
-                        try {
-                            return new String(response.getEntity().getBytes());
-                        } catch (IOException e) {
-                            throw new ModuleException("Failed to read response entity", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-                        }
-                    });
-        } catch (JsonProcessingException e) {
-            return CompletableFuture.failedFuture(new ModuleException("Failed to create request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
-        }
-    }
-    
-    private byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("input", inputs);
-        requestBody.put("model", modelName);
-        return objectMapper.writeValueAsBytes(requestBody);
     }
 
     private Map<String, String> buildAuthHeaders() {

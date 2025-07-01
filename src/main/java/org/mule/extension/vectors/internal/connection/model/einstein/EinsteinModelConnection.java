@@ -8,7 +8,7 @@ package org.mule.extension.vectors.internal.connection.model.einstein;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class EinsteinModelConnection implements BaseTextModelConnection {
+public class EinsteinModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EinsteinModelConnection.class);
 
@@ -35,7 +35,6 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
     private static final String PARAM_CLIENT_ID = "client_id";
     private static final String PARAM_CLIENT_SECRET = "client_secret";
     private static final String GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials";
-    private static final String EINSTEIN_PLATFORM_MODELS_URL = "https://api.salesforce.com/einstein/platform/v1/models/";
     private static final int TIMEOUT = 30000;
 
     private final String salesforceOrg;
@@ -51,6 +50,18 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
         this.clientSecret = clientSecret;
         this.httpClient = httpClient;
         this.accessToken = getAccessTokenBlocking();
+    }
+
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
+    public void setAccessToken(String newAccessToken) {
+        this.accessToken = newAccessToken;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
     }
 
     @Override
@@ -93,7 +104,7 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
         }
     }
 
-    private CompletableFuture<String> getAccessTokenAsync() {
+    public CompletableFuture<String> getAccessTokenAsync() {
         String tokenUrl = getOAuthURL();
         byte[] body = getOAuthBody();
         Map<String, String> headers = Map.of("Content-Type", "application/x-www-form-urlencoded");
@@ -130,65 +141,6 @@ public class EinsteinModelConnection implements BaseTextModelConnection {
             throw new IOException(String.format("API error (HTTP %d): %s",
                     response.getStatusCode(), errorBody));
         }
-    }
-
-    private String buildEmbeddingsPayload(List<String> texts) {
-        JSONArray input = new JSONArray(texts);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("input", input);
-        return jsonObject.toString();
-    }
-
-    private String buildEmbeddingRequestUrl(String modelName) {
-        return EINSTEIN_PLATFORM_MODELS_URL + modelName + "/embeddings";
-    }
-
-    private Map<String, String> buildEmbeddingRequestHeaders() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + this.accessToken);
-        headers.put("x-sfdc-app-context", "EinsteinGPT");
-        headers.put("x-client-feature-id", "ai-platform-models-connected-app");
-        headers.put("Content-Type", "application/json;charset=utf-8");
-        return headers;
-    }
-
-    @Override
-    public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-        try {
-            return generateEmbeddingsAsync(inputs, modelName).get(); // Block to get the final result
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            if (e.getCause() instanceof ModuleException) {
-                throw (ModuleException) e.getCause();
-            }
-            throw new ModuleException("Error while generating embeddings with Einstein.",
-                    MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private CompletableFuture<String> generateEmbeddingsAsync(List<String> inputs, String modelName) {
-        String payload = buildEmbeddingsPayload(inputs);
-        String urlString = buildEmbeddingRequestUrl(modelName);
-        Map<String, String> headers = buildEmbeddingRequestHeaders();
-
-        return HttpRequestHelper.executePostRequest(httpClient, urlString, headers, payload.getBytes(), TIMEOUT)
-                .thenCompose(response -> {
-                    if (response.getStatusCode() == 200) {
-                        try {
-                            return CompletableFuture.completedFuture(new String(response.getEntity().getBytes()));
-                        } catch (IOException e) {
-                            return CompletableFuture.failedFuture(e);
-                        }
-                    } else if (response.getStatusCode() == 401) {
-                        LOGGER.debug("Salesforce access token expired. Refreshing token.");
-                        return getAccessTokenAsync().thenCompose(newAccessToken -> {
-                            this.accessToken = newAccessToken;
-                            return generateEmbeddingsAsync(inputs, modelName); // Retry with new token
-                        });
-                    } else {
-                        return CompletableFuture.failedFuture(handleErrorResponse(response));
-                    }
-                });
     }
 
     private ModuleException handleErrorResponse(HttpResponse response) {

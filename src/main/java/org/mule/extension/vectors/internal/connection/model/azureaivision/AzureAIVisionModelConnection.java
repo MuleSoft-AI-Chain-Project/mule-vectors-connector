@@ -7,8 +7,7 @@
 package org.mule.extension.vectors.internal.connection.model.azureaivision;
 
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.connection.model.BaseImageModelConnection;
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
@@ -28,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class AzureAIVisionModelConnection implements BaseTextModelConnection, BaseImageModelConnection {
+public class AzureAIVisionModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AzureAIVisionModelConnection.class);
 
@@ -44,6 +43,26 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
         this.apiVersion = apiVersion;
         this.timeout = timeout;
         this.httpClient = httpClient;
+    }
+
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+
+    public String getApiVersion() {
+        return this.apiVersion;
+    }
+
+    public String getApiKey() {
+        return this.apiKey;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public long getTimeout() {
+        return this.timeout;
     }
 
     @Override
@@ -77,63 +96,6 @@ public class AzureAIVisionModelConnection implements BaseTextModelConnection, Ba
                         handleErrorResponse(response, "Failed to validate credentials");
                     }
                 });
-    }
-
-    @Override
-    public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {
-        LOGGER.debug("Embedding images, Model name: {}", modelName);
-        if (imageBytesList.size() != 1) {
-            throw new UnsupportedOperationException("Azure AI Vision only supports embedding one image at a time");
-        }
-        try {
-            return generateImageEmbeddingsAsync(imageBytesList.get(0), modelName).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new ModuleException("Failed to embed image", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-    
-    private CompletableFuture<String> generateImageEmbeddingsAsync(byte[] imageBytes, String modelName) {
-        String url = buildUrlWithParams(endpoint + "/computervision/retrieval:vectorizeImage",
-                Map.of("api-version", apiVersion, "model-version", modelName));
-        Map<String, String> headers = buildHeaders("application/octet-stream");
-
-        return HttpRequestHelper.executePostRequest(httpClient, url, headers, imageBytes, (int) timeout)
-                .thenApply(this::handleEmbeddingResponse);
-    }
-    
-    @Override
-    public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-        LOGGER.debug("Embedding texts, Model name: {}", modelName);
-        if (inputs.size() != 1) {
-            throw new UnsupportedOperationException("Azure AI Vision only supports embedding one text at a time");
-        }
-        try {
-            return generateTextEmbeddingsAsync(inputs.get(0), modelName).get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new ModuleException("Failed to embed text", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private CompletableFuture<String> generateTextEmbeddingsAsync(String text, String modelName) {
-        String url = buildUrlWithParams(endpoint + "/computervision/retrieval:vectorizeText",
-                Map.of("api-version", apiVersion, "model-version", modelName));
-        byte[] payload = new JSONObject().put("text", text).toString().getBytes(StandardCharsets.UTF_8);
-
-        return HttpRequestHelper.executePostRequest(httpClient, url, buildHeaders("application/json"), payload, (int) timeout)
-                .thenApply(this::handleEmbeddingResponse);
-    }
-
-    private String handleEmbeddingResponse(HttpResponse response) {
-        if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Failed to generate embedding");
-        }
-        try {
-            return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
     }
 
     private String buildUrlWithParams(String baseUrl, Map<String, String> params) {

@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.connection.model.huggingface;
 
-import org.mule.extension.vectors.internal.connection.model.BaseTextModelConnection;
+import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 @Alias("huggingFace")
 @DisplayName("Hugging Face")
-public class HuggingFaceModelConnection implements BaseTextModelConnection {
+public class HuggingFaceModelConnection implements BaseModelConnection {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceModelConnection.class);
 
@@ -47,7 +47,15 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
   }
 
   public String getApiKey() {
-    return apiKey;
+    return this.apiKey;
+  }
+
+  public HttpClient getHttpClient() {
+    return this.httpClient;
+  }
+
+  public long getTimeout() {
+    return this.timeout;
   }
 
   @Override
@@ -82,60 +90,6 @@ public class HuggingFaceModelConnection implements BaseTextModelConnection {
             handleErrorResponse(response, "Failed to validate credentials");
           }
         });
-  }
-
-  @Override
-  public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-    if (inputs == null || inputs.isEmpty()) {
-      throw new IllegalArgumentException("Input list cannot be null or empty");
-    }
-    if (modelName == null || modelName.trim().isEmpty()) {
-      throw new IllegalArgumentException("Model name cannot be null or empty");
-    }
-    try {
-      return generateTextEmbeddingsAsync(inputs, modelName).get();
-    } catch (InterruptedException | ExecutionException e) {
-      Thread.currentThread().interrupt();
-      if (e.getCause() instanceof ModuleException) {
-        throw (ModuleException) e.getCause();
-      }
-      throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-    }
-  }
-
-  private CompletableFuture<String> generateTextEmbeddingsAsync(List<String> inputs, String modelName) {
-    String url = buildInferenceUrl(modelName);
-    try {
-      byte[] body = buildEmbeddingsPayload(inputs);
-      Map<String, String> headers = buildAuthHeaders();
-      headers.put("Content-Type", "application/json");
-
-      return HttpRequestHelper.executePostRequest(httpClient, url, headers, body, (int) timeout)
-          .thenApply(this::handleEmbeddingResponse);
-    } catch (JsonProcessingException e) {
-      return CompletableFuture.failedFuture(new ModuleException("Failed to create request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
-    }
-  }
-
-  private String handleEmbeddingResponse(HttpResponse response) {
-    if (response.getStatusCode() != 200) {
-      return handleErrorResponse(response, "Error generating embeddings");
-    }
-    try {
-      return new String(response.getEntity().getBytes());
-    } catch (IOException e) {
-      throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-    }
-  }
-  
-  private String buildInferenceUrl(String modelName) {
-    return INFERENCE_ENDPOINT + modelName + PIPELINE_FEATURE_EXTRACTION_PATH;
-  }
-
-  private byte[] buildEmbeddingsPayload(List<String> inputs) throws JsonProcessingException {
-    Map<String, Object> requestBody = new HashMap<>();
-    requestBody.put("inputs", inputs);
-    return objectMapper.writeValueAsBytes(requestBody);
   }
   
   private Map<String, String> buildAuthHeaders() {
