@@ -155,7 +155,7 @@ public class EmbeddingOperations {
 
       List<TextSegment> textSegments = new LinkedList<>();
       TokenUsage tokenUsage = null;
-
+      int multimodalEmbeddingModelDimension = 0;
       JSONObject jsonObject = new JSONObject();
 
       JSONArray jsonEmbeddings = new JSONArray();
@@ -175,6 +175,7 @@ public class EmbeddingOperations {
                            response.tokenUsage().totalTokenCount() != null ? response.tokenUsage().totalTokenCount(): 0)
             : null;
         jsonEmbeddings.put(embedding.vector());
+        multimodalEmbeddingModelDimension = embedding.dimension();
       } else {
 
         throw new ModuleException(
@@ -197,12 +198,12 @@ public class EmbeddingOperations {
       jsonObject.put(Constants.JSON_KEY_TEXT_SEGMENTS, jsonTextSegments);
 
       jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, jsonEmbeddings);
+      jsonObject.put(Constants.JSON_KEY_DIMENSION,multimodalEmbeddingModelDimension);
 
-      //jsonObject.put(Constants.JSON_KEY_DIMENSION, multimodalEmbeddingModel.dimension());
-
+      int finalMultimodalEmbeddingModelDimension = multimodalEmbeddingModelDimension;
       HashMap<String, Object> attributes = new HashMap<String, Object>() {{
         put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
-        //put("embeddingModelDimension", multimodalEmbeddingModel.dimension());
+        put("embeddingModelDimension", finalMultimodalEmbeddingModelDimension);
         put("mediaType", mediaBinaryParameters.getMediaType());
       }};
       if(tokenUsage != null) {
