@@ -112,6 +112,7 @@ public class EmbeddingOperations {
 
       jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, jsonEmbeddings);
 
+      dimension = embeddings.get(0).vector().length;
       jsonObject.put(Constants.JSON_KEY_DIMENSION, dimension);
 
 

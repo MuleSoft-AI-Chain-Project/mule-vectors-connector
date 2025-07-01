@@ -4,6 +4,7 @@ import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
+import org.mule.extension.vectors.internal.model.azureaivision.AzureAIVisionServiceProvider;
 import org.mule.extension.vectors.internal.model.azureopenai.AzureopenAIServiceProvider;
 import org.mule.extension.vectors.internal.model.einstein.EinsteinServiceProvider;
 import org.mule.extension.vectors.internal.model.huggingface.HuggingFaceServiceProvider;
@@ -26,6 +27,10 @@ public class EmbeddingServiceFactoryBuilder {
 
   public EmbeddingServiceProvider getServiceProvider() {
     switch (modelConnection.getEmbeddingModelService()) {
+
+      case Constants.EMBEDDING_MODEL_SERVICE_AZURE_AI_VISION:
+        serviceProvider = new AzureAIVisionServiceProvider();
+        break;
 
       case Constants.EMBEDDING_MODEL_SERVICE_AZURE_OPENAI:
         serviceProvider = new AzureopenAIServiceProvider();

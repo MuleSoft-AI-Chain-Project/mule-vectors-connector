@@ -10,7 +10,6 @@ import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureA
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
-import org.mule.extension.vectors.internal.model.nomic.NomicService;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -141,9 +140,10 @@ public class AzureAIVisionService implements EmbeddingService {
     @Override
     public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
         List<String> texts = textSegments.stream().map(TextSegment::text).collect(Collectors.toList());
+        String text = String.join("", texts);
         List<Embedding> embeddings = new ArrayList<>();
         try {
-            String response = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
+            String response = (String) generateTextEmbeddings(List.of(text), embeddingModelParameters.getEmbeddingModelName());
             JSONObject jsonResponse = new JSONObject(response);
             JSONArray vectorArray = jsonResponse.getJSONArray("vector");
             float[] vector = new float[vectorArray.length()];

@@ -21,7 +21,7 @@ public class AzureOpenAIBuilder implements EmbeddingServiceBuilder {
       return this;
     }
     public AzureOpenAIBuilder modelDimensions(Integer dimensions) {
-      this.dimensions =dimensions;
+      this.dimensions = dimensions;
       return this;
     }
     @Override
