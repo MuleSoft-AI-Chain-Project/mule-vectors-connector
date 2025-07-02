@@ -68,13 +68,11 @@
 			<name>Anush Shetty</name>
 		</developer>
 	</developers>
-
 	<parent>
 		<groupId>org.mule.extensions</groupId>
 		<artifactId>mule-modules-parent</artifactId>
 		<version>1.9.4</version>
 	</parent>
-
     <properties>
 		<runtimeProduct>MULE_EE</runtimeProduct>
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
@@ -92,7 +90,6 @@
 		<maven.surefire.version>2.22.2</maven.surefire.version>
 		<skip.unit.tests>false</skip.unit.tests>
     </properties>
-
 	<build>
 		<plugins>
 			<plugin>
