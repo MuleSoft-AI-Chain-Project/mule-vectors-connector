@@ -91,7 +91,6 @@
 		<jacoco.version>0.8.12</jacoco.version>
 		<maven.surefire.version>2.22.2</maven.surefire.version>
 		<skip.unit.tests>false</skip.unit.tests>
-		<connector.maven.plugin.version>3.0.2</connector.maven.plugin.version>
     </properties>
 
 	<build>
