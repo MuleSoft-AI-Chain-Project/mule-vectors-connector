@@ -261,24 +261,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-                <groupId>com.mulesoft.connectors.maven</groupId>
-                <artifactId>connector-maven-plugin</artifactId>
-                <version>${connector.maven.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>get-configuration-files</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>get-configuration-files</goal>
-                        </goals>
-                        <configuration>
-                            <folder>${configuration.files.s3.folder}</folder>
-                            <vaultBucket>${configuration.files.vault.secret.engine}</vaultBucket>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
 	</build>
 

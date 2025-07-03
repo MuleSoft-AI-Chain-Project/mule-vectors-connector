@@ -140,17 +140,18 @@ public class AzureAIVisionService implements EmbeddingService {
     @Override
     public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
         List<String> texts = textSegments.stream().map(TextSegment::text).collect(Collectors.toList());
-        String text = String.join("", texts);
         List<Embedding> embeddings = new ArrayList<>();
         try {
-            String response = (String) generateTextEmbeddings(List.of(text), embeddingModelParameters.getEmbeddingModelName());
-            JSONObject jsonResponse = new JSONObject(response);
-            JSONArray vectorArray = jsonResponse.getJSONArray("vector");
-            float[] vector = new float[vectorArray.length()];
-            for (int i = 0; i < vectorArray.length(); i++) {
-                vector[i] = (float) vectorArray.getDouble(i);
+            for(int index = 0; index < texts.size(); index += 1) {
+                String response = (String) generateTextEmbeddings(List.of(texts.get(index)), embeddingModelParameters.getEmbeddingModelName());
+                JSONObject jsonResponse = new JSONObject(response);
+                JSONArray vectorArray = jsonResponse.getJSONArray("vector");
+                float[] vector = new float[vectorArray.length()];
+                for (int i = 0; i < vectorArray.length(); i++) {
+                    vector[i] = (float) vectorArray.getDouble(i);
+                }
+                embeddings.add(Embedding.from(vector));
             }
-            embeddings.add(Embedding.from(vector));
             return Response.from(embeddings);
         } catch (Exception e) {
             LOGGER.error("Failed to process text embedding response", e);

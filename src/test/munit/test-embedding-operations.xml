@@ -64,7 +64,7 @@
 					<munit:parameter propertyName="isMultimodal" value="false" />
 				</munit:parameters>
 			</munit:parameterization>
-			<!-- <munit:parameterization name="config-embedding-visionai" >
+			<munit:parameterization name="config-embedding-visionai" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="embeddingAzureAIVisionConfig" />
 					<munit:parameter propertyName="textModelName" value="2023-04-15" />
@@ -73,7 +73,7 @@
 					<munit:parameter propertyName="maxOverlapSize" value="100" />
 					<munit:parameter propertyName="isMultimodal" value="true" />
 				</munit:parameters>
-			</munit:parameterization> -->
+			</munit:parameterization>
 		</munit:parameterizations>
 	</munit:config>
 	<munit:test name="embedding-operations-generate-from-text" doc:id="fa0c3ab8-5d99-40db-a0e0-d5b6f6c5b4dd" >
