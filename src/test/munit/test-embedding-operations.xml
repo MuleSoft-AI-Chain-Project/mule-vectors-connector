@@ -84,14 +84,6 @@
 			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="82679aa1-a5cb-4b02-a3a2-220366b6dcd7" name="embedding-operations-validate-generate-from"/>
 		</munit:validation>
 	</munit:test>
-	<munit:test name="embedding-operations-generate-from-media" doc:id="3201a90d-e628-4604-80f5-64b5d38bdc12" ignore="#[!p('isMultimodal')]">
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="f37eb7e1-9363-49c1-b7a8-0a91003acffd" name="embedding-operations-generate-from-media-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="b06f8603-2219-4df8-bc93-947fbbf02a37" name="embedding-operations-validate-generate-from" />
-		</munit:validation>
-	</munit:test>
 	<sub-flow name="embedding-operations-validate-generate-from" doc:id="3df16ae4-e3f7-4134-9686-8a21686d3f1a" >
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="5d1a4133-28fc-4154-9499-b73dee3d4e41" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		<munit-tools:assert-that doc:name="Assert that embeddings is not null" doc:id="d99d21e5-2dc1-4d4e-9cba-3cbc2752cab5" message="Payload is null" expression="#[payload.embeddings]" is="#[MunitTools::notNullValue()]" />

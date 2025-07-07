@@ -108,7 +108,11 @@
 		</munit:validation>
 	</munit:test>
 	<sub-flow doc:id="f35cf72c-c8df-4dff-9f8c-c4c889f8f91d" name="store-operations-validate-query-from-store">
-		<logger level="INFO" doc:name="Log paylaod" doc:id="161ccbb2-f212-4604-bd57-3f9296bf3a4b" message='#[%dw 2.0&#10;output text/plain&#10;---&#10;&#10;"\n\n" ++ write(payload, "application/json") ++ "\n\n"]'/>
+		<logger level="INFO" doc:name="Log paylaod" doc:id="161ccbb2-f212-4604-bd57-3f9296bf3a4b" message='#[%dw 2.0
+output text/plain
+---
+
+"\n\n" ++ write(payload, "application/json") ++ "\n\n"]'/>
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="7aa068ae-b2ea-4f83-a515-cff2e8efd272" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		<munit-tools:assert-equals doc:name="Assert has 4 sources" doc:id="8fc841db-9f6f-4447-ab35-419d3ba048c2" actual="#[sizeOf(payload.sources)]" expected="#[4]" message="The operation did not return 4 embedding ids." />
 	</sub-flow>
