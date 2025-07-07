@@ -107,8 +107,13 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
 
     @Override
     public ResultSet next() {
-      if (resultSet == null) {
-        throw new NoSuchElementException("No more elements available");
+      try {
+        if (resultSet == null || !resultSet.next()) {
+          throw new NoSuchElementException("No more elements available");
+        }
+      } catch (SQLException e) {
+        handleSQLException(e);
+        throw new NoSuchElementException("Error processing next row");
       }
       return resultSet;
     }
