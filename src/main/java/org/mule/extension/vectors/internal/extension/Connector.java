@@ -32,8 +32,6 @@ import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 @JavaVersionSupport({JAVA_17})
 @SubTypeMapping(baseType = DocumentParserParameters.class,
     subTypes = {MultiformatDocumentParserParameters.class, TextDocumentParserParameters.class})
-@SubTypeMapping(baseType = MediaProcessorParameters.class,
-    subTypes = {ImageProcessorParameters.class})
 @SubTypeMapping(baseType = HttpProxyConfig.class, subTypes = {DefaultProxyConfig.class, DefaultNtlmProxyConfig.class})
 @Export(classes = {HttpProxyConfig.class})
 public class Connector {

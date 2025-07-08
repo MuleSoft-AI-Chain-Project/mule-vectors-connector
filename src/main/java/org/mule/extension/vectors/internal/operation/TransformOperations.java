@@ -11,8 +11,6 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
-import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -89,14 +87,5 @@ public class TransformOperations {
   chunkText(@Alias("text") @DisplayName("Text") @Content String text,
             @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
     return transformService.chunkText(text, segmentationParameters);
-  }
-
-  @MediaType(value = APPLICATION_OCTET_STREAM, strict = false)
-  @Alias("Transform-process-media")
-  @DisplayName("[Transform] Process media")
-  @Throws(EmbeddingErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  processMedia(@ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
-    return transformService.processMedia(mediaBinaryParameters);
   }
 }

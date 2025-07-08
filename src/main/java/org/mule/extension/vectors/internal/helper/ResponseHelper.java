@@ -125,16 +125,4 @@ public final class ResponseHelper {
 
     return page;
   }
-
-  public static Result<InputStream, TransformResponseAttributes> createProcessedMediaResponse(
-      InputStream content,
-      Map<String, Object> transformAttributes) {
-
-    return Result.<InputStream, TransformResponseAttributes>builder()
-        .attributes(new TransformResponseAttributes((HashMap<String, Object>) transformAttributes))
-        .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(content)
-        .mediaType(MediaType.BINARY)
-        .build();
-  }
 }

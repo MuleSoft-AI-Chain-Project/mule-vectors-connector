@@ -128,16 +128,4 @@ class ResponseHelperTest {
         assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
     }
-
-    @Test
-    void createProcessedMediaResponse_shouldReturnResultWithBinaryMediaType() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("media", "done");
-        InputStream content = new ByteArrayInputStream(new byte[]{4,5,6});
-        Result<InputStream, TransformResponseAttributes> result = ResponseHelper.createProcessedMediaResponse(content, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("media", "done");
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(new byte[]{4,5,6}));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
 } 
