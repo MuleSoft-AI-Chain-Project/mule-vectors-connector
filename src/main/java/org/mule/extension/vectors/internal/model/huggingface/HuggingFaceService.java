@@ -93,13 +93,13 @@ public class HuggingFaceService implements EmbeddingService {
     return INFERENCE_ENDPOINT + modelName + PIPELINE_FEATURE_EXTRACTION_PATH;
   }
 
-  private byte[] buildEmbeddingsPayload(List<String> inputs) throws JsonProcessingException {
+  byte[] buildEmbeddingsPayload(List<String> inputs) throws JsonProcessingException {
     Map<String, Object> requestBody = new HashMap<>();
     requestBody.put("inputs", inputs);
     return objectMapper.writeValueAsBytes(requestBody);
   }
   
-  private Map<String, String> buildAuthHeaders() {
+  Map<String, String> buildAuthHeaders() {
     Map<String, String> headers = new HashMap<>();
     headers.put("Authorization", "Bearer " + this.huggingFaceModelConnection.getApiKey());
     return headers;

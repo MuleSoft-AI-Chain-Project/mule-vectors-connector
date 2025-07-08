@@ -85,14 +85,14 @@ public class MistralAIService implements EmbeddingService {
       }
   }
 
-  private byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
+  byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
       Map<String, Object> requestBody = new HashMap<>();
       requestBody.put("model", modelName);
       requestBody.put("input", inputs);
       return objectMapper.writeValueAsBytes(requestBody);
   }
 
-  private Map<String, String> buildAuthHeaders() {
+  Map<String, String> buildAuthHeaders() {
       Map<String, String> headers = new HashMap<>();
       headers.put("Authorization", "Bearer " + this.mistralAIModelConnection.getApiKey());
       headers.put("Content-Type", "application/json");

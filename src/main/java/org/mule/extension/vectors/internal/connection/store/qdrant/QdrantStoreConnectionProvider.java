@@ -49,6 +49,7 @@ public class QdrantStoreConnectionProvider implements
 
   @Override
   public void initialise() throws InitialisationException {
+    System.out.println("DEBUG: qdrantStoreConnectionParameters=" + qdrantStoreConnectionParameters);
     qdrantStoreConnection =
         new QdrantStoreConnection(qdrantStoreConnectionParameters);
     try {
@@ -56,5 +57,10 @@ public class QdrantStoreConnectionProvider implements
     } catch (ConnectionException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  // Package-private setter for testing
+  void setQdrantStoreConnectionParameters(QdrantStoreConnectionParameters params) {
+    this.qdrantStoreConnectionParameters = params;
   }
 }

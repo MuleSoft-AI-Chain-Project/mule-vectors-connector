@@ -1,0 +1,199 @@
+package org.mule.extension.vectors.internal.model.nomic;
+
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.output.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnection;
+import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
+import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class NomicServiceTest {
+    @Mock NomicModelConnection modelConnection;
+    @Mock EmbeddingModelParameters modelParameters;
+    NomicService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new NomicService(modelConnection, modelParameters, 1536);
+    }
+
+    @Test
+    void embedTexts_returnsEmbeddings() throws Exception {
+        when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
+        String embeddingJson = "{" +
+                "\"embeddings\": [[0.1, 0.2, 0.3]]," +
+                "\"usage\": {\"total_tokens\": 42}" +
+                "}";
+        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse httpResp = mock(HttpResponse.class);
+            when(httpResp.getStatusCode()).thenReturn(200);
+            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(embeddingJson.getBytes(StandardCharsets.UTF_8)));
+            when(modelConnection.getHttpClient()).thenReturn(null);
+            when(modelConnection.getApiKey()).thenReturn("key");
+            when(modelConnection.getTimeout()).thenReturn(1000L);
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+            List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+            Response<List<Embedding>> resp = service.embedTexts(segments);
+            assertNotNull(resp);
+            assertEquals(1, resp.content().size());
+            float[] expected = new float[]{0.1f, 0.2f, 0.3f};
+            assertArrayEquals(expected, resp.content().get(0).vector(), 1e-6f);
+        }
+    }
+
+    @Test
+    void embedTexts_handlesErrorResponse() throws Exception {
+        when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
+        String errorJson = "{\"error\":\"fail\"}";
+        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse httpResp = mock(HttpResponse.class);
+            when(httpResp.getStatusCode()).thenReturn(500);
+            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(errorJson.getBytes(StandardCharsets.UTF_8)));
+            when(modelConnection.getHttpClient()).thenReturn(null);
+            when(modelConnection.getApiKey()).thenReturn("key");
+            when(modelConnection.getTimeout()).thenReturn(1000L);
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+            List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+            assertThrows(ModuleException.class, () -> service.embedTexts(segments));
+        }
+    }
+
+    @Test
+    void embedTexts_handlesNullOrEmptyInput() {
+        assertThrows(NullPointerException.class, () -> service.embedTexts(null));
+        assertThrows(NullPointerException.class, () -> service.embedTexts(Collections.emptyList()));
+    }
+
+    @Test
+    void generateTextEmbeddings_normal() throws Exception {
+        when(modelConnection.getHttpClient()).thenReturn(null);
+        when(modelConnection.getApiKey()).thenReturn("key");
+        when(modelConnection.getTimeout()).thenReturn(1000L);
+        String embeddingJson = "{" +
+                "\"embeddings\": [[0.1, 0.2, 0.3]]," +
+                "\"usage\": {\"total_tokens\": 42}" +
+                "}";
+        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse httpResp = mock(HttpResponse.class);
+            when(httpResp.getStatusCode()).thenReturn(200);
+            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(embeddingJson.getBytes(StandardCharsets.UTF_8)));
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+            Object result = service.generateTextEmbeddings(List.of("foo"), "test-model");
+            assertTrue(result instanceof String);
+            JSONObject json = new JSONObject((String) result);
+            JSONArray arr = json.getJSONArray("embeddings");
+            assertEquals(1, arr.length());
+        }
+    }
+
+    @Test
+    void generateTextEmbeddings_propagatesModuleException() throws Exception {
+        when(modelConnection.getHttpClient()).thenReturn(null);
+        when(modelConnection.getApiKey()).thenReturn("key");
+        when(modelConnection.getTimeout()).thenReturn(1000L);
+        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(CompletableFuture.failedFuture(new ModuleException("fail", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE)));
+            assertThrows(ModuleException.class, () -> service.generateTextEmbeddings(List.of("foo"), "test-model"));
+        }
+    }
+
+    @Test
+    void buildTextEmbeddingsPayload_serializesInput() throws Exception {
+        var m = NomicService.class.getDeclaredMethod("buildTextEmbeddingsPayload", List.class, String.class);
+        m.setAccessible(true);
+        byte[] bytes = (byte[]) m.invoke(service, List.of("foo"), "bar");
+        String json = new String(bytes, StandardCharsets.UTF_8);
+        assertTrue(json.contains("foo"));
+        assertTrue(json.contains("bar"));
+    }
+
+    @Test
+    void buildAuthHeaders_containsAuthorization() throws Exception {
+        when(modelConnection.getApiKey()).thenReturn("key");
+        var m = NomicService.class.getDeclaredMethod("buildAuthHeaders");
+        m.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, String> headers = (Map<String, String>) m.invoke(service);
+        assertEquals("Bearer key", headers.get("Authorization"));
+    }
+
+    @Test
+    void embedImage_and_embedTextAndImage_returnEmbedding() throws Exception {
+        when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
+        String embeddingJson = "{" +
+                "\"embeddings\": [[0.1, 0.2, 0.3]]," +
+                "\"usage\": {\"total_tokens\": 42}" +
+                "}";
+        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse httpResp = mock(HttpResponse.class);
+            when(httpResp.getStatusCode()).thenReturn(200);
+            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(embeddingJson.getBytes(StandardCharsets.UTF_8)));
+            when(modelConnection.getHttpClient()).thenReturn(null);
+            when(modelConnection.getApiKey()).thenReturn("key");
+            when(modelConnection.getTimeout()).thenReturn(1000L);
+            helper.when(() -> HttpRequestHelper.executeMultipartPostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+            byte[] image = new byte[]{1, 2, 3};
+            Response<Embedding> resp = service.embedImage(image);
+            assertNotNull(resp);
+            assertArrayEquals(new float[]{0.1f, 0.2f, 0.3f}, resp.content().vector(), 1e-6f);
+            // embedTextAndImage delegates to embedImage
+            Response<Embedding> resp2 = service.embedTextAndImage("foo", image);
+            assertNotNull(resp2);
+            assertArrayEquals(new float[]{0.1f, 0.2f, 0.3f}, resp2.content().vector(), 1e-6f);
+        }
+    }
+
+    @Test
+    void embedImages_returnsEmbeddings() throws Exception {
+        when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
+        String embeddingJson = "{" +
+                "\"embeddings\": [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]," +
+                "\"usage\": {\"total_tokens\": 42}" +
+                "}";
+        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse httpResp = mock(HttpResponse.class);
+            when(httpResp.getStatusCode()).thenReturn(200);
+            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(embeddingJson.getBytes(StandardCharsets.UTF_8)));
+            when(modelConnection.getHttpClient()).thenReturn(null);
+            when(modelConnection.getApiKey()).thenReturn("key");
+            when(modelConnection.getTimeout()).thenReturn(1000L);
+            helper.when(() -> HttpRequestHelper.executeMultipartPostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+            List<byte[]> images = Arrays.asList(new byte[]{1, 2, 3}, new byte[]{4, 5, 6});
+            Response<List<Embedding>> resp = service.embedImages(images);
+            assertNotNull(resp);
+            assertEquals(2, resp.content().size());
+            assertArrayEquals(new float[]{0.1f, 0.2f, 0.3f}, resp.content().get(0).vector(), 1e-6f);
+            assertArrayEquals(new float[]{0.4f, 0.5f, 0.6f}, resp.content().get(1).vector(), 1e-6f);
+        }
+    }
+} 

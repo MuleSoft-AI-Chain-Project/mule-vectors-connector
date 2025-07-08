@@ -50,4 +50,34 @@ class ElasticsearchStoreConnectionParametersTest {
         assertEquals("", params.getPassword());
         assertEquals("", params.getApiKey());
     }
+
+    @Test
+    void getters_returnValues() throws Exception {
+        ElasticsearchStoreConnectionParameters params = new ElasticsearchStoreConnectionParameters();
+        java.lang.reflect.Field urlF = ElasticsearchStoreConnectionParameters.class.getDeclaredField("url");
+        urlF.setAccessible(true);
+        urlF.set(params, "http://localhost:9200");
+        java.lang.reflect.Field userF = ElasticsearchStoreConnectionParameters.class.getDeclaredField("user");
+        userF.setAccessible(true);
+        userF.set(params, "elastic");
+        java.lang.reflect.Field pwF = ElasticsearchStoreConnectionParameters.class.getDeclaredField("password");
+        pwF.setAccessible(true);
+        pwF.set(params, "pw");
+        java.lang.reflect.Field apiF = ElasticsearchStoreConnectionParameters.class.getDeclaredField("apiKey");
+        apiF.setAccessible(true);
+        apiF.set(params, "apikey");
+        assertEquals("http://localhost:9200", params.getUrl());
+        assertEquals("elastic", params.getUser());
+        assertEquals("pw", params.getPassword());
+        assertEquals("apikey", params.getApiKey());
+    }
+
+    @Test
+    void getters_nullAndDefaults() {
+        ElasticsearchStoreConnectionParameters params = new ElasticsearchStoreConnectionParameters();
+        assertNull(params.getUrl());
+        assertNull(params.getUser());
+        assertNull(params.getPassword());
+        assertNull(params.getApiKey());
+    }
 } 

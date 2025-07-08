@@ -98,7 +98,7 @@ public class AzureAIVisionModelConnection implements BaseModelConnection {
                 });
     }
 
-    private String buildUrlWithParams(String baseUrl, Map<String, String> params) {
+    String buildUrlWithParams(String baseUrl, Map<String, String> params) {
         StringBuilder url = new StringBuilder(baseUrl);
         if (params != null && !params.isEmpty()) {
             url.append("?");
@@ -118,14 +118,14 @@ public class AzureAIVisionModelConnection implements BaseModelConnection {
         return url.toString();
     }
     
-    private Map<String, String> buildHeaders(String contentType) {
+    Map<String, String> buildHeaders(String contentType) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", contentType);
         headers.put("Ocp-Apim-Subscription-Key", apiKey);
         return headers;
     }
     
-    private String handleErrorResponse(HttpResponse response, String message) {
+    String handleErrorResponse(HttpResponse response, String message) {
         try {
             String errorBody = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
             String errorMsg = String.format("%s. Azure AI Vision API error (HTTP %d): %s",

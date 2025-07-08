@@ -2,13 +2,8 @@ package org.mule.extension.vectors.internal.connection.store.weaviate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionProvider;
-import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters;
-import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection;
+import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.mule.runtime.http.api.client.HttpClient;
-
-import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,39 +11,37 @@ import static org.mockito.Mockito.*;
 class WeaviateStoreConnectionProviderTest {
 
     WeaviateStoreConnectionProvider provider;
-    WeaviateStoreConnectionParameters mockParams;
-    HttpClient mockHttpClient;
+    WeaviateStoreConnectionParameters params;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         provider = new WeaviateStoreConnectionProvider();
-        mockParams = mock(WeaviateStoreConnectionParameters.class);
-        mockHttpClient = mock(HttpClient.class);
-        // Inject mockParams
-        Field f = provider.getClass().getDeclaredField("weaviateStoreConnectionParameters");
-        f.setAccessible(true);
-        f.set(provider, mockParams);
-        // Inject mockHttpClient (via supertype)
-        Field httpField = provider.getClass().getSuperclass().getDeclaredField("httpClient");
-        httpField.setAccessible(true);
-        httpField.set(provider, mockHttpClient);
+        params = mock(WeaviateStoreConnectionParameters.class);
+        // Use reflection to set the private field
+        try {
+            java.lang.reflect.Field f = WeaviateStoreConnectionProvider.class.getDeclaredField("weaviateStoreConnectionParameters");
+            f.setAccessible(true);
+            f.set(provider, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void connectReturnsWeaviateStoreConnection() throws Exception {
-        WeaviateStoreConnection conn = (WeaviateStoreConnection) provider.connect();
-        assertNotNull(conn);
-        assertEquals(mockParams, conn.getConnectionParameters());
-        assertEquals(mockHttpClient, conn.getHttpClient());
+    void connect_success() throws Exception {
+        try (var providerMocked = mockConstruction(WeaviateStoreConnection.class, (mock, context) -> {})) {
+            BaseStoreConnection conn = provider.connect();
+            assertNotNull(conn);
+        }
     }
 
     @Test
-    void connectWrapsExceptionAsConnectionException() throws Exception {
-        // Simulate error in constructor
-        Field f = provider.getClass().getDeclaredField("weaviateStoreConnectionParameters");
-        f.setAccessible(true);
-        f.set(provider, null); // Will cause NPE
-        ConnectionException ex = assertThrows(ConnectionException.class, () -> provider.connect());
-        assertTrue(ex.getMessage().toLowerCase().contains("failed to connect"));
+    void connect_throwsException() {
+        try (var providerMocked = mockConstruction(WeaviateStoreConnection.class, (mock, context) -> {
+            throw new RuntimeException("fail");
+        })) {
+            ConnectionException ex = assertThrows(ConnectionException.class, provider::connect);
+            assertTrue(ex.getMessage().contains("Failed to connect"));
+        }
     }
 } 

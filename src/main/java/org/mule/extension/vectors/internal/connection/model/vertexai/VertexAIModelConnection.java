@@ -143,7 +143,7 @@ public class VertexAIModelConnection implements BaseModelConnection {
         return refreshAccessTokenAsync();
     }
 
-    private CompletableFuture<Boolean> validateAccessTokenAsync(String token) {
+    CompletableFuture<Boolean> validateAccessTokenAsync(String token) {
         String introspectionUrl = TOKEN_INTROSPECTION_URL + "?access_token=" + token;
         return HttpRequestHelper.executeGetRequest(httpClient, introspectionUrl, null, (int) timeout)
                 .thenApply(response -> {
@@ -163,7 +163,7 @@ public class VertexAIModelConnection implements BaseModelConnection {
                 });
     }
 
-    private CompletableFuture<String> refreshAccessTokenAsync() {
+    CompletableFuture<String> refreshAccessTokenAsync() {
         try {
             String jwt = createJwt();
             String body = "grant_type=" + GRANT_TYPE + "&assertion=" + jwt;
@@ -189,7 +189,7 @@ public class VertexAIModelConnection implements BaseModelConnection {
         }
     }
     
-    private String createJwt() throws Exception {
+    String createJwt() throws Exception {
         RSAPrivateKey rsaPrivateKey = parsePrivateKey(this.privateKey);
         Instant now = Instant.now();
         long iat = now.getEpochSecond();
