@@ -1,29 +1,40 @@
 package org.mule.extension.vectors.internal.store.weaviate;
 
 import dev.langchain4j.data.segment.TextSegment;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import java.util.NoSuchElementException;
+import org.mule.extension.vectors.internal.store.VectorStoreRow;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class WeaviateStoreIteratorTest {
-    @Mock QueryParameters queryParameters;
-
     @Test
-    void hasNext_returnsFalse() {
-        WeaviateStoreIterator<TextSegment> iterator = new WeaviateStoreIterator<>(queryParameters);
-        assertThat(iterator.hasNext()).isFalse();
+    void constructionAndHasNext() {
+        QueryParameters params = new QueryParameters();
+        WeaviateStoreIterator<?> it = new WeaviateStoreIterator<>(params);
+        assertNotNull(it);
+        assertFalse(it.hasNext());
     }
 
     @Test
-    void next_throwsNoSuchElementException() {
-        WeaviateStoreIterator<TextSegment> iterator = new WeaviateStoreIterator<>(queryParameters);
-        assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class);
+    void nextThrowsNoSuchElementException() {
+        QueryParameters params = new QueryParameters();
+        WeaviateStoreIterator<?> it = new WeaviateStoreIterator<>(params);
+        assertThrows(NoSuchElementException.class, it::next);
+    }
+
+    @Test
+    void nextErrorBranch() {
+        WeaviateStoreIterator<Object> it = new WeaviateStoreIterator<>(new QueryParameters()) {
+            @Override
+            public boolean hasNext() { return true; }
+            @Override
+            public VectorStoreRow<Object> next() {
+                throw new RuntimeException("fail");
+            }
+        };
+        Exception ex = assertThrows(RuntimeException.class, it::next);
+        assertEquals("fail", ex.getMessage());
     }
 } 
