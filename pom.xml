@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>0.7.3</version>
+    <version>0.7.5</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -24,50 +24,6 @@
 		</license>
 	</licenses>
 
-	<developers>
-		<developer>
-			<name>Amir Khan</name>
-			<email>amir.khan@salesforce.com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Tommaso Bolis</name>
-			<email>tbolis-at-salesforce-dot-com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Laura de Paz</name>
-			<email>laura.depaz@salesforce.com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Alick Wong</name>
-			<email>alick.wong@salesforce.com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Yogesh Mudaliar</name>
-			<email>ymudaliar@salesforce.com</email>
-			<organization>Salesforce</organization>
-			<organizationUrl>https://www.salesforce.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>Ryan Hoegg</name>
-			<email>ryan@hoegg.software</email>
-			<organization>Hoegg Software, Co.</organization>
-			<organizationUrl>https://hoegg.software</organizationUrl>
-		</developer>
-		<developer>
-			<name>Suraj Kamal</name>
-		</developer>
-		<developer>
-			<name>Anush Shetty</name>
-		</developer>
-	</developers>
 
 	<parent>
 		<groupId>org.mule.extensions</groupId>

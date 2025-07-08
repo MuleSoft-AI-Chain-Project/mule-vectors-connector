@@ -34,7 +34,6 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     this.database = parameters.getDatabase();
     this.user = parameters.getUser();
     this.password = parameters.getPassword();
-    System.out.println("PGVectorStoreConnection constructor--");
   }
 
   public DataSource getDataSource() {
