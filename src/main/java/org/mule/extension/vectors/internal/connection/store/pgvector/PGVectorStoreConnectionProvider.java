@@ -51,4 +51,9 @@ public class PGVectorStoreConnectionProvider implements
         new PGVectorStoreConnection(pgVectorStoreConnectionParameters);
     pgVectorStoreConnection.initialise();
   }
+
+  // Package-private setter for testing
+  void setPGVectorStoreConnectionParameters(PGVectorStoreConnectionParameters params) {
+    this.pgVectorStoreConnectionParameters = params;
+  }
 }

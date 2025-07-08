@@ -102,7 +102,7 @@ public class QdrantStoreConnection implements BaseStoreConnection {
     }
   }
 
-  private void doHealthCheck() throws Exception {
+  void doHealthCheck() throws Exception {
 
     // Assuming you have a method `healthCheckAsync` that returns ListenableFuture
     ListenableFuture<QdrantOuterClass.HealthCheckReply> healthCheckFuture = this.client.healthCheckAsync();

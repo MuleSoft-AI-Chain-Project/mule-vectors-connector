@@ -88,14 +88,14 @@ public class OpenAIService implements EmbeddingService {
         }
     }
     
-    private byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
+    byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("input", inputs);
         requestBody.put("model", modelName);
         return objectMapper.writeValueAsBytes(requestBody);
     }
 
-    private Map<String, String> buildAuthHeaders() {
+    Map<String, String> buildAuthHeaders() {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + this.openAIModelConnection.getApiKey());
         return headers;
