@@ -57,7 +57,6 @@ class CustomAlloyDBEngineTest {
         engine.initVectorStoreTable(config);
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(statement, times(2)).executeUpdate(captor.capture());
-        System.out.println("Captured SQL: " + captor.getAllValues());
         assertThat(captor.getAllValues().stream().anyMatch(sql -> sql.contains("foo\" TEXT NOT NULL"))).isTrue();
     }
 
