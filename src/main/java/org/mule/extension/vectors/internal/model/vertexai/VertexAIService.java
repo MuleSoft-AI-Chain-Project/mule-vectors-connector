@@ -193,16 +193,7 @@ public class VertexAIService implements EmbeddingService {
         }
     }
 
-    public Response<Embedding> embedText(String text) {
-        try {
-            List<String> inputs = List.of(text);
-            String result = (String) generateTextEmbeddings(inputs, embeddingModelParameters.getEmbeddingModelName());
-            return Response.from(parseEmbeddings(result).get(0));
-        } catch (Exception e) {
-            LOGGER.error("Error embedding text", e);
-            throw new RuntimeException("Error during text embedding generation", e);
-        }
-    }
+
 
     @Override
     public Response<Embedding> embedImage(byte[] imageBytes) {
