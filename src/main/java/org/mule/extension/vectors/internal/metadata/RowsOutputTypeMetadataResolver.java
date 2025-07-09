@@ -27,6 +27,10 @@ public class RowsOutputTypeMetadataResolver implements OutputTypeResolver<StoreC
         .getContextClassLoader()
         .getResourceAsStream("api/metadata/StoreQueryAllResponse.json");
 
+    if (resourceAsStream == null) {
+        return null;
+    }
+
     Optional<MetadataType> metadataType = new JsonTypeLoader(IOUtils.toString(resourceAsStream))
         .load(null, "Load Store Response");
 
