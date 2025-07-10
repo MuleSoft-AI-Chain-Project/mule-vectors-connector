@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.connection.store.chroma;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.store.HttpBasedConnectionProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;

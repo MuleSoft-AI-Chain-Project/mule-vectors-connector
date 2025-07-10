@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
+
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.constant.Constants;
@@ -8,11 +8,9 @@ import org.mule.extension.vectors.internal.data.media.Media;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
 

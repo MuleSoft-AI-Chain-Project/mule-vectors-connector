@@ -6,12 +6,10 @@ import io.qdrant.client.QdrantClient;
 
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 
 import org.mule.extension.vectors.internal.store.BaseStoreService;
-import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

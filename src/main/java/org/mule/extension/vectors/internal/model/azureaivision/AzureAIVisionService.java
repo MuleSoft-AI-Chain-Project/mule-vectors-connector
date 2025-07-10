@@ -3,7 +3,6 @@ package org.mule.extension.vectors.internal.model.azureaivision;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.output.Response;
-import dev.langchain4j.model.output.TokenUsage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;

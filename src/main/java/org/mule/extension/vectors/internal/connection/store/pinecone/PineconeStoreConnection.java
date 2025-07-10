@@ -4,7 +4,6 @@ import io.pinecone.clients.Pinecone;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
-import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnectionParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 

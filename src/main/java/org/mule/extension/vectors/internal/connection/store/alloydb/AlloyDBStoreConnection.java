@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.connection.store.alloydb;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;

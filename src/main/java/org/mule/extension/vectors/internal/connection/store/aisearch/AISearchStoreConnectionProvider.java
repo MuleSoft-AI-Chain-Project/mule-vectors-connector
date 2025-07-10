@@ -11,8 +11,6 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.maven.wagon.shared.http.AbstractHttpClientWagon.getHttpClient;
 import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
 @Alias("aiSearch")

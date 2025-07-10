@@ -3,7 +3,6 @@ package org.mule.extension.vectors.internal.connection.model;
 import com.mulesoft.connectors.commons.template.connection.provider.ConnectorConnectionProvider;
 import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
-import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.tls.TlsContextFactory;
