@@ -13,11 +13,8 @@ import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeSto
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionProvider;
 import org.mule.extension.vectors.internal.operation.StoreOperations;
-import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
-
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
 @org.mule.runtime.extension.api.annotation.Configuration(name = "storeConfig")
 @ConnectionProviders({

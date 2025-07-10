@@ -1,8 +1,6 @@
 package org.mule.extension.vectors.internal.operation;
 
-import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createEmbeddingResponse;
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.createMultimodalEmbeddingResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 import java.io.InputStream;
@@ -11,7 +9,6 @@ import java.util.stream.IntStream;
 
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.model.output.Response;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;

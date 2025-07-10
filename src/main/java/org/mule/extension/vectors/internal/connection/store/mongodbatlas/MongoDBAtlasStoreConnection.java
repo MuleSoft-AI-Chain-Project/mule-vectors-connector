@@ -1,14 +1,11 @@
 package org.mule.extension.vectors.internal.connection.store.mongodbatlas;
 
-import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnectionParameters;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;

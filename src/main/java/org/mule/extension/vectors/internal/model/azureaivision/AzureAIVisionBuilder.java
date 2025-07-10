@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.model.azureaivision;
 
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;

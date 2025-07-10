@@ -10,7 +10,6 @@ import org.mule.extension.vectors.internal.connection.model.azureopenai.AzureOpe
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
-import org.mule.extension.vectors.internal.model.nomic.NomicService;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;

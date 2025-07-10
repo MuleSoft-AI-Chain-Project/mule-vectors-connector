@@ -1,18 +1,11 @@
 package org.mule.extension.vectors.internal.operation;
 
-import dev.langchain4j.data.segment.TextSegment;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
+
 import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
@@ -23,12 +16,7 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.*;
-
-import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 
 /**
@@ -49,7 +37,6 @@ public class TransformOperations {
  *
  * @param transformConfiguration the configuration for the transformation.
  * @param documentStream the input stream containing the document to parse.
- * @param documentParser the parser to use for extracting text from the document.
  * @return a {@link Result} containing the document's content as an {@link InputStream} and
  *         additional metadata in {@link TransformResponseAttributes}.
  * @throws ModuleException if an error occurs while loading or processing the document.
