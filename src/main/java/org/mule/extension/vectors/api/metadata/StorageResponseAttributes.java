@@ -69,4 +69,21 @@ public class StorageResponseAttributes implements Serializable {
   public Map<String, Object> getOtherAttributes() {
     return otherAttributes;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    StorageResponseAttributes that = (StorageResponseAttributes) o;
+    return java.util.Objects.equals(path, that.path)
+        && java.util.Objects.equals(fileName, that.fileName)
+        && java.util.Objects.equals(mimeType, that.mimeType)
+        && java.util.Objects.equals(metadata, that.metadata)
+        && java.util.Objects.equals(otherAttributes, that.otherAttributes);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(path, fileName, mimeType, metadata, otherAttributes);
+  }
 }

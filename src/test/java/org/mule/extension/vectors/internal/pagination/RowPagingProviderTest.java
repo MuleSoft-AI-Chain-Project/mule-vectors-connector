@@ -150,6 +150,6 @@ class RowPagingProviderTest {
 
     @Test
     void close_noop() throws Exception {
-        provider.close(storeConnection); // should not throw
+        assertThatCode(() -> provider.close(storeConnection)).doesNotThrowAnyException();
     }
 } 

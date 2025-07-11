@@ -57,7 +57,7 @@ class WeaviateStoreConnectionTest {
 
     @Test
     void disconnect_noop() {
-        conn.disconnect(); // should not throw
+        assertDoesNotThrow(() -> conn.disconnect());
     }
 
     @Test
