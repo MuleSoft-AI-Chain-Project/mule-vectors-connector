@@ -26,15 +26,18 @@ public class EphemeralFileStoreIterator<Embedded> implements VectoreStoreIterato
   private final QueryParameters queryParams;
   private final JSONArray entries;
   private int currentIndex = 0;
+  private String storeName;
 
   public EphemeralFileStoreIterator(
       EphemeralFileStoreConnection ephemeralFileStoreConnection,
-      QueryParameters queryParams
+      QueryParameters queryParams,
+      String storeName
   ) {
     this.storeFilePath = ephemeralFileStoreConnection.getWorkingDir();
     this.queryParams = queryParams;
+    this.storeName = storeName;
     try {
-      EphemeralFileEmbeddingStore ephemeralFileEmbeddingStore = new EphemeralFileEmbeddingStore(storeFilePath);
+      EphemeralFileEmbeddingStore ephemeralFileEmbeddingStore = new EphemeralFileEmbeddingStore(getEphemeralFileStorePath());
       String jsonSerializedStore = ephemeralFileEmbeddingStore.serializeToJson();
       JSONObject jsonObject = new JSONObject(jsonSerializedStore);
       this.entries = jsonObject.getJSONArray("entries");
@@ -50,7 +53,9 @@ public class EphemeralFileStoreIterator<Embedded> implements VectoreStoreIterato
       }
     }
   }
-
+  public String getEphemeralFileStorePath() {
+    return (storeFilePath != null && !storeFilePath.isBlank() ? storeFilePath + "/" : "") + storeName + ".store";
+  }
   @Override
   public boolean hasNext() {
     return currentIndex < this.entries.length();
