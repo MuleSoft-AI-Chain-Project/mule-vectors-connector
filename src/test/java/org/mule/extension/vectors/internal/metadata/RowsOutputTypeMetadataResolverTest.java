@@ -36,10 +36,9 @@ class RowsOutputTypeMetadataResolverTest {
         assertThat(type).isNotNull();
     }
 
+    @org.junit.jupiter.api.Disabled("Resource manipulation required; test not implemented.")
     @Test
-    void getOutputType_resourceMissing_returnsNull() throws Exception {
-        // Temporarily rename or remove the resource if you want to test this, or mock getResourceAsStream if needed.
-        // For now, this test is skipped as it requires resource manipulation.
-        // assertThat(resolver.getOutputType(metadataContext, storeConfiguration)).isNull();
+    void getOutputType_resourceMissing_returnsNull() {
+        // Not implemented
     }
 } 
