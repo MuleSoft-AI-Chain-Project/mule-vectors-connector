@@ -51,7 +51,7 @@ class EphemeralFileStoreIteratorTest {
         try (MockedConstruction<EphemeralFileEmbeddingStore> construction =
                 Mockito.mockConstruction(EphemeralFileEmbeddingStore.class,
                         (mock, context) -> when(mock.serializeToJson()).thenReturn(validJson))) {
-            EphemeralFileStoreIterator<TextSegment> iterator = new EphemeralFileStoreIterator<>(connection, queryParameters);
+            EphemeralFileStoreIterator<TextSegment> iterator = new EphemeralFileStoreIterator<>(connection, queryParameters, "sotrName");
             assertThat(iterator.hasNext()).isTrue();
             var row = iterator.next();
             assertThat(row.getId()).isEqualTo("id1");
@@ -69,7 +69,7 @@ class EphemeralFileStoreIteratorTest {
         try (MockedConstruction<EphemeralFileEmbeddingStore> construction =
                 Mockito.mockConstruction(EphemeralFileEmbeddingStore.class,
                         (mock, context) -> when(mock.serializeToJson()).thenReturn(validJson))) {
-            EphemeralFileStoreIterator<TextSegment> iterator = new EphemeralFileStoreIterator<>(connection, queryParameters);
+            EphemeralFileStoreIterator<TextSegment> iterator = new EphemeralFileStoreIterator<>(connection, queryParameters,"sotrName");
             iterator.next(); // first
             assertThat(iterator.hasNext()).isFalse();
             assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class);
@@ -83,7 +83,7 @@ class EphemeralFileStoreIteratorTest {
         try (MockedConstruction<EphemeralFileEmbeddingStore> construction =
                 Mockito.mockConstruction(EphemeralFileEmbeddingStore.class,
                         (mock, context) -> when(mock.serializeToJson()).thenReturn(invalidJson))) {
-            assertThatThrownBy(() -> new EphemeralFileStoreIterator<>(connection, queryParameters))
+            assertThatThrownBy(() -> new EphemeralFileStoreIterator<>(connection, queryParameters,"sotrName"))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Invalid file format");
         }
@@ -96,7 +96,7 @@ class EphemeralFileStoreIteratorTest {
         try (MockedConstruction<EphemeralFileEmbeddingStore> construction =
                 Mockito.mockConstruction(EphemeralFileEmbeddingStore.class,
                         (mock, context) -> when(mock.serializeToJson()).thenThrow(new RuntimeException(new NoSuchFileException("/tmp/store"))))) {
-            assertThatThrownBy(() -> new EphemeralFileStoreIterator<>(connection, queryParameters))
+            assertThatThrownBy(() -> new EphemeralFileStoreIterator<>(connection, queryParameters,"sotrName"))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Store file not found");
         }
@@ -109,7 +109,7 @@ class EphemeralFileStoreIteratorTest {
         try (MockedConstruction<EphemeralFileEmbeddingStore> construction =
                 Mockito.mockConstruction(EphemeralFileEmbeddingStore.class,
                         (mock, context) -> when(mock.serializeToJson()).thenThrow(new RuntimeException(new java.io.IOException("fail"))))) {
-            assertThatThrownBy(() -> new EphemeralFileStoreIterator<>(connection, queryParameters))
+            assertThatThrownBy(() -> new EphemeralFileStoreIterator<>(connection, queryParameters,"sotrName"))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Failed to read store file");
         }

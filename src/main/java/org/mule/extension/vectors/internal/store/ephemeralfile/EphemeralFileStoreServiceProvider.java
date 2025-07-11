@@ -34,6 +34,6 @@ public class EphemeralFileStoreServiceProvider implements VectorStoreServiceProv
 
   @Override
   public VectoreStoreIterator getFileIterator() {
-    return new EphemeralFileStoreIterator(connection, queryParams);
+    return new EphemeralFileStoreIterator(connection, queryParams, storeName);
   }
 }
