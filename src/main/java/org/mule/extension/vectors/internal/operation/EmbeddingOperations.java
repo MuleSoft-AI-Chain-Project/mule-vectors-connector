@@ -15,7 +15,7 @@ import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
 import org.mule.extension.vectors.api.metadata.MultimodalEmbeddingResponseAttributes;
 import org.mule.extension.vectors.api.metadata.TokenUsage;
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;

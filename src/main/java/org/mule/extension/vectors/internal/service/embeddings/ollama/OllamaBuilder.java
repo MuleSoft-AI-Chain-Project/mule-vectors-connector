@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.service.embeddings.ollama;
 
-import org.mule.extension.vectors.internal.connection.model.ollama.OllamaModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.ollama.OllamaModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBuilder;

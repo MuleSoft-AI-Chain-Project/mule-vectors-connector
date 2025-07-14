@@ -4,7 +4,7 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.output.Response;
 import org.json.JSONArray;
-import org.mule.extension.vectors.internal.connection.model.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;

@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mule.extension.vectors.internal.connection.model.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.huggingface.HuggingFaceService;

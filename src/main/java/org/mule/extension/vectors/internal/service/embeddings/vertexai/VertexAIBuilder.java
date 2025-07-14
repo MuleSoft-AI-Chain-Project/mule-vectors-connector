@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.service.embeddings.vertexai;
 
-import org.mule.extension.vectors.internal.connection.model.vertexai.VertexAIModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.vertexai.VertexAIModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBuilder;

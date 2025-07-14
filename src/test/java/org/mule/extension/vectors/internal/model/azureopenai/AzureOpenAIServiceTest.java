@@ -6,7 +6,7 @@ import dev.langchain4j.model.output.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mule.extension.vectors.internal.connection.model.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.azureopenai.AzureOpenAIModelConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
