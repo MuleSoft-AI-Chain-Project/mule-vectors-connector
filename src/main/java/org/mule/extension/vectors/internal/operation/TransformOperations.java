@@ -9,6 +9,7 @@ import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
 import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
 import org.mule.extension.vectors.internal.helper.parameter.*;
+import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
@@ -33,7 +34,7 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 public class TransformOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
-  private final org.mule.extension.vectors.internal.service.TransformService transformService = new org.mule.extension.vectors.internal.service.TransformService();
+  private final TransformService transformService = new TransformService();
 
 /**
  * Parse document from a raw binary or base64-encoded content.

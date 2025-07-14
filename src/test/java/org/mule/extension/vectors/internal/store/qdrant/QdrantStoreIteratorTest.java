@@ -8,14 +8,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.qdrant.QdrantStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
+
 import com.google.common.util.concurrent.Futures;
 
 import static org.assertj.core.api.Assertions.*;

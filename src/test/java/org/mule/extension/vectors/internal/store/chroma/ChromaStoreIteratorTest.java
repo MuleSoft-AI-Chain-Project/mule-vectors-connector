@@ -2,8 +2,6 @@ package org.mule.extension.vectors.internal.store.chroma;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,9 +9,9 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.service.store.chroma.ChromaStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
@@ -61,7 +59,8 @@ class ChromaStoreIteratorTest {
                         "\"metadatas\":[{\"foo\":\"bar\"}]," +
                         "\"documents\":[\"doc1\"]," +
                         "\"embeddings\":[[0.1,0.2,0.3]]}").getBytes()));
-            ChromaStoreIterator<TextSegment> iterator = new ChromaStoreIterator<>(chromaStoreConnection, "testStore", queryParameters);
+            ChromaStoreIterator<TextSegment>
+                iterator = new ChromaStoreIterator<>(chromaStoreConnection, "testStore", queryParameters);
             var idsField = iterator.getClass().getDeclaredField("ids");
             idsField.setAccessible(true);
             assertThat((java.util.List<String>) idsField.get(iterator)).containsExactly("id1");

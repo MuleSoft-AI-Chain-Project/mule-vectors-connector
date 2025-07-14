@@ -1,12 +1,9 @@
 package org.mule.extension.vectors.internal.store.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.Time;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.elasticsearch.ElasticsearchStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.IOException;

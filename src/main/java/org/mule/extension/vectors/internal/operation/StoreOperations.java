@@ -10,7 +10,7 @@ import org.mule.extension.vectors.internal.error.provider.StoreErrorTypeProvider
 import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
-import org.mule.extension.vectors.internal.service.VectorStoreService;
+import org.mule.extension.vectors.internal.service.store.VectorStoreService;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.api.streaming.CursorProvider;

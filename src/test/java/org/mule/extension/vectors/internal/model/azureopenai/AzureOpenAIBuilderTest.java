@@ -3,7 +3,9 @@ package org.mule.extension.vectors.internal.model.azureopenai;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.model.azureopenai.AzureOpenAIModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
-import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.azureopenai.AzureOpenAIBuilder;
+import org.mule.extension.vectors.internal.service.embeddings.azureopenai.AzureOpenAIService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

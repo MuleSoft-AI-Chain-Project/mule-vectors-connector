@@ -1,10 +1,10 @@
 package org.mule.extension.vectors.internal.store.weaviate;
 
-import dev.langchain4j.data.segment.TextSegment;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import java.util.NoSuchElementException;
-import org.mule.extension.vectors.internal.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.weaviate.WeaviateStoreIterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 

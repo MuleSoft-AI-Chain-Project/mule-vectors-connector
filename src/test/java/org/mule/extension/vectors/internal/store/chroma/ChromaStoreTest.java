@@ -2,19 +2,17 @@ package org.mule.extension.vectors.internal.store.chroma;
 
 import dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.service.store.chroma.ChromaStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.entity.HttpEntity;
@@ -22,7 +20,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.*;

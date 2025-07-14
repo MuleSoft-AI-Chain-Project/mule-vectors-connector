@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.model.ollama.OllamaModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.service.embeddings.ollama.OllamaService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;

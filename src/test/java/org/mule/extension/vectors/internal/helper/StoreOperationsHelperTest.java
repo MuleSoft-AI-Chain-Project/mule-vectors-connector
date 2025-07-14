@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
@@ -10,9 +9,8 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
-import org.mule.extension.vectors.internal.service.VectorStoreService;
+import org.mule.extension.vectors.internal.service.store.VectorStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,9 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 

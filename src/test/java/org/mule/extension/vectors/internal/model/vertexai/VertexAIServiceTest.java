@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.mule.extension.vectors.internal.connection.model.vertexai.VertexAIModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.service.embeddings.vertexai.VertexAIService;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,16 +1,13 @@
 package org.mule.extension.vectors.internal.store.alloydb;
 
-import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEmbeddingStore;
 import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine;
 import dev.langchain4j.community.store.embedding.alloydb.EmbeddingStoreConfig;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.data.segment.TextSegment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.alloydb.AlloyDBStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.sql.SQLException;

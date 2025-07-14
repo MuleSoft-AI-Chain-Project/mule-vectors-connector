@@ -18,8 +18,7 @@ import org.json.JSONObject;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.media.Media;
-import org.mule.extension.vectors.internal.store.BaseStoreService;
-import org.mule.extension.vectors.internal.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 
 import java.io.IOException;
 import java.util.Collection;

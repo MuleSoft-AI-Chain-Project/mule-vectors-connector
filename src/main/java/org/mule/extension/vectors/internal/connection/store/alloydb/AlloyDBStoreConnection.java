@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.store.alloydb.CustomAlloyDBEngine;
+import org.mule.extension.vectors.internal.service.store.alloydb.CustomAlloyDBEngine;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.slf4j.Logger;

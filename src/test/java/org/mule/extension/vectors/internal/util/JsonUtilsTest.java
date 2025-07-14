@@ -9,13 +9,12 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.media.Media;
-import org.mule.extension.vectors.internal.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.image.Image;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;

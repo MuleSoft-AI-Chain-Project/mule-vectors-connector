@@ -13,10 +13,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.model.mistralai.MistralAIModelConnection;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
-import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.service.embeddings.mistralai.MistralAIService;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
 import java.nio.charset.StandardCharsets;

@@ -2,7 +2,7 @@ package org.mule.extension.vectors.internal.store;
 
 import dev.langchain4j.data.embedding.Embedding;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 
 import java.util.List;
 
