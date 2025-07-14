@@ -14,13 +14,13 @@ public class MongoDBAtlasStoreConnectionParameters extends BaseStoreConnectionPa
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
+  @Placement
   @Example("localhost")
   private String host;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2)
+  @Placement
   @Example("27017")
   @Optional
   private Integer port;
@@ -28,7 +28,7 @@ public class MongoDBAtlasStoreConnectionParameters extends BaseStoreConnectionPa
   @Parameter
   @DisplayName("Username")
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 3)
+  @Placement
   @Example("user")
   @Optional
   private String user;
@@ -36,20 +36,20 @@ public class MongoDBAtlasStoreConnectionParameters extends BaseStoreConnectionPa
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 4)
+  @Placement
   private String password;
 
   @Parameter
   @DisplayName("Database Name")
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 5)
+  @Placement
   @Example("default")
   @Optional
   private String database;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 6)
+  @Placement
   @Example("directConnection=true")
   @Optional
   private String options;

@@ -26,7 +26,6 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
   private static final Logger LOGGER = LoggerFactory.getLogger(MilvusStoreIterator.class);
 
   private final MilvusServiceClient client;
-  private final String storeName;
   private final QueryParameters queryParams;
   private final String idFieldName;
   private final String textFieldName;
@@ -44,7 +43,6 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       QueryParameters queryParams
   ) {
     this.client = milvusStoreConnection.getClient();
-    this.storeName = storeName;
     this.queryParams = queryParams;
     this.idFieldName = milvusStoreConnection.getIdFieldName();
     this.textFieldName = milvusStoreConnection.getTextFieldName();

@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 public class EmbeddingOperations {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(EmbeddingOperations.class);
-
   /**
    * Generates embeddings from a given text string. The text can optionally be segmented before embedding.
    *

@@ -10,8 +10,6 @@ import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
@@ -26,9 +24,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class QdrantStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStoreConnectionProvider.class);
-
-  @ParameterGroup(name = Placement.CONNECTION_TAB)
   private QdrantStoreConnectionParameters qdrantStoreConnectionParameters;
   private  QdrantStoreConnection qdrantStoreConnection;
 

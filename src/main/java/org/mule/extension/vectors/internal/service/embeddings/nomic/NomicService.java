@@ -37,8 +37,7 @@ public class NomicService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(NomicService.class);
     private NomicModelConnection nomicModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
-    private static final int BATCH_SIZE = 16;
+    private int dimensions;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String BASE_URL = "https://api-atlas.nomic.ai/v1/";

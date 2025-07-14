@@ -14,57 +14,57 @@ public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParame
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
+  @Placement
   @Example("https")
   private String scheme;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2)
+  @Placement
   @Example("localhost")
   private String host;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 3)
+  @Placement
   @Example("8181")
   @Optional
   private Integer port;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 4)
+  @Placement
   @Optional(defaultValue = "false")
   private boolean securedGrpc;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 5)
+  @Placement
   @Optional
   private Integer grpcPort;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 6)
+  @Placement
   @Optional(defaultValue = "false")
   private boolean useGrpcForInserts;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 7)
+  @Placement
   @Password
   private String apiKey;
 
   @Parameter
   @DisplayName("Avoid duplicates")
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 8)
+  @Placement
   @Optional(defaultValue = "true")
   private boolean avoidDups;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 9)
+  @Placement
   @Optional(defaultValue = "ALL")
   private String consistencyLevel;
 

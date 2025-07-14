@@ -13,20 +13,17 @@ public class PineconeStoreConnectionParameters extends BaseStoreConnectionParame
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
   @Example("AWS")
   private String cloud;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2)
   @Example("us-east-1")
   private String region;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 3)
   @Example("<your-apikey>")
   private String apiKey;
 

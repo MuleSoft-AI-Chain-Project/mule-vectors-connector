@@ -15,20 +15,17 @@ public class AzureOpenAIModelConnectionParameters extends BaseModelConnectionPar
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
   @Example("https://<resource-name>.openai.azure.com")
   private String endpoint;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2)
   @Example("<your-api-key>")
   private String apiKey;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 3)
   @Example("2023-04-01-preview")
   private String apiVersion;
 

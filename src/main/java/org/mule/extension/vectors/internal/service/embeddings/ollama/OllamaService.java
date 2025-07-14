@@ -34,7 +34,6 @@ public class OllamaService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OllamaService.class);
     private OllamaModelConnection ollamaModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
     private static final int BATCH_SIZE = 16;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String EMBEDDINGS_ENDPOINT = "/api/embeddings";
@@ -42,7 +41,6 @@ public class OllamaService implements EmbeddingService {
     public OllamaService(OllamaModelConnection ollamaModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
         this.ollamaModelConnection = ollamaModelConnection;
         this.embeddingModelParameters = embeddingModelParameters;
-        this.dimensions = dimensions;
     }
 
     public Object generateTextEmbeddings(List<String> inputs, String modelName) {

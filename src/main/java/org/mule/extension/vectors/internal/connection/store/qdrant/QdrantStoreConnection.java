@@ -16,8 +16,6 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 public class QdrantStoreConnection implements BaseStoreConnection {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStoreConnection.class);
-
   private final String host;
   private final int gprcPort;
   private final boolean useTLS;

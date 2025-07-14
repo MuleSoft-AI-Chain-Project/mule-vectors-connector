@@ -61,20 +61,17 @@ public class AlloyDBStoreConnectionParameters extends BaseStoreConnectionParamet
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 9)
   @Example("postgres")
   private String database;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 10)
   @Example("postgres")
   private String user;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 11)
   private String password;
 
   public String getProjectId() {

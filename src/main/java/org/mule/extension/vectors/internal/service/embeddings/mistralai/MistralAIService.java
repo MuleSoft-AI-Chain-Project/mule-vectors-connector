@@ -34,7 +34,6 @@ public class MistralAIService implements EmbeddingService {
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
   private MistralAIModelConnection mistralAIModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;
-  private Integer dimensions;
   private final ObjectMapper objectMapper = new ObjectMapper();
   private static final int BATCH_SIZE = 16;
   private static final String EMBEDDINGS_ENDPOINT = "https://api.mistral.ai/v1/embeddings";
@@ -42,7 +41,6 @@ public class MistralAIService implements EmbeddingService {
   public MistralAIService(MistralAIModelConnection mistralAIModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
     this.mistralAIModelConnection = mistralAIModelConnection;
     this.embeddingModelParameters = embeddingModelParameters;
-    this.dimensions = dimensions;
   }
 
   public Object generateTextEmbeddings(List<String> inputs, String modelName) {

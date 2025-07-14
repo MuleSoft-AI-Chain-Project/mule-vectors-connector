@@ -38,7 +38,6 @@ public class ChromaStore extends BaseStoreService {
 
     private final ChromaStoreConnection chromaStoreConnection;
     private final QueryParameters queryParams;
-    private final String collectionId;
 
     /**
      * Initializes a new instance of ChromaStore.
@@ -54,7 +53,6 @@ public class ChromaStore extends BaseStoreService {
         super(storeConfiguration, chromaStoreConnection, storeName, dimension, createStore);
         this.chromaStoreConnection = chromaStoreConnection;
         this.queryParams = queryParams;
-        this.collectionId = getCollectionId();
 
     }
 

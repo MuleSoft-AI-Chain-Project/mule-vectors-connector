@@ -33,8 +33,7 @@ public class AzureAIVisionService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AzureAIVisionService.class);
     private AzureAIVisionModelConnection azureAIVisionModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
-    private static final int BATCH_SIZE = 16;
+    private int dimensions;
 
     public AzureAIVisionService(AzureAIVisionModelConnection azureAIVisionModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
         this.azureAIVisionModelConnection = azureAIVisionModelConnection;
