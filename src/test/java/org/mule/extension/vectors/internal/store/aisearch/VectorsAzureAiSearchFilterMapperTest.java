@@ -4,9 +4,9 @@ import dev.langchain4j.store.embedding.filter.*;
 import dev.langchain4j.store.embedding.filter.comparison.*;
 import dev.langchain4j.store.embedding.filter.logical.*;
 import org.junit.jupiter.api.Test;
+import org.mule.extension.vectors.internal.service.store.aisearch.VectorsAzureAiSearchFilterMapper;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 

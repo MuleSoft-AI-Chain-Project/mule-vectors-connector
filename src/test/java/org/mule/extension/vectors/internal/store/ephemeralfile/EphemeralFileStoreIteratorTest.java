@@ -1,15 +1,14 @@
 package org.mule.extension.vectors.internal.store.ephemeralfile;
 
-import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.ephemeralfile.EphemeralFileEmbeddingStore;
+import org.mule.extension.vectors.internal.service.store.ephemeralfile.EphemeralFileStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.nio.file.NoSuchFileException;
@@ -51,7 +50,8 @@ class EphemeralFileStoreIteratorTest {
         try (MockedConstruction<EphemeralFileEmbeddingStore> construction =
                 Mockito.mockConstruction(EphemeralFileEmbeddingStore.class,
                         (mock, context) -> when(mock.serializeToJson()).thenReturn(validJson))) {
-            EphemeralFileStoreIterator<TextSegment> iterator = new EphemeralFileStoreIterator<>(connection, queryParameters, "sotrName");
+            EphemeralFileStoreIterator<TextSegment>
+                iterator = new EphemeralFileStoreIterator<>(connection, queryParameters, "sotrName");
             assertThat(iterator.hasNext()).isTrue();
             var row = iterator.next();
             assertThat(row.getId()).isEqualTo("id1");

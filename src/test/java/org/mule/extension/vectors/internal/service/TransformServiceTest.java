@@ -13,6 +13,7 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
+import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -23,7 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.AdditionalAnswers.delegatesTo;
+
 import org.mockito.MockedStatic;
 
 @ExtendWith(MockitoExtension.class)

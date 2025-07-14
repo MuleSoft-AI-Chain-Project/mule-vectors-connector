@@ -1,17 +1,13 @@
 package org.mule.extension.vectors.internal.store.aisearch;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.VectorStoreRow;
-import org.mule.runtime.http.api.client.HttpClient;
-import org.mule.runtime.http.api.domain.message.response.HttpResponse;
+import org.mule.extension.vectors.internal.service.store.aisearch.AISearchStoreIterator;
 
 import java.util.NoSuchElementException;
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class AISearchStoreIteratorTest {
     // Utility to allocate instance without running constructor

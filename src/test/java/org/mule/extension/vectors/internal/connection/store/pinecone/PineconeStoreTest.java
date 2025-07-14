@@ -7,12 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mule.extension.vectors.internal.store.pinecone.PineconeStore;
+import org.mule.extension.vectors.internal.service.store.pinecone.PineconeStore;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

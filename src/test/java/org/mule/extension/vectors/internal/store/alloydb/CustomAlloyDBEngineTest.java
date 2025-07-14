@@ -13,6 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
+import org.mule.extension.vectors.internal.service.store.alloydb.CustomAlloyDBEngine;
 
 class CustomAlloyDBEngineTest {
     CustomAlloyDBEngine engine;

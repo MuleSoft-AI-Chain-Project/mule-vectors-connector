@@ -12,15 +12,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.mongodbatlas.MongoDBAtlasStore;
+import org.mule.extension.vectors.internal.service.store.mongodbatlas.MongoDBAtlasStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

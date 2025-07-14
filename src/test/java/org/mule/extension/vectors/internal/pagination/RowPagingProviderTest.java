@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.pagination;
 
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,17 +10,12 @@ import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.service.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import org.mule.extension.vectors.internal.helper.OperationValidator;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

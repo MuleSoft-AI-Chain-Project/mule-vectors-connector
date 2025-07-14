@@ -6,10 +6,9 @@ import dev.langchain4j.store.embedding.filter.logical.And;
 import dev.langchain4j.store.embedding.filter.logical.Not;
 import dev.langchain4j.store.embedding.filter.logical.Or;
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.store.aisearch.VectorsAzureAiSearchFilterMapper;
+import org.mule.extension.vectors.internal.service.store.aisearch.VectorsAzureAiSearchFilterMapper;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.pgvector.PGVectorStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import javax.sql.DataSource;
@@ -52,7 +53,8 @@ class PGVectorStoreIteratorTest {
         meta.put("foo", "bar");
         when(resultSet.getString("metadata")).thenReturn(meta.toString());
 
-        PGVectorStoreIterator<TextSegment> iterator = new PGVectorStoreIterator<>(pgVectorStoreConnection, "testStore", queryParameters);
+        PGVectorStoreIterator<TextSegment>
+            iterator = new PGVectorStoreIterator<>(pgVectorStoreConnection, "testStore", queryParameters);
         assertThat(iterator.hasNext()).isTrue();
         var row = iterator.next();
         assertThat(row.getId()).isEqualTo("id1");

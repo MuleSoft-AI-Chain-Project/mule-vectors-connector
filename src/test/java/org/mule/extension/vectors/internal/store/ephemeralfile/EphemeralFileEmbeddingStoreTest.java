@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
+import org.mule.extension.vectors.internal.service.store.ephemeralfile.EphemeralFileEmbeddingStore;
 
 import java.io.IOException;
 import java.nio.file.Files;

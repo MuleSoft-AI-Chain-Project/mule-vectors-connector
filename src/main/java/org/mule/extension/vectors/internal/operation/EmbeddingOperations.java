@@ -19,7 +19,7 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.service.embedding.EmbeddingServiceFactoryBuilder;
+import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceFactoryBuilder;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;

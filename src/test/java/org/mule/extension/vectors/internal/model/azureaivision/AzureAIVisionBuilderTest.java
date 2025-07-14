@@ -3,7 +3,9 @@ package org.mule.extension.vectors.internal.model.azureaivision;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
-import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.azureaivision.AzureAIVisionBuilder;
+import org.mule.extension.vectors.internal.service.embeddings.azureaivision.AzureAIVisionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;

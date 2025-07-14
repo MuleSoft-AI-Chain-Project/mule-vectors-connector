@@ -3,7 +3,9 @@ package org.mule.extension.vectors.internal.model.ollama;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.model.ollama.OllamaModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
-import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.ollama.OllamaBuilder;
+import org.mule.extension.vectors.internal.service.embeddings.ollama.OllamaService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

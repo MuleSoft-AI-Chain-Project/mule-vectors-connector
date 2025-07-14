@@ -3,7 +3,9 @@ package org.mule.extension.vectors.internal.model.nomic;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
-import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
+import org.mule.extension.vectors.internal.service.embeddings.nomic.NomicBuilder;
+import org.mule.extension.vectors.internal.service.embeddings.nomic.NomicService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

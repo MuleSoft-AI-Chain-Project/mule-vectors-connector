@@ -2,7 +2,6 @@ package org.mule.extension.vectors.internal.store.mongodbatlas;
 
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoException;
-import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoSocketReadException;
 import com.mongodb.client.FindIterable;
@@ -18,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.mongodbatlas.MongoDBAtlasStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.*;

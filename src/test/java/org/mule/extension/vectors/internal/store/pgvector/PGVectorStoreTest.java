@@ -12,12 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.pgvector.PGVectorStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;

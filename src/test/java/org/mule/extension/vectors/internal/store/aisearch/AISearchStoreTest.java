@@ -1,13 +1,12 @@
 package org.mule.extension.vectors.internal.store.aisearch;
 
-import com.azure.core.exception.HttpResponseException;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.azure.search.AzureAiSearchEmbeddingStore;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.aisearch.AISearchStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
