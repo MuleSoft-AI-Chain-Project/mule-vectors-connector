@@ -15,6 +15,7 @@ public class MistralAIModelConnectionParameters {
     @Parameter
     @Password
     @Expression(ExpressionSupport.SUPPORTED)
+    @Placement(order = 1)
     @Example("<your-api-key>")
     private String apiKey;
 

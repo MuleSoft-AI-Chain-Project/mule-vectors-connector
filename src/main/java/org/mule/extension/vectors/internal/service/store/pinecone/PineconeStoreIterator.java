@@ -28,10 +28,13 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
   private final String apiKey;
   private final String storeName;
+  private final String cloud;
+  private final String region;
   private final QueryParameters queryParams;
 
   private final Pinecone client;
   private final Index index;
+  private final PineconeStoreConnection pineconeStoreConnection;
   private Iterator<io.pinecone.proto.Vector> vectorIterator = Collections.emptyIterator();
   private boolean hasMorePages = true;
   private String paginationToken = null;
@@ -43,8 +46,11 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   ) {
     this.apiKey = pineconeStoreConnection.getApiKey();
     this.storeName = storeName;
+    this.cloud = pineconeStoreConnection.getCloud();
+    this.region = pineconeStoreConnection.getRegion();
     this.queryParams = queryParams;
     try {
+      this.pineconeStoreConnection = pineconeStoreConnection;
       this.client =pineconeStoreConnection.getClient();
       this.index = client.getIndexConnection(storeName);
       fetchNextPage(); // Load first batch

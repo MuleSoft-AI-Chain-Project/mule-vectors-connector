@@ -26,6 +26,8 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class EphemeralFileStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(EphemeralFileStoreConnectionProvider.class);
+
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private EphemeralFileStoreConnectionParameters ephemeralFileStoreConnectionParameters;
 

@@ -36,7 +36,7 @@ public class MistralAIModelConnection implements BaseModelConnection {
     private final String apiKey;
     private final HttpClient httpClient;
     private final long timeout;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     public MistralAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
         this.apiKey = apiKey;

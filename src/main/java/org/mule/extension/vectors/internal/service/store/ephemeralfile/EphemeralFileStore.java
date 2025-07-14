@@ -16,7 +16,7 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 public class EphemeralFileStore extends BaseStoreService {
 
     private final String workingDir;
-    private QueryParameters queryParams;
+    private final QueryParameters queryParams;
 
     /**
      * Initializes a new instance of EphemeralFileStore.

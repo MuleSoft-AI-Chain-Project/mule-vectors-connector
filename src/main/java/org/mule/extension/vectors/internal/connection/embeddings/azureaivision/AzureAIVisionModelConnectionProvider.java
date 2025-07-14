@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Azure AI Vision")
 public class AzureAIVisionModelConnectionProvider extends BaseModelConnectionProvider  {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AzureAIVisionModelConnectionProvider.class);
+
   @ParameterGroup(name = CONNECTION)
   private AzureAIVisionModelConnectionParameters azureAIVisionModelConnectionParameters;
 

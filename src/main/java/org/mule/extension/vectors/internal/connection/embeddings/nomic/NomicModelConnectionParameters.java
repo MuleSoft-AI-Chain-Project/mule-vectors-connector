@@ -12,6 +12,7 @@ public class NomicModelConnectionParameters extends BaseModelConnectionParameter
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 1)
   @Example("<your-api-key>")
   private String apiKey;
 

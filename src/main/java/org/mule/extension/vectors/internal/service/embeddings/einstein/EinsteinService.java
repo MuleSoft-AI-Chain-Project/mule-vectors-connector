@@ -31,7 +31,7 @@ public class EinsteinService implements EmbeddingService {
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
   private EinsteinModelConnection einsteinModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;
-  private int dimensions;
+  private Integer dimensions;
   private static final int BATCH_SIZE = 16;
   private static final String EINSTEIN_PLATFORM_MODELS_URL = "https://api.salesforce.com/einstein/platform/v1/models/";
   private static final int TIMEOUT = 30000;

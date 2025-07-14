@@ -14,6 +14,7 @@ public class EinsteinModelConnectionParameters extends BaseModelConnectionParame
   @DisplayName("Salesforce Org")
   @Summary("The salesforce org.")
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(order = 1)
   @Example("mydomain.my.salesforce.com")
   private String salesforceOrg;
 

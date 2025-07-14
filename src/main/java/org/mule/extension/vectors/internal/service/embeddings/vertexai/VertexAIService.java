@@ -32,7 +32,8 @@ public class VertexAIService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(VertexAIService.class);
     private VertexAIModelConnection vertexAIModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private int dimensions;
+    private Integer dimensions;
+    private static final int BATCH_SIZE = 16;
 
     // Vertex AI Constants
     private static final String VERTEX_AI_ENDPOINT_FORMAT = "https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict";

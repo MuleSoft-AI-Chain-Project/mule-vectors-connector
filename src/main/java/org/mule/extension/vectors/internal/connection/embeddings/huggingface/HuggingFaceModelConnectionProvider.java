@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Hugging Face")
 public class HuggingFaceModelConnectionProvider extends BaseModelConnectionProvider  {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceModelConnectionProvider.class);
+
 
   @ParameterGroup(name = CONNECTION)
   private HuggingFaceModelConnectionParameters huggingFaceModelConnectionParameters;

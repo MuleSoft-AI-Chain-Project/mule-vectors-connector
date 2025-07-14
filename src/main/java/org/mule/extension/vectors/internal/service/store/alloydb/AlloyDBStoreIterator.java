@@ -25,6 +25,7 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
   private static final Logger LOGGER = LoggerFactory.getLogger(AlloyDBStoreIterator.class);
 
   private final AlloyDBStoreConnection alloyDBStoreConnection;
+  private final String storeName;
   private final QueryParameters queryParams;
   private final int pageSize;
 
@@ -37,6 +38,7 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
       QueryParameters queryParams
   )  {
     this.alloyDBStoreConnection = alloyDBStoreConnection;
+    this.storeName = storeName;
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
     try {
