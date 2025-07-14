@@ -24,10 +24,10 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class AISearchStoreConnectionProvider extends HttpBasedConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection> {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AISearchStoreConnectionProvider.class);
+
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AISearchStoreConnectionParameters aiSearchStoreConnectionParameters;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AISearchStoreConnectionProvider.class);
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {

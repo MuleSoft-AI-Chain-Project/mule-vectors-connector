@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Einstein")
 public class EinsteinModelConnectionProvider extends BaseModelConnectionProvider  {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(EinsteinModelConnectionProvider.class);
+
+
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private EinsteinModelConnectionParameters einsteinModelConnectionParameters;

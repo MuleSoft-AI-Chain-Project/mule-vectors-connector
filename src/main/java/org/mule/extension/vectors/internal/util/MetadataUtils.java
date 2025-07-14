@@ -19,6 +19,8 @@ import java.util.Optional;
  */
 public class MetadataUtils {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
+
   /**
    * Generates ingestion metadata for a document.
    *

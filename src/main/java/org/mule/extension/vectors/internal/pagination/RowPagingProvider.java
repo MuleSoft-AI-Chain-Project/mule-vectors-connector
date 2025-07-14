@@ -35,7 +35,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
   private String storeName;
   private QueryParameters queryParams;
   private StreamingHelper streamingHelper;
-  private final VectorStoreService vectorStoreService;
+  private VectorStoreService vectorStoreService;
 
   public RowPagingProvider(StoreConfiguration storeConfiguration,
                            String storeName,
@@ -46,13 +46,6 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
     this.storeName = storeName;
     this.queryParams = queryParams;
     this.streamingHelper = streamingHelper;
-    this.vectorStoreService = VectorStoreServiceProviderFactory.getService(
-            storeConfiguration,
-            null,
-            storeName,
-            queryParams,
-            0,
-            false);
   }
 
   @Override

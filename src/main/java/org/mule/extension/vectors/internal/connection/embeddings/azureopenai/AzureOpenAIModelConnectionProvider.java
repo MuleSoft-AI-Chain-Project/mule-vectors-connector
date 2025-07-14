@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Azure OpenAI")
 public class AzureOpenAIModelConnectionProvider  extends BaseModelConnectionProvider  {
 
- 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIModelConnectionProvider.class);
+
+
   @ParameterGroup(name = CONNECTION)
   private AzureOpenAIModelConnectionParameters azureOpenAIModelConnectionParameters;
 

@@ -17,98 +17,98 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 1)
   @Example("http://localhost:19530")
   @Optional
   private String uri;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 2)
   @Example("localhost")
   @Optional
   private String host;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 3)
   @Example("19530")
   @Optional
   private Integer port;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 4)
   @Optional
   private String token;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 5)
   @Optional
   private String username;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 6)
   @Optional
   private String password;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 7)
   @Optional
   private String databaseName;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
   @OfValues(MilvusIndexTypeProvider.class)
   @Optional(defaultValue = "FLAT")
   private String indexType;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 2, tab = Placement.ADVANCED_TAB)
   @OfValues(MilvusMetricTypeProvider.class)
   @Optional(defaultValue = "COSINE")
   private String metricType;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 3, tab = Placement.ADVANCED_TAB)
   @OfValues(MilvusConsistencyLevelProvider.class)
   @Optional(defaultValue = "EVENTUALLY")
   private String consistencyLevel;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 4, tab = Placement.ADVANCED_TAB)
   @Optional(defaultValue = "true")
   private boolean autoFlushOnInsert;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 5, tab = Placement.ADVANCED_TAB)
   @Optional(defaultValue = "id")
   private String idFieldName;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 6, tab = Placement.ADVANCED_TAB)
   @Optional(defaultValue = "text")
   private String textFieldName;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 7, tab = Placement.ADVANCED_TAB)
   @Optional(defaultValue = "metadata")
   private String metadataFieldName;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.ADVANCED_TAB)
+  @Placement(order = 8, tab = Placement.ADVANCED_TAB)
   @Optional(defaultValue = "vector")
   private String vectorFieldName;
 
