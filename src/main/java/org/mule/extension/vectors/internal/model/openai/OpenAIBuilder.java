@@ -5,6 +5,13 @@ import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParame
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingServiceBuilder;
 
+/**
+ * OpenAIBuilder constructs OpenAIService for embedding operations.
+ *
+ * <p>Preferred usage: Use via EmbeddingServiceFactoryBuilder.getBuilder(...) as per MDC rule
+ * 'Direct Construction of EmbeddingServiceBuilder via EmbeddingServiceFactoryBuilder'.
+ * This bypasses the provider indirection for clarity and maintainability.</p>
+ */
 public class OpenAIBuilder implements EmbeddingServiceBuilder {
     private OpenAIModelConnection openAIModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;

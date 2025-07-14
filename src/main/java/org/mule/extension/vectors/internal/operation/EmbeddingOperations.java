@@ -75,7 +75,7 @@ public class EmbeddingOperations {
             inputs.get(i),
             new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
       }
-      Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection).getServiceProvider().getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
+      Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection).getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
 
       embeddings = embeddingsResponse.content();
       tokenUsage = embeddingsResponse.tokenUsage() != null ?
