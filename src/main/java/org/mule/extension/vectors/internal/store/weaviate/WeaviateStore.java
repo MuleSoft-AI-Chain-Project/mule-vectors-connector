@@ -63,4 +63,11 @@ public class WeaviateStore extends BaseStoreService {
             throw new ModuleException("Failed to build Weaviate embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
         }
     }
+
+    @Override
+    public WeaviateStoreIterator<?> getFileIterator() {
+        return new WeaviateStoreIterator<>(
+            this.queryParams
+        );
+    }
 }

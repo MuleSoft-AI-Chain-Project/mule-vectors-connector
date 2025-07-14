@@ -67,6 +67,15 @@ public class ChromaStore extends BaseStoreService {
                 .build();
     }
 
+    @Override
+    public ChromaStoreIterator<?> getFileIterator() {
+        return new ChromaStoreIterator<>(
+            this.chromaStoreConnection,
+            this.storeName,
+            this.queryParams
+        );
+    }
+
     private String getJsonResponse(String endpoint, String jsonBody) {
         try {
             HttpClient httpClient = chromaStoreConnection.getHttpClient();

@@ -58,4 +58,13 @@ public class MongoDBAtlasStore extends BaseStoreService {
       throw new ModuleException("Failed to build MongoDB embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
+
+  @Override
+  public MongoDBAtlasStoreIterator<?> getFileIterator() {
+    return new MongoDBAtlasStoreIterator<>(
+      (MongoDBAtlasStoreConnection) this.storeConnection,
+      this.storeName,
+      this.queryParams
+    );
+  }
 }

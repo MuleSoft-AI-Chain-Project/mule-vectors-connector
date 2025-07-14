@@ -82,6 +82,7 @@ public class StoreOperations {
     Function<VectorStoreService, JSONObject> operation =
         (storeService) -> storeService.query(input.textSegments(), input.embeddings(), maxResults, finalMinScore, searchFilterParams);
 
+
     return executeStoreOperation(
         storeConfiguration, storeConnection, storeName, input.dimension(), false, null,
         operation,

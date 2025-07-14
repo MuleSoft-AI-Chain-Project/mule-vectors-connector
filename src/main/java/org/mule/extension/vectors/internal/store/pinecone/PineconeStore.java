@@ -55,5 +55,14 @@ public class PineconeStore extends BaseStoreService {
                         .build();
     }
 
+    @Override
+    public PineconeStoreIterator<?> getFileIterator() {
+        return new PineconeStoreIterator<>(
+            (org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection) this.storeConnection,
+            this.storeName,
+            this.queryParams
+        );
+    }
+
 
 }

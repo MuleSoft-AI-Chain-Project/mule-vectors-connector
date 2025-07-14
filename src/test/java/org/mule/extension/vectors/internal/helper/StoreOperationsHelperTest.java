@@ -161,7 +161,7 @@ class StoreOperationsHelperTest {
         HashMap<String, Object> attributes = new HashMap<>();
         assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
                 .isInstanceOf(ModuleException.class)
-                .hasMessageContaining("Error while initializing embedding store. \"store\" not supported.");
+                .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
 
     @Test
@@ -188,7 +188,7 @@ class StoreOperationsHelperTest {
         HashMap<String, Object> attributes = new HashMap<>();
         assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
                 .isInstanceOf(ModuleException.class)
-                .hasMessageContaining("Error while initializing embedding store. \"store\" not supported.");
+                .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
 
     @Test
@@ -215,7 +215,7 @@ class StoreOperationsHelperTest {
         HashMap<String, Object> attributes = new HashMap<>();
         assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
                 .isInstanceOf(ModuleException.class)
-                .hasMessageContaining("not supported");
+                .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
 
     @Test
@@ -242,7 +242,7 @@ class StoreOperationsHelperTest {
         HashMap<String, Object> attributes = new HashMap<>();
         assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
                 .isInstanceOf(ModuleException.class)
-                .hasMessageContaining("Error while initializing embedding store. \"store\" not supported.");
+                .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
 
     @Test

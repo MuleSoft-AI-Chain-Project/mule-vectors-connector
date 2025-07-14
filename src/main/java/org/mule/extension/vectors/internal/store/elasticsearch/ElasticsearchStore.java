@@ -37,4 +37,12 @@ public class ElasticsearchStore extends BaseStoreService {
     }
   }
 
+  @Override
+  public ElasticsearchStoreIterator<?> getFileIterator() {
+    return new ElasticsearchStoreIterator<>(
+      (org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection) this.storeConnection,
+      this.storeName,
+      this.queryParams
+    );
+  }
 }

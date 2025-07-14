@@ -114,12 +114,12 @@ public class StoreOperationsHelper {
             HashMap<String, Object> attributes) throws ModuleException {
 
         try {
-            VectorStoreService vectorStoreService = VectorStoreServiceProviderFactory.getInstance(storeConfiguration,
+            VectorStoreService vectorStoreService = VectorStoreServiceProviderFactory.getService(storeConfiguration,
                                                                                                   storeConnection,
                                                                                                   storeName,
                                                                                                   queryParams,
                                                                                                   dimension,
-                                                                                                  createStore).getService();
+                                                                                                  createStore);
 
             T operationResult = operation.apply(vectorStoreService);
             JSONObject jsonObject = responseBuilder.apply(operationResult);

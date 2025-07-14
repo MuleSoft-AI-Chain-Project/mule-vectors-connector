@@ -49,4 +49,14 @@ public interface VectorStoreService {
      */
     void remove(RemoveFilterParameters removeFilterParams);
 
+    /**
+     * Returns an iterator over the vector store's contents, if supported.
+     * By default, this operation is not supported and will throw an exception.
+     *
+     * @return a VectoreStoreIterator for iterating over the store's rows
+     * @throws UnsupportedOperationException if the store does not support iteration
+     */
+    default VectoreStoreIterator<?> getFileIterator() {
+        throw new UnsupportedOperationException("File iteration is not supported for this vector store.");
+    }
 } 

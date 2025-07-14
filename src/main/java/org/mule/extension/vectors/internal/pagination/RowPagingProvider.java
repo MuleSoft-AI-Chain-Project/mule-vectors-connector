@@ -58,7 +58,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
         OperationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_QUERY_ALL, storeConnection.getVectorStore());
 
-        rowIterator = VectorStoreServiceProviderFactory.getInstance(
+        rowIterator = VectorStoreServiceProviderFactory.getService(
                 storeConfiguration,
                 storeConnection,
                 storeName,
