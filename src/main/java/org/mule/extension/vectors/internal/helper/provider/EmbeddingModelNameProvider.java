@@ -3,7 +3,7 @@ package org.mule.extension.vectors.internal.helper.provider;
 import java.util.Collections;
 import java.util.Set;
 
-import org.mule.extension.vectors.internal.connection.model.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.model.EmbeddingModelHelper;
 import org.mule.runtime.api.value.Value;

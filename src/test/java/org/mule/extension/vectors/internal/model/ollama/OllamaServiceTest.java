@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mule.extension.vectors.internal.connection.model.ollama.OllamaModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.ollama.OllamaModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.ollama.OllamaService;

@@ -1,14 +1,14 @@
 package org.mule.extension.vectors.internal.config;
 
-import org.mule.extension.vectors.internal.connection.model.azureaivision.AzureAIVisionModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.azureopenai.AzureOpenAIModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.einstein.EinsteinModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.huggingface.HuggingFaceModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.mistralai.MistralAIModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.nomic.NomicModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.ollama.OllamaModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.openai.OpenAIModelConnectionProvider;
-import org.mule.extension.vectors.internal.connection.model.vertexai.VertexAIModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.azureaivision.AzureAIVisionModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.azureopenai.AzureOpenAIModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.einstein.EinsteinModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.nomic.NomicModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.ollama.OllamaModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.openai.OpenAIModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.embeddings.vertexai.VertexAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.operation.EmbeddingOperations;
 import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;

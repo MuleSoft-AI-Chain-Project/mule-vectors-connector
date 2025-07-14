@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.model.einstein;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.connection.model.einstein.EinsteinModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.einstein.EinsteinModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.einstein.EinsteinBuilder;

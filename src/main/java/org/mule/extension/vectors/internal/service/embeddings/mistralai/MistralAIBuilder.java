@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.service.embeddings.mistralai;
 
-import org.mule.extension.vectors.internal.connection.model.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBuilder;
