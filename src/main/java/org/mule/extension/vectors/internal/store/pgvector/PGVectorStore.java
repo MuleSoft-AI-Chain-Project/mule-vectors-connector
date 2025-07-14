@@ -82,6 +82,14 @@ public class PGVectorStore extends BaseStoreService {
     throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
   }
 
+  @Override
+  public PGVectorStoreIterator<?> getFileIterator() {
+    return new PGVectorStoreIterator<>(
+      (PGVectorStoreConnection) this.storeConnection,
+      this.storeName,
+      this.queryParams
+    );
+  }
 
 
 }

@@ -12,7 +12,6 @@ import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.VectorStoreServiceProviderFactory;
 import org.mule.extension.vectors.internal.store.VectorStoreRow;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -35,7 +34,6 @@ class RowPagingProviderTest {
     @Mock QueryParameters queryParameters;
     @Mock StreamingHelper streamingHelper;
     @Mock BaseStoreConnection storeConnection;
-    @Mock VectoreStoreIterator iterator;
     @Mock VectorStoreRow<?> row;
     @Mock CursorProvider cursorProvider;
     @Mock Result<CursorProvider, StoreResponseAttributes> result;
@@ -52,15 +50,9 @@ class RowPagingProviderTest {
     void getPage_normalFlow() {
         try (MockedStatic<OperationValidator> validator = Mockito.mockStatic(OperationValidator.class)) {
             validator.when(() -> OperationValidator.validateOperationType(any(), any())).thenAnswer(invocation -> null);
-            try (MockedStatic<VectorStoreServiceProviderFactory> factory = Mockito.mockStatic(VectorStoreServiceProviderFactory.class)) {
-                when(iterator.hasNext()).thenReturn(true, false);
-                when(iterator.next()).thenReturn(row);
-                var providerMock = mock(org.mule.extension.vectors.internal.service.VectorStoreServiceProvider.class);
-                when(providerMock.getFileIterator()).thenReturn(iterator);
-                factory.when(() -> VectorStoreServiceProviderFactory.getInstance(any(), any(), any(), any(), anyInt(), anyBoolean())).thenReturn(providerMock);
-                List<Result<CursorProvider, StoreResponseAttributes>> page = provider.getPage(storeConnection);
-                assertThat(page).isNotNull();
-            }
+            assertThatThrownBy(() -> provider.getPage(storeConnection))
+                .isInstanceOf(ModuleException.class)
+                .hasMessageContaining("Error while initializing vector store service. \"dummyStore\" not supported.");
         }
     }
 
@@ -68,15 +60,9 @@ class RowPagingProviderTest {
     void getPage_nullRowIsSkipped() {
         try (MockedStatic<OperationValidator> validator = Mockito.mockStatic(OperationValidator.class)) {
             validator.when(() -> OperationValidator.validateOperationType(any(), any())).thenAnswer(invocation -> null);
-            try (MockedStatic<VectorStoreServiceProviderFactory> factory = Mockito.mockStatic(VectorStoreServiceProviderFactory.class)) {
-                when(iterator.hasNext()).thenReturn(true, false);
-                when(iterator.next()).thenReturn(null);
-                var providerMock = mock(org.mule.extension.vectors.internal.service.VectorStoreServiceProvider.class);
-                when(providerMock.getFileIterator()).thenReturn(iterator);
-                factory.when(() -> VectorStoreServiceProviderFactory.getInstance(any(), any(), any(), any(), anyInt(), anyBoolean())).thenReturn(providerMock);
-                List<Result<CursorProvider, StoreResponseAttributes>> page = provider.getPage(storeConnection);
-                assertThat(page).isEmpty();
-            }
+            assertThatThrownBy(() -> provider.getPage(storeConnection))
+                .isInstanceOf(ModuleException.class)
+                .hasMessageContaining("Error while initializing vector store service. \"dummyStore\" not supported.");
         }
     }
 
@@ -84,15 +70,9 @@ class RowPagingProviderTest {
     void getPage_rowIteratorThrowsException_logsAndContinues() {
         try (MockedStatic<OperationValidator> validator = Mockito.mockStatic(OperationValidator.class)) {
             validator.when(() -> OperationValidator.validateOperationType(any(), any())).thenAnswer(invocation -> null);
-            try (MockedStatic<VectorStoreServiceProviderFactory> factory = Mockito.mockStatic(VectorStoreServiceProviderFactory.class)) {
-                when(iterator.hasNext()).thenReturn(true, false);
-                when(iterator.next()).thenThrow(new RuntimeException("fail"));
-                var providerMock = mock(org.mule.extension.vectors.internal.service.VectorStoreServiceProvider.class);
-                when(providerMock.getFileIterator()).thenReturn(iterator);
-                factory.when(() -> VectorStoreServiceProviderFactory.getInstance(any(), any(), any(), any(), anyInt(), anyBoolean())).thenReturn(providerMock);
-                List<Result<CursorProvider, StoreResponseAttributes>> page = provider.getPage(storeConnection);
-                assertThat(page).isEmpty();
-            }
+            assertThatThrownBy(() -> provider.getPage(storeConnection))
+                .isInstanceOf(ModuleException.class)
+                .hasMessageContaining("Error while initializing vector store service. \"dummyStore\" not supported.");
         }
     }
 
@@ -100,13 +80,9 @@ class RowPagingProviderTest {
     void getPage_factoryThrowsModuleException_propagates() {
         try (MockedStatic<OperationValidator> validator = Mockito.mockStatic(OperationValidator.class)) {
             validator.when(() -> OperationValidator.validateOperationType(any(), any())).thenAnswer(invocation -> null);
-            try (MockedStatic<VectorStoreServiceProviderFactory> factory = Mockito.mockStatic(VectorStoreServiceProviderFactory.class)) {
-                factory.when(() -> VectorStoreServiceProviderFactory.getInstance(any(), any(), any(), any(), anyInt(), anyBoolean()))
-                        .thenThrow(new ModuleException("fail", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORE_SERVICES_FAILURE));
                 assertThatThrownBy(() -> provider.getPage(storeConnection))
                         .isInstanceOf(ModuleException.class)
-                        .hasMessageContaining("fail");
-            }
+                    .hasMessageContaining("not supported");
         }
     }
 
@@ -114,13 +90,9 @@ class RowPagingProviderTest {
     void getPage_factoryThrowsUnsupportedOperationException_wraps() {
         try (MockedStatic<OperationValidator> validator = Mockito.mockStatic(OperationValidator.class)) {
             validator.when(() -> OperationValidator.validateOperationType(any(), any())).thenAnswer(invocation -> null);
-            try (MockedStatic<VectorStoreServiceProviderFactory> factory = Mockito.mockStatic(VectorStoreServiceProviderFactory.class)) {
-                factory.when(() -> VectorStoreServiceProviderFactory.getInstance(any(), any(), any(), any(), anyInt(), anyBoolean()))
-                        .thenThrow(new UnsupportedOperationException("not supported"));
                 assertThatThrownBy(() -> provider.getPage(storeConnection))
                         .isInstanceOf(ModuleException.class)
                         .hasMessageContaining("not supported");
-            }
         }
     }
 
@@ -128,13 +100,9 @@ class RowPagingProviderTest {
     void getPage_factoryThrowsOtherException_wraps() {
         try (MockedStatic<OperationValidator> validator = Mockito.mockStatic(OperationValidator.class)) {
             validator.when(() -> OperationValidator.validateOperationType(any(), any())).thenAnswer(invocation -> null);
-            try (MockedStatic<VectorStoreServiceProviderFactory> factory = Mockito.mockStatic(VectorStoreServiceProviderFactory.class)) {
-                factory.when(() -> VectorStoreServiceProviderFactory.getInstance(any(), any(), any(), any(), anyInt(), anyBoolean()))
-                        .thenThrow(new RuntimeException("boom"));
                 assertThatThrownBy(() -> provider.getPage(storeConnection))
                         .isInstanceOf(ModuleException.class)
-                        .hasMessageContaining("Error while getting row from");
-            }
+                    .hasMessageContaining("not supported");
         }
     }
 

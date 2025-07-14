@@ -41,5 +41,14 @@ public class OpenSearchStore extends BaseStoreService {
         }
     }
 
+    @Override
+    public OpenSearchStoreIterator<?> getFileIterator() {
+        return new OpenSearchStoreIterator<>(
+            (org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection) this.storeConnection,
+            this.storeName,
+            this.queryParams
+        );
+    }
+
 
 }

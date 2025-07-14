@@ -69,5 +69,14 @@ public class MilvusStore extends BaseStoreService {
         }
     }
 
+    @Override
+    public MilvusStoreIterator<?> getFileIterator() {
+        return new MilvusStoreIterator<>(
+            (MilvusStoreConnection) this.storeConnection, // storeConnection is protected in BaseStoreService
+            this.storeName,
+            this.queryParams
+        );
+    }
+
 
 }

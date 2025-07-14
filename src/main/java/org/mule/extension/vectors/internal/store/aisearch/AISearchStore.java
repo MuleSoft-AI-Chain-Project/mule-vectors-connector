@@ -65,4 +65,14 @@ public class AISearchStore extends BaseStoreService {
       throw new ModuleException("Failed to build Azure AI Search embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
+
+  @Override
+  public AISearchStoreIterator<?> getFileIterator() {
+    return new AISearchStoreIterator<>(
+      this.storeName,
+      this.queryParams,
+      this.aiSearchStoreConnection,
+      this.dimension
+    );
+  }
 }

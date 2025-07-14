@@ -53,5 +53,14 @@ try {
       throw new ModuleException("Failed to build Qdrant embedding store: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
+
+  @Override
+  public QdrantStoreIterator<?> getFileIterator() {
+    return new QdrantStoreIterator<>(
+      (org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection) this.storeConnection,
+      this.storeName,
+      this.queryParams
+    );
+  }
   }
 

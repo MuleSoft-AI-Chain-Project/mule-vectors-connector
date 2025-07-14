@@ -14,6 +14,7 @@ import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -82,5 +83,24 @@ class AlloyDBStoreTest {
         assertThat(thrown)
             .isInstanceOf(ModuleException.class)
             .hasMessageContaining("Failed to build AlloyDB embedding store");
+    }
+
+    @Test
+    void testGetFileIteratorReturnsNonNull() throws Exception {
+        StoreConfiguration config = mock(StoreConfiguration.class);
+        AlloyDBStoreConnection mockConn = mock(AlloyDBStoreConnection.class);
+        QueryParameters queryParams = mock(QueryParameters.class);
+        dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine alloyDBEngine = mock(dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine.class);
+        java.sql.Connection jdbcConnection = mock(java.sql.Connection.class);
+        java.sql.PreparedStatement pstmt = mock(java.sql.PreparedStatement.class);
+        java.sql.ResultSet resultSet = mock(java.sql.ResultSet.class);
+        when(mockConn.getAlloyDBEngine()).thenReturn(alloyDBEngine);
+        when(alloyDBEngine.getConnection()).thenReturn(jdbcConnection);
+        when(jdbcConnection.prepareStatement(anyString())).thenReturn(pstmt);
+        when(pstmt.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        AlloyDBStore store = new AlloyDBStore(config, mockConn, "store", queryParams, 128, true);
+        Iterator<?> iterator = store.getFileIterator();
+        assertThat(iterator).isNotNull();
     }
 }

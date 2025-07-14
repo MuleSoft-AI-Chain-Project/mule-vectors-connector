@@ -53,6 +53,15 @@ public class AlloyDBStore extends BaseStoreService {
     }
   }
 
+  @Override
+  public AlloyDBStoreIterator<?> getFileIterator() {
+    return new AlloyDBStoreIterator<>(
+      (org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection) this.storeConnection,
+      this.storeName,
+      this.queryParams
+    );
+  }
+
   private void handleSQLException(SQLException e) {
     LOGGER.error("SQL error", e);
     String sqlState = e.getSQLState();

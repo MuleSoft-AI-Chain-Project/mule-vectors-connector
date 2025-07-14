@@ -18,74 +18,127 @@ import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateSto
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.store.aisearch.AISearchStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.alloydb.AlloyDBStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.chroma.ChromaStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.ephemeralfile.EphemeralFileStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.milvus.MilvusStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.mongodbatlas.MongoDBAtlasStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.opensearch.OpenSearchStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.pgvector.PGVectorStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.pinecone.PineconeStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.qdrant.QdrantStoreServiceProvider;
-import org.mule.extension.vectors.internal.store.weaviate.WeaviateStoreServiceProvider;
+import org.mule.extension.vectors.internal.store.aisearch.AISearchStore;
+import org.mule.extension.vectors.internal.store.chroma.ChromaStore;
+import org.mule.extension.vectors.internal.store.elasticsearch.ElasticsearchStore;
+import org.mule.extension.vectors.internal.store.milvus.MilvusStore;
+import org.mule.extension.vectors.internal.store.mongodbatlas.MongoDBAtlasStore;
+import org.mule.extension.vectors.internal.store.opensearch.OpenSearchStore;
+import org.mule.extension.vectors.internal.store.pgvector.PGVectorStore;
+import org.mule.extension.vectors.internal.store.pinecone.PineconeStore;
+import org.mule.extension.vectors.internal.store.qdrant.QdrantStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.concurrent.ExecutionException;
 
 public class VectorStoreServiceProviderFactory {
-  public static VectorStoreServiceProvider getInstance(StoreConfiguration storeConfiguration,
+
+  public static VectorStoreService getService(StoreConfiguration storeConfiguration,
                                                BaseStoreConnection storeConnection,
                                                String storeName,
                                                QueryParameters queryParams,
                                                int dimension,
                                                boolean createStore) throws ExecutionException, InterruptedException {
-
     switch (storeConnection.getVectorStore()) {
-
-
-
-      case Constants.VECTOR_STORE_AI_SEARCH:
-        return new AISearchStoreServiceProvider(storeConfiguration, (AISearchStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_ALLOYDB:
-        return new AlloyDBStoreServiceProvider(storeConfiguration, (AlloyDBStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_CHROMA:
-        return new ChromaStoreServiceProvider(storeConfiguration, (ChromaStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_ELASTICSEARCH:
-        return new ElasticsearchStoreServiceProvider(storeConfiguration, (ElasticsearchStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_PGVECTOR:
-        return new PGVectorStoreServiceProvider(storeConfiguration, (PGVectorStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
       case Constants.VECTOR_STORE_MILVUS:
-        return new MilvusStoreServiceProvider(storeConfiguration, (MilvusStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_OPENSEARCH:
-        return new OpenSearchStoreServiceProvider(storeConfiguration, (OpenSearchStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_PINECONE:
-        return new PineconeStoreServiceProvider(storeConfiguration, (PineconeStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_QDRANT:
-        return new QdrantStoreServiceProvider(storeConfiguration, (QdrantStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_WEAVIATE:
-        return new WeaviateStoreServiceProvider(storeConfiguration, (WeaviateStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-      case Constants.VECTOR_STORE_EPHEMERAL_FILE:
-        return new EphemeralFileStoreServiceProvider(storeConfiguration, (EphemeralFileStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
+        return new MilvusStore(
+            storeConfiguration,
+            (MilvusStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
       case Constants.VECTOR_STORE_MONGODB_ATLAS:
-        return new MongoDBAtlasStoreServiceProvider(storeConfiguration, (MongoDBAtlasStoreConnection) storeConnection, storeName, queryParams, dimension, createStore);
-
-
+        return new MongoDBAtlasStore(
+            storeConfiguration,
+            (MongoDBAtlasStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_PGVECTOR:
+        return new PGVectorStore(
+            storeConfiguration,
+            (PGVectorStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_AI_SEARCH:
+        return new AISearchStore(
+            storeConfiguration,
+            (AISearchStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_CHROMA:
+        return new ChromaStore(
+            storeConfiguration,
+            (ChromaStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_PINECONE:
+        return new PineconeStore(
+            storeConfiguration,
+            (PineconeStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_ELASTICSEARCH:
+        return new ElasticsearchStore(
+            storeConfiguration,
+            (ElasticsearchStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_OPENSEARCH:
+        return new OpenSearchStore(
+            storeConfiguration,
+            (OpenSearchStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_QDRANT:
+        return new QdrantStore(
+            storeConfiguration,
+            (QdrantStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_ALLOYDB:
+        return new org.mule.extension.vectors.internal.store.alloydb.AlloyDBStore(
+            storeConfiguration,
+            (org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_EPHEMERAL_FILE:
+        return new org.mule.extension.vectors.internal.store.ephemeralfile.EphemeralFileStore(
+            storeConfiguration,
+            (org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
+      case Constants.VECTOR_STORE_WEAVIATE:
+        return new org.mule.extension.vectors.internal.store.weaviate.WeaviateStore(
+            storeConfiguration,
+            (org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection) storeConnection,
+            storeName,
+            queryParams,
+            dimension,
+            createStore);
       default:
         throw new ModuleException(
-            String.format("Error while initializing embedding store. \"%s\" not supported.", storeConnection.getVectorStore()),
+            String.format("Error while initializing vector store service. \"%s\" not supported.", storeConnection.getVectorStore()),
             MuleVectorsErrorType.STORE_SERVICES_FAILURE);
     }
   }

@@ -11,6 +11,8 @@ import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class WeaviateStoreTest {
     @Test
@@ -114,6 +116,26 @@ class WeaviateStoreTest {
         WeaviateStore store = new WeaviateStore(config, conn, storeName, queryParams, dimension, createStore);
         ModuleException ex = assertThrows(ModuleException.class, store::buildEmbeddingStore);
         assertTrue(ex.getMessage().toLowerCase().contains("fail"));
+    }
+
+    @Test
+    void testGetFileIteratorReturnsNonNull() {
+        StoreConfiguration storeConfiguration = mock(StoreConfiguration.class);
+        org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection storeConnection = mock(org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection.class);
+        QueryParameters queryParameters = mock(QueryParameters.class);
+        String storeName = "test-weaviate";
+        int dimension = 128;
+        boolean createStore = true;
+
+        WeaviateStore store = new WeaviateStore(
+                storeConfiguration,
+                storeConnection,
+                storeName,
+                queryParameters,
+                dimension,
+                createStore
+        );
+        assertThat(store.getFileIterator()).isNotNull();
     }
 
     // Reflection helper
