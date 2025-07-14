@@ -34,7 +34,6 @@ public class OpenAIService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIService.class);
     private OpenAIModelConnection openAIModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
     private static final int BATCH_SIZE = 16;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -43,7 +42,6 @@ public class OpenAIService implements EmbeddingService {
     public OpenAIService(OpenAIModelConnection openAIModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
         this.openAIModelConnection = openAIModelConnection;
         this.embeddingModelParameters = embeddingModelParameters;
-        this.dimensions = dimensions;
     }
 
     public Object generateTextEmbeddings(List<String> inputs, String modelName) {

@@ -12,7 +12,7 @@ public class WeaviateStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeaviateStoreIterator.class);
 
-  private final QueryParameters queryParams;
+  private QueryParameters queryParams;
 
 
   public WeaviateStoreIterator(

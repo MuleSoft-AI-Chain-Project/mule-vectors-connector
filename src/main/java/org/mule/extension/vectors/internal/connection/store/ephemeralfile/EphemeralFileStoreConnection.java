@@ -8,8 +8,6 @@ import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionP
 
 public class EphemeralFileStoreConnection implements BaseStoreConnection {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(EphemeralFileStoreConnection.class);
-
   private String workingDir;
   private final EphemeralFileStoreConnectionParameters parameters;
 

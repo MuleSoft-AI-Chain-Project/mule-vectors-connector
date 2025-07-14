@@ -14,9 +14,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Mistral AI")
 public class MistralAIModelConnectionProvider extends BaseModelConnectionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MistralAIModelConnectionProvider.class);
-
-
   @ParameterGroup(name = CONNECTION)
   private MistralAIModelConnectionParameters mistralAIModelConnectionParameters;
 

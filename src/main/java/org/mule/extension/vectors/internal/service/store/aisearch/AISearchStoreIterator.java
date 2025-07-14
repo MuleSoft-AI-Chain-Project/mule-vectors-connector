@@ -32,7 +32,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private final QueryParameters queryParams;
   private final AISearchStoreConnection aiSearchStoreConnection;
   private final String API_VERSION = "2024-07-01";
-  private final int dimension;
+  private int dimension;
 
   private String nextUrl;
   private Iterator<JSONObject> currentBatch;

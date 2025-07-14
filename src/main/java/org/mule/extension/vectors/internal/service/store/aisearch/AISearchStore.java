@@ -19,9 +19,6 @@ public class AISearchStore extends BaseStoreService {
   static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
   static final String VECTOR_DEFAULT_FIELD_NAME = "content_vector";
 
-  private static final String API_VERSION = "2024-07-01";
-  private static final Logger LOGGER = LoggerFactory.getLogger(AISearchStore.class);
-
   private final String apiKey;
   private final String url;
   private final QueryParameters queryParams;
