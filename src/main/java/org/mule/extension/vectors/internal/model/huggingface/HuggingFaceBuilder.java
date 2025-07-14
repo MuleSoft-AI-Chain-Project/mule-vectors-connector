@@ -5,6 +5,13 @@ import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParame
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embedding.EmbeddingServiceBuilder;
 
+/**
+ * HuggingFaceBuilder constructs HuggingFaceService for embedding operations.
+ *
+ * <p>Preferred usage: Use via EmbeddingServiceFactoryBuilder.getBuilder(...) as per MDC rule
+ * 'Direct Construction of EmbeddingServiceBuilder via EmbeddingServiceFactoryBuilder'.
+ * This bypasses the provider indirection for clarity and maintainability.</p>
+ */
 public class HuggingFaceBuilder implements EmbeddingServiceBuilder {
     private HuggingFaceModelConnection huggingFaceModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
