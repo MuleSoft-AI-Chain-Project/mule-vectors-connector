@@ -15,7 +15,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
 public class MistralAIBuilder implements EmbeddingServiceBuilder {
     private MistralAIModelConnection mistralAIModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
 
 
     public MistralAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
@@ -26,13 +25,9 @@ public class MistralAIBuilder implements EmbeddingServiceBuilder {
       this.mistralAIModelConnection = mistralAIModelConnection;
       return this;
     }
-    public MistralAIBuilder modelDimensions(Integer dimensions) {
-      this.dimensions = dimensions;
-      return this;
-    }
     @Override
     public EmbeddingService build() {
-      return new MistralAIService(this.mistralAIModelConnection, this.embeddingModelParameters, this.dimensions);
+      return new MistralAIService(this.mistralAIModelConnection, this.embeddingModelParameters);
     }
 
 }

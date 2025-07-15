@@ -18,8 +18,7 @@ class EinsteinBuilderTest {
         int dims = 123;
         EinsteinBuilder builder = new EinsteinBuilder()
                 .modelConnections(connection)
-                .modelParameters(params)
-                .modelDimensions(dims);
+                .modelParameters(params);
         EmbeddingService service = builder.build();
         assertNotNull(service);
         assertTrue(service instanceof EinsteinService);
@@ -30,7 +29,6 @@ class EinsteinBuilderTest {
         EinsteinBuilder builder = new EinsteinBuilder();
         assertDoesNotThrow(() -> builder.modelConnections(null));
         assertDoesNotThrow(() -> builder.modelParameters(null));
-        assertDoesNotThrow(() -> builder.modelDimensions(null));
         // build() with all nulls should still return a non-null EinsteinService
         EmbeddingService service = builder.build();
         assertNotNull(service);

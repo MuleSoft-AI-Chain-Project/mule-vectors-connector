@@ -35,7 +35,6 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
   private String storeName;
   private QueryParameters queryParams;
   private StreamingHelper streamingHelper;
-  private VectorStoreService vectorStoreService;
 
   public RowPagingProvider(StoreConfiguration storeConfiguration,
                            String storeName,

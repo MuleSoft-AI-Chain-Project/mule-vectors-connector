@@ -25,8 +25,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class ChromaStoreConnectionProvider extends HttpBasedConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStoreConnectionProvider.class);
-
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private ChromaStoreConnectionParameters chromaStoreConnectionParameters;
 

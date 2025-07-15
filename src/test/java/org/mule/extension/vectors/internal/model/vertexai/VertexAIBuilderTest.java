@@ -18,8 +18,7 @@ class VertexAIBuilderTest {
         int dims = 42;
         VertexAIBuilder builder = new VertexAIBuilder()
                 .modelConnections(connection)
-                .modelParameters(params)
-                .modelDimensions(dims);
+                .modelParameters(params);
         EmbeddingService service = builder.build();
         assertNotNull(service);
         assertTrue(service instanceof VertexAIService);

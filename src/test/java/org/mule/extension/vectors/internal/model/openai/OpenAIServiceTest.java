@@ -42,7 +42,7 @@ class OpenAIServiceTest {
         when(modelConnection.getHttpClient()).thenReturn(null);
         when(modelConnection.getTimeout()).thenReturn(1000L);
         when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
-        service = new OpenAIService(modelConnection, modelParameters, 128);
+        service = new OpenAIService(modelConnection, modelParameters);
     }
 
     @Test

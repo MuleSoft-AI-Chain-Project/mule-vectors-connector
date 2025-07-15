@@ -26,13 +26,11 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
   private static final Logger LOGGER = LoggerFactory.getLogger(MilvusStoreIterator.class);
 
   private final MilvusServiceClient client;
-  private final String storeName;
   private final QueryParameters queryParams;
   private final String idFieldName;
   private final String textFieldName;
   private final String metadataFieldName;
   private final String vectorFieldName;
-  private final MilvusStoreConnection milvusStoreConnection;
 
   private QueryIterator queryIterator;
   private List<io.milvus.response.QueryResultsWrapper.RowRecord> currentBatch;
@@ -44,13 +42,11 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       QueryParameters queryParams
   ) {
     this.client = milvusStoreConnection.getClient();
-    this.storeName = storeName;
     this.queryParams = queryParams;
     this.idFieldName = milvusStoreConnection.getIdFieldName();
     this.textFieldName = milvusStoreConnection.getTextFieldName();
     this.metadataFieldName = milvusStoreConnection.getMetadataFieldName();
     this.vectorFieldName = milvusStoreConnection.getVectorFieldName();
-    this.milvusStoreConnection = milvusStoreConnection;
 
     List<String> outFields = queryParams.retrieveEmbeddings() ?
         Arrays.asList(idFieldName, vectorFieldName, textFieldName, metadataFieldName) :

@@ -38,7 +38,7 @@ class OllamaServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new OllamaService(modelConnection, modelParameters, 1536);
+        service = new OllamaService(modelConnection, modelParameters);
     }
 
     @Test

@@ -16,7 +16,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
 public class AzureAIVisionBuilder implements EmbeddingServiceBuilder {
     private AzureAIVisionModelConnection azureAIVisionModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
 
 
     public AzureAIVisionBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
@@ -27,13 +26,9 @@ public class AzureAIVisionBuilder implements EmbeddingServiceBuilder {
       this.azureAIVisionModelConnection = azureAIVisionModelConnection;
       return this;
     }
-    public AzureAIVisionBuilder modelDimensions(Integer dimensions) {
-      this.dimensions =dimensions;
-      return this;
-    }
     @Override
     public EmbeddingService build() {
-      return new AzureAIVisionService(this.azureAIVisionModelConnection, this.embeddingModelParameters, this.dimensions);
+      return new AzureAIVisionService(this.azureAIVisionModelConnection, this.embeddingModelParameters);
     }
 
 }

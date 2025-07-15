@@ -12,8 +12,6 @@ public class WeaviateStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeaviateStoreIterator.class);
 
-  private final QueryParameters queryParams;
-
 
   public WeaviateStoreIterator(
       // WeaviateClient weaviateClient,
@@ -21,7 +19,7 @@ public class WeaviateStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       // ...other params as needed
   ) {
     // this.weaviateClient = weaviateClient;
-    this.queryParams = queryParams;
+    // this.queryParams = queryParams;
     // this.currentBatch = new ArrayList<>();
     // this.currentIndex = 0;
     // this.hasMorePages = true;

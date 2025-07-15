@@ -15,7 +15,6 @@ public class SegmentationParameters {
   @Alias("maxSegmentSizeInChar")
   @DisplayName("Max Segment Size (Characters)")
   @Summary("Maximum size of a segment in characters.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   @Optional
   int maxSegmentSizeInChars;
@@ -24,7 +23,6 @@ public class SegmentationParameters {
   @Alias("maxOverlapSizeInChars")
   @DisplayName("Max Overlap Size (Characters)")
   @Summary("Maximum overlap between segments in characters.")
-  @Placement(order = 2)
   @Expression(ExpressionSupport.SUPPORTED)
   @Optional
   int maxOverlapSizeInChars;

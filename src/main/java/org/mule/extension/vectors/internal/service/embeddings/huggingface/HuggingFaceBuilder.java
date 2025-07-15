@@ -15,7 +15,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
 public class HuggingFaceBuilder implements EmbeddingServiceBuilder {
     private HuggingFaceModelConnection huggingFaceModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
 
 
     public HuggingFaceBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
@@ -26,13 +25,10 @@ public class HuggingFaceBuilder implements EmbeddingServiceBuilder {
       this.huggingFaceModelConnection = huggingFaceModelConnection;
       return this;
     }
-    public HuggingFaceBuilder modelDimensions(Integer dimensions) {
-      this.dimensions = dimensions;
-      return this;
-    }
+
     @Override
     public EmbeddingService build() {
-      return new HuggingFaceService(this.huggingFaceModelConnection, this.embeddingModelParameters, this.dimensions);
+      return new HuggingFaceService(this.huggingFaceModelConnection, this.embeddingModelParameters);
     }
 
 }

@@ -15,7 +15,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
 public class EinsteinBuilder implements EmbeddingServiceBuilder {
     private EinsteinModelConnection einsteinModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
 
 
     public EinsteinBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
@@ -26,13 +25,9 @@ public class EinsteinBuilder implements EmbeddingServiceBuilder {
       this.einsteinModelConnection = einsteinModelConnection;
       return this;
     }
-    public EinsteinBuilder modelDimensions(Integer dimensions) {
-      this.dimensions =dimensions;
-      return this;
-    }
     @Override
     public EmbeddingService build() {
-      return new EinsteinService(this.einsteinModelConnection, this.embeddingModelParameters, this.dimensions);
+      return new EinsteinService(this.einsteinModelConnection, this.embeddingModelParameters);
     }
 
 }

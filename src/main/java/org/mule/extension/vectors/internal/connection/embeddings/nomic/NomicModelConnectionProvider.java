@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Nomic")
 public class NomicModelConnectionProvider extends BaseModelConnectionProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NomicModelConnectionProvider.class);
-
 
     @ParameterGroup(name = CONNECTION)
     private NomicModelConnectionParameters nomicModelConnectionParameters;

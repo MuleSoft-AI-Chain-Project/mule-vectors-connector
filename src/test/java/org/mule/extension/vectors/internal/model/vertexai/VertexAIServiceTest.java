@@ -45,7 +45,7 @@ class VertexAIServiceTest {
         when(modelConnection.getBatchSize()).thenReturn(16);
         when(modelConnection.getObjectMapper()).thenReturn(new ObjectMapper());
         when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
-        service = new VertexAIService(modelConnection, modelParameters, 128);
+        service = new VertexAIService(modelConnection, modelParameters);
     }
 
     @Test
@@ -55,11 +55,8 @@ class VertexAIServiceTest {
         connField.setAccessible(true);
         var paramsField = VertexAIService.class.getDeclaredField("embeddingModelParameters");
         paramsField.setAccessible(true);
-        var dimField = VertexAIService.class.getDeclaredField("dimensions");
-        dimField.setAccessible(true);
         assertThat(connField.get(service)).isEqualTo(modelConnection);
         assertThat(paramsField.get(service)).isEqualTo(modelParameters);
-        assertThat(dimField.get(service)).isEqualTo(128);
     }
 
     @Test

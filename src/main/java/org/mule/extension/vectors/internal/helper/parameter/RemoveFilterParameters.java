@@ -21,7 +21,6 @@ public class RemoveFilterParameters extends MetadataFilterParameters {
   @Alias("ids")
   @DisplayName("Ids")
   @Summary("List of ids to be removed")
-  @Placement(order = 2)
   @Optional
   List<String> ids;
 

@@ -15,13 +15,11 @@ public class ElasticsearchStoreConnectionParameters extends BaseStoreConnectionP
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
   @Example("http://localhost:9200")
   private String url;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2)
   @Example("elasticsearch")
   @Optional
   private String user;
@@ -29,13 +27,11 @@ public class ElasticsearchStoreConnectionParameters extends BaseStoreConnectionP
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 3)
   private String password;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 4)
   @Optional
   private String apiKey;
 

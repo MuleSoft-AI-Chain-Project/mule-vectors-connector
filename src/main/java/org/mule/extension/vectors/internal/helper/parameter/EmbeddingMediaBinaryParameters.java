@@ -22,7 +22,6 @@ public class EmbeddingMediaBinaryParameters {
   @Alias("binary")
   @DisplayName("Binary")
   @Summary("The media binary.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   private @Content InputStream binaryInputStream;
 
@@ -31,7 +30,6 @@ public class EmbeddingMediaBinaryParameters {
   @DisplayName("Media Label")
   @Summary("Short text describing the image. " +
       "Not all models allow to generate embedding for a combination of label and image.")
-  @Placement(order = 2)
   @Example("An image of a sunset")
   @Expression(ExpressionSupport.SUPPORTED)
   private @Content String label;
@@ -40,7 +38,6 @@ public class EmbeddingMediaBinaryParameters {
   @Alias("mediaType")
   @DisplayName("Media Type")
   @Summary("The supported types of media.")
-  @Placement(order = 3)
   @Expression(ExpressionSupport.SUPPORTED)
   @OfValues(MediaTypeProvider.class)
   @Optional(defaultValue = Constants.MEDIA_TYPE_IMAGE)

@@ -17,7 +17,6 @@ public class EmbeddingModelParameters {
   @Alias("embeddingModelName")
   @DisplayName("Model (Deployment) Name")
   @Summary("The embedding model (deployment) name.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   @OfValues(EmbeddingModelNameProvider.class)
   private String embeddingModelName;

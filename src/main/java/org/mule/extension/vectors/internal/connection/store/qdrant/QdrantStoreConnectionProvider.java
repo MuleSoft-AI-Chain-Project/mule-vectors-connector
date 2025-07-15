@@ -26,8 +26,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class QdrantStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStoreConnectionProvider.class);
-
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private QdrantStoreConnectionParameters qdrantStoreConnectionParameters;
   private  QdrantStoreConnection qdrantStoreConnection;

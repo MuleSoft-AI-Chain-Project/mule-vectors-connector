@@ -15,9 +15,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
 public class NomicBuilder implements EmbeddingServiceBuilder {
     private NomicModelConnection nomicModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
-
-
     public NomicBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
       this.embeddingModelParameters = embeddingModelParameters;
       return this;
@@ -26,13 +23,9 @@ public class NomicBuilder implements EmbeddingServiceBuilder {
       this.nomicModelConnection = nomicModelConnection;
       return this;
     }
-    public NomicBuilder modelDimensions(Integer dimensions) {
-      this.dimensions = dimensions;
-      return this;
-    }
     @Override
     public EmbeddingService build() {
-      return new NomicService(this.nomicModelConnection, this.embeddingModelParameters, this.dimensions);
+      return new NomicService(this.nomicModelConnection, this.embeddingModelParameters);
     }
 
 }

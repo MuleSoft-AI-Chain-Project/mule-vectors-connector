@@ -14,9 +14,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("OpenAI")
 public class OpenAIModelConnectionProvider extends BaseModelConnectionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnectionProvider.class);
-
-
  
   @ParameterGroup(name = CONNECTION)
   private OpenAIModelConnectionParameters openAIModelConnectionParameters;

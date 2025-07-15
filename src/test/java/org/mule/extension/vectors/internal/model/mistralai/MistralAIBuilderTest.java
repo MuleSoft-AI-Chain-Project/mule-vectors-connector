@@ -19,8 +19,7 @@ class MistralAIBuilderTest {
 
         MistralAIBuilder builder = new MistralAIBuilder()
                 .modelConnections(connection)
-                .modelParameters(params)
-                .modelDimensions(dims);
+                .modelParameters(params);
 
         EmbeddingService service = builder.build();
         assertNotNull(service);
@@ -33,6 +32,5 @@ class MistralAIBuilderTest {
         // Should not throw on nulls, but build() will likely NPE (acceptable for builder pattern)
         assertDoesNotThrow(() -> builder.modelConnections(null));
         assertDoesNotThrow(() -> builder.modelParameters(null));
-        assertDoesNotThrow(() -> builder.modelDimensions(null));
     }
 } 

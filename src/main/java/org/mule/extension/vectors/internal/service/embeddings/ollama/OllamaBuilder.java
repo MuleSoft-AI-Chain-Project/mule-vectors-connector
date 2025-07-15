@@ -32,7 +32,7 @@ public class OllamaBuilder implements EmbeddingServiceBuilder {
     }
     @Override
     public EmbeddingService build() {
-      return new OllamaService(this.ollamaModelConnection, this.embeddingModelParameters, this.dimensions);
+      return new OllamaService(this.ollamaModelConnection, this.embeddingModelParameters);
     }
 
 }

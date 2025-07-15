@@ -20,8 +20,7 @@ class AzureAIVisionBuilderTest {
 
         AzureAIVisionBuilder builder = new AzureAIVisionBuilder()
                 .modelConnections(modelConnection)
-                .modelParameters(modelParameters)
-                .modelDimensions(dimensions);
+                .modelParameters(modelParameters);
 
         // Use reflection to check private fields
         try {
@@ -29,11 +28,8 @@ class AzureAIVisionBuilderTest {
             connField.setAccessible(true);
             var paramsField = AzureAIVisionBuilder.class.getDeclaredField("embeddingModelParameters");
             paramsField.setAccessible(true);
-            var dimField = AzureAIVisionBuilder.class.getDeclaredField("dimensions");
-            dimField.setAccessible(true);
             assertThat(connField.get(builder)).isEqualTo(modelConnection);
             assertThat(paramsField.get(builder)).isEqualTo(modelParameters);
-            assertThat(dimField.get(builder)).isEqualTo(dimensions);
         } catch (Exception e) {
             throw new AssertionError(e);
         }
@@ -43,12 +39,9 @@ class AzureAIVisionBuilderTest {
     void build_returnsAzureAIVisionServiceWithCorrectFields() {
         AzureAIVisionModelConnection modelConnection = mock(AzureAIVisionModelConnection.class);
         EmbeddingModelParameters modelParameters = mock(EmbeddingModelParameters.class);
-        int dimensions = 256;
-
         AzureAIVisionBuilder builder = new AzureAIVisionBuilder()
                 .modelConnections(modelConnection)
-                .modelParameters(modelParameters)
-                .modelDimensions(dimensions);
+                .modelParameters(modelParameters);
 
         EmbeddingService service = builder.build();
         assertThat(service).isInstanceOf(AzureAIVisionService.class);
@@ -59,11 +52,8 @@ class AzureAIVisionBuilderTest {
             connField.setAccessible(true);
             var paramsField = AzureAIVisionService.class.getDeclaredField("embeddingModelParameters");
             paramsField.setAccessible(true);
-            var dimField = AzureAIVisionService.class.getDeclaredField("dimensions");
-            dimField.setAccessible(true);
             assertThat(connField.get(azureService)).isEqualTo(modelConnection);
             assertThat(paramsField.get(azureService)).isEqualTo(modelParameters);
-            assertThat(dimField.get(azureService)).isEqualTo(dimensions);
         } catch (Exception e) {
             throw new AssertionError(e);
         }
@@ -81,11 +71,8 @@ class AzureAIVisionBuilderTest {
             connField.setAccessible(true);
             var paramsField = AzureAIVisionService.class.getDeclaredField("embeddingModelParameters");
             paramsField.setAccessible(true);
-            var dimField = AzureAIVisionService.class.getDeclaredField("dimensions");
-            dimField.setAccessible(true);
             assertThat(connField.get(azureService)).isNull();
             assertThat(paramsField.get(azureService)).isNull();
-            assertThat(dimField.get(azureService)).isNull();
         } catch (Exception e) {
             throw new AssertionError(e);
         }

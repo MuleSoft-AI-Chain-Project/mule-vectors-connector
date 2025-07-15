@@ -26,7 +26,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class PineconeStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStoreConnectionProvider.class);
   private PineconeStoreConnection connection;
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

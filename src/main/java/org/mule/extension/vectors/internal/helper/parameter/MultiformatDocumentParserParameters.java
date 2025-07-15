@@ -19,7 +19,6 @@ public class MultiformatDocumentParserParameters implements DocumentParserParame
   @Alias("includeMetadata")
   @DisplayName("Include metadata")
   @Summary("Whether to include metadata in the parsed document.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   @Optional(defaultValue = "false")
   private boolean includeMetadata;

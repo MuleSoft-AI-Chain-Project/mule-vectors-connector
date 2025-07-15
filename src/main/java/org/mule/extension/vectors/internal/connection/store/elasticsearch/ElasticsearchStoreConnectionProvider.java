@@ -28,8 +28,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 public class ElasticsearchStoreConnectionProvider implements
     CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchStoreConnectionProvider.class);
-
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private ElasticsearchStoreConnectionParameters elasticsearchStoreConnectionParameters;
   private  ElasticsearchStoreConnection elasticsearchStoreConnection;

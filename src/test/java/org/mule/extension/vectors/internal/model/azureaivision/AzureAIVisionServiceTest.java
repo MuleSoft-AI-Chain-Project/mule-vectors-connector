@@ -46,7 +46,7 @@ class AzureAIVisionServiceTest {
         when(modelConnection.getTimeout()).thenReturn(1000L);
         when(modelConnection.getHttpClient()).thenReturn(null); // Not used directly in test
         when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
-        service = new AzureAIVisionService(modelConnection, modelParameters, 3);
+        service = new AzureAIVisionService(modelConnection, modelParameters);
     }
 
     @Test

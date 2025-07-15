@@ -25,19 +25,15 @@ public class HuggingFaceModelConnection implements BaseModelConnection {
   private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceModelConnection.class);
 
   private static final String AUTH_ENDPOINT = "https://huggingface.co/api/whoami-v2";
-  private static final String INFERENCE_ENDPOINT = "https://router.huggingface.co/hf-inference/models/";
-  private static final String PIPELINE_FEATURE_EXTRACTION_PATH = "/pipeline/feature-extraction";
 
   private final String apiKey;
   private final HttpClient httpClient;
   private final long timeout;
-  private final ObjectMapper objectMapper;
 
   public HuggingFaceModelConnection(String apiKey, long timeout, HttpClient httpClient) {
     this.apiKey = apiKey;
     this.timeout = timeout;
     this.httpClient = httpClient;
-    this.objectMapper = new ObjectMapper();
   }
 
   public String getApiKey() {

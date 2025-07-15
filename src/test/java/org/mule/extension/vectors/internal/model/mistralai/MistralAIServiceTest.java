@@ -35,7 +35,7 @@ class MistralAIServiceTest {
 
     @BeforeEach
     void setup() {
-        service = new MistralAIService(connection, params, 512);
+        service = new MistralAIService(connection, params);
     }
 
     @Test

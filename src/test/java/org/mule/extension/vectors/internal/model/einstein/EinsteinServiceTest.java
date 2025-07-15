@@ -36,7 +36,7 @@ class EinsteinServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new EinsteinService(modelConnection, modelParameters, 1536);
+        service = new EinsteinService(modelConnection, modelParameters);
     }
 
     @Test
