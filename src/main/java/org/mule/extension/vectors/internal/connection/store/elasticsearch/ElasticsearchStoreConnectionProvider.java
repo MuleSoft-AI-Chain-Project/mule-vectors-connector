@@ -59,7 +59,7 @@ public class ElasticsearchStoreConnectionProvider implements
     try {
       elasticsearchStoreConnection.initialise();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new InitialisationException(e, this);
     }
   }
 }

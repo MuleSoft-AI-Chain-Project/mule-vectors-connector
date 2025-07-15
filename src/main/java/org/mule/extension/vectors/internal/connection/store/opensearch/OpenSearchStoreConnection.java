@@ -98,7 +98,7 @@ public class OpenSearchStoreConnection implements BaseStoreConnection {
     } catch (Exception e) {
 
       LOGGER.error("Failed to close connection to OpenSearch.", e);
-      throw new RuntimeException(e);
+      throw new ModuleException("Failed to close connection to OpenSearch.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 

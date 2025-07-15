@@ -145,7 +145,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
         fetchNextBatch();
       }
     } catch (Exception e) {
-      throw new RuntimeException("Error fetching next batch from Azure AI Search", e);
+      throw new ModuleException("Error fetching next batch from Azure AI Search", MuleVectorsErrorType.SERVICE_ERROR, e);
     }
     return currentBatch != null && currentBatch.hasNext();
   }
@@ -153,7 +153,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   @Override
   public VectorStoreRow<Embedded> next() {
     if (!hasNext()) {
-      throw new NoSuchElementException();
+      throw new ModuleException("No more elements in Azure AI Search iterator", MuleVectorsErrorType.SERVICE_ERROR);
     }
 
     try {
@@ -198,7 +198,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
     } catch (Exception e) {
       LOGGER.error("Error while fetching next row", e);
-      throw new NoSuchElementException("Error processing next row");
+      throw new ModuleException("Error processing next row from Azure AI Search", MuleVectorsErrorType.SERVICE_ERROR, e);
     }
   }
 

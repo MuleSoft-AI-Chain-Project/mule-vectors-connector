@@ -99,13 +99,15 @@ public class QdrantStoreConnection implements BaseStoreConnection {
     }
   }
 
-  void doHealthCheck() throws Exception {
-
-    // Assuming you have a method `healthCheckAsync` that returns ListenableFuture
-    ListenableFuture<QdrantOuterClass.HealthCheckReply> healthCheckFuture = this.client.healthCheckAsync();
-
-    // Make it synchronous by calling get()
-    healthCheckFuture.get();
+  void doHealthCheck() {
+    try {
+      // Assuming you have a method `healthCheckAsync` that returns ListenableFuture
+      ListenableFuture<QdrantOuterClass.HealthCheckReply> healthCheckFuture = this.client.healthCheckAsync();
+      // Make it synchronous by calling get()
+      healthCheckFuture.get();
+    } catch (Exception e) {
+      throw new ModuleException("Failed during Qdrant health check", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+    }
   }
 
   public void createCollection(String storeName, int dimension) {

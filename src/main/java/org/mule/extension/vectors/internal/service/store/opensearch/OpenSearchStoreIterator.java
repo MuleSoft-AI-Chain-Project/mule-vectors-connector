@@ -61,7 +61,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
     try {
       return currentIndex < currentBatch.size() || fetchNextBatch();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new ModuleException("Error fetching next batch from OpenSearch", MuleVectorsErrorType.SERVICE_ERROR, e);
     }
   }
 

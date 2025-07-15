@@ -43,7 +43,10 @@ public class CustomAlloyDBEngine extends AlloyDBEngine {
       }
 
     } catch (SQLException ex) {
-      throw new RuntimeException(String.format("Failed to initialize vector store table: \"%s\".\"%s\"", embeddingStoreConfig.getSchemaName(), embeddingStoreConfig.getTableName()), ex);
+      throw new org.mule.runtime.extension.api.exception.ModuleException(
+          String.format("Failed to initialize vector store table: \"%s\".\"%s\"", embeddingStoreConfig.getSchemaName(), embeddingStoreConfig.getTableName()),
+          org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORE_CONNECTION_FAILURE,
+          ex);
     }
   }
 
