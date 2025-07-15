@@ -39,7 +39,7 @@ class AzureOpenAIServiceTest {
         // Only initialize mocks, do not stub anything here
         modelConnection = mock(AzureOpenAIModelConnection.class);
         modelParameters = mock(EmbeddingModelParameters.class);
-        service = new AzureOpenAIService(modelConnection, modelParameters, 1536);
+        service = new AzureOpenAIService(modelConnection, modelParameters);
     }
 
     @Test
@@ -51,7 +51,7 @@ class AzureOpenAIServiceTest {
         when(modelConnection.getApiVersion()).thenReturn("2024-01-01");
         when(modelConnection.getTimeout()).thenReturn(1000L);
         when(modelParameters.getEmbeddingModelName()).thenReturn("text-embedding-ada-002");
-        AzureOpenAIService service = new AzureOpenAIService(modelConnection, modelParameters, 3);
+        AzureOpenAIService service = new AzureOpenAIService(modelConnection, modelParameters);
         List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
         String fakeResponse = "{" +
                 "\"usage\": {\"total_tokens\": 42}," +
@@ -80,7 +80,7 @@ class AzureOpenAIServiceTest {
         when(modelConnection.getApiVersion()).thenReturn("2024-01-01");
         when(modelConnection.getTimeout()).thenReturn(1000L);
         when(modelParameters.getEmbeddingModelName()).thenReturn("text-embedding-ada-002");
-        AzureOpenAIService service = new AzureOpenAIService(modelConnection, modelParameters, 3);
+        AzureOpenAIService service = new AzureOpenAIService(modelConnection, modelParameters);
         List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
             HttpResponse httpResp = mock(HttpResponse.class);
@@ -94,7 +94,7 @@ class AzureOpenAIServiceTest {
 
     @Test
     void embedTexts_handlesNullOrEmptyInput() {
-        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class), 1536);
+        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class));
         assertThatThrownBy(() -> service.generateTextEmbeddings(null, "foo")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> service.generateTextEmbeddings(List.of(), "foo")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("bar"), null)).isInstanceOf(IllegalArgumentException.class);
@@ -106,7 +106,7 @@ class AzureOpenAIServiceTest {
         AzureOpenAIModelConnection conn = mock(AzureOpenAIModelConnection.class);
         when(conn.getEndpoint()).thenReturn("https://endpoint");
         when(conn.getApiVersion()).thenReturn("2024-01-01");
-        AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters, 1536);
+        AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters);
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.failedFuture(new ModuleException("fail", MuleVectorsErrorType.AI_SERVICES_FAILURE)));
@@ -121,7 +121,7 @@ class AzureOpenAIServiceTest {
         AzureOpenAIModelConnection conn = mock(AzureOpenAIModelConnection.class);
         when(conn.getEndpoint()).thenReturn("https://endpoint");
         when(conn.getApiVersion()).thenReturn("2024-01-01");
-        AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters, 1536);
+        AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters);
         var m = AzureOpenAIService.class.getDeclaredMethod("buildUrlForDeployment", String.class);
         m.setAccessible(true);
         String url = (String) m.invoke(svc, "deploy");
@@ -131,7 +131,7 @@ class AzureOpenAIServiceTest {
 
     @Test
     void buildTextEmbeddingPayload_serializesInput() throws Exception {
-        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class), 1536);
+        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class));
         var m = AzureOpenAIService.class.getDeclaredMethod("buildTextEmbeddingPayload", List.class);
         m.setAccessible(true);
         byte[] bytes = (byte[]) m.invoke(service, List.of("foo", "bar"));
@@ -144,7 +144,7 @@ class AzureOpenAIServiceTest {
     void buildHeaders_containsApiKeyAndContentType() throws Exception {
         AzureOpenAIModelConnection conn = mock(AzureOpenAIModelConnection.class);
         when(conn.getApiKey()).thenReturn("key");
-        AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters, 1536);
+        AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters);
         var m = AzureOpenAIService.class.getDeclaredMethod("buildHeaders");
         m.setAccessible(true);
         @SuppressWarnings("unchecked")
@@ -155,7 +155,7 @@ class AzureOpenAIServiceTest {
 
     @Test
     void embedImage_and_embedTextAndImage_returnNull() {
-        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class), 1536);
+        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class));
         assertNull(service.embedImage(new byte[0]));
         assertNull(service.embedTextAndImage("foo", new byte[0]));
     }

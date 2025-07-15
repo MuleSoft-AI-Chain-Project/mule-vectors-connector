@@ -2,6 +2,15 @@ package org.mule.extension.vectors.internal.service.embeddings;
 
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.azureaivision.AzureAIVisionModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.einstein.EinsteinModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.nomic.NomicModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.ollama.OllamaModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.openai.OpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.embeddings.vertexai.VertexAIModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.azureaivision.AzureAIVisionBuilder;
@@ -43,39 +52,39 @@ public class EmbeddingServiceFactoryBuilder {
       case Constants.EMBEDDING_MODEL_SERVICE_AZURE_AI_VISION:
         return new AzureAIVisionBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.azureaivision.AzureAIVisionModelConnection) modelConnection);
+            .modelConnections((AzureAIVisionModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_AZURE_OPENAI:
         return new AzureOpenAIBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.azureopenai.AzureOpenAIModelConnection) modelConnection);
+            .modelConnections((AzureOpenAIModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_EINSTEIN:
         return new EinsteinBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.einstein.EinsteinModelConnection) modelConnection);
+            .modelConnections((EinsteinModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_HUGGING_FACE:
         return new HuggingFaceBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection) modelConnection);
+            .modelConnections((HuggingFaceModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_MISTRAL_AI:
         return new MistralAIBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnection) modelConnection);
+            .modelConnections((MistralAIModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_NOMIC:
         return new NomicBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.nomic.NomicModelConnection) modelConnection);
+            .modelConnections((NomicModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_OLLAMA:
         return new OllamaBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.ollama.OllamaModelConnection) modelConnection);
+            .modelConnections((OllamaModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_OPENAI:
         return new OpenAIBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.openai.OpenAIModelConnection) modelConnection);
+            .modelConnections((OpenAIModelConnection) modelConnection);
       case Constants.EMBEDDING_MODEL_SERVICE_VERTEX_AI:
         return new VertexAIBuilder()
             .modelParameters(embeddingModelParameters)
-            .modelConnections((org.mule.extension.vectors.internal.connection.embeddings.vertexai.VertexAIModelConnection) modelConnection);
+            .modelConnections((VertexAIModelConnection) modelConnection);
       default:
         throw new IllegalArgumentException("Unsupported embedding model service: " + modelConnection.getEmbeddingModelService());
     }

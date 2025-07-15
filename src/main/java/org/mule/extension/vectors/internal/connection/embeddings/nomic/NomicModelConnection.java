@@ -36,7 +36,6 @@ public class NomicModelConnection implements BaseModelConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(NomicModelConnection.class);
     private static final String BASE_URL = "https://api-atlas.nomic.ai/v1/";
     private static final String TEXT_EMBEDDING_URL = BASE_URL + "embedding/text";
-    private static final String IMAGE_EMBEDDING_URL = BASE_URL + "embedding/image";
 
     private final String apiKey;
     private final long timeout;

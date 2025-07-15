@@ -14,7 +14,6 @@ public class FileParameters {
   @Alias("contextPath")
   @DisplayName("Context Path")
   @Summary("The context path.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   private String contextPath;
 

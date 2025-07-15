@@ -34,7 +34,7 @@ class HuggingFaceServiceTest {
 
     @BeforeEach
     void setup() {
-        service = new HuggingFaceService(connection, params, 512);
+        service = new HuggingFaceService(connection, params);
     }
 
     @Test

@@ -16,7 +16,6 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 public class EphemeralFileStore extends BaseStoreService {
 
     private final String workingDir;
-    private final QueryParameters queryParams;
 
     /**
      * Initializes a new instance of EphemeralFileStore.
@@ -31,7 +30,6 @@ public class EphemeralFileStore extends BaseStoreService {
     public EphemeralFileStore(StoreConfiguration storeConfiguration, EphemeralFileStoreConnection ephemeralFileStoreConnection, String storeName, QueryParameters queryParams, int dimension, boolean createStore) {
         super(storeConfiguration, ephemeralFileStoreConnection, storeName, dimension, createStore);
         this.workingDir = ephemeralFileStoreConnection.getWorkingDir();
-        this.queryParams = queryParams;
     }
 
     public String getEphemeralFileStorePath() {

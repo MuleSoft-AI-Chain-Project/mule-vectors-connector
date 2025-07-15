@@ -32,7 +32,6 @@ public class VertexAIService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(VertexAIService.class);
     private VertexAIModelConnection vertexAIModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
     private static final int BATCH_SIZE = 16;
 
     // Vertex AI Constants
@@ -41,10 +40,9 @@ public class VertexAIService implements EmbeddingService {
     private static final String TEXT_EMBEDDING_FIELD_NAME = "textEmbedding";
     private static final String IMAGE_EMBEDDING_FIELD_NAME = "imageEmbedding";
 
-    public VertexAIService(VertexAIModelConnection vertexAIModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
+    public VertexAIService(VertexAIModelConnection vertexAIModelConnection, EmbeddingModelParameters embeddingModelParameters) {
         this.vertexAIModelConnection = vertexAIModelConnection;
         this.embeddingModelParameters = embeddingModelParameters;
-        this.dimensions = dimensions;
     }
 
     public Object generateTextEmbeddings(List<String> inputs, String modelName) {

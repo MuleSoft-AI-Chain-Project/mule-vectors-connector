@@ -15,7 +15,6 @@ public class QueryParameters {
   @Alias("retrieveEmbeddings")
   @Expression(ExpressionSupport.SUPPORTED)
   @Summary("Flag to indicate whether embeddings should be retrieved. Defaults to true.")
-  @Placement(order = 1)
   @Optional(defaultValue = "false")
   private boolean retrieveEmbeddings;
 
@@ -24,7 +23,6 @@ public class QueryParameters {
   @Alias("pageSize")
   @Expression(ExpressionSupport.SUPPORTED)
   @Summary("The page size used when querying the vector store. Defaults to 5000 rows.")
-  @Placement(order = 2)
   @Optional(defaultValue = "5000")
   private Number pageSize;
 

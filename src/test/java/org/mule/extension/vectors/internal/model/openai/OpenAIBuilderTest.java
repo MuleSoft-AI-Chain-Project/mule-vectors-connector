@@ -18,8 +18,7 @@ class OpenAIBuilderTest {
         int dims = 42;
         OpenAIBuilder builder = new OpenAIBuilder()
                 .modelConnections(connection)
-                .modelParameters(params)
-                .modelDimensions(dims);
+                .modelParameters(params);
         EmbeddingService service = builder.build();
         assertNotNull(service);
         assertTrue(service instanceof OpenAIService);

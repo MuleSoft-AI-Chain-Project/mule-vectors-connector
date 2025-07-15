@@ -39,7 +39,7 @@ class NomicServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new NomicService(modelConnection, modelParameters, 1536);
+        service = new NomicService(modelConnection, modelParameters);
     }
 
     @Test

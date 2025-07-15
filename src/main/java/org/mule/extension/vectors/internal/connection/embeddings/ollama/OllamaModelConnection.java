@@ -34,15 +34,12 @@ public class OllamaModelConnection implements BaseModelConnection {
     private final String baseUrl;
     private final HttpClient httpClient;
     private final long timeout;
-    private final ObjectMapper objectMapper;
     private static final String MODELS_ENDPOINT = "/api/tags";
-    private static final String EMBEDDINGS_ENDPOINT = "/api/embeddings";
 
     public OllamaModelConnection(String baseUrl, long timeout, HttpClient httpClient) {
         this.baseUrl = baseUrl;
         this.timeout = timeout;
         this.httpClient = httpClient;
-        this.objectMapper = new ObjectMapper();
     }
 
     public String getBaseUrl() {

@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 
 public class QdrantStore extends BaseStoreService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStore.class);
-
   private final String payloadTextKey;
   private final QdrantClient client;
   private final QueryParameters queryParams;

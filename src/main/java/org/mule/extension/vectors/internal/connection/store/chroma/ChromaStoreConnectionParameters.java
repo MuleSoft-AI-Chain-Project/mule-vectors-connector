@@ -11,7 +11,6 @@ public class ChromaStoreConnectionParameters extends BaseStoreConnectionParamete
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
   @Example("http://localhost:8000")
   private String url;
 

@@ -32,7 +32,6 @@ public class OpenAIModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnection.class);
     private static final String MODELS_ENDPOINT = "https://api.openai.com/v1/models";
-    private static final String EMBEDDINGS_ENDPOINT = "https://api.openai.com/v1/embeddings";
 
     private final String apiKey;
     private final HttpClient httpClient;

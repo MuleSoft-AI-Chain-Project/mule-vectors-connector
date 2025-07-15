@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 @DisplayName("Ollama")
 public class OllamaModelConnectionProvider extends BaseModelConnectionProvider  {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OllamaModelConnectionProvider.class);
-
  
   @ParameterGroup(name = CONNECTION)
   private OllamaModelConnectionParameters ollamaModelConnectionParameters;

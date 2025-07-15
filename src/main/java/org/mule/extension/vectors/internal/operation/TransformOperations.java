@@ -30,7 +30,6 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
  */
 public class TransformOperations {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
   private final TransformService transformService = new TransformService();
 
 /**

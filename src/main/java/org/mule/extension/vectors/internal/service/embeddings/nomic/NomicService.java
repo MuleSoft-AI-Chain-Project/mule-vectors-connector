@@ -37,7 +37,6 @@ public class NomicService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(NomicService.class);
     private NomicModelConnection nomicModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
     private static final int BATCH_SIZE = 16;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -45,10 +44,9 @@ public class NomicService implements EmbeddingService {
     private static final String TEXT_EMBEDDING_URL = BASE_URL + "embedding/text";
     private static final String IMAGE_EMBEDDING_URL = BASE_URL + "embedding/image";
 
-    public NomicService(NomicModelConnection nomicModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
+    public NomicService(NomicModelConnection nomicModelConnection, EmbeddingModelParameters embeddingModelParameters) {
         this.nomicModelConnection = nomicModelConnection;
         this.embeddingModelParameters = embeddingModelParameters;
-        this.dimensions = dimensions;
     }
 
     public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {

@@ -36,15 +36,13 @@ public class AzureOpenAIService implements EmbeddingService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
   private AzureOpenAIModelConnection azureOpenAIModelConnection;
-  private EmbeddingModelParameters embeddingModelParameters;
-  private Integer dimensions;
+  private EmbeddingModelParameters embeddingModelParameters;private Integer dimensions;
   private static final int BATCH_SIZE = 16;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public AzureOpenAIService(AzureOpenAIModelConnection azureOpenAIModelConnection, EmbeddingModelParameters embeddingModelParameters, Integer dimensions) {
+  public AzureOpenAIService(AzureOpenAIModelConnection azureOpenAIModelConnection, EmbeddingModelParameters embeddingModelParameters) {
     this.azureOpenAIModelConnection = azureOpenAIModelConnection;
     this.embeddingModelParameters = embeddingModelParameters;
-    this.dimensions = dimensions;
   }
 
   public Object generateTextEmbeddings(List<String> inputs, String deploymentName) {

@@ -18,8 +18,7 @@ class AzureOpenAIBuilderTest {
         int dimensions = 1536;
         AzureOpenAIBuilder builder = new AzureOpenAIBuilder()
                 .modelConnections(connection)
-                .modelParameters(params)
-                .modelDimensions(dimensions);
+                .modelParameters(params);
         EmbeddingService service = builder.build();
         assertNotNull(service);
         assertTrue(service instanceof AzureOpenAIService);
@@ -30,6 +29,5 @@ class AzureOpenAIBuilderTest {
         AzureOpenAIBuilder builder = new AzureOpenAIBuilder();
         assertDoesNotThrow(() -> builder.modelConnections(null));
         assertDoesNotThrow(() -> builder.modelParameters(null));
-        assertDoesNotThrow(() -> builder.modelDimensions(null));
     }
 } 

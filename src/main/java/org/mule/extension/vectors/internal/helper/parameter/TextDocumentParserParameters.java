@@ -19,7 +19,6 @@ public class TextDocumentParserParameters implements DocumentParserParameters {
   @Alias("charset")
   @DisplayName("Charset")
   @Summary("The charset for the parsed text.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   @Optional(defaultValue = "UTF_8")
   private String charset;

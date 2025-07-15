@@ -31,18 +31,15 @@ public class MistralAIModelConnection implements BaseModelConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MistralAIModelConnection.class);
     private static final String MODELS_ENDPOINT = "https://api.mistral.ai/v1/models";
-    private static final String EMBEDDINGS_ENDPOINT = "https://api.mistral.ai/v1/embeddings";
 
     private final String apiKey;
     private final HttpClient httpClient;
     private final long timeout;
-    private final ObjectMapper objectMapper;
 
     public MistralAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
         this.apiKey = apiKey;
         this.timeout = timeout;
         this.httpClient = httpClient;
-        this.objectMapper = new ObjectMapper();
     }
 
     public String getApiKey() {
