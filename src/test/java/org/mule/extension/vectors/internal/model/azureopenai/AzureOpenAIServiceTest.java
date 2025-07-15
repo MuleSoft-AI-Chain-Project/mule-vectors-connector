@@ -95,10 +95,12 @@ class AzureOpenAIServiceTest {
     @Test
     void embedTexts_handlesNullOrEmptyInput() {
         AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class));
+        List<String> emptyList = List.of();
+        List<String> barList = List.of("bar");
         assertThatThrownBy(() -> service.generateTextEmbeddings(null, "foo")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.generateTextEmbeddings(List.of(), "foo")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("bar"), null)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("bar"), "")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(emptyList, "foo")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(barList, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(barList, "")).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

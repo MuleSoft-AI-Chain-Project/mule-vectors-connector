@@ -86,21 +86,24 @@ class WeaviateStoreConnectionTest {
     @Test
     void validate_missingScheme() {
         when(params.getScheme()).thenReturn(null);
-        ModuleException ex = assertThrows(ModuleException.class, () -> new WeaviateStoreConnection(params, httpClient).validate());
+        WeaviateStoreConnection conn = new WeaviateStoreConnection(params, httpClient);
+        ModuleException ex = assertThrows(ModuleException.class, conn::validate);
         assertTrue(ex.getMessage().contains("Scheme is required"));
     }
 
     @Test
     void validate_missingHost() {
         when(params.getHost()).thenReturn(null);
-        ModuleException ex = assertThrows(ModuleException.class, () -> new WeaviateStoreConnection(params, httpClient).validate());
+        WeaviateStoreConnection conn = new WeaviateStoreConnection(params, httpClient);
+        ModuleException ex = assertThrows(ModuleException.class, conn::validate);
         assertTrue(ex.getMessage().contains("Host is required"));
     }
 
     @Test
     void validate_missingApiKey() {
         when(params.getApiKey()).thenReturn(null);
-        ModuleException ex = assertThrows(ModuleException.class, () -> new WeaviateStoreConnection(params, httpClient).validate());
+        WeaviateStoreConnection conn = new WeaviateStoreConnection(params, httpClient);
+        ModuleException ex = assertThrows(ModuleException.class, conn::validate);
         assertTrue(ex.getMessage().contains("API Key is required"));
     }
 

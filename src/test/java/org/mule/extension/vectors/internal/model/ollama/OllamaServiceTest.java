@@ -116,11 +116,14 @@ class OllamaServiceTest {
 
     @Test
     void generateTextEmbeddings_throwsOnNulls() {
+        List<String> emptyList = List.of();
+        List<String> abList = List.of("a", "b");
+        List<String> aList = List.of("a");
         assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(null, "model"));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of(), "model"));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of("a", "b"), "model"));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of("a"), null));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of("a"), ""));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(emptyList, "model"));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(abList, "model"));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(aList, null));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(aList, ""));
     }
 
     @Test
