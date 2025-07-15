@@ -126,10 +126,11 @@ class EinsteinServiceTest {
     void generateTextEmbeddings_propagatesModuleException() {
         when(modelConnection.getAccessToken()).thenReturn("token");
         when(modelConnection.getHttpClient()).thenReturn(null);
+        List<String> input = List.of("foo");
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.failedFuture(new ModuleException("fail", MuleVectorsErrorType.AI_SERVICES_FAILURE)));
-            assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("foo"), "bar"))
+            assertThatThrownBy(() -> service.generateTextEmbeddings(input, "bar"))
                     .isInstanceOf(ModuleException.class)
                     .hasMessageContaining("fail");
         }

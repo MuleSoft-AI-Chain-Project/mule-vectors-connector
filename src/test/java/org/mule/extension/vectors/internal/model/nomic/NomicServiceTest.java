@@ -87,8 +87,9 @@ class NomicServiceTest {
 
     @Test
     void embedTexts_handlesNullOrEmptyInput() {
+        List<TextSegment> emptyList = Collections.emptyList();
         assertThrows(NullPointerException.class, () -> service.embedTexts(null));
-        assertThrows(NullPointerException.class, () -> service.embedTexts(Collections.emptyList()));
+        assertThrows(NullPointerException.class, () -> service.embedTexts(emptyList));
     }
 
     @Test

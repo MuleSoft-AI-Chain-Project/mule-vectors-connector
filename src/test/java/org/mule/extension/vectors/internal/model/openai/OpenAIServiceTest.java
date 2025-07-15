@@ -110,10 +110,12 @@ class OpenAIServiceTest {
 
     @Test
     void generateTextEmbeddings_throwsOnNulls() {
+        List<String> emptyList = List.of();
+        List<String> fooList = List.of("foo");
         assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(null, "model"));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of(), "model"));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of("foo"), null));
-        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(List.of("foo"), ""));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(emptyList, "model"));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(fooList, null));
+        assertThrows(IllegalArgumentException.class, () -> service.generateTextEmbeddings(fooList, ""));
     }
 
     @Test

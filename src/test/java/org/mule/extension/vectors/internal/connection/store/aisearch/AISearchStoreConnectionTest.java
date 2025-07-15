@@ -72,14 +72,16 @@ class AISearchStoreConnectionTest {
     @Test
     void validate_missingUrl() {
         when(params.getUrl()).thenReturn(null);
-        ModuleException ex = assertThrows(ModuleException.class, () -> new AISearchStoreConnection(params, httpClient).validate());
+        AISearchStoreConnection conn = new AISearchStoreConnection(params, httpClient);
+        ModuleException ex = assertThrows(ModuleException.class, conn::validate);
         assertTrue(ex.getMessage().contains("URL is required"));
     }
 
     @Test
     void validate_missingApiKey() {
         when(params.getApiKey()).thenReturn(null);
-        ModuleException ex = assertThrows(ModuleException.class, () -> new AISearchStoreConnection(params, httpClient).validate());
+        AISearchStoreConnection conn = new AISearchStoreConnection(params, httpClient);
+        ModuleException ex = assertThrows(ModuleException.class, conn::validate);
         assertTrue(ex.getMessage().contains("API Key is required"));
     }
 

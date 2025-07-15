@@ -56,7 +56,8 @@ class AzureAIVisionServiceTest {
 
     @Test
     void generateTextEmbeddings_throwsIfMultipleInputs() {
-        assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("a", "b"), "model"))
+        List<String> input = List.of("a", "b");
+        assertThatThrownBy(() -> service.generateTextEmbeddings(input, "model"))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessageContaining("only supports embedding one text");
     }
@@ -80,7 +81,8 @@ class AzureAIVisionServiceTest {
 
     @Test
     void generateImageEmbeddings_throwsIfMultipleInputs() {
-        assertThatThrownBy(() -> service.generateImageEmbeddings(List.of(new byte[1], new byte[2]), "model"))
+        List<byte[]> input = List.of(new byte[1], new byte[2]);
+        assertThatThrownBy(() -> service.generateImageEmbeddings(input, "model"))
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessageContaining("only supports embedding one image");
     }
