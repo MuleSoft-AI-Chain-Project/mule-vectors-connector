@@ -11,7 +11,9 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
-import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.*;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_PARAMETER;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.TRANSFORM_DOCUMENT_PARSING_FAILURE;
 
 public class TransformErrorTypeProvider implements ErrorTypeProvider {
 

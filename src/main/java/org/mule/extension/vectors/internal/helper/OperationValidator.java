@@ -1,8 +1,11 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.mule.extension.vectors.internal.constant.Constants;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A utility class to validate if a given operation is supported for a specified vector store.

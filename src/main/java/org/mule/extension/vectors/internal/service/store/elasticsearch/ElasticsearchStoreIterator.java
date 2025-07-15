@@ -27,8 +27,10 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.elasticsearch.client.RestClient;
 
 import java.io.IOException;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 public class ElasticsearchStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchStoreIterator.class);

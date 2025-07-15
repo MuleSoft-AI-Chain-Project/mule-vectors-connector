@@ -1,6 +1,10 @@
 package org.mule.extension.vectors.internal.helper;
 
-import org.mule.extension.vectors.api.metadata.*;
+import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.MultimodalEmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
+import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.runtime.operation.Result;

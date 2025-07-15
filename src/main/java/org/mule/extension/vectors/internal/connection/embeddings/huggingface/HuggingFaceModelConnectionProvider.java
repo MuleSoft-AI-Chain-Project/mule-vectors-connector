@@ -13,8 +13,6 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 
 import static org.mule.runtime.extension.api.annotation.param.ParameterGroup.CONNECTION;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Alias("huggingFace")
 @DisplayName("Hugging Face")

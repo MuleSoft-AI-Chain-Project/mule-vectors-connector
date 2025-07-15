@@ -11,7 +11,10 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
-import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.*;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_CONNECTION;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_PARAMETER;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORAGE_OPERATIONS_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORAGE_SERVICES_FAILURE;
 
 public class StorageErrorTypeProvider implements ErrorTypeProvider {
 
