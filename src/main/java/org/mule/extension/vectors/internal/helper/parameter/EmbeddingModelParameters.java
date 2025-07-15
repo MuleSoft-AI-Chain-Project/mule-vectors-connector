@@ -19,6 +19,7 @@ public class EmbeddingModelParameters {
   @Summary("The embedding model (deployment) name.")
   @Expression(ExpressionSupport.SUPPORTED)
   @OfValues(EmbeddingModelNameProvider.class)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   private String embeddingModelName;
 
   public String getEmbeddingModelName() {

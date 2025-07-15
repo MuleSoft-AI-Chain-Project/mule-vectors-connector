@@ -196,7 +196,6 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
                                   embedded);
 
     } catch (Exception e) {
-      LOGGER.error("Error while fetching next row", e);
       throw new ModuleException("Error processing next row from Azure AI Search", MuleVectorsErrorType.SERVICE_ERROR, e);
     }
   }

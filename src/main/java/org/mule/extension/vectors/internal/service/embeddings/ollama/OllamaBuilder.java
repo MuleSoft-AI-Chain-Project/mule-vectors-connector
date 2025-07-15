@@ -15,8 +15,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
 public class OllamaBuilder implements EmbeddingServiceBuilder {
     private OllamaModelConnection ollamaModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private Integer dimensions;
-
 
     public OllamaBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
       this.embeddingModelParameters = embeddingModelParameters;
@@ -24,10 +22,6 @@ public class OllamaBuilder implements EmbeddingServiceBuilder {
     }
     public OllamaBuilder modelConnections(OllamaModelConnection ollamaModelConnection) {
       this.ollamaModelConnection = ollamaModelConnection;
-      return this;
-    }
-    public OllamaBuilder modelDimensions(Integer dimensions) {
-      this.dimensions = dimensions;
       return this;
     }
     @Override

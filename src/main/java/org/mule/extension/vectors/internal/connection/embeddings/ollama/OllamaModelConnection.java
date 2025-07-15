@@ -18,9 +18,6 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -28,9 +25,6 @@ import java.util.concurrent.ExecutionException;
 @Alias("ollama")
 @DisplayName("Ollama")
 public class OllamaModelConnection implements BaseModelConnection {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OllamaModelConnection.class);
-
     private final String baseUrl;
     private final HttpClient httpClient;
     private final long timeout;

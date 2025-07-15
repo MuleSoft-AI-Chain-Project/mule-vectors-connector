@@ -129,7 +129,6 @@ public class StoreOperationsHelper {
         } catch (ModuleException me) {
             throw me;
         } catch (UnsupportedOperationException e) {
-            LOGGER.debug(e.getMessage());
             throw new ModuleException(e.getMessage(), MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
         } catch (Exception e) {
             throw new ModuleException(

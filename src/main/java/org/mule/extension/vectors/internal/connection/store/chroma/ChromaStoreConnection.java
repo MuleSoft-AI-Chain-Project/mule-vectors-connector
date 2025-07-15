@@ -12,14 +12,9 @@ import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters;
 
 public class ChromaStoreConnection implements BaseStoreConnection {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStoreConnection.class);
-
   private static final String API_ENDPOINT = "/api/v1";
 
   private String url;

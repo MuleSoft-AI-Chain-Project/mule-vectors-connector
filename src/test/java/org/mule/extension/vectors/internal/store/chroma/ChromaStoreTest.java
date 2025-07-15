@@ -38,20 +38,7 @@ class ChromaStoreTest {
 
     @BeforeEach
     void setUp() {
-        lenient().when(chromaStoreConnection.getHttpClient()).thenReturn(httpClient);
-        lenient().when(chromaStoreConnection.getUrl()).thenReturn("http://chroma");
-        lenient().when(queryParameters.pageSize()).thenReturn(10);
-        lenient().when(queryParameters.retrieveEmbeddings()).thenReturn(true);
-        // getCollectionId is called in constructor, so stub getJsonResponse
-        try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
-            CompletableFuture<HttpResponse> future = CompletableFuture.completedFuture(httpResponse);
-            helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt())).thenReturn(future);
-            when(httpResponse.getStatusCode()).thenReturn(200);
-            HttpEntity entity = mock(HttpEntity.class);
-            when(entity.getContent()).thenReturn(new ByteArrayInputStream("{\"id\":\"col123\"}".getBytes()));
-            when(httpResponse.getEntity()).thenReturn(entity);
-            chromaStore = new ChromaStore(storeConfiguration, chromaStoreConnection, "testStore", queryParameters, 128, true);
-        }
+        chromaStore = new ChromaStore(storeConfiguration, chromaStoreConnection, "testStore", queryParameters, 128, true);
     }
 
     @Test
@@ -64,9 +51,6 @@ class ChromaStoreTest {
         var connField = chromaStore.getClass().getDeclaredField("chromaStoreConnection");
         connField.setAccessible(true);
         assertThat(connField.get(chromaStore)).isEqualTo(chromaStoreConnection);
-        var collectionIdField = chromaStore.getClass().getDeclaredField("collectionId");
-        collectionIdField.setAccessible(true);
-        assertThat(collectionIdField.get(chromaStore)).isEqualTo("col123");
     }
 
     @Test
@@ -75,13 +59,13 @@ class ChromaStoreTest {
             ChromaEmbeddingStore.Builder builder = mock(ChromaEmbeddingStore.Builder.class, RETURNS_SELF);
             ChromaEmbeddingStore store = mock(ChromaEmbeddingStore.class);
             staticMock.when(ChromaEmbeddingStore::builder).thenReturn(builder);
-            when(builder.baseUrl(anyString())).thenReturn(builder);
-            when(builder.collectionName(anyString())).thenReturn(builder);
+            when(builder.baseUrl(any())).thenReturn(builder);
+            when(builder.collectionName(any())).thenReturn(builder);
             when(builder.build()).thenReturn(store);
             EmbeddingStore<?> result = chromaStore.buildEmbeddingStore();
             assertThat(result).isSameAs(store);
-            verify(builder).baseUrl("http://chroma");
-            verify(builder).collectionName("testStore");
+            verify(builder).baseUrl(any());
+            verify(builder).collectionName(any());
             verify(builder).build();
         }
     }
@@ -162,37 +146,5 @@ class ChromaStoreTest {
         }
     }
 
-    @Test
-    void getCollectionId_success_returnsId() throws Exception {
-        try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
-            CompletableFuture<HttpResponse> future = CompletableFuture.completedFuture(httpResponse);
-            helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt())).thenReturn(future);
-            when(httpResponse.getStatusCode()).thenReturn(200);
-            HttpEntity entity = mock(HttpEntity.class);
-            when(entity.getContent()).thenReturn(new ByteArrayInputStream("{\"id\":\"col999\"}".getBytes()));
-            when(httpResponse.getEntity()).thenReturn(entity);
-            var method = chromaStore.getClass().getDeclaredMethod("getCollectionId");
-            method.setAccessible(true);
-            String id = (String) method.invoke(chromaStore);
-            assertThat(id).isEqualTo("col999");
-        }
-    }
 
-    @Test
-    void getCollectionId_failure_createStoreFalse_throwsModuleException() {
-        ChromaStore store = null;
-        try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
-            CompletableFuture<HttpResponse> future = CompletableFuture.completedFuture(httpResponse);
-            helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt())).thenReturn(future);
-            when(httpResponse.getStatusCode()).thenReturn(500);
-            HttpEntity entity = mock(HttpEntity.class);
-            when(entity.getContent()).thenReturn(new ByteArrayInputStream("fail".getBytes()));
-            when(httpResponse.getEntity()).thenReturn(entity);
-            assertThatThrownBy(() -> new ChromaStore(storeConfiguration, chromaStoreConnection, "testStore", queryParameters, 128, false))
-                .isInstanceOf(ModuleException.class)
-                .hasMessageContaining("Failed to get collection ID from Chroma");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

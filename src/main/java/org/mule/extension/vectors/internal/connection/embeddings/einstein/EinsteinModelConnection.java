@@ -15,17 +15,12 @@ import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class EinsteinModelConnection implements BaseModelConnection {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EinsteinModelConnection.class);
 
     private static final String URI_OAUTH_TOKEN = "/services/oauth2/token";
     private static final String PARAM_GRANT_TYPE = "grant_type";

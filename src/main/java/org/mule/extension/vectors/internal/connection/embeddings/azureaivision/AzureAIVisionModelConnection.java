@@ -13,8 +13,6 @@ import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,8 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class AzureAIVisionModelConnection implements BaseModelConnection {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AzureAIVisionModelConnection.class);
 
     private final String endpoint;
     private final String apiKey;

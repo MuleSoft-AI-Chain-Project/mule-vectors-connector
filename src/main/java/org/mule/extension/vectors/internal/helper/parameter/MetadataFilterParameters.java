@@ -30,8 +30,6 @@ public abstract class MetadataFilterParameters {
       filter = MetadataFilterHelper.fromExpression(getCondition());
 
     } catch (Exception e) {
-
-      LOGGER.error("Error building metadata filter: {}", e.getMessage());
       throw new IllegalArgumentException("Error building metadata filter: " + e.getMessage());
     }
 

@@ -10,9 +10,6 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
@@ -22,12 +19,6 @@ import java.sql.SQLException;
  */
 public class PGVectorStore extends BaseStoreService {
 
-  static final String ID_DEFAULT_FIELD_NAME = "embedding_id";
-  static final String TEXT_DEFAULT_FIELD_NAME = "text";
-  static final String METADATA_DEFAULT_FIELD_NAME = "metadata";
-  static final String VECTOR_DEFAULT_FIELD_NAME = "embedding";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(PGVectorStore.class);
 
   private final DataSource dataSource;
   private final QueryParameters queryParams;

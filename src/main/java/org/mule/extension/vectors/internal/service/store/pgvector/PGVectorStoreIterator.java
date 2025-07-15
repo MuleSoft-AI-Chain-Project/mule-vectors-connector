@@ -18,14 +18,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PGVectorStoreIterator.class);
 
   private final DataSource dataSource;
-  private final String storeName;
   private final QueryParameters queryParams;
   private final int pageSize;
   private final PGVectorStoreConnection pgVectorStoreConnection;
@@ -39,7 +39,6 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   ) {
     this.pgVectorStoreConnection = pgVectorStoreConnection;
     this.dataSource = pgVectorStoreConnection.getDataSource();
-    this.storeName = storeName;
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
     try {

@@ -18,8 +18,7 @@ class OllamaBuilderTest {
         int dims = 42;
         OllamaBuilder builder = new OllamaBuilder()
                 .modelConnections(connection)
-                .modelParameters(params)
-                .modelDimensions(dims);
+                .modelParameters(params);
         EmbeddingService service = builder.build();
         assertNotNull(service);
         assertTrue(service instanceof OllamaService);

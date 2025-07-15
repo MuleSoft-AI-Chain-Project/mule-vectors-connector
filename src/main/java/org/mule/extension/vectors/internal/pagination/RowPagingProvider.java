@@ -95,8 +95,6 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
       throw me;
 
     } catch (UnsupportedOperationException e) {
-
-      LOGGER.debug(e.getMessage());
       throw new ModuleException(
           e.getMessage(),
           MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
