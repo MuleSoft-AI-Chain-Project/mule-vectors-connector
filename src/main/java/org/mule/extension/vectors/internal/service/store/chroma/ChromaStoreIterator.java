@@ -77,7 +77,6 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       String responseBody = readInputStreamToString(response);
 
       if (responseCode != 200) {
-        LOGGER.error("Chroma API request failed with status code {}: {}", responseCode, responseBody);
         throw new ModuleException("Chroma API request failed: " + responseBody, MuleVectorsErrorType.STORE_SERVICES_FAILURE);
       }
       return responseBody;

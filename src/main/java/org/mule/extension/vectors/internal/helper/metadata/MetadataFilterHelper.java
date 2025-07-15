@@ -188,7 +188,6 @@ public class MetadataFilterHelper {
       Class<?> expectedParamType = (value != null) ? Utils.getPrimitiveTypeClass(value) : null;
       String expectedParamTypeName = (expectedParamType != null) ? expectedParamType.getName() : "unknown (due to null value)";
 
-      LOGGER.error("No such method '" + methodName + "' for value type '" + typeName + "' (resolved to parameter type '" + expectedParamTypeName + "'). Field: " + field + ", Value: " + value, nsme);
       throw new IllegalArgumentException("Failed to create filter. Method '" + methodName + "' with parameter type '" + expectedParamTypeName + "' not found. Details: " + nsme.getMessage());
     }
     catch (Exception e) {

@@ -63,7 +63,6 @@ public class AlloyDBStore extends BaseStoreService {
   }
 
   private void handleSQLException(SQLException e) {
-    LOGGER.error("SQL error", e);
     String sqlState = e.getSQLState();
     if (sqlState != null) {
       if (sqlState.startsWith("08")) { // Connection Exception

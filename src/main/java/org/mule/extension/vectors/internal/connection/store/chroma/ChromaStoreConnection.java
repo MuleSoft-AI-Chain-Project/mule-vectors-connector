@@ -81,7 +81,6 @@ public class ChromaStoreConnection implements BaseStoreConnection {
             try {
               String errorBody = new String(connectionResponse.getEntity().getBytes());
               String errorMsg = String.format("Unable to connect to Chroma. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
-              LOGGER.error(errorMsg);
               throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
             } catch (IOException e) {
               throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);

@@ -135,13 +135,10 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       }
 
     } catch (StatusRuntimeException e) {
-      LOGGER.error("Authentication error fetching Pinecone points", e);
       throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
     } catch (IllegalArgumentException e) {
-      LOGGER.error("Invalid request fetching Pinecone points", e);
       throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
     } catch (Exception e) {
-      LOGGER.error("Error fetching Pinecone points", e);
       throw new ModuleException("Error fetching from Pinecone", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
