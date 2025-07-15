@@ -134,7 +134,6 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     } catch (ExecutionException e) {
       if (e.getCause() instanceof StatusRuntimeException) {
         StatusRuntimeException sre = (StatusRuntimeException) e.getCause();
-        LOGGER.error("gRPC error fetching Qdrant points", sre);
         switch (sre.getStatus().getCode()) {
           case UNAUTHENTICATED:
             throw new ModuleException("Authentication failed: " + sre.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, sre);

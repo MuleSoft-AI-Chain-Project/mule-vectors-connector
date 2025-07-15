@@ -92,7 +92,6 @@ public class HuggingFaceModelConnection implements BaseModelConnection {
     try {
       String errorBody = new String(response.getEntity().getBytes());
       String errorMsg = String.format("%s. Status: %d - %s", message, response.getStatusCode(), errorBody);
-      LOGGER.error(errorMsg);
       throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
     } catch (IOException e) {
       throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);

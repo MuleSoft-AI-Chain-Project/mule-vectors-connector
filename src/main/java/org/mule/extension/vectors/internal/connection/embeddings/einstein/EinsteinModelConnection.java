@@ -143,7 +143,6 @@ public class EinsteinModelConnection implements BaseModelConnection {
     private ModuleException handleErrorResponse(HttpResponse response) {
         try {
             String responseBody = new String(response.getEntity().getBytes());
-            LOGGER.error("Error (HTTP {}): {}", response.getStatusCode(), responseBody);
             MuleVectorsErrorType errorType = response.getStatusCode() == 429 ?
                     MuleVectorsErrorType.AI_SERVICES_RATE_LIMITING_ERROR : MuleVectorsErrorType.AI_SERVICES_FAILURE;
             return new ModuleException(

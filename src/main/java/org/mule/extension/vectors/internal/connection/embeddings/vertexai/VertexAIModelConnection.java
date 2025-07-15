@@ -213,7 +213,7 @@ public class VertexAIModelConnection implements BaseModelConnection {
             KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM);
             return (RSAPrivateKey) kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8Bytes));
         } catch (Exception e) {
-            throw new ModuleException("Failed to parse private key", MuleVectorsErrorType.INVALID_CONNECTION, e);
+            throw new ModuleException("Failed to parse private key: " + e.getMessage(), MuleVectorsErrorType.INVALID_CONNECTION, e);
         }
     }
 

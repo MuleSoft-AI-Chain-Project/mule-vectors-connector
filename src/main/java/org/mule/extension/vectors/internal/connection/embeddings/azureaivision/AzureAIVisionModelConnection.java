@@ -128,7 +128,6 @@ public class AzureAIVisionModelConnection implements BaseModelConnection {
             String errorBody = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
             String errorMsg = String.format("%s. Azure AI Vision API error (HTTP %d): %s",
                     message, response.getStatusCode(), errorBody);
-            LOGGER.error(errorMsg);
             throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
         } catch (IOException e) {
             throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);

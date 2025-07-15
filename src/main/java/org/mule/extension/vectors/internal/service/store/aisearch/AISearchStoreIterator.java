@@ -125,7 +125,6 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
   private void handleHttpError(HttpResponse connection, int responseCode) throws IOException {
     String errorMessage = "Failed to fetch data: " + responseCode + " - " + readInputStreamToString(connection);
-    LOGGER.error(errorMessage);
 
     switch (responseCode) {
       case 401:
@@ -153,7 +152,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   @Override
   public VectorStoreRow<Embedded> next() {
     if (!hasNext()) {
-      throw new ModuleException("No more elements in Azure AI Search iterator", MuleVectorsErrorType.SERVICE_ERROR);
+      throw new NoSuchElementException("No more elements in Azure AI Search iterator");
     }
 
     try {
