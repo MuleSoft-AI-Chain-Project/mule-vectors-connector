@@ -10,9 +10,6 @@ import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDB
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mongodb.client.MongoClient;
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoException;
@@ -20,14 +17,14 @@ import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoSocketReadException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBAtlasStoreIterator.class);
 
   private final MongoClient mongoClient;
-  private final String storeName;
   private final QueryParameters queryParams;
   private final String databaseName;
 
@@ -46,7 +43,6 @@ public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator
   ) {
     this.mongoClient = mongoDBAtlasStoreConnection.getMongoClient();
     this.databaseName = mongoDBAtlasStoreConnection.getDatabase();
-    this.storeName = storeName;
     this.queryParams = queryParams;
     this.collection = mongoClient.getDatabase(databaseName).getCollection(storeName);
     this.pageSize = (int) queryParams.pageSize();

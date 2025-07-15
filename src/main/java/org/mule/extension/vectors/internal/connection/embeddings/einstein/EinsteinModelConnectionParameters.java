@@ -14,17 +14,20 @@ public class EinsteinModelConnectionParameters extends BaseModelConnectionParame
   @DisplayName("Salesforce Org")
   @Summary("The salesforce org.")
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("mydomain.my.salesforce.com")
   private String salesforceOrg;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("<your-connected-app-client-id>")
   private String clientId;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   @Example("<your-connected-app-client-secret>")
   private String clientSecret;
 

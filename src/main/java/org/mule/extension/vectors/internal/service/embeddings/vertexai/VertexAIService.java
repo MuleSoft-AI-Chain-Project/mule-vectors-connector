@@ -32,7 +32,6 @@ public class VertexAIService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(VertexAIService.class);
     private VertexAIModelConnection vertexAIModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private static final int BATCH_SIZE = 16;
 
     // Vertex AI Constants
     private static final String VERTEX_AI_ENDPOINT_FORMAT = "https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict";
@@ -147,7 +146,6 @@ public class VertexAIService implements EmbeddingService {
             }
             allEmbeddings.addAll(embeddings);
         } catch (Exception e) {
-            LOGGER.error("Error generating embeddings", e);
             throw new RuntimeException("Failed to generate embeddings", e);
         }
       }
@@ -198,7 +196,6 @@ public class VertexAIService implements EmbeddingService {
             String result = (String) generateImageEmbeddings(inputs, embeddingModelParameters.getEmbeddingModelName());
             return Response.from(parseEmbeddings(result).get(0));
         } catch (Exception e) {
-            LOGGER.error("Error embedding image", e);
             throw new RuntimeException("Error during image embedding generation", e);
         }
     }

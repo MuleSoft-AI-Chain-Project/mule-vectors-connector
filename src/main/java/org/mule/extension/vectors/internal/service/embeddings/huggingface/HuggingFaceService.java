@@ -32,7 +32,6 @@ public class HuggingFaceService implements EmbeddingService {
   private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
   private HuggingFaceModelConnection huggingFaceModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;;
-  private static final int BATCH_SIZE = 16;
   private static final String INFERENCE_ENDPOINT = "https://router.huggingface.co/hf-inference/models/";
   private static final String PIPELINE_FEATURE_EXTRACTION_PATH = "/pipeline/feature-extraction";
   private final ObjectMapper objectMapper = new ObjectMapper();

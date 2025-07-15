@@ -3,7 +3,6 @@ package org.mule.extension.vectors.internal.service.store.chroma;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -29,16 +28,10 @@ import java.util.concurrent.ExecutionException;
  */
 public class ChromaStore extends BaseStoreService {
 
-    static final String ID_DEFAULT_FIELD_NAME = "ids";
-    static final String TEXT_DEFAULT_FIELD_NAME = "documents";
-    static final String METADATA_DEFAULT_FIELD_NAME = "metadatas";
-    static final String VECTOR_DEFAULT_FIELD_NAME = "embeddings";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStore.class);
 
     private final ChromaStoreConnection chromaStoreConnection;
     private final QueryParameters queryParams;
-    private final String collectionId;
 
     /**
      * Initializes a new instance of ChromaStore.
@@ -54,7 +47,6 @@ public class ChromaStore extends BaseStoreService {
         super(storeConfiguration, chromaStoreConnection, storeName, dimension, createStore);
         this.chromaStoreConnection = chromaStoreConnection;
         this.queryParams = queryParams;
-        this.collectionId = getCollectionId();
 
     }
 
@@ -111,19 +103,6 @@ public class ChromaStore extends BaseStoreService {
             }
             return result.toString();
         }
-    }
-
-    private String getCollectionId()   {
-        try{
-            String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
-            JSONObject collection = new JSONObject(jsonResponse);
-            return collection.getString("id");
-        } catch (Exception e){
-            if(!this.createStore)
-            throw new ModuleException("Failed to get collection ID from Chroma", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-        }
-        return "";
-
     }
 
 }

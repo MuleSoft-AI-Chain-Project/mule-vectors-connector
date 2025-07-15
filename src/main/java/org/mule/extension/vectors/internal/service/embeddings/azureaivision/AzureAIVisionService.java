@@ -150,7 +150,6 @@ public class AzureAIVisionService implements EmbeddingService {
             }
             return Response.from(embeddings);
         } catch (Exception e) {
-            LOGGER.error("Failed to process text embedding response", e);
             throw new RuntimeException("Failed to process text embedding response", e);
         }
     }
@@ -167,7 +166,6 @@ public class AzureAIVisionService implements EmbeddingService {
             }
             return Response.from(Embedding.from(vector));
             } catch (Exception e) {
-            LOGGER.error("Failed to process image embedding response", e);
             throw new RuntimeException("Failed to process image embedding response", e);
             }
     }

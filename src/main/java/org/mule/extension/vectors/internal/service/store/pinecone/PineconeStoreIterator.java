@@ -19,17 +19,18 @@ import io.pinecone.proto.ListResponse;
 import io.pinecone.proto.Vector;
 import io.grpc.StatusRuntimeException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStoreIterator.class);
 
-  private final String apiKey;
   private final String storeName;
-  private final String cloud;
-  private final String region;
   private final QueryParameters queryParams;
 
   private final Pinecone client;
@@ -44,10 +45,7 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       String storeName,
       QueryParameters queryParams
   ) {
-    this.apiKey = pineconeStoreConnection.getApiKey();
     this.storeName = storeName;
-    this.cloud = pineconeStoreConnection.getCloud();
-    this.region = pineconeStoreConnection.getRegion();
     this.queryParams = queryParams;
     try {
       this.pineconeStoreConnection = pineconeStoreConnection;
@@ -112,7 +110,6 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     } catch (NoSuchElementException e) {
       throw e;
     } catch (Exception e) {
-      LOGGER.error("Error while fetching next row", e);
       throw new ModuleException("Error processing next row: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
@@ -159,13 +156,10 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       return ids;
 
     } catch (StatusRuntimeException e) {
-      LOGGER.error("Authentication error retrieving batch of IDs", e);
       throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
     } catch (IllegalArgumentException e) {
-      LOGGER.error("Invalid request retrieving batch of IDs", e);
       throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
     } catch (Exception e) {
-      LOGGER.error("Error retrieving next batch of IDs", e);
       throw new ModuleException("Error fetching from Pinecone", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }

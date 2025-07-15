@@ -34,7 +34,6 @@ public class OllamaService implements EmbeddingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OllamaService.class);
     private OllamaModelConnection ollamaModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
-    private static final int BATCH_SIZE = 16;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String EMBEDDINGS_ENDPOINT = "/api/embeddings";
 
@@ -134,7 +133,6 @@ public class OllamaService implements EmbeddingService {
                     embeddings.add(Embedding.from(vector));
 
                 } catch (Exception e) {
-                    LOGGER.error("Error generating embeddings", e);
                     throw new RuntimeException("Failed to generate embeddings", e);
                 }
             }

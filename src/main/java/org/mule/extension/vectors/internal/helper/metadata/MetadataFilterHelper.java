@@ -6,9 +6,12 @@ import org.mule.extension.vectors.internal.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dev.langchain4j.store.embedding.filter.MetadataFilterBuilder.metadataKey;
 
@@ -182,17 +185,13 @@ public class MetadataFilterHelper {
       Method method = filterBuilder.getClass().getMethod(methodName, Utils.getPrimitiveTypeClass(value)); // Line 187 from stack trace
       return (Filter) method.invoke(filterBuilder, value);
 
-    } catch (NoSuchMethodException nsme) {
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) {
       String typeName = (value != null) ? value.getClass().getName() : "null";
       // Provide more info about the expected parameter type based on Utils.getPrimitiveTypeClass(value)
       Class<?> expectedParamType = (value != null) ? Utils.getPrimitiveTypeClass(value) : null;
       String expectedParamTypeName = (expectedParamType != null) ? expectedParamType.getName() : "unknown (due to null value)";
 
       throw new IllegalArgumentException("Failed to create filter. Method '" + methodName + "' with parameter type '" + expectedParamTypeName + "' not found. Details: " + nsme.getMessage());
-    }
-    catch (Exception e) {
-      LOGGER.error("Error creating filter: " + e.getMessage(), e);
-      throw new IllegalArgumentException("Failed to create filter: " + e.getMessage());
     }
   }
 

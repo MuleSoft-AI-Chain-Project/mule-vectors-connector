@@ -9,9 +9,6 @@ import dev.langchain4j.data.document.Metadata;
 import org.json.JSONObject;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.milvus.client.MilvusServiceClient;
 import io.milvus.exception.MilvusException;
 import io.milvus.orm.iterator.QueryIterator;
@@ -19,11 +16,12 @@ import io.milvus.param.dml.QueryIteratorParam;
 import io.milvus.param.R;
 import io.grpc.StatusRuntimeException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(MilvusStoreIterator.class);
 
   private final MilvusServiceClient client;
   private final QueryParameters queryParams;

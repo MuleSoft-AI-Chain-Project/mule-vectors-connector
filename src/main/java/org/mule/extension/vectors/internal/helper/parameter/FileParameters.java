@@ -15,6 +15,7 @@ public class FileParameters {
   @DisplayName("Context Path")
   @Summary("The context path.")
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   private String contextPath;
 
   public String getContextPath() {

@@ -15,13 +15,13 @@ public class OpenSearchStoreConnectionParameters extends BaseStoreConnectionPara
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("https://search-mydomain-xyz123456.us-west-1.es.amazonaws.com")
   private String url;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("admin")
   @Optional
   private String user;
@@ -29,13 +29,13 @@ public class OpenSearchStoreConnectionParameters extends BaseStoreConnectionPara
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 3)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   private String password;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 4)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 4)
   @Optional
   private String apiKey;
 

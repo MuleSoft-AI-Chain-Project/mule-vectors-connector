@@ -78,7 +78,6 @@ public class ElasticsearchStoreConnection implements BaseStoreConnection {
 
     } catch (IOException e) {
 
-      LOGGER.error("Failed to close connection to Elasticsearch.", e);
       throw new ModuleException("Failed to close connection to Elasticsearch.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }

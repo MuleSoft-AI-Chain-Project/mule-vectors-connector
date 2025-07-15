@@ -14,7 +14,7 @@ import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import java.util.*;
+import java.util.HashSet;
 public class MongoDBAtlasStore extends BaseStoreService {
 
   private final MongoClient mongoClient;

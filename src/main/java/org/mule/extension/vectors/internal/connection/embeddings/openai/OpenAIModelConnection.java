@@ -36,13 +36,10 @@ public class OpenAIModelConnection implements BaseModelConnection {
     private final String apiKey;
     private final HttpClient httpClient;
     private final long timeout;
-    private final ObjectMapper objectMapper;
-
     public OpenAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
         this.apiKey = apiKey;
         this.timeout = timeout;
         this.httpClient = httpClient;
-        this.objectMapper = new ObjectMapper();
     }
 
     public long getTimeout() {
