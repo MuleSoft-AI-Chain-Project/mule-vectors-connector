@@ -40,7 +40,7 @@ public class PGVectorStoreConnectionProvider implements
     try {
       pgVectorStoreConnection.dispose();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(new ConnectionException(e.getMessage(), e));
     }
 
   }

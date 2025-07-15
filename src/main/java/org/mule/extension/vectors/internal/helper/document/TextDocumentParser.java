@@ -33,7 +33,7 @@ public class TextDocumentParser implements DocumentParser {
     } catch (ModuleException e) {
       throw e;
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ModuleException("Failed to parse text document", MuleVectorsErrorType.TRANSFORM_DOCUMENT_PARSING_FAILURE, e);
     }
   }
 }

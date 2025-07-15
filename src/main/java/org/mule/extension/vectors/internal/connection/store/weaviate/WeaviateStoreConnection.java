@@ -125,47 +125,30 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
     }
   }
 
-  private CompletableFuture<Void> testConnection() throws Exception {
-    String urlString;
-    if (port != null && port != 0) {
-      urlString = String.format("%s://%s:%s%s", scheme, host, port, AUTH_CHECK_ENDPOINT);
-    } else {
-      urlString = String.format("%s://%s%s", scheme, host, AUTH_CHECK_ENDPOINT);
+  private CompletableFuture<Void> testConnection() {
+    try {
+      String urlString;
+      if (port != null && port != 0) {
+        urlString = String.format("%s://%s:%s%s", scheme, host, port, AUTH_CHECK_ENDPOINT);
+      } else {
+        urlString = String.format("%s://%s%s", scheme, host, AUTH_CHECK_ENDPOINT);
+      }
+
+      return HttpRequestHelper.executeGetRequest(httpClient, urlString, buildHeaders("application/json"), 30000)
+          .thenAccept(connectionResponse -> {
+            if (connectionResponse.getStatusCode() != 200) {
+              try {
+                String errorBody = new String(connectionResponse.getEntity().getBytes());
+                String errorMsg = String.format("Unable to connect to Weaviate. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
+                LOGGER.error(errorMsg);
+                throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+              } catch (IOException e) {
+                throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
+               }
+            }
+          });
+    } catch (Exception e) {
+      throw new ModuleException("Failed during Weaviate test connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
-
-    // HttpRequestBuilder requestBuilder = HttpRequest.builder()
-    //   .method("GET")
-    //   .uri(urlString)
-    //   .addHeader("Authorization", "Bearer " + apikey)
-    //   .addHeader("Content-Type", "application/json")
-    //   .addHeader("Accept", "application/json");
-
-    // HttpRequestOptions options = HttpRequestOptions.builder()
-    //     .responseTimeout(30000)
-    //     .followsRedirect(false)
-    //     .build();
-
-    // HttpResponse connectionResponse = httpClient.send(requestBuilder.build(), options);
-
-    // if (connectionResponse.getStatusCode() != 200) {
-    //   String errorBody = new String(connectionResponse.getEntity().getBytes());
-    //   String errorMsg = String.format("Unable to connect to Weaviate. Status: %d - %s", 
-    //       connectionResponse.getStatusCode(), errorBody);
-    //   throw new ConnectionException(errorMsg);
-    // }
-
-    return HttpRequestHelper.executeGetRequest(httpClient, urlString, buildHeaders("application/json"), 30000)
-        .thenAccept(connectionResponse -> {
-          if (connectionResponse.getStatusCode() != 200) {
-            try {
-              String errorBody = new String(connectionResponse.getEntity().getBytes());
-              String errorMsg = String.format("Unable to connect to Weaviate. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
-              LOGGER.error(errorMsg);
-              throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-            } catch (IOException e) {
-              throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
-             }
-          }
-        });
   }
 }

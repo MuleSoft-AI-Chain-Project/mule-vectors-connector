@@ -52,7 +52,7 @@ public class QdrantStoreConnectionProvider implements
     try {
       qdrantStoreConnection.initialise();
     } catch (ConnectionException e) {
-      throw new RuntimeException(e);
+      throw new InitialisationException(e, this);
     }
   }
 

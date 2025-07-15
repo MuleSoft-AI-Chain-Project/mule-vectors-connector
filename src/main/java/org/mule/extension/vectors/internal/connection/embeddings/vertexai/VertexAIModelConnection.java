@@ -185,35 +185,47 @@ public class VertexAIModelConnection implements BaseModelConnection {
         }
     }
     
-    String createJwt() throws Exception {
-        RSAPrivateKey rsaPrivateKey = parsePrivateKey(this.privateKey);
-        Instant now = Instant.now();
-        long iat = now.getEpochSecond();
-        long exp = now.plusSeconds(3600).getEpochSecond();
+    String createJwt() {
+        try {
+            RSAPrivateKey rsaPrivateKey = parsePrivateKey(this.privateKey);
+            Instant now = Instant.now();
+            long iat = now.getEpochSecond();
+            long exp = now.plusSeconds(3600).getEpochSecond();
 
-        String header = base64UrlEncode(JWT_HEADER.getBytes(StandardCharsets.UTF_8));
-        String payload = base64UrlEncode(String.format("{\"iss\":\"%s\",\"scope\":\"%s\",\"aud\":\"%s\",\"exp\":%d,\"iat\":%d}",
-                clientEmail, String.join(" ", SCOPES), AUDIENCE, exp, iat).getBytes(StandardCharsets.UTF_8));
+            String header = base64UrlEncode(JWT_HEADER.getBytes(StandardCharsets.UTF_8));
+            String payload = base64UrlEncode(String.format("{\"iss\":\"%s\",\"scope\":\"%s\",\"aud\":\"%s\",\"exp\":%d,\"iat\":%d}",
+                    clientEmail, String.join(" ", SCOPES), AUDIENCE, exp, iat).getBytes(StandardCharsets.UTF_8));
 
-        String signatureBase = header + "." + payload;
-        byte[] signatureBytes = signWithRSA(signatureBase.getBytes(StandardCharsets.UTF_8), rsaPrivateKey);
-        String signature = base64UrlEncode(signatureBytes);
+            String signatureBase = header + "." + payload;
+            byte[] signatureBytes = signWithRSA(signatureBase.getBytes(StandardCharsets.UTF_8), rsaPrivateKey);
+            String signature = base64UrlEncode(signatureBytes);
 
-        return signatureBase + "." + signature;
+            return signatureBase + "." + signature;
+        } catch (Exception e) {
+            throw new ModuleException("Failed to create JWT for access token", MuleVectorsErrorType.INVALID_CONNECTION, e);
+        }
     }
 
-    private RSAPrivateKey parsePrivateKey(String pem) throws Exception {
-        pem = pem.replace(PRIVATE_KEY_BEGIN, "").replace(PRIVATE_KEY_END, "").replaceAll("\\s+", "");
-        byte[] pkcs8Bytes = Base64.getDecoder().decode(pem);
-        KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM);
-        return (RSAPrivateKey) kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8Bytes));
+    private RSAPrivateKey parsePrivateKey(String pem) {
+        try {
+            pem = pem.replace(PRIVATE_KEY_BEGIN, "").replace(PRIVATE_KEY_END, "").replaceAll("\\s+", "");
+            byte[] pkcs8Bytes = Base64.getDecoder().decode(pem);
+            KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM);
+            return (RSAPrivateKey) kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8Bytes));
+        } catch (Exception e) {
+            throw new ModuleException("Failed to parse private key", MuleVectorsErrorType.INVALID_CONNECTION, e);
+        }
     }
 
-    private byte[] signWithRSA(byte[] data, PrivateKey rsaPrivateKey) throws Exception {
-        Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
-        sig.initSign(rsaPrivateKey);
-        sig.update(data);
-        return sig.sign();
+    private byte[] signWithRSA(byte[] data, PrivateKey rsaPrivateKey) {
+        try {
+            Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
+            sig.initSign(rsaPrivateKey);
+            sig.update(data);
+            return sig.sign();
+        } catch (Exception e) {
+            throw new ModuleException("Failed to sign JWT with RSA", MuleVectorsErrorType.INVALID_CONNECTION, e);
+        }
     }
 
     private String base64UrlEncode(byte[] bytes) {
