@@ -25,8 +25,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     MistralAIModelConnectionProvider.class,
     NomicModelConnectionProvider.class,
     OllamaModelConnectionProvider.class,
-    OpenAIModelConnectionProvider.class,
-    VertexAIModelConnectionProvider.class})
+    OpenAIModelConnectionProvider.class})
 @Operations({EmbeddingOperations.class})
 @ExternalLib(name = "LangChain4J",
     type=DEPENDENCY,

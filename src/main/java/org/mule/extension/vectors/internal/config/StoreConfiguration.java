@@ -19,7 +19,6 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
 @org.mule.runtime.extension.api.annotation.Configuration(name = "storeConfig")
 @ConnectionProviders({
     AISearchStoreConnectionProvider.class,
-    AlloyDBStoreConnectionProvider.class,
     ChromaStoreConnectionProvider.class,
     ElasticsearchStoreConnectionProvider.class,
     MilvusStoreConnectionProvider.class,
@@ -28,7 +27,6 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
     PGVectorStoreConnectionProvider.class,
     PineconeStoreConnectionProvider.class,
     QdrantStoreConnectionProvider.class,
-    WeaviateStoreConnectionProvider.class,
     EphemeralFileStoreConnectionProvider.class})
 @Operations({StoreOperations.class})
 public class StoreConfiguration {
