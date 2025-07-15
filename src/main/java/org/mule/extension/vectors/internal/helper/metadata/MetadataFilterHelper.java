@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.internal.helper.metadata;
 
-import dev.langchain4j.store.embedding.filter.*;
+import dev.langchain4j.store.embedding.filter.Filter;
+import dev.langchain4j.store.embedding.filter.MetadataFilterBuilder;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.util.Utils;
 import org.slf4j.Logger;

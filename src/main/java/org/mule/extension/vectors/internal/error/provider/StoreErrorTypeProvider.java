@@ -12,6 +12,10 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.*;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_PARAMETER;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORE_OPERATIONS_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORE_SERVICES_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION;
 
 public class StoreErrorTypeProvider implements ErrorTypeProvider {
 

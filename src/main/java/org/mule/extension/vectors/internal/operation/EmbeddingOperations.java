@@ -4,7 +4,9 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createEm
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import dev.langchain4j.data.document.Metadata;
@@ -18,20 +20,20 @@ import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnec
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.parameter.*;
+import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceFactoryBuilder;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
-import org.mule.runtime.extension.api.annotation.param.*;
-
+import org.mule.runtime.extension.api.annotation.param.Config;
+import org.mule.runtime.extension.api.annotation.param.Connection;
+import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Container for embedding operations, providing methods to generate embeddings from text or documents.

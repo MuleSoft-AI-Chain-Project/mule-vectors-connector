@@ -8,7 +8,6 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.service.store.VectorStoreService;
 import org.mule.extension.vectors.internal.service.store.VectorStoreServiceProviderFactory;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
@@ -22,7 +21,10 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageStoreResponse;
 
