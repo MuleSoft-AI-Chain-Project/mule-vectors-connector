@@ -39,6 +39,8 @@ public class OperationValidator {
   private static final Map<String, Set<String>> EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES =
           new HashMap<>();
 
+  private OperationValidator() {}
+
   static {
     // Mapping operation types to supported vector stores
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_STORE_METADATA,

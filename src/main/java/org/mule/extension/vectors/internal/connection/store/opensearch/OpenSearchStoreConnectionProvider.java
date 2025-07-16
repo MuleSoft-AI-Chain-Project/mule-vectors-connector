@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import java.net.URISyntaxException;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 
 @Alias("openSearch")
 @DisplayName("OpenSearch")
@@ -48,7 +50,7 @@ public class OpenSearchStoreConnectionProvider implements BaseStoreConnectionPro
     try {
       openSearchStoreConnection.initialise();
     } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
+      throw new ModuleException("Failed to initialize OpenSearch connection: " + e.getMessage(), MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
 }
