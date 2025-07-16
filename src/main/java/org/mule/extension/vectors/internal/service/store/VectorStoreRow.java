@@ -25,7 +25,7 @@ public class VectorStoreRow<Embedded> {
     if (this == o) {
       return true;
     } else if (o != null && this.getClass() == o.getClass()) {
-      VectorStoreRow that = (VectorStoreRow)o;
+      VectorStoreRow<?> that = (VectorStoreRow<?>)o;
       return Objects.equals(this.id, that.id) && Objects.equals(this.embedding, that.embedding) && Objects.equals(this.embedded, that.embedded);
     } else {
       return false;

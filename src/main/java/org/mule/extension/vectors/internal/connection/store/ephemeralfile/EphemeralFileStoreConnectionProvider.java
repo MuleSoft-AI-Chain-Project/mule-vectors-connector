@@ -23,8 +23,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j:1.0.1")
-public class EphemeralFileStoreConnectionProvider implements
-    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
+public class EphemeralFileStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private EphemeralFileStoreConnectionParameters ephemeralFileStoreConnectionParameters;

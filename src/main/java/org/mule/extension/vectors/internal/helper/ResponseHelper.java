@@ -6,6 +6,7 @@ import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
+import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
@@ -36,16 +37,16 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static List<Result<CursorProvider, StoreResponseAttributes>> createPageStoreResponse(
+  public static List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> createPageStoreResponse(
       String response,
       Map<String, Object> storeAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, StoreResponseAttributes>> page = new LinkedList<>();
+    List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> page = new LinkedList<>();
 
-    page.add(Result.<CursorProvider, StoreResponseAttributes>builder()
+    page.add(Result.<CursorProvider<Cursor>, StoreResponseAttributes>builder()
                  .attributes(new StoreResponseAttributes((HashMap<String, Object>) storeAttributes))
-                 .output((CursorProvider) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
+                 .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
                  .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
                  .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
                  .build());
@@ -113,16 +114,16 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static List<Result<CursorProvider, StorageResponseAttributes>> createPageFileResponse(
+  public static List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> createPageFileResponse(
       InputStream content,
       Map<String, Object> storageAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, StorageResponseAttributes>> page =  new LinkedList<>();
+    List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> page =  new LinkedList<>();
 
-    page.add(Result.<CursorProvider, StorageResponseAttributes>builder()
+    page.add(Result.<CursorProvider<Cursor>, StorageResponseAttributes>builder()
         .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
-        .output((CursorProvider) streamingHelper.resolveCursorProvider(content))
+        .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(content))
         .mediaType(MediaType.BINARY)
         .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
         .build());

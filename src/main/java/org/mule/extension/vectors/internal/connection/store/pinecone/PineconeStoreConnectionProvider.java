@@ -23,8 +23,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-pinecone:1.1.0-beta7")
-public class PineconeStoreConnectionProvider implements
-    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
+public class PineconeStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   private PineconeStoreConnection connection;
 

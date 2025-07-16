@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.connection.embeddings;
 
-import com.mulesoft.connectors.commons.template.connection.ConnectorConnection;
 
+import org.mule.extension.vectors.internal.connection.ConnectorConnection;
 
 public interface BaseModelConnection extends ConnectorConnection {
 

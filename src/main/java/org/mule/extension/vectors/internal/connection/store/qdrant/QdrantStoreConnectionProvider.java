@@ -23,8 +23,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-qdrant:1.1.0-beta7")
-public class QdrantStoreConnectionProvider implements
-    CachedConnectionProvider<BaseStoreConnection>, BaseStoreConnectionProvider {
+public class QdrantStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private QdrantStoreConnectionParameters qdrantStoreConnectionParameters;

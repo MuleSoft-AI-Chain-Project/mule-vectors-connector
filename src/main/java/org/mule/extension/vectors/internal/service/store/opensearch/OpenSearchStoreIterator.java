@@ -35,7 +35,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
   private final OpenSearchStoreConnection OpenSearchStoreConnection;
 
   private String scrollId;
-  private List<Hit<Map>> currentBatch;
+  private List<Hit<Map<String, Object>>> currentBatch;
   private int currentIndex;
 
   public OpenSearchStoreIterator(
@@ -70,7 +70,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
     if (!hasNext()) {
       throw new NoSuchElementException();
     }
-    Hit<Map> hit = currentBatch.get(currentIndex++);
+    Hit<Map<String, Object>> hit = currentBatch.get(currentIndex++);
     String embeddingId = hit.id();
     Map<String, Object> sourceMap = hit.source();
     String VECTOR_DEFAULT_FIELD_NAME = "vector";
@@ -121,7 +121,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
       }
 
       SearchRequest searchRequest = searchRequestBuilder.build();
-      SearchResponse<Map> searchResponse = openSearchClient.search(searchRequest, Map.class);
+      SearchResponse<Map<String, Object>> searchResponse = openSearchClient.search(searchRequest, (Class<Map<String, Object>>)(Class<?>)Map.class);
       currentBatch = searchResponse.hits().hits();
       scrollId = searchResponse.scrollId();
     } else {
@@ -129,7 +129,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
           .scrollId(scrollId)
           .scroll(Time.of(t -> t.time("1m")))
           .build();
-      ScrollResponse<Map> scrollResponse = openSearchClient.scroll(scrollRequest, Map.class);
+      ScrollResponse<Map<String, Object>> scrollResponse = openSearchClient.scroll(scrollRequest, (Class<Map<String, Object>>)(Class<?>)Map.class);
       currentBatch = scrollResponse.hits().hits();
       scrollId = scrollResponse.scrollId();
     }
