@@ -14,11 +14,13 @@ public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParame
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("https")
   private String scheme;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("localhost")
   private String host;
 
@@ -45,6 +47,7 @@ public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParame
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   @Password
   private String apiKey;
 

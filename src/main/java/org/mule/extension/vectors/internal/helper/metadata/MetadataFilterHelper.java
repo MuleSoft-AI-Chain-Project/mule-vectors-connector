@@ -36,17 +36,17 @@ public class MetadataFilterHelper {
     }
 
     expression = expression.trim();
-    LOGGER.debug("Processing expression: " + expression);
+    LOGGER.debug("Processing expression: {}", expression);
 
     while (expression.startsWith("(") && expression.endsWith(")") &&
         isRedundantlyWrapped(expression)) {
-      LOGGER.debug("Stripping redundant outer parentheses from: " + expression);
+      LOGGER.debug("Stripping redundant outer parentheses from: {}", expression);
       expression = expression.substring(1, expression.length() - 1).trim();
-      LOGGER.debug("Expression after stripping: " + expression);
+      LOGGER.debug("Expression after stripping: {}", expression);
     }
 
     List<String> tokens = splitExpression(expression);
-    LOGGER.debug("splitExpression tokens for '" + expression + "': " + tokens);
+    LOGGER.debug("splitExpression tokens for '{}': {}", expression, tokens);
 
     if (tokens.size() > 1) {
       OperatorType opType = getOperatorTypeForCurrentLevel(expression);
@@ -133,7 +133,7 @@ public class MetadataFilterHelper {
       } else if (c == ')') {
         balance--;
         if (balance < 0) {
-          throw new IllegalArgumentException("Mismatched parentheses leading to negative balance at index " + i + " in: " + expression);
+          throw new IllegalArgumentException(String.format("Mismatched parentheses leading to negative balance at index %d in: %s", i, expression));
         }
       } else if (balance == 0) {
         if (checkLogicalOperator(expression, i, "AND")) {

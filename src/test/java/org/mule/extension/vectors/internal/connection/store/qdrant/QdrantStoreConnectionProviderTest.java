@@ -7,6 +7,7 @@ import org.mule.runtime.api.connection.ConnectionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
+import org.mockito.MockedConstruction;
 
 class QdrantStoreConnectionProviderTest {
 
@@ -42,16 +43,22 @@ class QdrantStoreConnectionProviderTest {
 
     @Test
     void connect_returnsConnection() throws Exception {
-        provider.initialise();
-        BaseStoreConnection conn = provider.connect();
-        assertNotNull(conn);
-        assertTrue(conn instanceof QdrantStoreConnection);
+        try (MockedConstruction<QdrantStoreConnection> mocked = org.mockito.Mockito.mockConstruction(QdrantStoreConnection.class, (mock, context) -> {})) {
+            provider.initialise();
+            BaseStoreConnection conn = provider.connect();
+            assertNotNull(conn);
+            assertTrue(conn instanceof QdrantStoreConnection);
+        }
     }
 
     @Test
     void dispose_disconnects() throws Exception {
-        provider.initialise();
-        assertDoesNotThrow(provider::dispose);
+        try (MockedConstruction<QdrantStoreConnection> mocked = org.mockito.Mockito.mockConstruction(QdrantStoreConnection.class, (mock, context) -> {
+            org.mockito.Mockito.doNothing().when(mock).disconnect();
+        })) {
+            provider.initialise();
+            assertDoesNotThrow(provider::dispose);
+        }
     }
 
     @Test
