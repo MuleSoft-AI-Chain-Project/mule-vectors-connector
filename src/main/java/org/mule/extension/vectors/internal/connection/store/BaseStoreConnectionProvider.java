@@ -1,10 +1,22 @@
 package org.mule.extension.vectors.internal.connection.store;
-
-import com.mulesoft.connectors.commons.template.connection.provider.ConnectorConnectionProvider;
+import org.mule.runtime.api.connection.CachedConnectionProvider;
+import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 
 public interface  BaseStoreConnectionProvider
-    extends  ConnectorConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
+    extends  CachedConnectionProvider<BaseStoreConnection>, Initialisable, Disposable {
+  default void disconnect(BaseStoreConnection connection) {
+    connection.disconnect();
+  }
+
+  default ConnectionValidationResult validate(BaseStoreConnection connection) {
+    try {
+      connection.validate();
+      return ConnectionValidationResult.success();
+    } catch (Exception e) {
+      return ConnectionValidationResult.failure(e.getMessage(), e);
+    }
+  }
 
 }

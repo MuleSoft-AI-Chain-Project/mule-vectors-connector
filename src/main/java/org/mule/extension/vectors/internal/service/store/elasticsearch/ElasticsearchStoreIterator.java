@@ -41,7 +41,7 @@ public class ElasticsearchStoreIterator<Embedded> implements VectoreStoreIterato
 
   private ElasticsearchClient client;
   private String scrollId;
-  private List<Hit<Map>> currentBatch;
+  private List<Hit<Map<String, Object>>> currentBatch;
   private int currentIndex;
 
   public ElasticsearchStoreIterator(
@@ -68,7 +68,7 @@ public class ElasticsearchStoreIterator<Embedded> implements VectoreStoreIterato
     if (!hasNext()) {
       throw new NoSuchElementException();
     }
-    Hit<Map> hit = currentBatch.get(currentIndex++);
+    Hit<Map<String, Object>> hit = currentBatch.get(currentIndex++);
     String embeddingId = hit.id();
     Map<String, Object> sourceMap = hit.source();
     float[] vector = null;
@@ -122,7 +122,7 @@ try {
       }
 
       SearchRequest searchRequest = searchRequestBuilder.build();
-      SearchResponse<Map> searchResponse = client.search(searchRequest, Map.class);
+      SearchResponse<Map<String, Object>> searchResponse = client.search(searchRequest, (Class<Map<String, Object>>)(Class<?>)Map.class);
       currentBatch = searchResponse.hits().hits();
       scrollId = searchResponse.scrollId();
     } else {
@@ -130,7 +130,7 @@ try {
           .scrollId(scrollId)
           .scroll(Time.of(t -> t.time("1m")))
           .build();
-      ScrollResponse<Map> scrollResponse = client.scroll(scrollRequest, Map.class);
+      ScrollResponse<Map<String, Object>> scrollResponse = client.scroll(scrollRequest, (Class<Map<String, Object>>)(Class<?>)Map.class);
       currentBatch = scrollResponse.hits().hits();
       scrollId = scrollResponse.scrollId();
     }

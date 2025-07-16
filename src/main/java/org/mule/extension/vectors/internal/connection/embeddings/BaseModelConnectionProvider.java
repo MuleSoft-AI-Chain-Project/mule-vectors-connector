@@ -1,8 +1,10 @@
 package org.mule.extension.vectors.internal.connection.embeddings;
 
-import com.mulesoft.connectors.commons.template.connection.provider.ConnectorConnectionProvider;
+
+import org.apache.commons.lang3.StringUtils;
 import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
+import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.tls.TlsContextFactory;
@@ -13,16 +15,20 @@ import org.mule.runtime.extension.api.annotation.param.RefName;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.client.HttpClientConfiguration;
 
 import javax.inject.Inject;
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 
 public abstract class BaseModelConnectionProvider implements CachedConnectionProvider<BaseModelConnection>,
-    ConnectorConnectionProvider<BaseModelConnection>, Initialisable,
+    Initialisable,
     Disposable {
   private HttpClient httpClient;
   @Inject
@@ -74,4 +80,19 @@ public abstract class BaseModelConnectionProvider implements CachedConnectionPro
       httpClient = null;
     }
   }
+  @Override
+  public ConnectionValidationResult validate(BaseModelConnection connection) {
+    try {
+      connection.validate();
+      return ConnectionValidationResult.success();
+    } catch (Exception e) {
+      return ConnectionValidationResult.failure(e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public void disconnect(BaseModelConnection connection) {
+    connection.disconnect();
+  }
+
 }

@@ -13,6 +13,7 @@ import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageStoreResponse;
 
-public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Result<CursorProvider, StoreResponseAttributes>> {
+public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Result<CursorProvider<Cursor>, StoreResponseAttributes>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RowPagingProvider.class);
 
@@ -50,7 +51,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
   }
 
   @Override
-  public List<Result<CursorProvider, StoreResponseAttributes>> getPage(BaseStoreConnection storeConnection) {
+  public List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> getPage(BaseStoreConnection storeConnection) {
 
     try {
 

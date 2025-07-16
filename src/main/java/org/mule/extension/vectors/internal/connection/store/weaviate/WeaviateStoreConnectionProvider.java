@@ -22,8 +22,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-weaviate:1.1.0-beta7")
-public class WeaviateStoreConnectionProvider extends HttpBasedConnectionProvider implements
-    CachedConnectionProvider<BaseStoreConnection> {
+public class WeaviateStoreConnectionProvider extends HttpBasedConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private WeaviateStoreConnectionParameters weaviateStoreConnectionParameters;

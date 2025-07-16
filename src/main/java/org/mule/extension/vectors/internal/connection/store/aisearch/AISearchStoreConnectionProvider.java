@@ -21,8 +21,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.azure.search.AzureAiSearchEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-azure-ai-search:1.1.0-beta7")
-public class AISearchStoreConnectionProvider extends HttpBasedConnectionProvider implements
-    CachedConnectionProvider<BaseStoreConnection> {
+public class AISearchStoreConnectionProvider extends HttpBasedConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AISearchStoreConnectionParameters aiSearchStoreConnectionParameters;

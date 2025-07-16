@@ -16,6 +16,7 @@ import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
 import org.mule.extension.vectors.internal.service.store.VectorStoreService;
 import org.mule.extension.vectors.internal.util.JsonUtils;
 import org.mule.extension.vectors.internal.util.MetadataUtils;
+import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
@@ -115,7 +116,7 @@ public class StoreOperations {
   @DisplayName("[Store] Query all")
   @Throws(StoreErrorTypeProvider.class)
   @OutputResolver(output = RowsOutputTypeMetadataResolver.class)
-  public PagingProvider<BaseStoreConnection, Result<CursorProvider, StoreResponseAttributes>> queryAll(
+  public PagingProvider<BaseStoreConnection, Result<CursorProvider<Cursor>, StoreResponseAttributes>> queryAll(
       @Config StoreConfiguration storeConfiguration,
       String storeName,
       @ParameterGroup(name = "Query Parameters") QueryParameters queryParams,
