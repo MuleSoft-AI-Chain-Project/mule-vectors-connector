@@ -40,7 +40,7 @@ public class TransformResponseAttributes implements Serializable {
   /**
    * Additional attributes not explicitly defined as fields in this class.
    */
-  private final HashMap<String, Object> otherAttributes;
+  private transient final HashMap<String, Object> otherAttributes;
 
   /**
    * Constructs a {@code TransformResponseAttributes} instance.

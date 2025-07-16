@@ -123,6 +123,6 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
   @Override
   public void close(BaseStoreConnection baseStoreConnection) throws MuleException {
-
+    //Handled by runtime
   }
 }

@@ -38,6 +38,7 @@ public class VertexAIService implements EmbeddingService {
 
     private static final String TEXT_EMBEDDING_FIELD_NAME = "textEmbedding";
     private static final String IMAGE_EMBEDDING_FIELD_NAME = "imageEmbedding";
+    private static final String EMBEDDING_ERROR_MESSAGE = "Failed to generate embeddings";
 
     public VertexAIService(VertexAIModelConnection vertexAIModelConnection, EmbeddingModelParameters embeddingModelParameters) {
         this.vertexAIModelConnection = vertexAIModelConnection;
@@ -66,13 +67,13 @@ public class VertexAIService implements EmbeddingService {
             if (e.getCause() instanceof ModuleException) {
                 throw (ModuleException) e.getCause();
             }
-            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+            throw new ModuleException(EMBEDDING_ERROR_MESSAGE, MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
         }
     }
 
     private String handleEmbeddingResponse(HttpResponse response) {
         if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Failed to generate embeddings");
+            return handleErrorResponse(response, EMBEDDING_ERROR_MESSAGE);
         }
         try {
             return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
@@ -146,7 +147,7 @@ public class VertexAIService implements EmbeddingService {
             }
             allEmbeddings.addAll(embeddings);
         } catch (Exception e) {
-            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+            throw new RuntimeException(EMBEDDING_ERROR_MESSAGE, e);
         }
       }
       return Response.from(allEmbeddings);

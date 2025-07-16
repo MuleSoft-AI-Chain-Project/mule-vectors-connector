@@ -106,11 +106,11 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     public ResultSet next() {
       try {
         if (resultSet == null || resultSet.isAfterLast()) {
-          throw new NoSuchElementException("No more elements available");
+          throw new NoSuchElementException();
         }
         return resultSet;
       } catch (SQLException e) {
-        throw new NoSuchElementException("No more elements available");
+        throw new NoSuchElementException();
       }
     }
 
@@ -138,7 +138,7 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     try {
       ResultSet resultSet = iterator.next();
       if (resultSet == null || resultSet.isAfterLast()) {
-        throw new NoSuchElementException("No more elements available");
+        throw new NoSuchElementException();
       }
 
       String ID_DEFAULT_FIELD_NAME = "embedding_id";
@@ -171,7 +171,7 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
                                   embedded);
 
     } catch (NullPointerException e) {
-      throw new NoSuchElementException("No more elements available");
+      throw new NoSuchElementException();
     } catch (SQLException e) {
       handleSQLException(e);
       throw new NoSuchElementException("Error processing next row");
