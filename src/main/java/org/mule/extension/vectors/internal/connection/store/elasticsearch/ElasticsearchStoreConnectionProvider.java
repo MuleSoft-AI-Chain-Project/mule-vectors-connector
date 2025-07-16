@@ -26,7 +26,6 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     requiredClassName = "dev.langchain4j.store.embedding.elasticsearch.ElasticsearchEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-elasticsearch:1.1.0-beta7")
 public class ElasticsearchStoreConnectionProvider implements BaseStoreConnectionProvider {
-
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private ElasticsearchStoreConnectionParameters elasticsearchStoreConnectionParameters;
   private  ElasticsearchStoreConnection elasticsearchStoreConnection;

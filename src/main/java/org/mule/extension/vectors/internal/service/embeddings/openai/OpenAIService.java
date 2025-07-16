@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +110,7 @@ public class OpenAIService implements EmbeddingService {
 
     @Override
     public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
-        List<String> texts = textSegments.stream().map(TextSegment::text).collect(Collectors.toList());
+        List<String> texts = textSegments.stream().map(TextSegment::text).toList();
         {
             List<Embedding> embeddings = new ArrayList<>();
             int tokenUsage = 0;
@@ -138,7 +137,7 @@ public class OpenAIService implements EmbeddingService {
                     }
                 } catch (Exception e) {
                     LOGGER.error("Error generating embeddings", e);
-                    throw new RuntimeException("Failed to generate embeddings", e);
+                    throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
                 }
             }
 

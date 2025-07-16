@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +121,7 @@ public class AzureOpenAIService implements EmbeddingService {
 
   @Override
   public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
-    List<String> texts = textSegments.stream().map(TextSegment::text).collect(Collectors.toList());
+    List<String> texts = textSegments.stream().map(TextSegment::text).toList();
     {
       List<Embedding> embeddings = new ArrayList<>();
       int tokenUsage = 0;

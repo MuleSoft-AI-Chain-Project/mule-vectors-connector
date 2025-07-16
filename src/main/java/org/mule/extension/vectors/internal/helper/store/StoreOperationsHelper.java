@@ -139,11 +139,11 @@ public class StoreOperationsHelper {
     }
 
     public static Map<String, Object> getMetadataMap(File file){
-       return new HashMap<String, Object>() {{
-            put("path", file.getPath());
-            put("fileName", file.getFileName());
-            put("mimeType", file.getMimeType());
-            put("metadata", file.getMetadata());
-        }};
+        Map<String, Object> map = new HashMap<>();
+        map.put("path", file.getPath());
+        map.put("fileName", file.getFileName());
+        map.put("mimeType", file.getMimeType());
+        map.put("metadata", file.getMetadata());
+        return map;
     }
 } 

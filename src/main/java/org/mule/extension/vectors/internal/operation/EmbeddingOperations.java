@@ -117,12 +117,10 @@ public class EmbeddingOperations {
 
       int finalDimension = dimension;
 
-      HashMap<String, Object> attributes = new HashMap<String, Object>() {{
-        put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
-        put("embeddingModelDimension", finalDimension);
-      }};
+      HashMap<String, Object> attributes = new HashMap<>();
+      attributes.put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
+      attributes.put("embeddingModelDimension", finalDimension);
       if(tokenUsage != null) {
-
         attributes.put("tokenUsage", tokenUsage);
       }
       return createEmbeddingResponse(jsonObject.toString(), attributes);
