@@ -25,11 +25,11 @@ public class StorageResponseAttributes implements Serializable {
   private final String fileName;
   private final String mimeType;
 
-  private final Map<String, Object> metadata;
+  private transient final Map<String, Object> metadata;
   /**
    * Additional attributes not explicitly defined as fields in this class.
    */
-  private final Map<String, Object> otherAttributes;
+  private transient final Map<String, Object> otherAttributes;
 
   /**
    * Constructs a {@code DocumentResponseAttributes} instance.
