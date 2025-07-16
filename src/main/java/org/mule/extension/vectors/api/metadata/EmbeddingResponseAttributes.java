@@ -31,7 +31,7 @@ public class EmbeddingResponseAttributes implements Serializable {
   /**
    * Additional attributes not explicitly defined as fields in this class.
    */
-  protected HashMap<String, Object> otherAttributes;
+  protected transient HashMap<String, Object> otherAttributes;
 
   /**
    * Constructs an {@code EmbeddingResponseAttributes} instance.

@@ -24,7 +24,11 @@ import io.qdrant.client.grpc.Points;
 import io.grpc.StatusRuntimeException;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {

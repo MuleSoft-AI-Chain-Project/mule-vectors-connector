@@ -42,7 +42,7 @@ private String metadataCondition;
   /**
    * Additional attributes not explicitly defined as fields in this class.
    */
-  private final HashMap<String, Object> otherAttributes;
+  private transient final HashMap<String, Object> otherAttributes;
 
   /**
    * Constructs a {@code StoreResponseAttributes} instance.

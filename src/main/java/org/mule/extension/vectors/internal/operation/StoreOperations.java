@@ -51,6 +51,7 @@ import static org.mule.sdk.api.annotation.param.MediaType.ANY;
 public class StoreOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StoreOperations.class);
+  private static String storeNameConstant = "storeName";
 
   /**
    * Queries an embedding store based on the provided embedding and text segment, and applies a metadata filter.
