@@ -2,8 +2,8 @@ package org.mule.extension.vectors.internal.service.embeddings;
 
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.azureaivision.AzureAIVisionModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.azureaivision.AzureAIVisionModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.azureopenai.AzureOpenAIModelConnection;
 import org.mule.extension.vectors.internal.connection.embeddings.einstein.EinsteinModelConnection;
 import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection;
 import org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnection;

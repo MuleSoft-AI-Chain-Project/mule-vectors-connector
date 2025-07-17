@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.connection.embeddings.azureopenai;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.azureopenai.AzureOpenAIModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.runtime.extension.api.exception.ModuleException;
