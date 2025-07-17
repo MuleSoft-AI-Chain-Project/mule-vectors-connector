@@ -2,6 +2,9 @@ package org.mule.extension.vectors.internal.connection.embeddings.azureaivision;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.azureaivision.AzureAIVisionModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.azureaivision.AzureAIVisionModelConnectionParameters;
+import org.mule.extension.vectors.internal.connection.provider.azureaivision.AzureAIVisionModelConnectionProvider;
 import org.mule.runtime.http.api.client.HttpClient;
 import java.lang.reflect.Field;
 import static org.junit.jupiter.api.Assertions.*;

@@ -2,6 +2,9 @@ package org.mule.extension.vectors.internal.connection.embeddings.azureopenai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mule.extension.vectors.internal.connection.provider.azureopenai.AzureOpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.azureopenai.AzureOpenAIModelConnectionParameters;
+import org.mule.extension.vectors.internal.connection.provider.azureopenai.AzureOpenAIModelConnectionProvider;
 import org.mule.runtime.http.api.client.HttpClient;
 
 import java.lang.reflect.Field;

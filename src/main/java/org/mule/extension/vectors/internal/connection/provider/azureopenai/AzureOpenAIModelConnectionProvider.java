@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.azureopenai;
+package org.mule.extension.vectors.internal.connection.provider.azureopenai;
 
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnectionProvider;

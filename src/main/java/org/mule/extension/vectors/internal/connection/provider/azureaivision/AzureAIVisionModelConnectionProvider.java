@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.azureaivision;
+package org.mule.extension.vectors.internal.connection.provider.azureaivision;
 
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnectionProvider;
