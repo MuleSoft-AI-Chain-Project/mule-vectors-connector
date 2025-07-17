@@ -27,7 +27,7 @@ public class EphemeralFileStoreConnection implements BaseStoreConnection {
 
   @Override
   public void disconnect() {
-    // HttpClient lifecycle is managed by the provider
+
   }
 
   @Override

@@ -5,7 +5,6 @@ import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;
 import org.mule.runtime.extension.api.annotation.param.Optional;
-import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
@@ -23,7 +22,6 @@ public class RemoveFilterParameters extends MetadataFilterParameters {
   @DisplayName("Ids")
   @Summary("List of ids to be removed")
   @Optional
-  @NullSafe
   List<String> ids;
 
   @Parameter
