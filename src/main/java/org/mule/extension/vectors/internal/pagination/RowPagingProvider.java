@@ -78,11 +78,11 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
           JSONObject jsonObject = JsonUtils.rowToJson(row);
 
-          HashMap<String, Object> attributes = new HashMap<>();
-          attributes.put("storeName", storeName);
           return createPageStoreResponse(
               jsonObject.toString(),
-              attributes,
+              new HashMap<String, Object>() {{
+                put("storeName", storeName);
+              }},
               streamingHelper);
 
         } catch (Exception e) {

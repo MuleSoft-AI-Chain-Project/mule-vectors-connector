@@ -30,8 +30,8 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
         if (filter == null) return "";
 
         String azureAISearchFilter = isLogicalOperator(filter) ? mapLogicalOperator(filter) : mapComparisonFilter(filter);
-        LOGGER.debug("LangChain4j Filter: {}", filter);
-        LOGGER.debug("Azure AI Search Filter: {}", azureAISearchFilter);
+        LOGGER.debug(String.format("LangChain4j Filter: %s", filter.toString()));
+        LOGGER.debug(String.format("Azure AI Search Filter: %s", azureAISearchFilter));
         return azureAISearchFilter;
     }
 
@@ -69,12 +69,16 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
 
     private String getComparisonFormat(Filter filter) {
         if (filter instanceof IsEqualTo) return "k/value eq '%s'";
+        // not use, it raplace by Not ( isEqualTo )
+        //        if (filter instanceof IsNotEqualTo) return "k/value ne '%s'";
         if (filter instanceof IsGreaterThan) return "k/value gt '%s'";
         if (filter instanceof IsGreaterThanOrEqualTo) return "k/value ge '%s'";
         if (filter instanceof IsLessThan) return "k/value lt '%s'";
         if (filter instanceof IsLessThanOrEqualTo) return "k/value le '%s'";
         if (filter instanceof IsIn) return "search.in(k/value, ('%s'))";
         if (filter instanceof ContainsString) return "search.ismatch('%s', 'metadata/attributes/value', 'simple', 'all')";
+        // not use, it raplace by Not ( IsIn )
+        //        if (filter instanceof IsNotIn) return "not search.in(k/value, ('%s'))";
         throw new UnsupportedOperationException("Unsupported filter type: " + filter.getClass().getName());
     }
 
@@ -119,13 +123,10 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
     }
 
     private String formatComparisonFilter(String key, String value, String format) {
-        // format may already contain a %s for value, so we need to fill key and value in order
-        String pattern = "metadata/attributes/any(k: k/key eq '%s' and %s)";
-        return String.format(pattern, key, String.format(format, value));
+        return format("metadata/attributes/any(k: k/key eq '%s' and " + format + ")", key, value);
     }
 
     private String formatContainsStringFilter(String key, String value, String format) {
-        String pattern = "(metadata/attributes/any(k: k/key eq '%s') and (%s))";
-        return String.format(pattern, key, String.format(format, value));
+        return format("(metadata/attributes/any(k: k/key eq '%s') and (" + format + "))", key, value);
     }
 }

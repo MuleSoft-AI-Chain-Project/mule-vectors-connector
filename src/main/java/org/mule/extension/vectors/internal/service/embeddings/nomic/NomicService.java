@@ -142,7 +142,7 @@ public class NomicService implements EmbeddingService {
     public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
         List<String> texts = textSegments.stream()
             .map(TextSegment::text)
-            .toList();
+            .collect(Collectors.toList());
             
         String responseJson = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
         JSONObject response = new JSONObject(responseJson);
@@ -171,7 +171,8 @@ public class NomicService implements EmbeddingService {
 
     @Override
     public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-        LOGGER.warn("Nomic {} model doesn't support generating embedding for a combination of image and text. The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName());
+        LOGGER.warn(String.format("Nomic %s model doesn't support generating embedding for a combination of image and text. " +
+            "The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName()));
         return embedImage(imageBytes);
     }
 

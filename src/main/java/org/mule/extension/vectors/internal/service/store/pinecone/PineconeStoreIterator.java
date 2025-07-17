@@ -79,9 +79,7 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
       Map<String, Object> metadataMap = entry.getMetadata().getFieldsMap().entrySet().stream()
           .filter(e -> !"text_segment".equals(e.getKey()))
-          .toList()
-          .stream()
-          .collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> ProtobufValueConverter.convertProtobufValue(e.getValue())));
+          .collect(Collectors.toMap(Map.Entry::getKey, e -> ProtobufValueConverter.convertProtobufValue(e.getValue())));
 
       if (entry.getMetadata().getFieldsMap().containsKey("text_segment")) {
         text = entry.getMetadata().getFieldsMap().get("text_segment").getStringValue();
@@ -150,7 +148,7 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
       List<String> ids = listResponse.getVectorsList().stream()
           .map(vector -> vector.getId())
-          .toList();
+          .collect(Collectors.toList());
 
       paginationToken = listResponse.getPagination().getNext();
       hasMorePages = paginationToken != null && !paginationToken.isEmpty();
@@ -167,7 +165,6 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   }
 
   public static class ProtobufValueConverter {
-    private ProtobufValueConverter() {}
     public static Object convertProtobufValue(com.google.protobuf.Value value) {
       if (value == null) return null;
       if (value.hasStringValue()) return value.getStringValue();
@@ -179,7 +176,7 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       if (value.hasListValue()) {
         return value.getListValue().getValuesList().stream()
             .map(ProtobufValueConverter::convertProtobufValue)
-            .toList();
+            .collect(Collectors.toList());
       }
       if (value.hasStructValue()) return value.getStructValue().getFieldsMap();
       return null;

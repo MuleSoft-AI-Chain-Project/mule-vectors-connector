@@ -13,33 +13,33 @@ public class QdrantStoreConnectionParameters extends BaseStoreConnectionParamete
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
+  @Placement(order = 1)
   @Example("localhost")
   private String host;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
   @DisplayName("GPRC Port")
-  @Placement(tab = Placement.DEFAULT_TAB, order = 2)
+  @Placement(order = 2)
   @Example("6334")
   private int gprcPort;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
+  @Placement(order = 3)
   @Example("false")
   private boolean useTLS;
 
   @Parameter
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 4)
+  @Placement(order = 4)
   @Example("text-segment")
   private String textSegmentKey;
 
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 5)
+  @Placement(order = 5)
   @Example("<your-apikey>")
   private String apiKey;
 

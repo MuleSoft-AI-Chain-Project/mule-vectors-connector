@@ -95,7 +95,10 @@ public class StoreOperations {
         storeConfiguration, storeConnection, storeName, input.dimension(), false, null,
         operation,
         (response) -> response,
-        createStoreNameAndSearchFilterMap(storeName, searchFilterParams)
+        new HashMap<>() {{
+          put("storeName", storeName);
+          put("searchFilter", searchFilterParams);
+        }}
     );
   }
 
@@ -167,8 +170,9 @@ public class StoreOperations {
 
     Function<VectorStoreService, List<String>> operation = (storeService) -> {
       List<String> ids = storeService.add(input.embeddings(), input.textSegments());
-      String sourceDisplayName = MetadataUtils.getSourceDisplayName(input.textSegments().get(0).metadata());
-      LOGGER.info("Ingested into {}  >> {}", storeName, sourceDisplayName);
+      LOGGER.info(String.format("Ingested into %s  >> %s",
+          storeName,
+          MetadataUtils.getSourceDisplayName(input.textSegments().get(0).metadata())));
       return ids;
     };
 
@@ -179,7 +183,9 @@ public class StoreOperations {
         storeConfiguration, storeConnection, storeName, input.dimension(), true, null,
         operation,
         responseBuilder,
-        createStoreNameMap(storeName)
+        new HashMap<>() {{
+          put("storeName", storeName);
+        }}
     );
   }
 
@@ -217,27 +223,10 @@ public class StoreOperations {
         storeConfiguration, storeConnection, storeName, 0, false, null,
         operation,
         responseBuilder,
-        createStoreNameAndRemoveFilterMap(storeName, removeFilterParams)
+        new HashMap<>() {{
+          put("storeName", storeName);
+          put("removeFilter", removeFilterParams);
+        }}
     );
-  }
-
-  private static HashMap<String, Object> createStoreNameAndSearchFilterMap(String storeName, Object searchFilterParams) {
-    HashMap<String, Object> map = new HashMap<>();
-    map.put("storeName", storeName);
-    map.put("searchFilter", searchFilterParams);
-    return map;
-  }
-
-  private static HashMap<String, Object> createStoreNameMap(String storeName) {
-    HashMap<String, Object> map = new HashMap<>();
-    map.put("storeName", storeName);
-    return map;
-  }
-
-  private static HashMap<String, Object> createStoreNameAndRemoveFilterMap(String storeName, Object removeFilterParams) {
-    HashMap<String, Object> map = new HashMap<>();
-    map.put("storeName", storeName);
-    map.put("removeFilter", removeFilterParams);
-    return map;
   }
 }

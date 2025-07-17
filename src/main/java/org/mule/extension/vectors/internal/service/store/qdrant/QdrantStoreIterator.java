@@ -154,7 +154,6 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
 }
 
 final class JsonFactory {
-  private JsonFactory() {}
 
   public static String toJson(Map<String, JsonWithInt.Value> map)
       throws InvalidProtocolBufferException {

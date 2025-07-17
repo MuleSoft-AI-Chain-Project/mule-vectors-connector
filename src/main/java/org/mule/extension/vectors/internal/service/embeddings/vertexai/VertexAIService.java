@@ -121,7 +121,7 @@ public class VertexAIService implements EmbeddingService {
     public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
          List<String> texts = textSegments.stream()
           .map(TextSegment::text)
-          .toList();
+          .collect(Collectors.toList());
 
       List<Embedding> allEmbeddings = new ArrayList<>();
       for (int i = 0; i < texts.size(); i += vertexAIModelConnection.getBatchSize()) {
@@ -146,7 +146,7 @@ public class VertexAIService implements EmbeddingService {
             }
             allEmbeddings.addAll(embeddings);
         } catch (Exception e) {
-            throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+            throw new RuntimeException("Failed to generate embeddings", e);
         }
       }
       return Response.from(allEmbeddings);
@@ -183,7 +183,7 @@ public class VertexAIService implements EmbeddingService {
             
             return embeddings;
         } catch (Exception e) {
-        throw new ModuleException("Error parsing embeddings response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+        throw new RuntimeException("Error parsing embeddings response", e);
         }
     }
 
@@ -196,7 +196,7 @@ public class VertexAIService implements EmbeddingService {
             String result = (String) generateImageEmbeddings(inputs, embeddingModelParameters.getEmbeddingModelName());
             return Response.from(parseEmbeddings(result).get(0));
         } catch (Exception e) {
-            throw new ModuleException("Error during image embedding generation", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+            throw new RuntimeException("Error during image embedding generation", e);
         }
     }
 
