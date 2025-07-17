@@ -5,19 +5,17 @@ import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
+import org.mule.extension.vectors.internal.helper.parameter.*;
 import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
+import org.mule.runtime.extension.api.annotation.param.*;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-import org.mule.runtime.extension.api.annotation.param.Config;
-import org.mule.runtime.extension.api.annotation.param.Content;
-import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.*;

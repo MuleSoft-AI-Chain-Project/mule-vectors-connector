@@ -82,27 +82,27 @@ class VertexAIModelConnectionTest {
         assertNotNull(ex.getCause().getMessage());
     }
 
-    // @Test
-    // void parsePrivateKey_throwsOnMalformedPem() throws Exception {
-    //     VertexAIModelConnection c = conn;
-    //     Exception ex = assertThrows(Exception.class, () -> {
-    //         java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("parsePrivateKey", String.class);
-    //         m.setAccessible(true);
-    //         m.invoke(c, "not-a-key");
-    //     });
-    //     assertTrue(ex.getCause().getMessage().toLowerCase().contains("illegal base64"));
-    // }
+    @Test
+    void parsePrivateKey_throwsOnMalformedPem() throws Exception {
+        VertexAIModelConnection c = conn;
+        Exception ex = assertThrows(Exception.class, () -> {
+            java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("parsePrivateKey", String.class);
+            m.setAccessible(true);
+            m.invoke(c, "not-a-key");
+        });
+        assertTrue(ex.getCause().getMessage().toLowerCase().contains("illegal base64"));
+    }
 
-    // @Test
-    // void signWithRSA_throwsOnBadKey() throws Exception {
-    //     VertexAIModelConnection c = conn;
-    //     Exception ex = assertThrows(Exception.class, () -> {
-    //         java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("signWithRSA", byte[].class, java.security.PrivateKey.class);
-    //         m.setAccessible(true);
-    //         m.invoke(c, "foo".getBytes(), null);
-    //     });
-    //     assertNotNull(ex.getCause());
-    // }
+    @Test
+    void signWithRSA_throwsOnBadKey() throws Exception {
+        VertexAIModelConnection c = conn;
+        Exception ex = assertThrows(Exception.class, () -> {
+            java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("signWithRSA", byte[].class, java.security.PrivateKey.class);
+            m.setAccessible(true);
+            m.invoke(c, "foo".getBytes(), null);
+        });
+        assertNotNull(ex.getCause());
+    }
 
     @Test
     void base64UrlEncode_encodesCorrectly() throws Exception {

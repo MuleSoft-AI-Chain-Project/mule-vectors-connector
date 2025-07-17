@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStoreIterator.class);
-  private String TEXT_SEGMENT_MAP_KEY = "text_segment";
 
   private final String storeName;
   private final QueryParameters queryParams;
@@ -79,13 +78,13 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       String text = "";
 
       Map<String, Object> metadataMap = entry.getMetadata().getFieldsMap().entrySet().stream()
-          .filter(e -> !TEXT_SEGMENT_MAP_KEY.equals(e.getKey()))
+          .filter(e -> !"text_segment".equals(e.getKey()))
           .toList()
           .stream()
           .collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> ProtobufValueConverter.convertProtobufValue(e.getValue())));
 
-      if (entry.getMetadata().getFieldsMap().containsKey(TEXT_SEGMENT_MAP_KEY)) {
-        text = entry.getMetadata().getFieldsMap().get(TEXT_SEGMENT_MAP_KEY).getStringValue();
+      if (entry.getMetadata().getFieldsMap().containsKey("text_segment")) {
+        text = entry.getMetadata().getFieldsMap().get("text_segment").getStringValue();
       }
 
       float[] vector = null;

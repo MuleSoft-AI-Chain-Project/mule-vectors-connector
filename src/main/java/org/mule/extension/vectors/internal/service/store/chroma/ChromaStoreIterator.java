@@ -21,18 +21,14 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.*;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStoreIterator.class);
-  private String COLLECTIONS_API_BASE_URL = "/api/v1/collections/";
 
   private final ChromaStoreConnection chromaStoreConnection;
   private final QueryParameters queryParams;
@@ -105,13 +101,13 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
 
   private int getSegmentCount() throws IOException {
     if (collectionId == null) return 0;
-    String jsonResponse = getJsonResponse(COLLECTIONS_API_BASE_URL + collectionId + "/count", null);
+    String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId + "/count", null);
     Integer count = Integer.parseInt(jsonResponse.toString());
     LOGGER.debug("Segment count {}", count);
     return count;
   }
   private String getCollectionId() throws IOException {
-    String jsonResponse = getJsonResponse(COLLECTIONS_API_BASE_URL + storeName, null);
+    String jsonResponse = getJsonResponse("/api/v1/collections/" + storeName, null);
     JSONObject collection = new JSONObject(jsonResponse);
     return collection.getString("id");
   }
@@ -137,7 +133,7 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     }
     jsonRequest.put("include", jsonInclude);
 
-    String jsonResponse = getJsonResponse(COLLECTIONS_API_BASE_URL + collectionId + "/get", jsonRequest.toString());
+    String jsonResponse = getJsonResponse("/api/v1/collections/" + collectionId + "/get", jsonRequest.toString());
 
     JSONObject responseObject = new JSONObject(jsonResponse);
 

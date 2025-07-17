@@ -97,19 +97,12 @@ public class MetadataUtils {
    *                  absolute directory path, filename, and file type from the file name.
    */
   public static void addImageMetadataToMedia(Media media, String mediaType) {
-    addMediaTypeMetadata(media, mediaType);
-    addMimeTypeAndFileTypeMetadata(media);
-    addImageUrlAndFilePathMetadata(media);
-  }
 
-  private static void addMediaTypeMetadata(Media media, String mediaType) {
-    if (!mediaType.isEmpty()) {
+    if (!mediaType.isEmpty())
       media.metadata().put(Constants.METADATA_KEY_MEDIA_TYPE, mediaType);
-    }
-  }
 
-  private static void addMimeTypeAndFileTypeMetadata(Media media) {
     if (media.hasImage() && media.image().mimeType() != null && !media.image().mimeType().toString().isEmpty()) {
+
       String mimeType = media.image().mimeType().toString();
       media.metadata().put(Constants.METADATA_KEY_MIME_TYPE, mimeType);
       // Extract file type from mime type
@@ -118,22 +111,25 @@ public class MetadataUtils {
         media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromMime);
       }
     }
-  }
 
-  private static void addImageUrlAndFilePathMetadata(Media media) {
     if (media.hasImage() && !media.image().url().toString().isEmpty()) {
+
       URI uri = media.image().url();
       media.metadata().put(Constants.METADATA_KEY_SOURCE, media.image().url().toString());
-      if ("file".equalsIgnoreCase(uri.getScheme())) {
-        Path path = Paths.get(uri);
-        media.metadata().put(Constants.METADATA_KEY_ABSOLUTE_DIRECTORY_PATH, path.getParent().toString());
-        media.metadata().put(Constants.METADATA_KEY_FILE_NAME, path.getFileName().toString());
-        // Extract file type from file name
-        String fileName = path.getFileName().toString();
-        String fileTypeFromName = fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".") + 1) : null;
-        if (fileTypeFromName != null) {
-          media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromName);
-        }
+      switch (uri.getScheme().toLowerCase()) {
+
+        case "file":
+          Path path = Paths.get(uri);
+          media.metadata().put(Constants.METADATA_KEY_ABSOLUTE_DIRECTORY_PATH, path.getParent().toString());
+          media.metadata().put(Constants.METADATA_KEY_FILE_NAME, path.getFileName().toString());
+
+          // Extract file type from file name
+          String fileName = path.getFileName().toString();
+          String fileTypeFromName = fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".") + 1) : null;
+          if (fileTypeFromName != null) {
+            media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromName);
+          }
+
       }
     }
   }

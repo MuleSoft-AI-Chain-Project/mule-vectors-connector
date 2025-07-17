@@ -4,8 +4,6 @@ import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.internal.ValidationUtils;
-import opennlp.tools.stemmer.snowball.irishStemmer;
-
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +20,6 @@ import org.mule.extension.vectors.internal.service.store.VectorStoreServiceProvi
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
-import org.mule.runtime.extension.internal.dsql.MuleDsqlParser.bool_return;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,27 +47,6 @@ public class StoreOperationsHelper {
             HashMap<String, Object> ingestionMetadataMap = isAddOperation ? MetadataUtils.getIngestionMetadata() : new HashMap<>();
 
             // Text Segments parsing
-            List<TextSegment> textSegments = parseTextSegments(jsonContent, isAddOperation, ingestionMetadataMap, customMetadata);
-
-            // Embeddings parsing
-            List<Embedding> embeddings = parseEmbeddings(jsonContent, isAddOperation);
-
-            // Dimension parsing
-            int dimension = jsonContent.getInt(Constants.JSON_KEY_DIMENSION);
-            ValidationUtils.ensureGreaterThanZero(dimension, Constants.JSON_KEY_DIMENSION);
-
-            return new ParsedStoreInput(textSegments, embeddings, dimension, ingestionMetadataMap);
-
-        } catch (Exception e) {
-            if (e instanceof ModuleException) {
-                throw (ModuleException) e;
-            }
-            throw new ModuleException("Error while parsing Text Segments and Embeddings input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
-        }
-    }
-
-    public static List<TextSegment> parseTextSegments(JSONObject jsonContent, boolean isAddOperation, HashMap<String, Object> ingestionMetadataMap, CustomMetadata customMetadata) throws ModuleException {
-        try {
             List<TextSegment> textSegments = new LinkedList<>();
             if (jsonContent.has(Constants.JSON_KEY_TEXT_SEGMENTS)) {
                 JSONArray jsonTextSegments = jsonContent.getJSONArray(Constants.JSON_KEY_TEXT_SEGMENTS);
@@ -94,17 +70,8 @@ public class StoreOperationsHelper {
                             textSegments.add(new TextSegment(jsonTextSegment.getString(Constants.JSON_KEY_TEXT), metadata));
                         });
             }
-            return textSegments;
-        } catch (Exception e) {
-            if (e instanceof ModuleException) {
-                throw (ModuleException) e;
-            }
-            throw new ModuleException("Error while parsing Text Segments input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
-        }
-    }
 
-    public static List<Embedding> parseEmbeddings(JSONObject jsonContent, boolean isAddOperation) throws ModuleException {
-        try {
+            // Embeddings parsing
             List<Embedding> embeddings = new LinkedList<>();
             JSONArray jsonEmbeddings = jsonContent.getJSONArray(Constants.JSON_KEY_EMBEDDINGS);
             if (!isAddOperation && jsonEmbeddings.length() != 1) {
@@ -119,13 +86,19 @@ public class StoreOperationsHelper {
                             floatArray[i] = (float) jsonEmbedding.getDouble(i);
                         }
                         embeddings.add(new Embedding(floatArray));
-            });
-            return embeddings;
+                    });
+
+            // Dimension parsing
+            int dimension = jsonContent.getInt(Constants.JSON_KEY_DIMENSION);
+            ValidationUtils.ensureGreaterThanZero(dimension, Constants.JSON_KEY_DIMENSION);
+
+            return new ParsedStoreInput(textSegments, embeddings, dimension, ingestionMetadataMap);
+
         } catch (Exception e) {
             if (e instanceof ModuleException) {
                 throw (ModuleException) e;
             }
-            throw new ModuleException("Error while parsing Text Segments input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
+            throw new ModuleException("Error while parsing Text Segments and Embeddings input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
         }
     }
 

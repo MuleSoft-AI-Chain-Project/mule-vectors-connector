@@ -1,16 +1,8 @@
 package org.mule.extension.vectors.internal.service.store.aisearch;
 
 import dev.langchain4j.rag.content.retriever.azure.search.AzureAiSearchFilterMapper;
-import dev.langchain4j.store.embedding.filter.Filter;
-import dev.langchain4j.store.embedding.filter.comparison.IsEqualTo;
-import dev.langchain4j.store.embedding.filter.comparison.IsNotEqualTo;
-import dev.langchain4j.store.embedding.filter.comparison.IsGreaterThan;
-import dev.langchain4j.store.embedding.filter.comparison.IsGreaterThanOrEqualTo;
-import dev.langchain4j.store.embedding.filter.comparison.IsLessThan;
-import dev.langchain4j.store.embedding.filter.comparison.IsLessThanOrEqualTo;
-import dev.langchain4j.store.embedding.filter.comparison.IsIn;
-import dev.langchain4j.store.embedding.filter.comparison.IsNotIn;
-import dev.langchain4j.store.embedding.filter.comparison.ContainsString;
+import dev.langchain4j.store.embedding.filter.*;
+import dev.langchain4j.store.embedding.filter.comparison.*;
 import dev.langchain4j.store.embedding.filter.logical.And;
 import dev.langchain4j.store.embedding.filter.logical.Not;
 import dev.langchain4j.store.embedding.filter.logical.Or;
@@ -29,10 +21,8 @@ import static java.lang.String.format;
 public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VectorsAzureAiSearchFilterMapper.class);
-    private static final String UNSUPPORTED_ERROR_MESSAGE = "Unsupported filter type: ";
 
     public VectorsAzureAiSearchFilterMapper() {
-        //Empty constructor
     }
 
     public String map(Filter filter) {
@@ -50,7 +40,7 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
         if (operator instanceof And) return  format(getLogicalFormat(operator), map(((And) operator).left()), map(((And) operator).right()));
         if (operator instanceof Or) return format(getLogicalFormat(operator), map(((Or) operator).left()), map(((Or) operator).right()));
         if (operator instanceof Not) return format(getLogicalFormat(operator), map(((Not) operator).expression()));
-        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE + operator.getClass().getName());
+        throw new UnsupportedOperationException("Unsupported filter type: " + operator.getClass().getName());
     }
 
     private boolean isLogicalOperator(Filter filter) {
@@ -67,14 +57,14 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
         if (filter instanceof IsIn) return mapIsIn((IsIn) filter);
         if (filter instanceof IsNotIn) return mapIsNotIn((IsNotIn) filter);
         if (filter instanceof ContainsString) return mapContainsString((ContainsString) filter);
-        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE + filter.getClass().getName());
+        throw new UnsupportedOperationException("Unsupported filter type: " + filter.getClass().getName());
     }
 
     private String getLogicalFormat(Filter filter) {
         if (filter instanceof And) return "(%s and %s)";
         if (filter instanceof Or) return "(%s or %s)";
         if (filter instanceof Not) return "(not %s)";
-        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE + filter.getClass().getName());
+        throw new UnsupportedOperationException("Unsupported filter type: " + filter.getClass().getName());
     }
 
     private String getComparisonFormat(Filter filter) {
@@ -85,9 +75,7 @@ public class VectorsAzureAiSearchFilterMapper implements AzureAiSearchFilterMapp
         if (filter instanceof IsLessThanOrEqualTo) return "k/value le '%s'";
         if (filter instanceof IsIn) return "search.in(k/value, ('%s'))";
         if (filter instanceof ContainsString) return "search.ismatch('%s', 'metadata/attributes/value', 'simple', 'all')";
-        // not use, it raplace by Not ( IsIn )
-        //        if (filter instanceof IsNotIn) return "not search.in(k/value, ('%s'))";
-        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE + filter.getClass().getName());
+        throw new UnsupportedOperationException("Unsupported filter type: " + filter.getClass().getName());
     }
 
     private String mapIsNotIn(IsNotIn filter) {

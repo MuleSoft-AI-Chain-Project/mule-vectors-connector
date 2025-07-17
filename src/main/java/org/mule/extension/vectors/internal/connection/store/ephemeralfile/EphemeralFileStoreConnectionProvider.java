@@ -45,11 +45,11 @@ public class EphemeralFileStoreConnectionProvider implements BaseStoreConnection
 
   @Override
   public void dispose() {
-    // HttpClient lifecycle is managed by the provider
+
   }
 
   @Override
   public void initialise() throws InitialisationException {
-    // HttpClient lifecycle is managed by the provider
+
   }
 }
