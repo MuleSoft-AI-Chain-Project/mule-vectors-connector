@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-local02</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -72,14 +72,6 @@
 					</argLines>
 					<sharedLibraries>
 					<!-- Storage Services Dependencies -->
-						<sharedLibrary>
-							<groupId>software.amazon.awssdk</groupId>
-							<artifactId>s3</artifactId>
-						</sharedLibrary>
-						<sharedLibrary>
-							<groupId>com.azure</groupId>
-							<artifactId>azure-storage-blob</artifactId>
-						</sharedLibrary>
 						<sharedLibrary>
 							<groupId>com.google.cloud</groupId>
 							<artifactId>google-cloud-storage</artifactId>
@@ -232,26 +224,13 @@
     </dependencyManagement>
 
     <dependencies>
-	<!-- Storage Dependencies (Optionals) -->
-		<dependency>
-			<groupId>com.azure</groupId>
-			<artifactId>azure-storage-blob</artifactId>
-			<version>12.30.0</version>
-			<scope>provided</scope>
-		</dependency>
 
-		<dependency>
-			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>s3</artifactId>
-			<version>2.31.6</version>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-storage</artifactId>
 			<version>2.43.0</version>
-			<scope>provided</scope>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Mule Required Dependencies -->
