@@ -33,8 +33,6 @@ import java.util.concurrent.ExecutionException;
 
 public class VectorStoreServiceProviderFactory {
 
-  private VectorStoreServiceProviderFactory() {}
-
   public static VectorStoreService getService(StoreConfiguration storeConfiguration,
                                                BaseStoreConnection storeConnection,
                                                String storeName,

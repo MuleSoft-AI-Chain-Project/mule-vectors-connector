@@ -20,8 +20,6 @@ import java.util.concurrent.TimeoutException;
 
 public class HttpRequestHelper {
 
-    private HttpRequestHelper() {}
-
     public static CompletableFuture<HttpResponse> executeGetRequest(HttpClient httpClient, String url, Map<String, String> headers, int timeout) {
         HttpRequest request = buildGetRequest(url, headers);
         HttpRequestOptions options = getRequestOptions(timeout);

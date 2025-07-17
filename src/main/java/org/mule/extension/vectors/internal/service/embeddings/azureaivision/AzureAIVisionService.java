@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +135,7 @@ public class AzureAIVisionService implements EmbeddingService {
 
     @Override
     public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
-        List<String> texts = textSegments.stream().map(TextSegment::text).toList();
+        List<String> texts = textSegments.stream().map(TextSegment::text).collect(Collectors.toList());
         List<Embedding> embeddings = new ArrayList<>();
         try {
             for(int index = 0; index < texts.size(); index += 1) {
@@ -149,7 +150,7 @@ public class AzureAIVisionService implements EmbeddingService {
             }
             return Response.from(embeddings);
         } catch (Exception e) {
-            throw new ModuleException("Failed to process text embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+            throw new RuntimeException("Failed to process text embedding response", e);
         }
     }
 
@@ -164,14 +165,15 @@ public class AzureAIVisionService implements EmbeddingService {
                 vector[i] = (float) vectorArray.getDouble(i);
             }
             return Response.from(Embedding.from(vector));
-        } catch (Exception e) {
-            throw new ModuleException("Failed to process image embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
+            } catch (Exception e) {
+            throw new RuntimeException("Failed to process image embedding response", e);
+            }
     }
 
     @Override
     public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-        LOGGER.warn("Azure AI Vision {} model doesn't support generating embedding for a combination of image and text. The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName());
+        LOGGER.warn(String.format("Azure AI Vision %s model doesn't support generating embedding for a combination of image and text. " +
+                                  "The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName()));
         return embedImage(imageBytes);
     }
 }

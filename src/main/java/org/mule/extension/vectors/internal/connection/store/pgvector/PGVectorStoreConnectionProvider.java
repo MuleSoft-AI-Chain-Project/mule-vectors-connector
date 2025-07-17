@@ -38,8 +38,8 @@ public class PGVectorStoreConnectionProvider implements BaseStoreConnectionProvi
   public void dispose() {
     try {
       pgVectorStoreConnection.dispose();
-    } catch (SQLException ignored) {
-      // Exception is already logged in the connection class; do not throw from dispose()
+    } catch (SQLException e) {
+      throw new RuntimeException(new ConnectionException(e.getMessage(), e));
     }
 
   }

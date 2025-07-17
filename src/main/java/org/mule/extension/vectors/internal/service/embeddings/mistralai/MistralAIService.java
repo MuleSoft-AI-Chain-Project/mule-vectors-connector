@@ -113,7 +113,7 @@ public class MistralAIService implements EmbeddingService {
   public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
     List<String> texts = textSegments.stream()
           .map(TextSegment::text)
-          .toList();
+          .collect(Collectors.toList());
     {
         List<Embedding> embeddings = new ArrayList<>();
         int tokenUsage = 0;
@@ -139,7 +139,7 @@ public class MistralAIService implements EmbeddingService {
                     embeddings.add(Embedding.from(vector));
                 }
             } catch (Exception e) {
-                throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+                throw new RuntimeException("Failed to generate embeddings", e);
             }
         }
 

@@ -115,7 +115,7 @@ public class HuggingFaceService implements EmbeddingService {
   public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
     List<String> texts = textSegments.stream()
           .map(TextSegment::text)
-          .toList();
+          .collect(Collectors.toList());
 
     String result = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
     {

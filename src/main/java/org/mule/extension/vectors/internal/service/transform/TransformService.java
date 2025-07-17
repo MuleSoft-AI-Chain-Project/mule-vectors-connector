@@ -31,10 +31,9 @@ public class TransformService {
             DocumentParserParameters documentParserParameters) {
         try {
             String text = documentParserParameters.getDocumentParser().parse(documentStream);
-            HashMap<String, Object> attributes = new HashMap<>();
             return createParsedDocumentResponse(
                     text,
-                    attributes);
+                    new HashMap<String, Object>() {{}});
         } catch (ModuleException me) {
             throw me;
         } catch (Exception e) {
@@ -56,10 +55,9 @@ public class TransformService {
             for (TextSegment textSegment : textSegments) {
                 responseJsonArray.put(textSegment.text());
             }
-            HashMap<String, Object> attributes = new HashMap<>();
             return createChunkedTextResponse(
                     responseJsonArray.toString(),
-                    attributes);
+                    new HashMap<String, Object>() {});
         } catch (ModuleException me) {
             throw me;
         } catch (Exception e) {
