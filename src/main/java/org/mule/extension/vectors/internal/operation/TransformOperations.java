@@ -51,7 +51,7 @@ public class TransformOperations {
   parseDocument(@Config TransformConfiguration transformConfiguration,
                 @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
                 @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
-    return transformService.parseDocument(transformConfiguration, documentStream, documentParserParameters);
+    return transformService.parseDocument(documentStream, documentParserParameters);
   }
 
   /**

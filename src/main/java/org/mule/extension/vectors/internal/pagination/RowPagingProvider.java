@@ -38,6 +38,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
   private String storeName;
   private QueryParameters queryParams;
   private StreamingHelper streamingHelper;
+  private OperationValidator operationValidator;
 
   public RowPagingProvider(StoreConfiguration storeConfiguration,
                            String storeName,
@@ -48,6 +49,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
     this.storeName = storeName;
     this.queryParams = queryParams;
     this.streamingHelper = streamingHelper;
+    this.operationValidator = new OperationValidator();
   }
 
   @Override
@@ -57,7 +59,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
       if(rowIterator == null) {
 
-        OperationValidator.validateOperationType(
+        operationValidator.validateOperationType(
             Constants.STORE_OPERATION_TYPE_QUERY_ALL, storeConnection.getVectorStore());
 
         rowIterator = VectorStoreServiceProviderFactory.getService(

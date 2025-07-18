@@ -37,6 +37,7 @@ public abstract class BaseStoreService implements VectorStoreService {
   protected BaseStoreConnection storeConnection;
   protected int dimension;
   protected boolean createStore;
+  protected OperationValidator operationValidator;
 
   public BaseStoreService(StoreConfiguration storeConfiguration, BaseStoreConnection storeConnection, String storeName, int dimension, boolean createStore) {
 
@@ -45,6 +46,7 @@ public abstract class BaseStoreService implements VectorStoreService {
     this.storeName = storeName;
     this.dimension = dimension;
     this.createStore = createStore;
+    this.operationValidator = new OperationValidator();
   }
 
   public abstract EmbeddingStore<TextSegment> buildEmbeddingStore();
@@ -69,7 +71,7 @@ public abstract class BaseStoreService implements VectorStoreService {
 
     if(searchFilterParams != null && searchFilterParams.isConditionSet()) {
 
-      OperationValidator.validateOperationType(
+      operationValidator.validateOperationType(
               Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
       Filter filter = searchFilterParams.buildMetadataFilter();
       searchRequestBuilder.filter(filter);

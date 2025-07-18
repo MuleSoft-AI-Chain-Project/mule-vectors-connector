@@ -21,7 +21,6 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPa
 public class TransformService {
 
     public Result<InputStream, TransformResponseAttributes> parseDocument(
-            TransformConfiguration transformConfiguration,
             InputStream documentStream,
             DocumentParserParameters documentParserParameters) {
         try {

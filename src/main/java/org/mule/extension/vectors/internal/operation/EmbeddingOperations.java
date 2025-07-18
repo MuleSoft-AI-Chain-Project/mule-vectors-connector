@@ -76,11 +76,14 @@ public class EmbeddingOperations {
       Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection).getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
 
       embeddings = embeddingsResponse.content();
-      tokenUsage = embeddingsResponse.tokenUsage() != null ?
-          new TokenUsage(embeddingsResponse.tokenUsage().inputTokenCount() != null ? embeddingsResponse.tokenUsage().inputTokenCount() : 0,
-                          embeddingsResponse.tokenUsage().outputTokenCount() != null ? embeddingsResponse.tokenUsage().outputTokenCount() : 0,
-                          embeddingsResponse.tokenUsage().totalTokenCount() != null ? embeddingsResponse.tokenUsage().totalTokenCount(): 0)
-          : null;
+      if (embeddingsResponse.tokenUsage() != null) {
+          Integer inputTokenCount = embeddingsResponse.tokenUsage().inputTokenCount() != null ? embeddingsResponse.tokenUsage().inputTokenCount() : 0;
+          Integer outputTokenCount = embeddingsResponse.tokenUsage().outputTokenCount() != null ? embeddingsResponse.tokenUsage().outputTokenCount() : 0;
+          Integer totalTokenCount = embeddingsResponse.tokenUsage().totalTokenCount() != null ? embeddingsResponse.tokenUsage().totalTokenCount() : 0;
+          tokenUsage = new TokenUsage(inputTokenCount, outputTokenCount, totalTokenCount);
+      } else {
+          tokenUsage = null;
+      }
 
       JSONObject jsonObject = new JSONObject();
 

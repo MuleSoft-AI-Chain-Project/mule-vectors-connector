@@ -42,7 +42,7 @@ class TransformServiceTest {
         when(documentParserParameters.getDocumentParser()).thenReturn(documentParser);
         when(documentParser.parse(any(InputStream.class))).thenReturn("parsed text");
         InputStream input = new ByteArrayInputStream("test".getBytes());
-        Result<InputStream, TransformResponseAttributes> result = service.parseDocument(transformConfiguration, input, documentParserParameters);
+        Result<InputStream, TransformResponseAttributes> result = service.parseDocument(input, documentParserParameters);
         assertThat(result).isNotNull();
         assertThat(result.getOutput()).isNotNull();
         assertThat(new String(result.getOutput().readAllBytes())).contains("parsed text");
@@ -53,7 +53,7 @@ class TransformServiceTest {
         when(documentParserParameters.getDocumentParser()).thenReturn(documentParser);
         when(documentParser.parse(any(InputStream.class))).thenThrow(new ModuleException("fail", MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE));
         InputStream input = new ByteArrayInputStream("test".getBytes());
-        assertThatThrownBy(() -> service.parseDocument(transformConfiguration, input, documentParserParameters))
+        assertThatThrownBy(() -> service.parseDocument(input, documentParserParameters))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("fail");
     }
@@ -63,7 +63,7 @@ class TransformServiceTest {
         when(documentParserParameters.getDocumentParser()).thenReturn(documentParser);
         when(documentParser.parse(any(InputStream.class))).thenThrow(new RuntimeException("boom"));
         InputStream input = new ByteArrayInputStream("test".getBytes());
-        assertThatThrownBy(() -> service.parseDocument(transformConfiguration, input, documentParserParameters))
+        assertThatThrownBy(() -> service.parseDocument(input, documentParserParameters))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Error while parsing document");
     }
