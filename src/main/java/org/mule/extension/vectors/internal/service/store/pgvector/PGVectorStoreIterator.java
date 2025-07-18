@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.service.store.pgvector;
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.BaseDatabaseIterator;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.data.document.Metadata;
@@ -15,10 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
@@ -29,7 +28,7 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private final QueryParameters queryParams;
   private final int pageSize;
 
-  private PgVectorMetadataIterator iterator;
+  private PGVectorDatabaseIterator iterator;
 
   public PGVectorStoreIterator(
       PGVectorStoreConnection pgVectorStoreConnection,
@@ -40,89 +39,34 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
     try {
-      this.iterator = new PgVectorMetadataIterator(storeName, pageSize);
+      this.iterator = new PGVectorDatabaseIterator(storeName, pageSize, queryParams);
     } catch (SQLException e) {
       throw new ModuleException("Store issue",MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
-  private class PgVectorMetadataIterator implements Iterator<ResultSet>, AutoCloseable {
+  /**
+   * PGVector-specific database iterator implementation.
+   */
+  private class PGVectorDatabaseIterator extends BaseDatabaseIterator {
 
-    private int offset = 0;
-    private ResultSet resultSet;
-    private PreparedStatement pstmt;
-    private Connection connection;
-    private String table;
-    int pageSize;
-
-    private PgVectorMetadataIterator(String table, int pageSize) throws SQLException {
-      connection = dataSource.getConnection();
-      this.table = table;
-      this.pageSize = pageSize;
-      fetchNextPage();
-    }
-
-    private void fetchNextPage() throws SQLException {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-
-      String idDefaultFieldName = "embedding_id";
-      String textDefaultFieldName = "text";
-      String metadataDefaultFieldName = "metadata";
-      String vectorDefaultFieldName = "embedding";
-
-      String query = "SELECT " +
-          idDefaultFieldName + ", " +
-          textDefaultFieldName + ", " +
-          (queryParams.retrieveEmbeddings() ? (vectorDefaultFieldName + ", ") : "") +
-          metadataDefaultFieldName +
-          " FROM " + table + " LIMIT ? OFFSET ?";
-      pstmt = connection.prepareStatement(query);
-      pstmt.setInt(1, this.pageSize);
-      pstmt.setInt(2, offset);
-      resultSet = pstmt.executeQuery();
-      offset += pageSize;
+    private PGVectorDatabaseIterator(String table, int pageSize, QueryParameters queryParams) throws SQLException {
+      super(table, pageSize, queryParams);
     }
 
     @Override
-    public boolean hasNext() {
-      try {
-        if (resultSet != null && resultSet.next()) {
-          return true;
-        } else {
-          fetchNextPage();
-          return resultSet != null && resultSet.next();
-        }
-      } catch (SQLException e) {
-        handleSQLException(e);
-        return false;
-      }
+    protected Connection getConnection() throws SQLException {
+      return dataSource.getConnection();
     }
 
     @Override
-    public ResultSet next() {
-      try {
-        if (resultSet == null || resultSet.isAfterLast()) {
-          throw new NoSuchElementException();
-        }
-        return resultSet;
-      } catch (SQLException e) {
-        throw new NoSuchElementException();
-      }
-    }
-
-    public void close() {
-      try {
-        if (resultSet != null)
-          resultSet.close();
-        if (pstmt != null)
-          pstmt.close();
-        if (connection != null)
-          connection.close();
-      } catch (SQLException e) {
-        LOGGER.error("Error closing database resources", e);
-      }
+    protected DatabaseFieldNames getFieldNames() {
+      return new DatabaseFieldNames(
+          "embedding_id",  // id field
+          "text",          // text field
+          "metadata",      // metadata field
+          "embedding"      // vector field
+      );
     }
   }
 
@@ -133,6 +77,10 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
   @Override
   public VectorStoreRow<Embedded> next() {
+    if (!hasNext()) {
+      throw new NoSuchElementException("No more elements available");
+    }
+    
     try {
       ResultSet resultSet = iterator.next();
       if (resultSet == null || resultSet.isAfterLast()) {
@@ -171,20 +119,8 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     } catch (NullPointerException e) {
       throw new NoSuchElementException();
     } catch (SQLException e) {
-      handleSQLException(e);
+      iterator.handleSQLException(e);
       throw new NoSuchElementException("Error processing next row");
     }
-  }
-
-  private void handleSQLException(SQLException e) {
-    String sqlState = e.getSQLState();
-    if (sqlState != null) {
-      if (sqlState.startsWith("08")) { // Connection Exception
-        throw new ModuleException("Database connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-      } else if (sqlState.equals("28P01")) { // Invalid Password
-        throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
-      }
-    }
-    throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
   }
 }
