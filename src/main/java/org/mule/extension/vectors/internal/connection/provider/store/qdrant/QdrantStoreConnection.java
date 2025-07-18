@@ -103,6 +103,9 @@ public class QdrantStoreConnection implements BaseStoreConnection {
       ListenableFuture<QdrantOuterClass.HealthCheckReply> healthCheckFuture = this.client.healthCheckAsync();
       // Make it synchronous by calling get()
       healthCheckFuture.get();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException("Failed during Qdrant health check", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     } catch (Exception e) {
       throw new ModuleException("Failed during Qdrant health check", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }

@@ -20,6 +20,13 @@ import java.util.Optional;
 public class MetadataUtils {
 
   /**
+   * Private constructor to prevent instantiation of utility class.
+   */
+  private MetadataUtils() {
+    // Utility class - no instantiation allowed
+  }
+
+  /**
    * Generates ingestion metadata for a document.
    *
    * @return a HashMap containing ingestion metadata, including source ID, ingestion datetime,

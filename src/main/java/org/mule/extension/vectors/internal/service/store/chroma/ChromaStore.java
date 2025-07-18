@@ -13,8 +13,6 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,8 +25,6 @@ import java.util.concurrent.ExecutionException;
  * the Chroma database for managing vector data and sources.
  */
 public class ChromaStore extends BaseStoreService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChromaStore.class);
 
     private final ChromaStoreConnection chromaStoreConnection;
     private final QueryParameters queryParams;

@@ -78,6 +78,9 @@ public class AISearchStoreConnection implements BaseStoreConnection {
     }
     try {
       doAuthenticatedHttpRequest().get();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException("Failed to connect to AI search", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     } catch (Exception e) {
       throw new ModuleException("Failed to connect to AI search", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
