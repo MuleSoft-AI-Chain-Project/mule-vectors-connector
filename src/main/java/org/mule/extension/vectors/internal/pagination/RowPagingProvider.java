@@ -102,6 +102,13 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
           e.getMessage(),
           MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
 
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException(
+          String.format("Error while getting row from %s.", this.storeName),
+          MuleVectorsErrorType.STORE_SERVICES_FAILURE,
+          e);
+
     } catch (Exception e) {
 
       throw new ModuleException(

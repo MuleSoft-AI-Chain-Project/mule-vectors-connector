@@ -24,6 +24,13 @@ import java.util.UUID;
 public class Utils {
 
   /**
+   * Private constructor to prevent instantiation of utility class.
+   */
+  private Utils() {
+    // Utility class - no instantiation allowed
+  }
+
+  /**
    * Returns the current date and time in ISO 8601 format (UTC).
    * <p>
    * The format returned is compliant with the ISO 8601 standard, represented as:

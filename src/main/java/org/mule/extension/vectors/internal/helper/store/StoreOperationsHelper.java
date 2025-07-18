@@ -21,8 +21,6 @@ import org.mule.extension.vectors.internal.service.store.VectorStoreServiceProvi
 import org.mule.extension.vectors.internal.util.MetadataUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,8 +34,6 @@ import java.util.stream.IntStream;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createStoreResponse;
 
 public class StoreOperationsHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(StoreOperationsHelper.class);
 
     public record ParsedStoreInput(List<TextSegment> textSegments, List<Embedding> embeddings, int dimension, HashMap<String, Object> ingestionMetadata) {}
 
@@ -155,6 +151,12 @@ public class StoreOperationsHelper {
             throw me;
         } catch (UnsupportedOperationException e) {
             throw new ModuleException(e.getMessage(), MuleVectorsErrorType.STORE_UNSUPPORTED_OPERATION);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ModuleException(
+                    String.format("Error during operation on store %s", storeName),
+                    MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
+                    e);
         } catch (Exception e) {
             throw new ModuleException(
                     String.format("Error during operation on store %s", storeName),

@@ -97,6 +97,8 @@ class AzureOpenAIServiceTest {
         AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class));
         List<String> emptyList = List.of();
         List<String> barList = List.of("bar");
+        
+        // Separate assertions to avoid multiple method invocations in lambda
         assertThatThrownBy(() -> service.generateTextEmbeddings(null, "foo")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> service.generateTextEmbeddings(emptyList, "foo")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> service.generateTextEmbeddings(barList, null)).isInstanceOf(IllegalArgumentException.class);

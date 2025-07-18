@@ -13,14 +13,10 @@ import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.net.URISyntaxException;
 import java.util.Collections;
 
 public class OpenSearchStoreConnection implements BaseStoreConnection {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(OpenSearchStoreConnection.class);
 
   private String url;
   private String user;

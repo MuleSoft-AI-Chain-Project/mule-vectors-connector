@@ -9,8 +9,6 @@ import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.pinecone.clients.Index;
 import io.pinecone.clients.Pinecone;
@@ -27,7 +25,6 @@ import java.util.NoSuchElementException;
 
 public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStoreIterator.class);
   private String TEXT_SEGMENT_MAP_KEY = "text_segment";
 
   private final String storeName;
@@ -35,7 +32,6 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
   private final Pinecone client;
   private final Index index;
-  private final PineconeStoreConnection pineconeStoreConnection;
   private Iterator<io.pinecone.proto.Vector> vectorIterator = Collections.emptyIterator();
   private boolean hasMorePages = true;
   private String paginationToken = null;
@@ -48,7 +44,6 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     this.storeName = storeName;
     this.queryParams = queryParams;
     try {
-      this.pineconeStoreConnection = pineconeStoreConnection;
       this.client =pineconeStoreConnection.getClient();
       this.index = client.getIndexConnection(storeName);
       fetchNextPage(); // Load first batch

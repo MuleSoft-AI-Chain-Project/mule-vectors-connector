@@ -41,7 +41,7 @@ public class MetadataFilterHelper {
     }
 
     if (isParenthesizedSingleToken(expression)) {
-      LOGGER.debug("Processing single token as parenthesized sub-expression: " + expression);
+      LOGGER.debug("Processing single token as parenthesized sub-expression: {}", expression);
       return fromExpression(expression.substring(1, expression.length() - 1).trim());
     }
 
@@ -56,11 +56,11 @@ public class MetadataFilterHelper {
 
   private static String stripRedundantParentheses(String expression) {
     expression = expression.trim();
-    LOGGER.debug("Processing expression: " + expression);
+    LOGGER.debug("Processing expression: {}", expression);
     while (expression.startsWith("(") && expression.endsWith(")") && isRedundantlyWrapped(expression)) {
-      LOGGER.debug("Stripping redundant outer parentheses from: " + expression);
+      LOGGER.debug("Stripping redundant outer parentheses from: {}", expression);
       expression = expression.substring(1, expression.length() - 1).trim();
-      LOGGER.debug("Expression after stripping: " + expression);
+      LOGGER.debug("Expression after stripping: {}", expression);
     }
     return expression;
   }
@@ -77,12 +77,12 @@ public class MetadataFilterHelper {
     } else if (opType == OperatorType.OR) {
       currentLevelIsAnd = false;
     } else {
-      throw new IllegalArgumentException("Could not determine consistent logical operator for expression: " + expression + ". Tokens found: " + tokens.size());
+      throw new IllegalArgumentException(String.format("Could not determine consistent logical operator for expression: %s. Tokens found: %d", expression, tokens.size()));
     }
     List<Filter> subFilters = new ArrayList<>();
     for (String token : tokens) {
       if (token.trim().isEmpty()) {
-        throw new IllegalArgumentException("Empty condition in expression: " + expression);
+        throw new IllegalArgumentException(String.format("Empty condition in expression: %s", expression));
       }
       subFilters.add(fromExpression(token.trim()));
     }
@@ -92,7 +92,7 @@ public class MetadataFilterHelper {
   private static Filter parseSimpleCondition(String expression) {
     Matcher matcher = CONDITION_PATTERN.matcher(expression);
     if (!matcher.matches()) {
-      throw new IllegalArgumentException("Invalid condition format: " + expression);
+      throw new IllegalArgumentException(String.format("Invalid condition format: %s", expression));
     }
     String field, operator, valueStr;
     // Check if this is a function call (CONTAINS)
@@ -165,7 +165,7 @@ public class MetadataFilterHelper {
           return Long.parseLong(value);
         }
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid number format for value '" + value + "' that matched number pattern.");
+        throw new IllegalArgumentException(String.format("Invalid number format for value '%s' that matched number pattern.", value));
       }
     }
     return value;
@@ -190,18 +190,17 @@ public class MetadataFilterHelper {
 
       methodName = getFilterMethod(operator);
       if (value == null) {
-        throw new IllegalArgumentException("Value cannot be null for operator " + operator + " on field " + field);
+        throw new IllegalArgumentException(String.format("Value cannot be null for operator %s on field %s", operator, field));
       }
       Method method = filterBuilder.getClass().getMethod(methodName, Utils.getPrimitiveTypeClass(value)); // Line 187 from stack trace
       return (Filter) method.invoke(filterBuilder, value);
 
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException nsme) {
-      String typeName = (value != null) ? value.getClass().getName() : "null";
       // Provide more info about the expected parameter type based on Utils.getPrimitiveTypeClass(value)
       Class<?> expectedParamType = (value != null) ? Utils.getPrimitiveTypeClass(value) : null;
       String expectedParamTypeName = (expectedParamType != null) ? expectedParamType.getName() : "unknown (due to null value)";
 
-      throw new IllegalArgumentException("Failed to create filter. Method '" + methodName + "' with parameter type '" + expectedParamTypeName + "' not found. Details: " + nsme.getMessage());
+      throw new IllegalArgumentException(String.format("Failed to create filter. Method '%s' with parameter type '%s' not found. Details: %s", methodName, expectedParamTypeName, nsme.getMessage()));
     }
   }
 
@@ -220,7 +219,7 @@ public class MetadataFilterHelper {
       case "<=":
         return Constants.METADATA_FILTER_METHOD_IS_LESS_THAN_OR_EQUAL_TO;
       default:
-        throw new IllegalArgumentException("Unsupported operator: " + operator);
+        throw new IllegalArgumentException(String.format("Unsupported operator: %s", operator));
     }
   }
 

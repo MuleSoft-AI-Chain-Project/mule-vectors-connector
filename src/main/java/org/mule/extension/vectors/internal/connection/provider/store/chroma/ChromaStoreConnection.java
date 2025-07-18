@@ -64,6 +64,9 @@ public class ChromaStoreConnection implements BaseStoreConnection {
         throw new ModuleException("URL is required for Chroma connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
       }
       doHttpRequest().get();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException("Failed to connect to Chroma", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     } catch (Exception e) {
       throw new ModuleException("Failed to connect to Chroma", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }

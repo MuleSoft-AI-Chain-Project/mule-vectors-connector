@@ -31,6 +31,9 @@ try {
     qdrantStoreConnection.createCollection(storeName, dimension);
   }
   this.payloadTextKey = qdrantStoreConnection.getTextSegmentKey();
+} catch (InterruptedException e) {
+  Thread.currentThread().interrupt();
+  throw new ModuleException("Qdrant API request failed: ",  MuleVectorsErrorType.STORE_SERVICES_FAILURE, e );
 } catch (Exception e){
   throw new ModuleException("Qdrant API request failed: ",  MuleVectorsErrorType.STORE_SERVICES_FAILURE, e );
 }

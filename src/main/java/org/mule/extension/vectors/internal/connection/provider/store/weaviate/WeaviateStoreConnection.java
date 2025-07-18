@@ -120,6 +120,9 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
     }
     try {
       testConnection().get();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException("Failed to connect to Weaviate store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     } catch (Exception e) {
       throw new ModuleException("Failed to connect to Weaviate store", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
