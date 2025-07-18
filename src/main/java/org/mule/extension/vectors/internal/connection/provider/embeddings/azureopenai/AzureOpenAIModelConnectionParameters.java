@@ -32,15 +32,6 @@ public class AzureOpenAIModelConnectionParameters extends BaseModelConnectionPar
   @Example("2023-04-01-preview")
   private String apiVersion;
 
-  @Parameter
-  @DisplayName("Timeout")
-  @Summary("Timeout for the operation in milliseconds")
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
-  @Example("60000")
-  @Optional(defaultValue = "60000")
-  private long totalTimeout;
-
   public String getEndpoint() {
     return endpoint;
   }
@@ -51,9 +42,5 @@ public class AzureOpenAIModelConnectionParameters extends BaseModelConnectionPar
 
   public String getApiVersion() { 
     return apiVersion; 
-  }
-
-  public long getTotalTimeout() { 
-    return totalTimeout; 
   }
 }

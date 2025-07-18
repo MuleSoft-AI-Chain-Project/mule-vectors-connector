@@ -20,18 +20,7 @@ public class OllamaModelConnectionParameters extends BaseModelConnectionParamete
   @Example("http://127.0.0.1:11434")
   private String baseUrl;
 
-  @Parameter
-  @DisplayName("Timeout")
-  @Summary("Timeout for the operation in milliseconds")
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2, tab = Placement.ADVANCED_TAB)
-  @Example("60000")
-  @Optional(defaultValue = "60000")
-  private long totalTimeout;
-
   public String getBaseUrl() {
     return baseUrl;
   }
-
-  public long getTotalTimeout() { return totalTimeout; }
 }

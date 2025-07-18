@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.joining;
  */
 public abstract class BaseStoreService implements VectorStoreService {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(BaseStoreService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(BaseStoreService.class);
 
   protected String storeName;
   protected StoreConfiguration storeConfiguration;

@@ -79,4 +79,25 @@ public class EmbeddingResponseAttributes implements Serializable {
   public Map<String, Object> getOtherAttributes() {
     return otherAttributes;
   }
+
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    EmbeddingResponseAttributes that = (EmbeddingResponseAttributes) o;
+
+    if (embeddingModelDimension != that.embeddingModelDimension) return false;
+    if (embeddingModelName != null ? !embeddingModelName.equals(that.embeddingModelName) : that.embeddingModelName != null)
+      return false;
+    if (tokenUsage != null ? !tokenUsage.equals(that.tokenUsage) : that.tokenUsage != null) return false;
+    return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
+  }
+
+  public int hashCode() {
+    int result = embeddingModelName != null ? embeddingModelName.hashCode() : 0;
+    result = 31 * result + embeddingModelDimension;
+    result = 31 * result + (tokenUsage != null ? tokenUsage.hashCode() : 0);
+    result = 31 * result + (otherAttributes != null ? otherAttributes.hashCode() : 0);
+    return result;
+  }
 }

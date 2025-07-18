@@ -27,7 +27,7 @@ public class EinsteinModelConnectionProvider extends BaseModelConnectionProvider
           einsteinModelConnectionParameters.getSalesforceOrg(),
           einsteinModelConnectionParameters.getClientId(),
           einsteinModelConnectionParameters.getClientSecret(),
-          getHttpClient());
+          getHttpClient(), einsteinModelConnectionParameters.getTimeout());
       return einsteinModelConnection;
     } catch (Exception e) {
       throw new ConnectionException("Failed to connect to Einstein", e);

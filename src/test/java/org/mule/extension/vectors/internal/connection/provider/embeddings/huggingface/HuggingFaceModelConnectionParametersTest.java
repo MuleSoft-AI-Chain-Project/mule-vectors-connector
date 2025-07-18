@@ -15,17 +15,17 @@ class HuggingFaceModelConnectionParametersTest {
         Field apiKeyField = HuggingFaceModelConnectionParameters.class.getDeclaredField("apiKey");
         apiKeyField.setAccessible(true);
         apiKeyField.set(params, "sk-hf");
-        Field timeoutField = HuggingFaceModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = HuggingFaceModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 12345L);
         assertEquals("sk-hf", params.getApiKey());
-        assertEquals(12345L, params.getTotalTimeout());
+        assertEquals(12345L, params.getTimeout());
     }
 
     @Test
     void testDefaultTimeoutIsZeroInPlainJava() {
         HuggingFaceModelConnectionParameters params = new HuggingFaceModelConnectionParameters();
         // In plain Java, default is 0; Mule injects @Optional default at runtime
-        assertEquals(0L, params.getTotalTimeout());
+        assertEquals(0L, params.getTimeout());
     }
 } 

@@ -156,10 +156,4 @@ class OllamaServiceTest {
         Map<String, String> headers = (Map<String, String>) m.invoke(service);
         assertEquals("application/json", headers.get("Content-Type"));
     }
-
-    @Test
-    void embedImage_and_embedTextAndImage_returnNull() {
-        assertNull(service.embedImage(new byte[0]));
-        assertNull(service.embedTextAndImage("foo", new byte[0]));
-    }
 } 

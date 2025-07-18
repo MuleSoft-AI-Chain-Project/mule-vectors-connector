@@ -23,13 +23,6 @@ import static org.mockito.Mockito.*;
 class JsonUtilsTest {
 
     @Test
-    void stringToJsonNode_shouldParseValidJson() throws IOException {
-        String json = "{\"foo\":\"bar\"}";
-        JsonNode node = JsonUtils.stringToJsonNode(json);
-        assertThat(node.get("foo").asText()).isEqualTo("bar");
-    }
-
-    @Test
     void jsonObjectCollectionToJsonArray_shouldConvertList() {
         JSONObject obj1 = new JSONObject().put("a", 1);
         JSONObject obj2 = new JSONObject().put("b", 2);

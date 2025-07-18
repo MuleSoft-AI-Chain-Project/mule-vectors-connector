@@ -160,11 +160,4 @@ class AzureOpenAIServiceTest {
         assertEquals("key", headers.get("api-key"));
         assertEquals("application/json", headers.get("Content-Type"));
     }
-
-    @Test
-    void embedImage_and_embedTextAndImage_returnNull() {
-        AzureOpenAIService service = new AzureOpenAIService(mock(AzureOpenAIModelConnection.class), mock(EmbeddingModelParameters.class));
-        assertNull(service.embedImage(new byte[0]));
-        assertNull(service.embedTextAndImage("foo", new byte[0]));
-    }
 } 

@@ -108,4 +108,25 @@ private String metadataCondition;
   public Map<String, Object> getOtherAttributes() {
     return otherAttributes;
   }
+
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    StoreResponseAttributes that = (StoreResponseAttributes) o;
+
+    if (storeName != null ? !storeName.equals(that.storeName) : that.storeName != null) return false;
+    if (ids != null ? !ids.equals(that.ids) : that.ids != null) return false;
+    if (metadataCondition != null ? !metadataCondition.equals(that.metadataCondition) : that.metadataCondition != null)
+      return false;
+    return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
+  }
+
+  public int hashCode() {
+    int result = storeName != null ? storeName.hashCode() : 0;
+    result = 31 * result + (ids != null ? ids.hashCode() : 0);
+    result = 31 * result + (metadataCondition != null ? metadataCondition.hashCode() : 0);
+    result = 31 * result + (otherAttributes != null ? otherAttributes.hashCode() : 0);
+    return result;
+  }
 }

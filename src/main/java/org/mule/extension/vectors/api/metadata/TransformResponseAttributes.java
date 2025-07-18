@@ -95,4 +95,24 @@ public class TransformResponseAttributes implements Serializable {
   public Map<String, Object> getOtherAttributes() {
     return otherAttributes;
   }
+
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    TransformResponseAttributes that = (TransformResponseAttributes) o;
+
+    if (fileType != null ? !fileType.equals(that.fileType) : that.fileType != null) return false;
+    if (mediaType != null ? !mediaType.equals(that.mediaType) : that.mediaType != null) return false;
+    if (mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null) return false;
+    return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
+  }
+
+  public int hashCode() {
+    int result = fileType != null ? fileType.hashCode() : 0;
+    result = 31 * result + (mediaType != null ? mediaType.hashCode() : 0);
+    result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+    result = 31 * result + (otherAttributes != null ? otherAttributes.hashCode() : 0);
+    return result;
+  }
 }

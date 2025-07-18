@@ -161,38 +161,6 @@ public class NomicService implements EmbeddingService {
         TokenUsage tokenUsage = new TokenUsage(usage.getInt("total_tokens"), 0);
         return Response.from(embeddingsList, tokenUsage);
     }
-
-    @Override
-    public Response<Embedding> embedImage(byte[] imageBytes) {
-        Response<List<Embedding>> response = embedImages(Arrays.asList(imageBytes));
-        return Response.from(response.content().get(0), response.tokenUsage());
-    }
-
-    @Override
-    public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-        LOGGER.warn("Nomic {} model doesn't support generating embedding for a combination of image and text. The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName());
-        return embedImage(imageBytes);
-    }
-
-    public Response<List<Embedding>> embedImages(List<byte[]> imageBytesList) {
-        String responseJson = (String) generateImageEmbeddings(imageBytesList, embeddingModelParameters.getEmbeddingModelName());
-        JSONObject response = new JSONObject(responseJson);
-        JSONArray embeddings = response.getJSONArray("embeddings");
-        JSONObject usage = response.getJSONObject("usage");
-
-        List<Embedding> embeddingsList = new ArrayList<>();
-        for (int j = 0; j < embeddings.length(); j++) {
-            JSONArray embeddingArray = embeddings.getJSONArray(j);
-            float[] embeddingValues = new float[embeddingArray.length()];
-            for (int i = 0; i < embeddingArray.length(); i++) {
-                embeddingValues[i] = (float)embeddingArray.getDouble(i);
-            }
-            embeddingsList.add(Embedding.from(embeddingValues));
-        }
-
-        TokenUsage tokenUsage = new TokenUsage(usage.getInt("total_tokens"), 0);
-        return Response.from(embeddingsList, tokenUsage);
-    }
 }
 
 

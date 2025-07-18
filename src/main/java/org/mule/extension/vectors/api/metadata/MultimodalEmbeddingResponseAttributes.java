@@ -46,4 +46,22 @@ public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttr
   public String getMimeType() {
     return mimeType;
   }
+
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+
+    MultimodalEmbeddingResponseAttributes that = (MultimodalEmbeddingResponseAttributes) o;
+
+    if (mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null) return false;
+    return mediaType != null ? mediaType.equals(that.mediaType) : that.mediaType == null;
+  }
+
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+    result = 31 * result + (mediaType != null ? mediaType.hashCode() : 0);
+    return result;
+  }
 }

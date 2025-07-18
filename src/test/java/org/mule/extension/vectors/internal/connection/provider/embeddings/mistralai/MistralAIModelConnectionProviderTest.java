@@ -31,7 +31,7 @@ class MistralAIModelConnectionProviderTest {
     @Test
     void connectReturnsValidConnection() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-mistral");
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         MistralAIModelConnection conn = (MistralAIModelConnection) provider.connect();
         assertNotNull(conn);
         assertEquals("sk-mistral", conn.getApiKey());
@@ -41,7 +41,7 @@ class MistralAIModelConnectionProviderTest {
     @Test
     void connectWithNullApiKey() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn(null);
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         MistralAIModelConnection conn = (MistralAIModelConnection) provider.connect();
         assertNotNull(conn);
         assertNull(conn.getApiKey());
@@ -50,7 +50,7 @@ class MistralAIModelConnectionProviderTest {
     @Test
     void connectWithZeroTimeout() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-mistral");
-        when(params.getTotalTimeout()).thenReturn(0L);
+        when(params.getTimeout()).thenReturn(0L);
         MistralAIModelConnection conn = (MistralAIModelConnection) provider.connect();
         assertNotNull(conn);
         assertEquals(0L, conn.getTimeout());

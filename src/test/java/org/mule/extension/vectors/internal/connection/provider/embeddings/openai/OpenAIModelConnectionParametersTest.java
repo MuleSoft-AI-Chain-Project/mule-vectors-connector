@@ -15,11 +15,11 @@ class OpenAIModelConnectionParametersTest {
         Field apiKeyField = OpenAIModelConnectionParameters.class.getDeclaredField("apiKey");
         apiKeyField.setAccessible(true);
         apiKeyField.set(params, "sk-123");
-        Field timeoutField = OpenAIModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = OpenAIModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 42000L);
         assertEquals("sk-123", params.getApiKey());
-        assertEquals(42000L, params.getTotalTimeout());
+        assertEquals(42000L, params.getTimeout());
     }
 
     @Test
@@ -27,7 +27,7 @@ class OpenAIModelConnectionParametersTest {
         // Note: The @Optional(defaultValue = "60000") is enforced by Mule runtime, not by Java itself.
         // In plain Java, the default for long is 0.
         OpenAIModelConnectionParameters params = new OpenAIModelConnectionParameters();
-        assertEquals(0L, params.getTotalTimeout());
+        assertEquals(0L, params.getTimeout());
     }
 
     @Test

@@ -24,7 +24,7 @@ class AzureAIVisionModelConnectionProviderTest {
         Field apiVersionField = AzureAIVisionModelConnectionParameters.class.getDeclaredField("apiVersion");
         apiVersionField.setAccessible(true);
         apiVersionField.set(params, "2023-04-01-preview");
-        Field timeoutField = AzureAIVisionModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = AzureAIVisionModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 1234L);
         Field groupField = AzureAIVisionModelConnectionProvider.class.getDeclaredField("azureAIVisionModelConnectionParameters");

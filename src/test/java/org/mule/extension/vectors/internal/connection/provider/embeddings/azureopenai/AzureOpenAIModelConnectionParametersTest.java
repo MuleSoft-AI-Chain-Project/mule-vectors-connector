@@ -18,18 +18,18 @@ class AzureOpenAIModelConnectionParametersTest {
         Field endpointField = AzureOpenAIModelConnectionParameters.class.getDeclaredField("endpoint");
         endpointField.setAccessible(true);
         endpointField.set(params, "https://azure.openai");
-        Field timeoutField = AzureOpenAIModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = AzureOpenAIModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 12345L);
         assertEquals("sk-azure", params.getApiKey());
         assertEquals("https://azure.openai", params.getEndpoint());
-        assertEquals(12345L, params.getTotalTimeout());
+        assertEquals(12345L, params.getTimeout());
     }
 
     @Test
     void testDefaultTimeoutIsZeroInPlainJava() {
         AzureOpenAIModelConnectionParameters params = new AzureOpenAIModelConnectionParameters();
         // In plain Java, default is 0; Mule injects @Optional default at runtime
-        assertEquals(0L, params.getTotalTimeout());
+        assertEquals(0L, params.getTimeout());
     }
 } 

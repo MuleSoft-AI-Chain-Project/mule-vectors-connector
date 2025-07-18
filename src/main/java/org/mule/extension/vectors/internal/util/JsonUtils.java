@@ -35,18 +35,6 @@ public final class JsonUtils {
   private JsonUtils() {}
 
   /**
-   * Converts a string to a JsonNode object.
-   *
-   * @param content the string content to be converted.
-   * @return a JsonNode representation of the content.
-   * @throws IOException if an error occurs during parsing.
-   */
-  public static JsonNode stringToJsonNode(String content) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.readTree(content);
-  }
-
-  /**
    * Converts a collection of JSONObject instances to a JSONArray.
    *
    * @param jsonObjectList the collection of JSONObjects to be converted.

@@ -25,7 +25,7 @@ class EinsteinModelConnectionTest {
     void setUp() throws Exception {
         httpClient = mock(HttpClient.class);
         // Mock getAccessTokenBlocking by subclassing and overriding
-        conn = new EinsteinModelConnection("mydomain.my.salesforce.com", "client-id", "client-secret", httpClient) {
+        conn = new EinsteinModelConnection("mydomain.my.salesforce.com", "client-id", "client-secret", httpClient, 12345L) {
             @Override
             public String getAccessToken() { return "access-token"; }
             @Override

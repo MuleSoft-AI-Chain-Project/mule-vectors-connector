@@ -18,7 +18,7 @@ class OllamaModelConnectionProviderTest {
         Field baseUrlField = OllamaModelConnectionParameters.class.getDeclaredField("baseUrl");
         baseUrlField.setAccessible(true);
         baseUrlField.set(params, "http://localhost:1234");
-        Field timeoutField = OllamaModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = OllamaModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 1234L);
         Field groupField = OllamaModelConnectionProvider.class.getDeclaredField("ollamaModelConnectionParameters");

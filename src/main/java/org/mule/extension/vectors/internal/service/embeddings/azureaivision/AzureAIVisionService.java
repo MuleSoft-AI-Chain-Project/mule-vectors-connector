@@ -152,27 +152,5 @@ public class AzureAIVisionService implements EmbeddingService {
             throw new ModuleException("Failed to process text embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
         }
     }
-
-    @Override
-    public Response<Embedding> embedImage(byte[] imageBytes) {
-        try {
-            String response = (String) generateImageEmbeddings(List.of(imageBytes), embeddingModelParameters.getEmbeddingModelName());
-            JSONObject jsonResponse = new JSONObject(response);
-            JSONArray vectorArray = jsonResponse.getJSONArray("vector");
-            float[] vector = new float[vectorArray.length()];
-            for (int i = 0; i < vectorArray.length(); i++) {
-                vector[i] = (float) vectorArray.getDouble(i);
-            }
-            return Response.from(Embedding.from(vector));
-        } catch (Exception e) {
-            throw new ModuleException("Failed to process image embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    @Override
-    public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-        LOGGER.warn("Azure AI Vision {} model doesn't support generating embedding for a combination of image and text. The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName());
-        return embedImage(imageBytes);
-    }
 }
 

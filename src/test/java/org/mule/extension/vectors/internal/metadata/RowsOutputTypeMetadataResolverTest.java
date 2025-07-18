@@ -35,10 +35,4 @@ class RowsOutputTypeMetadataResolverTest {
         MetadataType type = resolver.getOutputType(metadataContext, storeConfiguration);
         assertThat(type).isNotNull();
     }
-
-    @org.junit.jupiter.api.Disabled("Resource manipulation required; test not implemented.")
-    @Test
-    void getOutputType_resourceMissing_returnsNull() {
-        // Not implemented
-    }
 } 
