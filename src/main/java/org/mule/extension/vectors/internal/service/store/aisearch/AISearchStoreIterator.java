@@ -37,7 +37,6 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private final QueryParameters queryParams;
   private final AISearchStoreConnection aiSearchStoreConnection;
   private final String API_VERSION = "2024-07-01";
-  private final int dimension;
 
   private String nextUrl;
   private Iterator<JSONObject> currentBatch;
@@ -54,9 +53,10 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     this.aiSearchStoreConnection = aiSearchStoreConnection;
     this.nextUrl = buildInitialUrl();
     this.hasMore = true;
-    this.dimension = dimension;
     try {
       fetchNextBatch();
+    } catch (ModuleException me) {
+      throw me;
     } catch (Exception e) {
       throw new ModuleException("Authentication failed: " , MuleVectorsErrorType.AUTHENTICATION, e);
     }
@@ -188,7 +188,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       } else {
         LOGGER.warn("No metadata available");
       }
-      Metadata metadata = metadataJson != null ? Metadata.from(metadataJson.toMap()) : Metadata.from(new HashMap<>());
+      Metadata metadata = Metadata.from(metadataJson.toMap());
 
       // This is the only place you may want to adapt for Embedded type.
       // If you want to keep it generic, you can cast or use a factory.

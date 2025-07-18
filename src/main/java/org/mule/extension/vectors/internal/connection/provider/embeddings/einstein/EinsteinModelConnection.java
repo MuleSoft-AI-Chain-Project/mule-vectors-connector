@@ -134,18 +134,4 @@ public class EinsteinModelConnection implements BaseModelConnection {
                     response.getStatusCode(), errorBody));
         }
     }
-
-    private ModuleException handleErrorResponse(HttpResponse response) {
-        try {
-            String responseBody = new String(response.getEntity().getBytes());
-            MuleVectorsErrorType errorType = response.getStatusCode() == 429 ?
-                    MuleVectorsErrorType.AI_SERVICES_RATE_LIMITING_ERROR : MuleVectorsErrorType.AI_SERVICES_FAILURE;
-            return new ModuleException(
-                    String.format("Error with Einstein API. Response code: %s. Response: %s.",
-                            response.getStatusCode(), responseBody),
-                    errorType);
-        } catch (IOException e) {
-            return new ModuleException("Failed to read error response from Einstein API.", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
 }

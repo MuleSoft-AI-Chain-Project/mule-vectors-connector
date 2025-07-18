@@ -28,7 +28,6 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private final DataSource dataSource;
   private final QueryParameters queryParams;
   private final int pageSize;
-  private final PGVectorStoreConnection pgVectorStoreConnection;
 
   private PgVectorMetadataIterator iterator;
 
@@ -37,7 +36,6 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       String storeName,
       QueryParameters queryParams
   ) {
-    this.pgVectorStoreConnection = pgVectorStoreConnection;
     this.dataSource = pgVectorStoreConnection.getDataSource();
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
