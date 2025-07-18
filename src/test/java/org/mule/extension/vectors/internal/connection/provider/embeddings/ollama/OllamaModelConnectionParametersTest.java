@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.ollama;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.ollama;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.ollama.OllamaModelConnectionParameters;

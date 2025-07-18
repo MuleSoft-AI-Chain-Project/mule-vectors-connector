@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.model.openai;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.connection.embeddings.openai.OpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.openai.OpenAIModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.openai.OpenAIBuilder;

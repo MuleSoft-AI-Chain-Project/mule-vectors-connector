@@ -1,8 +1,8 @@
-package org.mule.extension.vectors.internal.connection.embeddings.huggingface;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.huggingface;
 
 
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnectionProvider;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 
 import org.mule.runtime.extension.api.annotation.Alias;

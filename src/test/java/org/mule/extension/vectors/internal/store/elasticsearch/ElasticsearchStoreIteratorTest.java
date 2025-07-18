@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.elasticsearch.ElasticsearchStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;

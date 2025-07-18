@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.opensearch;
+package org.mule.extension.vectors.internal.connection.provider.store.opensearch;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;

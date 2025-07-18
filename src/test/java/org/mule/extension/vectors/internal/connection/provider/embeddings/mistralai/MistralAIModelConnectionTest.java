@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.mistralai;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.mistralai;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

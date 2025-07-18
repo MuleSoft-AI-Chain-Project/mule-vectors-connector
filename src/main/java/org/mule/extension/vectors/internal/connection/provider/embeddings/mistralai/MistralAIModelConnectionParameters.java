@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.mistralai;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.mistralai;
 
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;

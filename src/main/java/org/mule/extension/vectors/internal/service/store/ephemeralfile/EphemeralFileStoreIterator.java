@@ -1,5 +1,5 @@
 package org.mule.extension.vectors.internal.service.store.ephemeralfile;
-import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import dev.langchain4j.data.embedding.Embedding;

@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.service.embeddings.huggingface;
 
-import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.huggingface.HuggingFaceModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBuilder;

@@ -2,7 +2,8 @@ package org.mule.extension.vectors.internal.helper;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.file.File;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -138,7 +139,7 @@ class StoreOperationsHelperTest {
         StoreConfiguration config = new StoreConfiguration();
         BaseStoreConnection conn = new BaseStoreConnection() {
             @Override public String getVectorStore() { return "store"; }
-            @Override public org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters getConnectionParameters() { return null; }
+            @Override public BaseStoreConnectionParameters getConnectionParameters() { return null; }
             @Override public void disconnect() {}
             @Override public void validate() {}
         };
@@ -165,7 +166,7 @@ class StoreOperationsHelperTest {
         StoreConfiguration config = new StoreConfiguration();
         BaseStoreConnection conn = new BaseStoreConnection() {
             @Override public String getVectorStore() { return "store"; }
-            @Override public org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters getConnectionParameters() { return null; }
+            @Override public BaseStoreConnectionParameters getConnectionParameters() { return null; }
             @Override public void disconnect() {}
             @Override public void validate() {}
         };
@@ -192,7 +193,7 @@ class StoreOperationsHelperTest {
         StoreConfiguration config = new StoreConfiguration();
         BaseStoreConnection conn = new BaseStoreConnection() {
             @Override public String getVectorStore() { return "store"; }
-            @Override public org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters getConnectionParameters() { return null; }
+            @Override public BaseStoreConnectionParameters getConnectionParameters() { return null; }
             @Override public void disconnect() {}
             @Override public void validate() {}
         };
@@ -219,7 +220,7 @@ class StoreOperationsHelperTest {
         StoreConfiguration config = new StoreConfiguration();
         BaseStoreConnection conn = new BaseStoreConnection() {
             @Override public String getVectorStore() { return "store"; }
-            @Override public org.mule.extension.vectors.internal.connection.store.BaseStoreConnectionParameters getConnectionParameters() { return null; }
+            @Override public BaseStoreConnectionParameters getConnectionParameters() { return null; }
             @Override public void disconnect() {}
             @Override public void validate() {}
         };

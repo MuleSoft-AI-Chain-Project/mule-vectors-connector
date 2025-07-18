@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.service.store.opensearch;
 
 
-import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.opensearch.OpenSearchStoreConnection;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import dev.langchain4j.data.embedding.Embedding;

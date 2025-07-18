@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.connection;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
 
 import static org.junit.jupiter.api.Assertions.*;
 

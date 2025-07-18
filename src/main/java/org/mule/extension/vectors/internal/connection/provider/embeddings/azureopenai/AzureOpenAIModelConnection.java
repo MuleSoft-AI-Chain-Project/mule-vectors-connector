@@ -9,7 +9,7 @@ package org.mule.extension.vectors.internal.connection.provider.embeddings.azure
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;

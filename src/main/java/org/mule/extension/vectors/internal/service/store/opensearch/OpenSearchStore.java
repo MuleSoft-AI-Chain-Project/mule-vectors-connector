@@ -4,7 +4,7 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.opensearch.OpenSearchEmbeddingStore;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.opensearch.OpenSearchStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
@@ -44,7 +44,7 @@ public class OpenSearchStore extends BaseStoreService {
     @Override
     public OpenSearchStoreIterator<?> getFileIterator() {
         return new OpenSearchStoreIterator<>(
-            (org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection) this.storeConnection,
+            (OpenSearchStoreConnection) this.storeConnection,
             this.storeName,
             this.queryParams
         );

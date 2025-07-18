@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
-import org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.ephemeralfile.EphemeralFileEmbeddingStore;
 import org.mule.extension.vectors.internal.service.store.ephemeralfile.EphemeralFileStoreIterator;

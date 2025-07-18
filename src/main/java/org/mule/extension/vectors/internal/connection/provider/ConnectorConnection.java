@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection;
+package org.mule.extension.vectors.internal.connection.provider;
 
 public interface ConnectorConnection {
   void disconnect();

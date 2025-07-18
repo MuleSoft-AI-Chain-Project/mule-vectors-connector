@@ -6,7 +6,7 @@ import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
 import io.qdrant.client.grpc.JsonWithInt;
-import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import dev.langchain4j.data.embedding.Embedding;

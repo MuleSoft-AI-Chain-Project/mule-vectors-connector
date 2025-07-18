@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.pinecone;
+package org.mule.extension.vectors.internal.connection.provider.store.pinecone;
 
 import io.pinecone.clients.Pinecone;
 import org.junit.jupiter.api.BeforeEach;

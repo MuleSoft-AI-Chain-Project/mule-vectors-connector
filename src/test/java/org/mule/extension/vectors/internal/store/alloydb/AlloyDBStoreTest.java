@@ -5,7 +5,7 @@ import dev.langchain4j.community.store.embedding.alloydb.EmbeddingStoreConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.alloydb.AlloyDBStore;
 import org.mule.runtime.extension.api.exception.ModuleException;

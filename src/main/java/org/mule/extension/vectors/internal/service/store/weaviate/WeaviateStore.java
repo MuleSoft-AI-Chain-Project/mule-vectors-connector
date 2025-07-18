@@ -7,7 +7,7 @@ import dev.langchain4j.store.embedding.weaviate.WeaviateEmbeddingStore;
 
 
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.weaviate.WeaviateStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;

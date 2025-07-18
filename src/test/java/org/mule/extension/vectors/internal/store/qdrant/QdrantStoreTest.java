@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.qdrant.QdrantStore;
 import org.mule.runtime.extension.api.exception.ModuleException;

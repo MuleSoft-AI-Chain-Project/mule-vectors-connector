@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.mongodbatlas;
+package org.mule.extension.vectors.internal.connection.provider.store.mongodbatlas;
 
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoException;

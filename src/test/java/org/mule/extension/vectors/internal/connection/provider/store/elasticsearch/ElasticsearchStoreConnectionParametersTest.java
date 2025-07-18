@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.elasticsearch;
+package org.mule.extension.vectors.internal.connection.provider.store.elasticsearch;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.store.elasticsearch.ElasticsearchStoreConnectionParameters;

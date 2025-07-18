@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.aisearch;
+package org.mule.extension.vectors.internal.connection.provider.store.aisearch;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnectionParameters;

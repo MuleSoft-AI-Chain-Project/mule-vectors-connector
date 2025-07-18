@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.opensearch;
+package org.mule.extension.vectors.internal.connection.provider.store.opensearch;
 
 public class BooleanResponse {
     private final boolean value;

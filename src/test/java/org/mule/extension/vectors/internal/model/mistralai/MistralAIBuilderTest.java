@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.model.mistralai;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.mistralai.MistralAIModelConnection;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.extension.vectors.internal.service.embeddings.mistralai.MistralAIBuilder;

@@ -1,6 +1,6 @@
-package org.mule.extension.vectors.internal.connection.embeddings.ollama;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.ollama;
 
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnectionParameters;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Optional;

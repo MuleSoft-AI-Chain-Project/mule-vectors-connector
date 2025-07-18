@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.service.store.pgvector;
 
-import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import dev.langchain4j.data.embedding.Embedding;

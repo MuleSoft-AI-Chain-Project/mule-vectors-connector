@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-package org.mule.extension.vectors.internal.connection.embeddings.ollama;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.ollama;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;

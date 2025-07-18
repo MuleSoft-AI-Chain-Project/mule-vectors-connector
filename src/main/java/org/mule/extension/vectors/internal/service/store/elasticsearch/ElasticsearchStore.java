@@ -5,7 +5,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.elasticsearch.ElasticsearchEmbeddingStore;
 import org.elasticsearch.client.RestClient;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.elasticsearch.ElasticsearchStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
@@ -40,7 +40,7 @@ public class ElasticsearchStore extends BaseStoreService {
   @Override
   public ElasticsearchStoreIterator<?> getFileIterator() {
     return new ElasticsearchStoreIterator<>(
-      (org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection) this.storeConnection,
+      (ElasticsearchStoreConnection) this.storeConnection,
       this.storeName,
       this.queryParams
     );

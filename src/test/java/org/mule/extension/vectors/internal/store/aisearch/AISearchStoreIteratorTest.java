@@ -1,6 +1,8 @@
 package org.mule.extension.vectors.internal.store.aisearch;
 
 import org.junit.jupiter.api.Test;
+import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnectionParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.aisearch.AISearchStoreIterator;
 
@@ -25,8 +27,8 @@ class AISearchStoreIteratorTest {
 
     @Test
     void constructionAndHasNext_emptyBatch() {
-        var params = new org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnectionParameters();
-        org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection conn = new org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection(params, null) {
+        var params = new AISearchStoreConnectionParameters();
+        AISearchStoreConnection conn = new AISearchStoreConnection(params, null) {
             @Override public String getApiKey() { return "key"; }
             @Override public String getUrl() { return "endpoint"; }
         };
@@ -60,8 +62,8 @@ class AISearchStoreIteratorTest {
 
     @Test
     void next_throwsNoSuchElementException_whenNoNext() {
-        var params = new org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnectionParameters();
-        org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection conn = new org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection(params, null) {
+        var params = new AISearchStoreConnectionParameters();
+        AISearchStoreConnection conn = new AISearchStoreConnection(params, null) {
             @Override public String getApiKey() { return "key"; }
             @Override public String getUrl() { return "endpoint"; }
         };

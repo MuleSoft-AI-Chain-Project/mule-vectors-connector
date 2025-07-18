@@ -1,16 +1,16 @@
 package org.mule.extension.vectors.internal.service.embeddings;
 
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.azureaivision.AzureAIVisionModelConnection;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.azureopenai.AzureOpenAIModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.einstein.EinsteinModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.huggingface.HuggingFaceModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.mistralai.MistralAIModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.nomic.NomicModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.ollama.OllamaModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.openai.OpenAIModelConnection;
-import org.mule.extension.vectors.internal.connection.embeddings.vertexai.VertexAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.einstein.EinsteinModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.huggingface.HuggingFaceModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.mistralai.MistralAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.nomic.NomicModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.ollama.OllamaModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.openai.OpenAIModelConnection;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.vertexai.VertexAIModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.azureaivision.AzureAIVisionBuilder;

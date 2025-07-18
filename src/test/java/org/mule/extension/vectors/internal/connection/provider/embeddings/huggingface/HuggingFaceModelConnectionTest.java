@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.huggingface;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.huggingface;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
