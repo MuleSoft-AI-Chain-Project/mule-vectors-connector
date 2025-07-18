@@ -80,7 +80,7 @@ public class StoreOperations {
           @DisplayName("Text Segment and Embedding")
           @InputJsonType(schema = "api/metadata/EmbeddingGenerateResponse.json")
           @Content InputStream content,
-      @Alias("maxResults") @Summary("Maximum number of results (text segments) retrieved.") Number maxResults,
+      @Alias("maxResults") @Summary("Maximum number of results (text segments) retrieved.") Integer maxResults,
       @Alias("minScore") @Summary("Minimum score used to filter retrieved results (text segments).") Double minScore,
       @ParameterGroup(name = "Filter") SearchFilterParameters searchFilterParams) {
 

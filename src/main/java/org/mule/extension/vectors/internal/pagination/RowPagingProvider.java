@@ -73,25 +73,9 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
       while(rowIterator.hasNext()) {
 
-        try {
-
-          VectorStoreRow<?> row = (VectorStoreRow<?>) rowIterator.next();
-          if(row == null) continue; // Skip null media
-
-          JSONObject jsonObject = JsonUtils.rowToJson(row);
-
-          HashMap<String, Object> attributes = new HashMap<>();
-          attributes.put("storeName", storeName);
-          return createPageStoreResponse(
-              jsonObject.toString(),
-              attributes,
-              streamingHelper);
-
-        } catch (Exception e) {
-
-          // Look for next page if any on error
-          LOGGER.warn(String.format("Error while getting row from %s. Trying next page.", storeName));
-          e.printStackTrace();
+        List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> result = processNextRow();
+        if (result != null) {
+          return result;
         }
 
       }
@@ -120,6 +104,30 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
     }
 
     return new LinkedList<>();
+  }
+
+  private List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> processNextRow() {
+    try {
+
+      VectorStoreRow<Object> row = (VectorStoreRow<Object>) rowIterator.next();
+      if(row == null) return null; // Skip null media
+
+      JSONObject jsonObject = JsonUtils.rowToJson(row);
+
+      HashMap<String, Object> attributes = new HashMap<>();
+      attributes.put("storeName", storeName);
+      return createPageStoreResponse(
+          jsonObject.toString(),
+          attributes,
+          streamingHelper);
+
+    } catch (Exception e) {
+
+      // Look for next page if any on error
+      LOGGER.warn(String.format("Error while getting row from %s. Trying next page.", storeName));
+      e.printStackTrace();
+      return null;
+    }
   }
 
   @Override
