@@ -37,6 +37,36 @@ public class StoreOperationsHelper {
 
     public record ParsedStoreInput(List<TextSegment> textSegments, List<Embedding> embeddings, int dimension, HashMap<String, Object> ingestionMetadata) {}
 
+    public static class StoreOperationContext {
+        private final StoreConfiguration storeConfiguration;
+        private final BaseStoreConnection storeConnection;
+        private final String storeName;
+        private final int dimension;
+        private final boolean createStore;
+        private final QueryParameters queryParams;
+        private final HashMap<String, Object> attributes;
+
+        public StoreOperationContext(StoreConfiguration storeConfiguration, BaseStoreConnection storeConnection, 
+                                   String storeName, int dimension, boolean createStore, 
+                                   QueryParameters queryParams, HashMap<String, Object> attributes) {
+            this.storeConfiguration = storeConfiguration;
+            this.storeConnection = storeConnection;
+            this.storeName = storeName;
+            this.dimension = dimension;
+            this.createStore = createStore;
+            this.queryParams = queryParams;
+            this.attributes = attributes;
+        }
+
+        public StoreConfiguration getStoreConfiguration() { return storeConfiguration; }
+        public BaseStoreConnection getStoreConnection() { return storeConnection; }
+        public String getStoreName() { return storeName; }
+        public int getDimension() { return dimension; }
+        public boolean isCreateStore() { return createStore; }
+        public QueryParameters getQueryParams() { return queryParams; }
+        public HashMap<String, Object> getAttributes() { return attributes; }
+    }
+
     public static ParsedStoreInput parseStoreInput(InputStream content, boolean isAddOperation, CustomMetadata customMetadata) throws ModuleException {
         try {
             String contentString = IOUtils.toString(content, StandardCharsets.UTF_8);
@@ -121,28 +151,22 @@ public class StoreOperationsHelper {
     }
 
     public static <T> Result<InputStream, StoreResponseAttributes> executeStoreOperation(
-            StoreConfiguration storeConfiguration,
-            BaseStoreConnection storeConnection,
-            String storeName,
-            int dimension,
-            boolean createStore,
-            QueryParameters queryParams,
+            StoreOperationContext context,
             Function<VectorStoreService, T> operation,
-            Function<T, JSONObject> responseBuilder,
-            HashMap<String, Object> attributes) throws ModuleException {
+            Function<T, JSONObject> responseBuilder) throws ModuleException {
 
         try {
-            VectorStoreService vectorStoreService = VectorStoreServiceProviderFactory.getService(storeConfiguration,
-                                                                                                  storeConnection,
-                                                                                                  storeName,
-                                                                                                  queryParams,
-                                                                                                  dimension,
-                                                                                                  createStore);
+            VectorStoreService vectorStoreService = VectorStoreServiceProviderFactory.getService(context.getStoreConfiguration(),
+                                                                                                  context.getStoreConnection(),
+                                                                                                  context.getStoreName(),
+                                                                                                  context.getQueryParams(),
+                                                                                                  context.getDimension(),
+                                                                                                  context.isCreateStore());
 
             T operationResult = operation.apply(vectorStoreService);
             JSONObject jsonObject = responseBuilder.apply(operationResult);
 
-            return createStoreResponse(jsonObject.toString(), attributes);
+            return createStoreResponse(jsonObject.toString(), context.getAttributes());
 
         } catch (ModuleException me) {
             throw me;
@@ -151,12 +175,12 @@ public class StoreOperationsHelper {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ModuleException(
-                    String.format("Error during operation on store %s", storeName),
+                    String.format("Error during operation on store %s", context.getStoreName()),
                     MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
                     e);
         } catch (Exception e) {
             throw new ModuleException(
-                    String.format("Error during operation on store %s", storeName),
+                    String.format("Error during operation on store %s", context.getStoreName()),
                     MuleVectorsErrorType.STORE_OPERATIONS_FAILURE,
                     e);
         }

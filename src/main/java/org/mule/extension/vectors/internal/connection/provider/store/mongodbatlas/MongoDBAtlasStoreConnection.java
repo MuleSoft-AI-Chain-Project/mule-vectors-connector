@@ -25,7 +25,7 @@ public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
     Integer port = parameters.getPort();
     String user = parameters.getUser();
     String password = parameters.getPassword();
-    String database = parameters.getDatabase();
+    String databaseName = parameters.getDatabase();
     String options = parameters.getOptions();
     this.mongodbUri =
         (port != null ? "mongodb" : "mongodb+srv") +
@@ -33,7 +33,7 @@ public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
             (port != null ? ":" + port : "") + "/" +
             (options != null && !options.isEmpty() ? "?" + options : "");
     LOGGER.debug(mongodbUri);
-    this.database = database;
+    this.database = databaseName;
   }
 
   public MongoClient getMongoClient() {

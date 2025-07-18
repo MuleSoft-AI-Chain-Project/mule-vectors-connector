@@ -19,7 +19,7 @@ import java.util.Set;
  * See <a href="https://docs.langchain4j.dev/integrations/embedding-stores/">LangChain4j documentation</a>
  *
  * <p>
- * Supported vector stores for each operation are stored in a static map:
+ * Supported vector stores for each operation are stored in an instance map:
  * {@code
  *   EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put("STORE_METADATA", new HashSet<>(Arrays.asList(
  *       Constants.VECTOR_STORE_PGVECTOR,
@@ -36,12 +36,14 @@ import java.util.Set;
  */
 public class OperationValidator {
 
-  private static final Map<String, Set<String>> EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES =
-          new HashMap<>();
+  private final Map<String, Set<String>> EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES;
 
-  private OperationValidator() {}
+  public OperationValidator() {
+    EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES = new HashMap<>();
+    initializeOperationMappings();
+  }
 
-  static {
+  private void initializeOperationMappings() {
     // Mapping operation types to supported vector stores
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_STORE_METADATA,
             new HashSet<>(Arrays.asList(
@@ -133,7 +135,7 @@ public class OperationValidator {
    *
    * @throws IllegalArgumentException if the operationType or vectorStore is null or empty
    */
-  public static void validateOperationType(String operationType, String vectorStore) {
+  public void validateOperationType(String operationType, String vectorStore) {
 
     // Validate inputs
     if (operationType == null || operationType.isEmpty() || vectorStore == null || vectorStore.isEmpty()) {

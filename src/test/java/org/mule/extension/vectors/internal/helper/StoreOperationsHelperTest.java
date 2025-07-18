@@ -156,7 +156,9 @@ class StoreOperationsHelperTest {
         Function<VectorStoreService, String> operation = svc -> "result";
         Function<String, JSONObject> responseBuilder = str -> new JSONObject().put("foo", str);
         HashMap<String, Object> attributes = new HashMap<>();
-        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
+        StoreOperationsHelper.StoreOperationContext context = new StoreOperationsHelper.StoreOperationContext(
+            config, conn, storeName, dimension, createStore, queryParams, attributes);
+        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(context, operation, responseBuilder))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
@@ -183,7 +185,9 @@ class StoreOperationsHelperTest {
         Function<VectorStoreService, String> operation = svc -> { throw new ModuleException("fail", MuleVectorsErrorType.INVALID_PARAMETER); };
         Function<String, JSONObject> responseBuilder = str -> new JSONObject().put("foo", str);
         HashMap<String, Object> attributes = new HashMap<>();
-        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
+        StoreOperationsHelper.StoreOperationContext context = new StoreOperationsHelper.StoreOperationContext(
+            config, conn, storeName, dimension, createStore, queryParams, attributes);
+        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(context, operation, responseBuilder))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
@@ -210,7 +214,9 @@ class StoreOperationsHelperTest {
         Function<VectorStoreService, String> operation = svc -> { throw new UnsupportedOperationException("not supported"); };
         Function<String, JSONObject> responseBuilder = str -> new JSONObject().put("foo", str);
         HashMap<String, Object> attributes = new HashMap<>();
-        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
+        StoreOperationsHelper.StoreOperationContext context = new StoreOperationsHelper.StoreOperationContext(
+            config, conn, storeName, dimension, createStore, queryParams, attributes);
+        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(context, operation, responseBuilder))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }
@@ -237,7 +243,9 @@ class StoreOperationsHelperTest {
         Function<VectorStoreService, String> operation = svc -> { throw new RuntimeException("boom"); };
         Function<String, JSONObject> responseBuilder = str -> new JSONObject().put("foo", str);
         HashMap<String, Object> attributes = new HashMap<>();
-        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(config, conn, storeName, dimension, createStore, queryParams, operation, responseBuilder, attributes))
+        StoreOperationsHelper.StoreOperationContext context = new StoreOperationsHelper.StoreOperationContext(
+            config, conn, storeName, dimension, createStore, queryParams, attributes);
+        assertThatThrownBy(() -> StoreOperationsHelper.executeStoreOperation(context, operation, responseBuilder))
                 .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Error while initializing vector store service. \"store\" not supported.");
     }

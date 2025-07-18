@@ -20,8 +20,10 @@ public class MetadataFilterHelper {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterHelper.class);
 
-  private static final Pattern CONDITION_PATTERN =
-      Pattern.compile("(?:([a-zA-Z_][a-zA-Z0-9_]*)\\s*([=!><]+)\\s*(.+)|CONTAINS\\s*\\(\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*(.+?)\\s*\\))");
+  private static final Pattern FIELD_NAME_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)");
+  private static final Pattern OPERATOR_PATTERN = Pattern.compile("([=!><]+)");
+  private static final Pattern VALUE_PATTERN = Pattern.compile("(.+)");
+  private static final Pattern CONTAINS_FUNCTION_PATTERN = Pattern.compile("CONTAINS\\s*\\(\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*(.+?)\\s*\\)");
 
   private static final Pattern NUMBER_PATTERN =
       Pattern.compile("^-?\\d+(\\.\\d+)?$");
@@ -90,26 +92,52 @@ public class MetadataFilterHelper {
   }
 
   private static Filter parseSimpleCondition(String expression) {
-    Matcher matcher = CONDITION_PATTERN.matcher(expression);
-    if (!matcher.matches()) {
-      throw new IllegalArgumentException(String.format("Invalid condition format: %s", expression));
+    // First check if this is a CONTAINS function call
+    Matcher containsMatcher = CONTAINS_FUNCTION_PATTERN.matcher(expression);
+    if (containsMatcher.matches()) {
+      String field = containsMatcher.group(1);
+      String valueStr = containsMatcher.group(2).trim();
+      // Handle quoted strings
+      if ((valueStr.startsWith("'") && valueStr.endsWith("'")) ||
+          (valueStr.startsWith("\"") && valueStr.endsWith("\""))) {
+        valueStr = valueStr.substring(1, valueStr.length() - 1);
+      }
+      Object value = parseValue(valueStr);
+      return createFilter(field, "CONTAINS", value);
     }
-    String field, operator, valueStr;
-    // Check if this is a function call (CONTAINS)
-    if (matcher.group(4) != null) {
-      field = matcher.group(4);
-      operator = "CONTAINS";
-      valueStr = matcher.group(5).trim();
-    } else {
-      field = matcher.group(1);
-      operator = matcher.group(2);
-      valueStr = matcher.group(3).trim();
+
+    // Parse regular condition: field operator value
+    String trimmedExpression = expression.trim();
+    
+    // Find field name
+    Matcher fieldMatcher = FIELD_NAME_PATTERN.matcher(trimmedExpression);
+    if (!fieldMatcher.find()) {
+      throw new IllegalArgumentException(String.format("Invalid field name in condition: %s", expression));
     }
+    String field = fieldMatcher.group(1);
+    int fieldEnd = fieldMatcher.end();
+    
+    // Find operator
+    String remainingAfterField = trimmedExpression.substring(fieldEnd).trim();
+    Matcher operatorMatcher = OPERATOR_PATTERN.matcher(remainingAfterField);
+    if (!operatorMatcher.find()) {
+      throw new IllegalArgumentException(String.format("Invalid operator in condition: %s", expression));
+    }
+    String operator = operatorMatcher.group(1);
+    int operatorEnd = operatorMatcher.end();
+    
+    // Get value
+    String valueStr = remainingAfterField.substring(operatorEnd).trim();
+    if (valueStr.isEmpty()) {
+      throw new IllegalArgumentException(String.format("Missing value in condition: %s", expression));
+    }
+    
     // Handle quoted strings
     if ((valueStr.startsWith("'") && valueStr.endsWith("'")) ||
         (valueStr.startsWith("\"") && valueStr.endsWith("\""))) {
       valueStr = valueStr.substring(1, valueStr.length() - 1);
     }
+    
     // Parse value
     Object value = parseValue(valueStr);
     return createFilter(field, operator, value);

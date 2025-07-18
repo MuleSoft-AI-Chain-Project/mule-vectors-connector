@@ -61,8 +61,7 @@ public class AISearchStore extends BaseStoreService {
     return new AISearchStoreIterator<>(
       this.storeName,
       this.queryParams,
-      this.aiSearchStoreConnection,
-      this.dimension
+      this.aiSearchStoreConnection
     );
   }
 }

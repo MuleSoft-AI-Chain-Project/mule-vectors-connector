@@ -11,6 +11,7 @@ import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;
 import org.mule.extension.vectors.internal.service.store.VectorStoreService;
@@ -92,10 +93,11 @@ public class StoreOperations {
 
 
     return executeStoreOperation(
-        storeConfiguration, storeConnection, storeName, input.dimension(), false, null,
+        new StoreOperationsHelper.StoreOperationContext(
+            storeConfiguration, storeConnection, storeName, input.dimension(), false, null,
+            createStoreNameAndSearchFilterMap(storeName, searchFilterParams)),
         operation,
-        (response) -> response,
-        createStoreNameAndSearchFilterMap(storeName, searchFilterParams)
+        (response) -> response
     );
   }
 
@@ -176,10 +178,11 @@ public class StoreOperations {
         input.ingestionMetadata().get(Constants.METADATA_KEY_SOURCE_ID).toString(), ids);
 
     return executeStoreOperation(
-        storeConfiguration, storeConnection, storeName, input.dimension(), true, null,
+        new StoreOperationsHelper.StoreOperationContext(
+            storeConfiguration, storeConnection, storeName, input.dimension(), true, null,
+            createStoreNameMap(storeName)),
         operation,
-        responseBuilder,
-        createStoreNameMap(storeName)
+        responseBuilder
     );
   }
 
@@ -214,10 +217,11 @@ public class StoreOperations {
     Function<Void, JSONObject> responseBuilder = (v) -> new JSONObject().put(Constants.JSON_KEY_STATUS, Constants.OPERATION_STATUS_DELETED);
 
     return executeStoreOperation(
-        storeConfiguration, storeConnection, storeName, 0, false, null,
+        new StoreOperationsHelper.StoreOperationContext(
+            storeConfiguration, storeConnection, storeName, 0, false, null,
+            createStoreNameAndRemoveFilterMap(storeName, removeFilterParams)),
         operation,
-        responseBuilder,
-        createStoreNameAndRemoveFilterMap(storeName, removeFilterParams)
+        responseBuilder
     );
   }
 
