@@ -63,15 +63,4 @@ public class ChromaStore extends BaseStoreService {
         );
     }
 
-    private String readInputStreamToString(HttpResponse response) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
-            StringBuilder result = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-            return result.toString();
-        }
-    }
-
 }

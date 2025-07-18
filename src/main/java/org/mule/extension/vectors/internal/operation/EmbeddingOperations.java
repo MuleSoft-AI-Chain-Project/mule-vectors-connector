@@ -68,7 +68,7 @@ public class EmbeddingOperations {
     try {
 
       List<TextSegment> textSegments = new LinkedList<>();
-      List<Embedding> embeddings = new LinkedList<>();
+      List<Embedding> embeddings;
       TokenUsage tokenUsage = null;
       int dimension = 0;
 

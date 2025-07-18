@@ -2,6 +2,8 @@ package org.mule.extension.vectors.internal.pagination;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -48,52 +50,15 @@ class RowPagingProviderTest {
         }
     }
 
-    @Test
-    void getPage_normalFlow() {
+    @ParameterizedTest
+    @ValueSource(strings = {"normalFlow", "nullRowIsSkipped", "rowIteratorThrowsException", 
+                           "factoryThrowsModuleException", "factoryThrowsUnsupportedOperationException", 
+                           "factoryThrowsOtherException"})
+    void getPage_variousScenarios(String scenario) {
         doNothing().when(operationValidator).validateOperationType(any(), any());
         assertThatThrownBy(() -> provider.getPage(storeConnection))
             .isInstanceOf(ModuleException.class)
             .hasMessageContaining("Error while initializing vector store service. \"dummyStore\" not supported.");
-    }
-
-    @Test
-    void getPage_nullRowIsSkipped() {
-        doNothing().when(operationValidator).validateOperationType(any(), any());
-        assertThatThrownBy(() -> provider.getPage(storeConnection))
-            .isInstanceOf(ModuleException.class)
-            .hasMessageContaining("Error while initializing vector store service. \"dummyStore\" not supported.");
-    }
-
-    @Test
-    void getPage_rowIteratorThrowsException_logsAndContinues() {
-        doNothing().when(operationValidator).validateOperationType(any(), any());
-        assertThatThrownBy(() -> provider.getPage(storeConnection))
-            .isInstanceOf(ModuleException.class)
-            .hasMessageContaining("Error while initializing vector store service. \"dummyStore\" not supported.");
-    }
-
-    @Test
-    void getPage_factoryThrowsModuleException_propagates() {
-        doNothing().when(operationValidator).validateOperationType(any(), any());
-        assertThatThrownBy(() -> provider.getPage(storeConnection))
-                .isInstanceOf(ModuleException.class)
-            .hasMessageContaining("not supported");
-    }
-
-    @Test
-    void getPage_factoryThrowsUnsupportedOperationException_wraps() {
-        doNothing().when(operationValidator).validateOperationType(any(), any());
-        assertThatThrownBy(() -> provider.getPage(storeConnection))
-                .isInstanceOf(ModuleException.class)
-                .hasMessageContaining("not supported");
-    }
-
-    @Test
-    void getPage_factoryThrowsOtherException_wraps() {
-        doNothing().when(operationValidator).validateOperationType(any(), any());
-        assertThatThrownBy(() -> provider.getPage(storeConnection))
-                .isInstanceOf(ModuleException.class)
-            .hasMessageContaining("not supported");
     }
 
     @Test

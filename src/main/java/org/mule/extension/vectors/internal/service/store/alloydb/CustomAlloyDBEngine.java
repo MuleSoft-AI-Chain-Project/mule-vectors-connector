@@ -52,6 +52,7 @@ public class CustomAlloyDBEngine extends AlloyDBEngine {
 
   public static class Builder extends AlloyDBEngine.Builder {
 
+    @Override
     public CustomAlloyDBEngine build() {
       return new CustomAlloyDBEngine(this);
     }
