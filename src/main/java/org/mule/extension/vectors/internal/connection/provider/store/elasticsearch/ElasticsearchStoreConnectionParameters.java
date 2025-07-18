@@ -29,6 +29,7 @@ public class ElasticsearchStoreConnectionParameters extends BaseStoreConnectionP
   @Parameter
   @Password
   @Expression(ExpressionSupport.SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   private String password;
 
   @Parameter

@@ -257,7 +257,8 @@ public class MetadataFilterHelper {
     QuoteState quoteState = new QuoteState();
     OperatorState operatorState = new OperatorState();
 
-    for (int i = 0; i < expression.length(); i++) {
+    int i = 0;
+    while (i < expression.length()) {
       char c = expression.charAt(i);
       updateQuoteState(quoteState, c);
 
@@ -292,6 +293,7 @@ public class MetadataFilterHelper {
         }
       }
       current.append(c);
+      i++;
     }
 
     if (openParens != 0) {
