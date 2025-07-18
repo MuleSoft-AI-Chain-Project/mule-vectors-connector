@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.service.store.alloydb;
 
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.BaseDatabaseIterator;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.data.document.Metadata;
@@ -14,10 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
@@ -28,7 +27,7 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
   private final QueryParameters queryParams;
   private final int pageSize;
 
-  private PgVectorMetadataIterator iterator;
+  private AlloyDBDatabaseIterator iterator;
 
   // Constructor: pass all required fields
   public AlloyDBStoreIterator(
@@ -40,93 +39,34 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
     try {
-      this.iterator = new PgVectorMetadataIterator(storeName, pageSize);
+      this.iterator = new AlloyDBDatabaseIterator(storeName, pageSize, queryParams);
     } catch (SQLException e) {
      throw new ModuleException("Authentication failed: " , MuleVectorsErrorType.AUTHENTICATION, e);
     }
   }
 
   /**
-   * Iterator to handle metadata pagination from the PostgreSQL database.
+   * AlloyDB-specific database iterator implementation.
    */
-  private class PgVectorMetadataIterator implements Iterator<ResultSet>, AutoCloseable {
+  private class AlloyDBDatabaseIterator extends BaseDatabaseIterator {
 
-    private int offset = 0; // Current offset for pagination
-    private ResultSet resultSet;
-    private PreparedStatement pstmt;
-    private Connection connection;
-    private String table;
-    int pageSize;
-
-    private PgVectorMetadataIterator(String table, int pageSize) throws SQLException {
-      connection = alloyDBStoreConnection.getAlloyDBEngine().getConnection();
-      this.table = table;
-      this.pageSize = pageSize;
-      fetchNextPage();
-    }
-
-    private void fetchNextPage() throws SQLException {
-      if (pstmt != null) {
-        pstmt.close();
-      }
-
-      String idDefaultFieldName = "langchain_id";
-      String textDefaultFieldName = "content";
-      String metadataDefaultFieldName = "langchain_metadata";
-      String vectorDefaultFieldName = "embedding";
-
-      String query = "SELECT " +
-          idDefaultFieldName + ", " +
-          textDefaultFieldName + ", " +
-          (queryParams.retrieveEmbeddings() ? (vectorDefaultFieldName + ", ") : "") +
-          metadataDefaultFieldName +
-          " FROM " + table + " LIMIT ? OFFSET ?";
-      pstmt = connection.prepareStatement(query);
-      pstmt.setInt(1, this.pageSize);
-      pstmt.setInt(2, offset);
-      resultSet = pstmt.executeQuery();
-      offset += pageSize;
+    private AlloyDBDatabaseIterator(String table, int pageSize, QueryParameters queryParams) throws SQLException {
+      super(table, pageSize, queryParams);
     }
 
     @Override
-    public boolean hasNext() {
-      try {
-        if (resultSet != null && resultSet.next()) {
-          return true;
-        } else {
-          fetchNextPage();
-          return resultSet != null && resultSet.next();
-        }
-      } catch (SQLException e) {
-        handleSQLException(e);
-        return false;
-      }
+    protected Connection getConnection() throws SQLException {
+      return alloyDBStoreConnection.getAlloyDBEngine().getConnection();
     }
 
     @Override
-    public ResultSet next() {
-      try {
-        if (resultSet == null || !resultSet.next()) {
-          throw new NoSuchElementException("No more elements available");
-        }
-      } catch (SQLException e) {
-        handleSQLException(e);
-        throw new NoSuchElementException("Error processing next row");
-      }
-      return resultSet;
-    }
-
-    public void close() {
-      try {
-        if (resultSet != null)
-          resultSet.close();
-        if (pstmt != null)
-          pstmt.close();
-        if (connection != null)
-          connection.close();
-      } catch (SQLException e) {
-        LOGGER.error("Error closing database resources", e);
-      }
+    protected DatabaseFieldNames getFieldNames() {
+      return new DatabaseFieldNames(
+          "langchain_id",      // id field
+          "content",           // text field
+          "langchain_metadata", // metadata field
+          "embedding"          // vector field
+      );
     }
   }
 
@@ -137,6 +77,10 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
 
   @Override
   public VectorStoreRow<Embedded> next() {
+    if (!hasNext()) {
+      throw new NoSuchElementException("No more elements available");
+    }
+    
     try {
       ResultSet resultSet = iterator.next();
       if (resultSet == null) {
@@ -173,20 +117,8 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
                                   embedded);
 
     } catch (SQLException e) {
-      handleSQLException(e);
+      iterator.handleSQLException(e);
       throw new NoSuchElementException("Error processing next row");
     }
-  }
-
-  private void handleSQLException(SQLException e) {
-    String sqlState = e.getSQLState();
-    if (sqlState != null) {
-      if (sqlState.startsWith("08")) { // Connection Exception
-        throw new ModuleException("Database connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-      } else if (sqlState.equals("28P01")) { // Invalid Password
-        throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
-      }
-    }
-    throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
   }
 }
