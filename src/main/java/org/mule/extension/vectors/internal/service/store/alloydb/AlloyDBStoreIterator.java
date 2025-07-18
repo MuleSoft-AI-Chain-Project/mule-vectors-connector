@@ -70,16 +70,16 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
         pstmt.close();
       }
 
-      String ID_DEFAULT_FIELD_NAME = "langchain_id";
-      String TEXT_DEFAULT_FIELD_NAME = "content";
-      String METADATA_DEFAULT_FIELD_NAME = "langchain_metadata";
-      String VECTOR_DEFAULT_FIELD_NAME = "embedding";
+      String idDefaultFieldName = "langchain_id";
+      String textDefaultFieldName = "content";
+      String metadataDefaultFieldName = "langchain_metadata";
+      String vectorDefaultFieldName = "embedding";
 
       String query = "SELECT " +
-          ID_DEFAULT_FIELD_NAME + ", " +
-          TEXT_DEFAULT_FIELD_NAME + ", " +
-          (queryParams.retrieveEmbeddings() ? (VECTOR_DEFAULT_FIELD_NAME + ", ") : "") +
-          METADATA_DEFAULT_FIELD_NAME +
+          idDefaultFieldName + ", " +
+          textDefaultFieldName + ", " +
+          (queryParams.retrieveEmbeddings() ? (vectorDefaultFieldName + ", ") : "") +
+          metadataDefaultFieldName +
           " FROM " + table + " LIMIT ? OFFSET ?";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, this.pageSize);
@@ -143,15 +143,15 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
         throw new NoSuchElementException("No more elements available");
       }
 
-      String ID_DEFAULT_FIELD_NAME = "langchain_id";
-      String TEXT_DEFAULT_FIELD_NAME = "content";
-      String METADATA_DEFAULT_FIELD_NAME = "langchain_metadata";
-      String VECTOR_DEFAULT_FIELD_NAME = "embedding";
+      String idDefaultFieldName = "langchain_id";
+      String textDefaultFieldName = "content";
+      String metadataDefaultFieldName = "langchain_metadata";
+      String vectorDefaultFieldName = "embedding";
 
-      String embeddingId = resultSet.getString(ID_DEFAULT_FIELD_NAME);
+      String embeddingId = resultSet.getString(idDefaultFieldName);
       float[] vector = null;
       if (queryParams.retrieveEmbeddings()) {
-        String vectorString = resultSet.getString(VECTOR_DEFAULT_FIELD_NAME);
+        String vectorString = resultSet.getString(vectorDefaultFieldName);
         String[] vectorStringArray =
             vectorString.replace("{", "").replace("}", "").replace("[", "").replace("]", "").split(",");
         vector = new float[vectorStringArray.length];
@@ -159,8 +159,8 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
           vector[i] = Float.parseFloat(vectorStringArray[i].trim());
         }
       }
-      String text = resultSet.getString(TEXT_DEFAULT_FIELD_NAME);
-      JSONObject metadataObject = new JSONObject(resultSet.getString(METADATA_DEFAULT_FIELD_NAME));
+      String text = resultSet.getString(textDefaultFieldName);
+      JSONObject metadataObject = new JSONObject(resultSet.getString(metadataDefaultFieldName));
 
       // This is the only place you may want to adapt for Embedded type.
       // If you want to keep it generic, you can cast or use a factory.

@@ -39,7 +39,7 @@ public abstract class BaseStoreService implements VectorStoreService {
   protected boolean createStore;
   protected OperationValidator operationValidator;
 
-  public BaseStoreService(StoreConfiguration storeConfiguration, BaseStoreConnection storeConnection, String storeName, int dimension, boolean createStore) {
+  protected BaseStoreService(StoreConfiguration storeConfiguration, BaseStoreConnection storeConnection, String storeName, int dimension, boolean createStore) {
 
     this.storeConfiguration = storeConfiguration;
     this.storeConnection = storeConnection;

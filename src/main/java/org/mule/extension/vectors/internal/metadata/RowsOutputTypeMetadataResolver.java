@@ -20,7 +20,7 @@ public class RowsOutputTypeMetadataResolver implements OutputTypeResolver<StoreC
   }
 
   @Override
-  public MetadataType getOutputType(MetadataContext metadataContext, StoreConfiguration StoreConfiguration)
+  public MetadataType getOutputType(MetadataContext metadataContext, StoreConfiguration storeConfiguration)
       throws MetadataResolvingException, ConnectionException {
 
     InputStream resourceAsStream = Thread.currentThread()

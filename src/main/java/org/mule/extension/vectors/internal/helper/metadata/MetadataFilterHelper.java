@@ -22,7 +22,6 @@ public class MetadataFilterHelper {
 
   private static final Pattern FIELD_NAME_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)");
   private static final Pattern OPERATOR_PATTERN = Pattern.compile("([=!><]+)");
-  private static final Pattern VALUE_PATTERN = Pattern.compile("(.+)");
   private static final Pattern CONTAINS_FUNCTION_PATTERN = Pattern.compile("CONTAINS\\s*\\(\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*,\\s*(.+?)\\s*\\)");
 
   private static final Pattern NUMBER_PATTERN =
@@ -281,7 +280,13 @@ public class MetadataFilterHelper {
               parts.add(current.toString().trim());
               current.setLength(0);
             }
-            i += (foundOp == OperatorType.AND ? "AND".length() : "OR".length()) - 1;
+            int skipLength = (foundOp == OperatorType.AND ? "AND".length() : "OR".length()) - 1;
+            for (int skip = 0; skip < skipLength; skip++) {
+              if (i + skip + 1 < expression.length()) {
+                current.append(expression.charAt(i + skip + 1));
+              }
+            }
+            i += skipLength;
             continue;
           }
         }

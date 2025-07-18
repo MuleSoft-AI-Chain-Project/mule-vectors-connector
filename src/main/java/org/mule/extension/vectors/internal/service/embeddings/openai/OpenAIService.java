@@ -136,7 +136,6 @@ public class OpenAIService implements EmbeddingService {
                         embeddings.add(Embedding.from(vector));
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Error generating embeddings", e);
                     throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
                 }
             }

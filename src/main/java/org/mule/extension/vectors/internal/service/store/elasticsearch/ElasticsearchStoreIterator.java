@@ -72,12 +72,12 @@ public class ElasticsearchStoreIterator<Embedded> implements VectoreStoreIterato
     String embeddingId = hit.id();
     Map<String, Object> sourceMap = hit.source();
     float[] vector = null;
-    String VECTOR_DEFAULT_FIELD_NAME = "vector";
-    String TEXT_DEFAULT_FIELD_NAME = "text";
-    String METADATA_DEFAULT_FIELD_NAME = "metadata";
+    String vectorDefaultFieldName = "vector";
+    String textDefaultFieldName = "text";
+    String metadataDefaultFieldName = "metadata";
 
     if (queryParams.retrieveEmbeddings()) {
-      List<Double> vectorList = (List<Double>) sourceMap.get(VECTOR_DEFAULT_FIELD_NAME);
+      List<Double> vectorList = (List<Double>) sourceMap.get(vectorDefaultFieldName);
       if (vectorList != null) {
         vector = new float[vectorList.size()];
         for (int i = 0; i < vectorList.size(); i++) {
@@ -85,8 +85,8 @@ public class ElasticsearchStoreIterator<Embedded> implements VectoreStoreIterato
         }
       }
     }
-    String text = (String) sourceMap.get(TEXT_DEFAULT_FIELD_NAME);
-    JSONObject metadataObject = new JSONObject((Map) sourceMap.get(METADATA_DEFAULT_FIELD_NAME));
+    String text = (String) sourceMap.get(textDefaultFieldName);
+    JSONObject metadataObject = new JSONObject((Map) sourceMap.get(metadataDefaultFieldName));
 
     // This is the only place you may want to adapt for Embedded type.
     // If you want to keep it generic, you can cast or use a factory.
@@ -100,9 +100,9 @@ public class ElasticsearchStoreIterator<Embedded> implements VectoreStoreIterato
   }
 
   private boolean fetchNextBatch()  {
-    String VECTOR_DEFAULT_FIELD_NAME = "vector";
-    String TEXT_DEFAULT_FIELD_NAME = "text";
-    String METADATA_DEFAULT_FIELD_NAME = "metadata";
+    String vectorDefaultFieldName = "vector";
+    String textDefaultFieldName = "text";
+    String metadataDefaultFieldName = "metadata";
 try {
 
 
@@ -113,12 +113,12 @@ try {
           .scroll(Time.of(t -> t.time("1m")));
 
       if (queryParams.retrieveEmbeddings()) {
-        searchRequestBuilder.source(s -> s.filter(f -> f.includes(TEXT_DEFAULT_FIELD_NAME,
-                                                                  METADATA_DEFAULT_FIELD_NAME,
-                                                                  VECTOR_DEFAULT_FIELD_NAME)));
+        searchRequestBuilder.source(s -> s.filter(f -> f.includes(textDefaultFieldName,
+                                                                  metadataDefaultFieldName,
+                                                                  vectorDefaultFieldName)));
       } else {
-        searchRequestBuilder.source(s -> s.filter(f -> f.includes(TEXT_DEFAULT_FIELD_NAME,
-                                                                  METADATA_DEFAULT_FIELD_NAME)));
+        searchRequestBuilder.source(s -> s.filter(f -> f.includes(textDefaultFieldName,
+                                                                  metadataDefaultFieldName)));
       }
 
       SearchRequest searchRequest = searchRequestBuilder.build();

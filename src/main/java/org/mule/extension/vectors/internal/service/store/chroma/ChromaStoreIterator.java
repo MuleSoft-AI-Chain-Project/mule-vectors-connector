@@ -120,20 +120,20 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       return;
     }
 
-    String METADATA_DEFAULT_FIELD_NAME = "metadatas";
-    String TEXT_DEFAULT_FIELD_NAME = "documents";
-    String VECTOR_DEFAULT_FIELD_NAME = "embeddings";
-    String ID_DEFAULT_FIELD_NAME = "ids";
+    String metadataDefaultFieldName = "metadatas";
+    String textDefaultFieldName = "documents";
+    String vectorDefaultFieldName = "embeddings";
+    String idDefaultFieldName = "ids";
 
     JSONObject jsonRequest = new JSONObject();
     jsonRequest.put("limit", queryParams.pageSize());
     jsonRequest.put("offset", (long) currentPage * queryParams.pageSize());
 
     JSONArray jsonInclude = new JSONArray();
-    jsonInclude.put(METADATA_DEFAULT_FIELD_NAME);
-    jsonInclude.put(TEXT_DEFAULT_FIELD_NAME);
+    jsonInclude.put(metadataDefaultFieldName);
+    jsonInclude.put(textDefaultFieldName);
     if (queryParams.retrieveEmbeddings()) {
-      jsonInclude.put(VECTOR_DEFAULT_FIELD_NAME);
+      jsonInclude.put(vectorDefaultFieldName);
     }
     jsonRequest.put("include", jsonInclude);
 
@@ -149,11 +149,11 @@ public class ChromaStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     pageIndex = 0;
 
     // Populate with new data
-    responseObject.optJSONArray(ID_DEFAULT_FIELD_NAME).forEach(id -> ids.add(id.toString()));
-    responseObject.optJSONArray(METADATA_DEFAULT_FIELD_NAME).forEach(meta -> metadata.add((JSONObject) meta));
-    responseObject.optJSONArray(TEXT_DEFAULT_FIELD_NAME).forEach(doc -> documents.add(doc.toString()));
+    responseObject.optJSONArray(idDefaultFieldName).forEach(id -> ids.add(id.toString()));
+    responseObject.optJSONArray(metadataDefaultFieldName).forEach(meta -> metadata.add((JSONObject) meta));
+    responseObject.optJSONArray(textDefaultFieldName).forEach(doc -> documents.add(doc.toString()));
     if (queryParams.retrieveEmbeddings()) {
-      responseObject.optJSONArray(VECTOR_DEFAULT_FIELD_NAME).forEach(emb -> embeddings.add((JSONArray) emb));
+      responseObject.optJSONArray(vectorDefaultFieldName).forEach(emb -> embeddings.add((JSONArray) emb));
     }
     currentPage++;
   }
