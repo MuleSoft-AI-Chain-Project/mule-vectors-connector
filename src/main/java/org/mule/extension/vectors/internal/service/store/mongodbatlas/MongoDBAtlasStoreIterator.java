@@ -30,7 +30,6 @@ public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator
 
   private final com.mongodb.client.MongoCollection<org.bson.Document> collection;
   private final int pageSize;
-  private final MongoDBAtlasStoreConnection mongoDBAtlasStoreConnection;
   private int skip;
   private List<org.bson.Document> currentBatch;
   private int currentIndex;
@@ -50,7 +49,6 @@ public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator
     this.currentBatch = new ArrayList<>();
     this.currentIndex = 0;
     this.noMoreData = false;
-    this.mongoDBAtlasStoreConnection = mongoDBAtlasStoreConnection;
     loadNextBatch();
   }
 

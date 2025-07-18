@@ -99,10 +99,14 @@ class AzureOpenAIServiceTest {
         List<String> barList = List.of("bar");
         
         // Separate assertions to avoid multiple method invocations in lambda
-        assertThatThrownBy(() -> service.generateTextEmbeddings(null, "foo")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.generateTextEmbeddings(emptyList, "foo")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.generateTextEmbeddings(barList, null)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> service.generateTextEmbeddings(barList, "")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(null, "foo"))
+            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(emptyList, "foo"))
+            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(barList, null))
+            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> service.generateTextEmbeddings(barList, ""))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

@@ -44,9 +44,6 @@ class AISearchStoreIteratorTest {
             Field connF = AISearchStoreIterator.class.getDeclaredField("aiSearchStoreConnection");
             connF.setAccessible(true);
             connF.set(it, conn);
-            Field dimF = AISearchStoreIterator.class.getDeclaredField("dimension");
-            dimF.setAccessible(true);
-            dimF.set(it, 128);
             Field hasMoreF = AISearchStoreIterator.class.getDeclaredField("hasMore");
             hasMoreF.setAccessible(true);
             hasMoreF.set(it, false);
@@ -79,9 +76,6 @@ class AISearchStoreIteratorTest {
             Field connF = AISearchStoreIterator.class.getDeclaredField("aiSearchStoreConnection");
             connF.setAccessible(true);
             connF.set(it, conn);
-            Field dimF = AISearchStoreIterator.class.getDeclaredField("dimension");
-            dimF.setAccessible(true);
-            dimF.set(it, 128);
             Field hasMoreF = AISearchStoreIterator.class.getDeclaredField("hasMore");
             hasMoreF.setAccessible(true);
             hasMoreF.set(it, false);

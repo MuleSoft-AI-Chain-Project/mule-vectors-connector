@@ -55,10 +55,9 @@ public class StoreOperationsHelper {
 
             return new ParsedStoreInput(textSegments, embeddings, dimension, ingestionMetadataMap);
 
+        } catch (ModuleException me) {
+            throw me;
         } catch (Exception e) {
-            if (e instanceof ModuleException) {
-                throw (ModuleException) e;
-            }
             throw new ModuleException("Error while parsing Text Segments and Embeddings input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
         }
     }
@@ -89,10 +88,9 @@ public class StoreOperationsHelper {
                         });
             }
             return textSegments;
+        } catch (ModuleException me) {
+            throw me;
         } catch (Exception e) {
-            if (e instanceof ModuleException) {
-                throw (ModuleException) e;
-            }
             throw new ModuleException("Error while parsing Text Segments input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
         }
     }
@@ -115,10 +113,9 @@ public class StoreOperationsHelper {
                         embeddings.add(new Embedding(floatArray));
             });
             return embeddings;
+        } catch (ModuleException me) {
+            throw me;
         } catch (Exception e) {
-            if (e instanceof ModuleException) {
-                throw (ModuleException) e;
-            }
             throw new ModuleException("Error while parsing Text Segments input.", MuleVectorsErrorType.INVALID_PARAMETER, e);
         }
     }

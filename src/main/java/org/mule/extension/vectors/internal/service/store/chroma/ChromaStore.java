@@ -63,33 +63,6 @@ public class ChromaStore extends BaseStoreService {
         );
     }
 
-    private String getJsonResponse(String endpoint, String jsonBody) {
-        try {
-            HttpClient httpClient = chromaStoreConnection.getHttpClient();
-            CompletableFuture<HttpResponse> futureResponse;
-            if (jsonBody != null) {
-                futureResponse = HttpRequestHelper.executePostRequest(httpClient, chromaStoreConnection.getUrl() + endpoint, null, jsonBody.getBytes(), 5000);
-            } else {
-                futureResponse = HttpRequestHelper.executeGetRequest(httpClient, chromaStoreConnection.getUrl() + endpoint, null, 5000);
-            }
-
-            HttpResponse response = futureResponse.get(); // Block for the result
-
-            int responseCode = response.getStatusCode();
-            String responseBody = readInputStreamToString(response);
-
-            if (responseCode != 200) {
-                throw new ModuleException("Chroma API request failed: " + responseBody, MuleVectorsErrorType.STORE_SERVICES_FAILURE);
-            }
-            return responseBody;
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new ModuleException("Request to Chroma failed or was interrupted", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-        } catch (IOException e) {
-            throw new ModuleException("Error reading response from Chroma", MuleVectorsErrorType.NETWORK_ERROR, e);
-        }
-    }
-
     private String readInputStreamToString(HttpResponse response) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
             StringBuilder result = new StringBuilder();
