@@ -20,20 +20,7 @@ public class NomicModelConnectionParameters extends BaseModelConnectionParameter
   @Example("<your-api-key>")
   private String apiKey;
 
-  @Parameter
-  @DisplayName("Timeout")
-  @Summary("Timeout for the operation in milliseconds")
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2, tab = Placement.ADVANCED_TAB)
-  @Example("60000")
-  @Optional(defaultValue = "60000")
-  private long totalTimeout;
-
   public String getApiKey() {
     return apiKey;
-  }
-
-  public long getTotalTimeout() {
-    return totalTimeout;
   }
 }

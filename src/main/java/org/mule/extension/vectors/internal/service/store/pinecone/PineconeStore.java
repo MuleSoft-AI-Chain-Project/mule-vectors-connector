@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class PineconeStore extends BaseStoreService {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(PineconeStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStore.class);
 
     private final String apiKey;
     private final String cloud;

@@ -36,6 +36,7 @@ public class VertexAIService implements EmbeddingService {
     // Vertex AI Constants
     private static final String VERTEX_AI_ENDPOINT_FORMAT = "https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict";
 
+    private static final String TEXT_EMBEDDING_FIELD_NAME = "textEmbedding";
     private static final String IMAGE_EMBEDDING_FIELD_NAME = "imageEmbedding";
     private static final String EMBEDDING_ERROR_MESSAGE = "Failed to generate embeddings";
 
@@ -84,7 +85,7 @@ public class VertexAIService implements EmbeddingService {
     private String buildTextPayload(List<String> inputs, String modelName) {
         List<Map<String, String>> instances = inputs.stream()
                 .map(input -> Map.of(modelName.startsWith("text") ? "content" : "text", input))
-                .toList();
+                .collect(Collectors.toList());
         return buildPayload(instances);
     }
     
@@ -94,7 +95,7 @@ public class VertexAIService implements EmbeddingService {
                     String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
                     return Map.of("image", Map.of("bytesBase64Encoded", encodedImage));
                 })
-                .toList();
+                .collect(Collectors.toList());
         return buildPayload(instances);
     }
 
@@ -146,39 +147,45 @@ public class VertexAIService implements EmbeddingService {
             }
             allEmbeddings.addAll(embeddings);
         } catch (Exception e) {
-            throw new ModuleException(EMBEDDING_ERROR_MESSAGE, MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+            throw new RuntimeException(EMBEDDING_ERROR_MESSAGE, e);
         }
       }
       return Response.from(allEmbeddings);
     }
 
-    @Override
-    public Response<Embedding> embedImage(byte[] imageBytes) {
+    private List<Embedding> parseEmbeddings(String jsonResponse) {
         try {
-            List<byte[]> inputs = List.of(imageBytes);
-            String result = (String) generateImageEmbeddings(inputs, embeddingModelParameters.getEmbeddingModelName());
-            
-            JSONObject response = new JSONObject(result);
+            JSONObject response = new JSONObject(jsonResponse);
             JSONArray predictions = response.getJSONArray("predictions");
-            JSONObject prediction = predictions.getJSONObject(0);
-            List<Float> vector = new ArrayList<>();
+            List<Embedding> embeddings = new ArrayList<>();
             
-            if (prediction.has(IMAGE_EMBEDDING_FIELD_NAME)) {
+            for (int i = 0; i < predictions.length(); i++) {
+                JSONObject prediction = predictions.getJSONObject(i);
+                List<Float> vector = new ArrayList<>();
+                
+                if (prediction.has(IMAGE_EMBEDDING_FIELD_NAME)) {
+
                 JSONArray imageEmbedding = prediction.getJSONArray(IMAGE_EMBEDDING_FIELD_NAME);
                 for (int j = 0; j < imageEmbedding.length(); j++) {
                     vector.add((float) imageEmbedding.getDouble(j));
                 }
+
+                // TODO: Change behavior, today text embedding is ignored if image embedding is present
+                } else if (prediction.has(TEXT_EMBEDDING_FIELD_NAME)) {
+
+                JSONArray textEmbedding = prediction.getJSONArray(TEXT_EMBEDDING_FIELD_NAME);
+                for (int j = 0; j < textEmbedding.length(); j++) {
+                    vector.add((float) textEmbedding.getDouble(j));
+                }
+                }
+                
+                embeddings.add(Embedding.from(vector));
             }
             
-            return Response.from(Embedding.from(vector));
+            return embeddings;
         } catch (Exception e) {
-            throw new ModuleException("Error during image embedding generation", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+        throw new ModuleException("Error parsing embeddings response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
         }
-    }
-
-    @Override
-    public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-        return null;
     }
 }
 

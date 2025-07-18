@@ -24,7 +24,7 @@ public class AzureAIVisionModelConnectionProvider extends BaseModelConnectionPro
           new AzureAIVisionModelConnection(azureAIVisionModelConnectionParameters.getEndpoint(),
                                          azureAIVisionModelConnectionParameters.getApiKey(),
                                          azureAIVisionModelConnectionParameters.getApiVersion(),
-                                         azureAIVisionModelConnectionParameters.getTotalTimeout(),
+                                         azureAIVisionModelConnectionParameters.getTimeout(),
                                            getHttpClient());
 
       return azureAIVisionModelConnection;

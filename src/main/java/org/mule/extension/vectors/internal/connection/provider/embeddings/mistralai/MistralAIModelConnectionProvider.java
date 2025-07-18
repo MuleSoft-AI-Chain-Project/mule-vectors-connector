@@ -19,7 +19,7 @@ public class MistralAIModelConnectionProvider extends BaseModelConnectionProvide
   public BaseModelConnection connect() throws ConnectionException {
       MistralAIModelConnection mistralAIModelConnection = new MistralAIModelConnection(
           mistralAIModelConnectionParameters.getApiKey(),
-          mistralAIModelConnectionParameters.getTotalTimeout(),
+          mistralAIModelConnectionParameters.getTimeout(),
           getHttpClient());
       return mistralAIModelConnection;
 

@@ -27,21 +27,22 @@ public class EinsteinModelConnection implements BaseModelConnection {
     private static final String PARAM_CLIENT_ID = "client_id";
     private static final String PARAM_CLIENT_SECRET = "client_secret";
     private static final String GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials";
-    private static final int TIMEOUT = 30000;
 
     private final String salesforceOrg;
     private final String clientId;
     private final String clientSecret;
     private final HttpClient httpClient;
+    private final long timeout;
     private String accessToken;
 
-    public EinsteinModelConnection(String salesforceOrg, String clientId, String clientSecret, HttpClient httpClient)
+    public EinsteinModelConnection(String salesforceOrg, String clientId, String clientSecret, HttpClient httpClient, long timeout)
             throws ConnectionException {
         this.salesforceOrg = salesforceOrg;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.httpClient = httpClient;
         this.accessToken = getAccessTokenBlocking();
+        this.timeout = timeout;
     }
 
     public String getAccessToken() {
@@ -101,7 +102,7 @@ public class EinsteinModelConnection implements BaseModelConnection {
         byte[] body = getOAuthBody();
         Map<String, String> headers = Map.of("Content-Type", "application/x-www-form-urlencoded");
 
-        return HttpRequestHelper.executePostRequest(httpClient, tokenUrl, headers, body, TIMEOUT)
+        return HttpRequestHelper.executePostRequest(httpClient, tokenUrl, headers, body, (int) timeout)
                 .thenApply(this::handleResponseToGetToken);
     }
 
@@ -119,7 +120,7 @@ public class EinsteinModelConnection implements BaseModelConnection {
         String urlString = "https://" + salesforceOrg + "/services/oauth2/userinfo";
         Map<String, String> headers = Map.of("Authorization", "Bearer " + this.accessToken);
 
-        return HttpRequestHelper.executeGetRequest(httpClient, urlString, headers, TIMEOUT)
+        return HttpRequestHelper.executeGetRequest(httpClient, urlString, headers, (int) timeout)
                 .thenAccept(response -> {
                     if (response.getStatusCode() != 200) {
                         throw new ModuleException("Error while validating access token for Einstein.", MuleVectorsErrorType.INVALID_CONNECTION);

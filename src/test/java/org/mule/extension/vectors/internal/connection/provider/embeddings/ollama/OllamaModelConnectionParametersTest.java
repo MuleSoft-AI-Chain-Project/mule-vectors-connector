@@ -15,19 +15,19 @@ class OllamaModelConnectionParametersTest {
         baseUrlField.setAccessible(true);
         baseUrlField.set(params, "http://localhost:1234");
         // Set totalTimeout via reflection to match expected value
-        Field timeoutField = OllamaModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = OllamaModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 60000L);
         assertEquals("http://localhost:1234", params.getBaseUrl());
-        assertEquals(60000L, params.getTotalTimeout());
+        assertEquals(60000L, params.getTimeout());
     }
 
     @Test
     void canSetTotalTimeoutViaReflection() throws Exception {
         OllamaModelConnectionParameters params = new OllamaModelConnectionParameters();
-        Field timeoutField = OllamaModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = OllamaModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 12345L);
-        assertEquals(12345L, params.getTotalTimeout());
+        assertEquals(12345L, params.getTimeout());
     }
 } 

@@ -22,7 +22,7 @@ public class OpenAIModelConnectionProvider extends BaseModelConnectionProvider {
 
     OpenAIModelConnection openAIModelConnection = new OpenAIModelConnection(
         openAIModelConnectionParameters.getApiKey(),
-        openAIModelConnectionParameters.getTotalTimeout(),
+        openAIModelConnectionParameters.getTimeout(),
         getHttpClient());
     return openAIModelConnection;
   }

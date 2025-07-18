@@ -15,17 +15,17 @@ class MistralAIModelConnectionParametersTest {
         Field apiKeyField = MistralAIModelConnectionParameters.class.getDeclaredField("apiKey");
         apiKeyField.setAccessible(true);
         apiKeyField.set(params, "sk-mistral");
-        Field timeoutField = MistralAIModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = MistralAIModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 12345L);
         assertEquals("sk-mistral", params.getApiKey());
-        assertEquals(12345L, params.getTotalTimeout());
+        assertEquals(12345L, params.getTimeout());
     }
 
     @Test
     void testDefaultTimeout() {
         MistralAIModelConnectionParameters params = new MistralAIModelConnectionParameters();
         // In plain Java, default is 0, not the @Optional value
-        assertEquals(0L, params.getTotalTimeout());
+        assertEquals(0L, params.getTimeout());
     }
 } 

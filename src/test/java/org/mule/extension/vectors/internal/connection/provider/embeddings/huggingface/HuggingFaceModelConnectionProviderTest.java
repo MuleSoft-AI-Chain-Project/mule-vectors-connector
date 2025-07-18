@@ -32,7 +32,7 @@ class HuggingFaceModelConnectionProviderTest {
     @Test
     void connectReturnsValidConnection() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-hf");
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         HuggingFaceModelConnection conn = (HuggingFaceModelConnection) provider.connect();
         assertNotNull(conn);
         assertEquals("sk-hf", conn.getApiKey());
@@ -42,7 +42,7 @@ class HuggingFaceModelConnectionProviderTest {
     @Test
     void connectWithNullApiKey() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn(null);
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         HuggingFaceModelConnection conn = (HuggingFaceModelConnection) provider.connect();
         assertNull(conn.getApiKey());
     }
@@ -50,7 +50,7 @@ class HuggingFaceModelConnectionProviderTest {
     @Test
     void connectWithZeroTimeout() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-hf");
-        when(params.getTotalTimeout()).thenReturn(0L);
+        when(params.getTimeout()).thenReturn(0L);
         HuggingFaceModelConnection conn = (HuggingFaceModelConnection) provider.connect();
         assertEquals(0L, conn.getTimeout());
     }

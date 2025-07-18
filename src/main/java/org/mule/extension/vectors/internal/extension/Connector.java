@@ -14,7 +14,6 @@ import org.mule.extension.vectors.internal.helper.parameter.MultiformatDocumentP
 import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
-import org.mule.runtime.extension.api.annotation.Export;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;

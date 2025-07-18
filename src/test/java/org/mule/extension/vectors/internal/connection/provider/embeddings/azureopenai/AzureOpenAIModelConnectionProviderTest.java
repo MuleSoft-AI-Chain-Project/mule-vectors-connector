@@ -33,7 +33,7 @@ class AzureOpenAIModelConnectionProviderTest {
     void connectReturnsValidConnection() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-azure");
         when(params.getEndpoint()).thenReturn("https://azure.openai");
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         AzureOpenAIModelConnection conn = (AzureOpenAIModelConnection) provider.connect();
         assertNotNull(conn);
         assertEquals("sk-azure", conn.getApiKey());
@@ -45,7 +45,7 @@ class AzureOpenAIModelConnectionProviderTest {
     void connectWithNullApiKey() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn(null);
         when(params.getEndpoint()).thenReturn("https://azure.openai");
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         AzureOpenAIModelConnection conn = (AzureOpenAIModelConnection) provider.connect();
         assertNull(conn.getApiKey());
     }
@@ -54,7 +54,7 @@ class AzureOpenAIModelConnectionProviderTest {
     void connectWithNullEndpoint() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-azure");
         when(params.getEndpoint()).thenReturn(null);
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         AzureOpenAIModelConnection conn = (AzureOpenAIModelConnection) provider.connect();
         assertNull(conn.getEndpoint());
     }
@@ -63,7 +63,7 @@ class AzureOpenAIModelConnectionProviderTest {
     void connectWithZeroTimeout() throws org.mule.runtime.api.connection.ConnectionException {
         when(params.getApiKey()).thenReturn("sk-azure");
         when(params.getEndpoint()).thenReturn("https://azure.openai");
-        when(params.getTotalTimeout()).thenReturn(0L);
+        when(params.getTimeout()).thenReturn(0L);
         AzureOpenAIModelConnection conn = (AzureOpenAIModelConnection) provider.connect();
         assertEquals(0L, conn.getTimeout());
     }

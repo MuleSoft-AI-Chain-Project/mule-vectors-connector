@@ -25,7 +25,7 @@ public class NomicModelConnectionProvider extends BaseModelConnectionProvider {
 
             NomicModelConnection nomicModelConnection = new NomicModelConnection(
                 nomicModelConnectionParameters.getApiKey(),
-                nomicModelConnectionParameters.getTotalTimeout(),
+                nomicModelConnectionParameters.getTimeout(),
                 getHttpClient()
             );
            return nomicModelConnection;

@@ -23,7 +23,7 @@ public class OllamaModelConnectionProvider extends BaseModelConnectionProvider  
 
       OllamaModelConnection ollamaModelConnection = new OllamaModelConnection(
           ollamaModelConnectionParameters.getBaseUrl(),
-          ollamaModelConnectionParameters.getTotalTimeout(),
+          ollamaModelConnectionParameters.getTimeout(),
           getHttpClient());
 
 

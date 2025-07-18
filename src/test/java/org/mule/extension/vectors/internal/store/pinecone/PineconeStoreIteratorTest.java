@@ -45,12 +45,6 @@ class PineconeStoreIteratorTest {
     }
 
     @Test
-    @Disabled("Disabled due to missing Pagination type in Pinecone proto; cannot mock pagination-dependent logic.")
-    void constructor_success_doesNotThrow() {
-        // Test disabled: Pagination type is unavailable, so we cannot mock it. Pagination logic is not tested here.
-    }
-
-    @Test
     void constructor_authenticationFailure_throwsModuleException() {
         PineconeStoreConnection failingConn = mock(PineconeStoreConnection.class, withSettings().lenient());
         lenient().when(failingConn.getApiKey()).thenReturn("api-key");

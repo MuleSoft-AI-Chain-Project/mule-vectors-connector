@@ -25,7 +25,7 @@ public class AzureOpenAIModelConnectionProvider  extends BaseModelConnectionProv
           new AzureOpenAIModelConnection(azureOpenAIModelConnectionParameters.getEndpoint(),
                                          azureOpenAIModelConnectionParameters.getApiKey(),
                                          azureOpenAIModelConnectionParameters.getApiVersion(),
-                                         azureOpenAIModelConnectionParameters.getTotalTimeout(),
+                                         azureOpenAIModelConnectionParameters.getTimeout(),
                                          getHttpClient());
       return azureOpenAIModelConnection;
   }

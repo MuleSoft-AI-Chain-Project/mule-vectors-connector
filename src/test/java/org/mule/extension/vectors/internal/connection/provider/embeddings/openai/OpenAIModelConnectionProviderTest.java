@@ -35,7 +35,7 @@ class OpenAIModelConnectionProviderTest {
     @Test
     void connectReturnsValidConnection() throws Exception {
         when(params.getApiKey()).thenReturn("sk-test");
-        when(params.getTotalTimeout()).thenReturn(12345L);
+        when(params.getTimeout()).thenReturn(12345L);
         var conn = provider.connect();
         assertTrue(conn instanceof OpenAIModelConnection);
         OpenAIModelConnection oaiConn = (OpenAIModelConnection) conn;
@@ -47,7 +47,7 @@ class OpenAIModelConnectionProviderTest {
     @Test
     void connectHandlesNullApiKey() throws Exception {
         when(params.getApiKey()).thenReturn(null);
-        when(params.getTotalTimeout()).thenReturn(1000L);
+        when(params.getTimeout()).thenReturn(1000L);
         var conn = provider.connect();
         assertNull(((OpenAIModelConnection) conn).getApiKey());
     }
@@ -55,7 +55,7 @@ class OpenAIModelConnectionProviderTest {
     @Test
     void connectHandlesZeroTimeout() throws Exception {
         when(params.getApiKey()).thenReturn("sk");
-        when(params.getTotalTimeout()).thenReturn(0L);
+        when(params.getTimeout()).thenReturn(0L);
         var conn = provider.connect();
         assertEquals(0L, ((OpenAIModelConnection) conn).getTimeout());
     }
@@ -63,7 +63,7 @@ class OpenAIModelConnectionProviderTest {
     @Test
     void connectHandlesNegativeTimeout() throws Exception {
         when(params.getApiKey()).thenReturn("sk");
-        when(params.getTotalTimeout()).thenReturn(-1L);
+        when(params.getTimeout()).thenReturn(-1L);
         var conn = provider.connect();
         assertEquals(-1L, ((OpenAIModelConnection) conn).getTimeout());
     }

@@ -49,15 +49,6 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
     private String privateKey;
 
     @Parameter
-    @DisplayName("Total timeout")
-    @Summary("Total timeout for the operation in milliseconds")
-    @Expression(ExpressionSupport.SUPPORTED)
-    @Placement(order = 1, tab = Placement.ADVANCED_TAB)
-    @Example("60000")
-    @Optional(defaultValue = "60000")
-    private long totalTimeout;
-
-    @Parameter
     @DisplayName("Batch size")
     @Summary("Number of input texts sent in a single call")
     @Expression(ExpressionSupport.SUPPORTED)
@@ -88,10 +79,6 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
         return privateKey;
     }
 
-    public long getTotalTimeout() {
-        return totalTimeout;
-    }
-
     public int getBatchSize() { return batchSize; }
 
     @Override
@@ -103,7 +90,7 @@ public class VertexAIModelConnectionParameters extends BaseModelConnectionParame
                 ", clientId='" + clientId + '\'' +
                 ", privateKeyId='" + privateKeyId + '\'' +
                 //", privateKey='" + privateKey + '\'' +
-                ", totalTimeout=" + totalTimeout +
+                ", totalTimeout=" + this.getTimeout() +
                 ", batchSize=" + batchSize +
                 '}';
     }

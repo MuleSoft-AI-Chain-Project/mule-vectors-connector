@@ -18,7 +18,7 @@ import static dev.langchain4j.store.embedding.filter.MetadataFilterBuilder.metad
 
 public class MetadataFilterHelper {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterHelper.class);
 
   private static final Pattern FIELD_NAME_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)");
   private static final Pattern OPERATOR_PATTERN = Pattern.compile("([=!><]+)");

@@ -23,10 +23,10 @@ class AzureAIVisionModelConnectionParametersTest {
         apiKeyField.set(params, "key");
         assertEquals("key", params.getApiKey());
         // Set totalTimeout via reflection
-        Field timeoutField = AzureAIVisionModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = AzureAIVisionModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 60000L);
-        assertEquals(60000L, params.getTotalTimeout());
+        assertEquals(60000L, params.getTimeout());
     }
 
     @Test

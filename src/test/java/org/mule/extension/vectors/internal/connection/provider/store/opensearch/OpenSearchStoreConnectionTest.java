@@ -76,13 +76,6 @@ class OpenSearchStoreConnectionTest {
         assertTrue(ex.getMessage().contains("Failed to validate connection"));
     }
 
-    @Test
-    void validate_succeedsIfPingOk() {
-        // This cannot be tested without a real OpenSearch instance.
-        // Documenting as not testable in this context.
-        // If a mockable client is available, implement here.
-    }
-
     // Reflection helper
     static void setField(Object obj, String field, Object value) {
         try {

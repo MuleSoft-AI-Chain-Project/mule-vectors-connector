@@ -15,17 +15,17 @@ class NomicModelConnectionParametersTest {
         Field apiKeyField = NomicModelConnectionParameters.class.getDeclaredField("apiKey");
         apiKeyField.setAccessible(true);
         apiKeyField.set(params, "sk-nomic");
-        Field timeoutField = NomicModelConnectionParameters.class.getDeclaredField("totalTimeout");
+        Field timeoutField = NomicModelConnectionParameters.class.getField("totalTimeout");
         timeoutField.setAccessible(true);
         timeoutField.set(params, 12345L);
         assertEquals("sk-nomic", params.getApiKey());
-        assertEquals(12345L, params.getTotalTimeout());
+        assertEquals(12345L, params.getTimeout());
     }
 
     @Test
     void testDefaultTimeoutIsZeroInPlainJava() {
         NomicModelConnectionParameters params = new NomicModelConnectionParameters();
         // In plain Java, default is 0; Mule injects @Optional default at runtime
-        assertEquals(0L, params.getTotalTimeout());
+        assertEquals(0L, params.getTimeout());
     }
 } 

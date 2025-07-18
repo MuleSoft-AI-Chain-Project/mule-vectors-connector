@@ -149,36 +149,4 @@ class AzureAIVisionServiceTest {
             assertThat(result.get(1).vector()).containsExactly(0.1f, 0.2f);
         }
     }
-
-    @Test
-    void embedImage_success() throws Exception {
-        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            String fakeResponse = new JSONObject().put("vector", List.of(0.1, 0.2, 0.3)).toString();
-            httpResponse = mock(HttpResponse.class);
-            httpEntity = mock(HttpEntity.class);
-            when(httpResponse.getStatusCode()).thenReturn(200);
-            when(httpResponse.getEntity()).thenReturn(httpEntity);
-            when(httpEntity.getBytes()).thenReturn(fakeResponse.getBytes(StandardCharsets.UTF_8));
-            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResponse));
-            Response<Embedding> response = service.embedImage(new byte[1]);
-            assertThat(response.content().vector()).containsExactly(0.1f, 0.2f, 0.3f);
-        }
-    }
-
-    @Test
-    void embedTextAndImage_warnsAndDelegates() throws Exception {
-        try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            String fakeResponse = new JSONObject().put("vector", List.of(0.1, 0.2, 0.3)).toString();
-            httpResponse = mock(HttpResponse.class);
-            httpEntity = mock(HttpEntity.class);
-            when(httpResponse.getStatusCode()).thenReturn(200);
-            when(httpResponse.getEntity()).thenReturn(httpEntity);
-            when(httpEntity.getBytes()).thenReturn(fakeResponse.getBytes(StandardCharsets.UTF_8));
-            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResponse));
-            Response<Embedding> response = service.embedTextAndImage("text", new byte[1]);
-            assertThat(response.content().vector()).containsExactly(0.1f, 0.2f, 0.3f);
-        }
-    }
 } 

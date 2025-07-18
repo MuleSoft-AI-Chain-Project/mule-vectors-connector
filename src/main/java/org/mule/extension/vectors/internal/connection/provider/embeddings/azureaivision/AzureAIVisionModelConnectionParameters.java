@@ -32,15 +32,6 @@ public class AzureAIVisionModelConnectionParameters extends BaseModelConnectionP
   @Example("2023-04-01-preview")
   private String apiVersion = "2023-04-01-preview";
 
-  @Parameter
-  @DisplayName("Timeout")
-  @Summary("Timeout for the operation in milliseconds")
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 1, tab = Placement.ADVANCED_TAB)
-  @Example("60000")
-  @Optional(defaultValue = "60000")
-  private long totalTimeout;
-
   public String getEndpoint() {
     return endpoint;
   }
@@ -51,6 +42,6 @@ public class AzureAIVisionModelConnectionParameters extends BaseModelConnectionP
 
   public String getApiVersion() { return apiVersion; }
 
-  public long getTotalTimeout() { return totalTimeout; }
+  public long getTotalTimeout() { return this.getTimeout(); }
 }
 

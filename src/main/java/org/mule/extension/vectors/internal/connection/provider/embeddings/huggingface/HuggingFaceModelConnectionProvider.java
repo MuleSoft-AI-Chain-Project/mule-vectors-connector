@@ -28,7 +28,7 @@ public class HuggingFaceModelConnectionProvider extends BaseModelConnectionProvi
 
       HuggingFaceModelConnection huggingFaceModelConnection = new HuggingFaceModelConnection(
           huggingFaceModelConnectionParameters.getApiKey(),
-          huggingFaceModelConnectionParameters.getTotalTimeout(),
+          huggingFaceModelConnectionParameters.getTimeout(),
           getHttpClient());
       return huggingFaceModelConnection;
 

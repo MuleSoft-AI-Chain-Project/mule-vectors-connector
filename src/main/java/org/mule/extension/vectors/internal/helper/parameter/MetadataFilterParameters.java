@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class MetadataFilterParameters {
 
-  protected static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterParameters.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterParameters.class);
 
   public abstract String getCondition();
 
