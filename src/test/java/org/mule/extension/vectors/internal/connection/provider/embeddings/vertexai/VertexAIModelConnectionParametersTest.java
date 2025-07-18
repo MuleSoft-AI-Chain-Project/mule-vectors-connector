@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.vertexai;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.vertexai;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.vertexai.VertexAIModelConnectionParameters;

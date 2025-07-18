@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.qdrant;
+package org.mule.extension.vectors.internal.connection.provider.store.qdrant;
 
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;

@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.opensearch;
+package org.mule.extension.vectors.internal.connection.provider.store.opensearch;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

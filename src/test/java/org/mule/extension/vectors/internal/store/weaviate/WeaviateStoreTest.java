@@ -5,7 +5,8 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.weaviate.WeaviateStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.weaviate.WeaviateStoreConnectionParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.weaviate.WeaviateStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -18,7 +19,7 @@ class WeaviateStoreTest {
     @Test
     void constructionAndBuildEmbeddingStoreSuccess() {
         StoreConfiguration config = new StoreConfiguration();
-        var params = new org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters();
+        var params = new WeaviateStoreConnectionParameters();
         setField(params, "scheme", "https");
         setField(params, "host", "localhost");
         setField(params, "port", 8080);
@@ -71,7 +72,7 @@ class WeaviateStoreTest {
     @Test
     void buildEmbeddingStoreThrowsAuthenticationException() {
         StoreConfiguration config = new StoreConfiguration();
-        var params = new org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters();
+        var params = new WeaviateStoreConnectionParameters();
         setField(params, "scheme", "https");
         setField(params, "host", "localhost");
         setField(params, "port", 8080);
@@ -96,7 +97,7 @@ class WeaviateStoreTest {
     @Test
     void buildEmbeddingStoreThrowsGenericException() {
         StoreConfiguration config = new StoreConfiguration();
-        var params = new org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnectionParameters();
+        var params = new WeaviateStoreConnectionParameters();
         setField(params, "scheme", "https");
         setField(params, "host", "localhost");
         setField(params, "port", 8080);
@@ -121,7 +122,7 @@ class WeaviateStoreTest {
     @Test
     void testGetFileIteratorReturnsNonNull() {
         StoreConfiguration storeConfiguration = mock(StoreConfiguration.class);
-        org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection storeConnection = mock(org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection.class);
+        WeaviateStoreConnection storeConnection = mock(WeaviateStoreConnection.class);
         QueryParameters queryParameters = mock(QueryParameters.class);
         String storeName = "test-weaviate";
         int dimension = 128;

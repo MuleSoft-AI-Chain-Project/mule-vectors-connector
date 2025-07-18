@@ -1,6 +1,6 @@
-package org.mule.extension.vectors.internal.connection.embeddings.einstein;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.einstein;
 
-import org.mule.extension.vectors.internal.connection.embeddings.BaseModelConnectionParameters;
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;

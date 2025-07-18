@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.alloydb;
+package org.mule.extension.vectors.internal.connection.provider.store.alloydb;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnectionParameters;

@@ -6,7 +6,7 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.data.document.Metadata;
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.extension.api.exception.ModuleException;

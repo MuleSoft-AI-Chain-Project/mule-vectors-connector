@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.chroma;
+package org.mule.extension.vectors.internal.connection.provider.store.chroma;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.store.chroma.ChromaStoreConnectionParameters;

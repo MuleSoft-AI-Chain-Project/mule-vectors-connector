@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.nomic;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.nomic;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

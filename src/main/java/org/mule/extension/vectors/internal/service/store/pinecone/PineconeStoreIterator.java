@@ -1,6 +1,6 @@
 package org.mule.extension.vectors.internal.service.store.pinecone;
 
-import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.pinecone.PineconeStoreConnection;
 import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import dev.langchain4j.data.embedding.Embedding;
@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 

@@ -5,7 +5,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore;
 import dev.langchain4j.store.embedding.pinecone.PineconeServerlessIndexConfig;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.pinecone.PineconeStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class PineconeStore extends BaseStoreService {
     @Override
     public PineconeStoreIterator<?> getFileIterator() {
         return new PineconeStoreIterator<>(
-            (org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection) this.storeConnection,
+            (PineconeStoreConnection) this.storeConnection,
             this.storeName,
             this.queryParams
         );

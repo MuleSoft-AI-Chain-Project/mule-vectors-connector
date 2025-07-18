@@ -1,17 +1,20 @@
 package org.mule.extension.vectors.internal.service.store;
 
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.weaviate.WeaviateStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnection;
 
-import org.mule.extension.vectors.internal.connection.store.chroma.ChromaStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.elasticsearch.ElasticsearchStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.milvus.MilvusStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.mongodbatlas.MongoDBAtlasStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.opensearch.OpenSearchStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.pgvector.PGVectorStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.pinecone.PineconeStoreConnection;
-import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.chroma.ChromaStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.elasticsearch.ElasticsearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.milvus.MilvusStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.mongodbatlas.MongoDBAtlasStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.opensearch.OpenSearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.pinecone.PineconeStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
@@ -117,7 +120,7 @@ public class VectorStoreServiceProviderFactory {
       case Constants.VECTOR_STORE_ALLOYDB:
         return new AlloyDBStore(
             storeConfiguration,
-            (org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection) storeConnection,
+            (AlloyDBStoreConnection) storeConnection,
             storeName,
             queryParams,
             dimension,
@@ -125,7 +128,7 @@ public class VectorStoreServiceProviderFactory {
       case Constants.VECTOR_STORE_EPHEMERAL_FILE:
         return new EphemeralFileStore(
             storeConfiguration,
-            (org.mule.extension.vectors.internal.connection.store.ephemeralfile.EphemeralFileStoreConnection) storeConnection,
+            (EphemeralFileStoreConnection) storeConnection,
             storeName,
             queryParams,
             dimension,
@@ -133,7 +136,7 @@ public class VectorStoreServiceProviderFactory {
       case Constants.VECTOR_STORE_WEAVIATE:
         return new WeaviateStore(
             storeConfiguration,
-            (org.mule.extension.vectors.internal.connection.store.weaviate.WeaviateStoreConnection) storeConnection,
+            (WeaviateStoreConnection) storeConnection,
             storeName,
             queryParams,
             dimension,

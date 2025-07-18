@@ -5,14 +5,12 @@ import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import io.qdrant.client.QdrantClient;
 
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class QdrantStore extends BaseStoreService {
 
@@ -55,7 +53,7 @@ try {
   @Override
   public QdrantStoreIterator<?> getFileIterator() {
     return new QdrantStoreIterator<>(
-      (org.mule.extension.vectors.internal.connection.store.qdrant.QdrantStoreConnection) this.storeConnection,
+      (QdrantStoreConnection) this.storeConnection,
       this.storeName,
       this.queryParams
     );

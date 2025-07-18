@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.aisearch;
+package org.mule.extension.vectors.internal.connection.provider.store.aisearch;
 
 import dev.langchain4j.store.embedding.filter.*;
 import dev.langchain4j.store.embedding.filter.comparison.*;

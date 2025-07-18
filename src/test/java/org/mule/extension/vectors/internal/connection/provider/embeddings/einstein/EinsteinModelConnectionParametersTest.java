@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.einstein;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.einstein;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.einstein.EinsteinModelConnectionParameters;

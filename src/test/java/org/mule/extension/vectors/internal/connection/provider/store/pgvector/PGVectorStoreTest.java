@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.pgvector;
+package org.mule.extension.vectors.internal.connection.provider.store.pgvector;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;

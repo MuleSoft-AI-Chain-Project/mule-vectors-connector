@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.store.pgvector;
+package org.mule.extension.vectors.internal.connection.provider.store.pgvector;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

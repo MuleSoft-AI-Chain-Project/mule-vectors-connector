@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.connection.embeddings.azureopenai;
+package org.mule.extension.vectors.internal.connection.provider.embeddings.azureopenai;
 
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.azureopenai.AzureOpenAIModelConnectionParameters;

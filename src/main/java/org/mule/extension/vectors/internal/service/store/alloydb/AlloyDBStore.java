@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.service.store.alloydb;
 import java.sql.SQLException;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
@@ -56,7 +56,7 @@ public class AlloyDBStore extends BaseStoreService {
   @Override
   public AlloyDBStoreIterator<?> getFileIterator() {
     return new AlloyDBStoreIterator<>(
-      (org.mule.extension.vectors.internal.connection.store.alloydb.AlloyDBStoreConnection) this.storeConnection,
+      (AlloyDBStoreConnection) this.storeConnection,
       this.storeName,
       this.queryParams
     );

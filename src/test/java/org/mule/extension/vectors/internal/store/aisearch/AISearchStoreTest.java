@@ -4,7 +4,8 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.junit.jupiter.api.Test;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnectionParameters;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.aisearch.AISearchStore;
 import org.mule.runtime.extension.api.exception.ModuleException;
@@ -29,8 +30,8 @@ class AISearchStoreTest {
     @Test
     void buildEmbeddingStore_throwsModuleException_onHttpResponseException401() {
         StoreConfiguration config = new StoreConfiguration();
-        var params = new org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnectionParameters();
-        org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection conn = new org.mule.extension.vectors.internal.connection.store.aisearch.AISearchStoreConnection(params, null) {
+        var params = new AISearchStoreConnectionParameters();
+        AISearchStoreConnection conn = new AISearchStoreConnection(params, null) {
             @Override public String getApiKey() { return "key"; }
             @Override public String getUrl() { return "endpoint"; }
         };
