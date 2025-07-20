@@ -11,18 +11,12 @@ import org.mule.extension.vectors.internal.connection.provider.store.alloydb.All
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AlloyDBStoreIterator.class);
-
   private final AlloyDBStoreConnection alloyDBStoreConnection;
   private final QueryParameters queryParams;
   private final int pageSize;

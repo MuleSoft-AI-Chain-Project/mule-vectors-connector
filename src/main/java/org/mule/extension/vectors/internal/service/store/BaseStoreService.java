@@ -16,9 +16,6 @@ import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.OperationValidator;
 import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -29,8 +26,6 @@ import static java.util.stream.Collectors.joining;
  * in concrete store implementations.
  */
 public abstract class BaseStoreService implements VectorStoreService {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(BaseStoreService.class);
 
   protected String storeName;
   protected StoreConfiguration storeConfiguration;
