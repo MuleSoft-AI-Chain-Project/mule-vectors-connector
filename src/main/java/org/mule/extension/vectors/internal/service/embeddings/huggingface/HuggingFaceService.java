@@ -8,7 +8,6 @@ import org.mule.extension.vectors.internal.connection.provider.embeddings.huggin
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
-import org.mule.extension.vectors.internal.service.embeddings.azureopenai.AzureOpenAIService;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -18,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 public class HuggingFaceService implements EmbeddingService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceService.class);
   private HuggingFaceModelConnection huggingFaceModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;;
   private static final String INFERENCE_ENDPOINT = "https://router.huggingface.co/hf-inference/models/";
@@ -73,14 +71,7 @@ public class HuggingFaceService implements EmbeddingService {
   }
 
   private String handleEmbeddingResponse(HttpResponse response) {
-    if (response.getStatusCode() != 200) {
-      return handleErrorResponse(response, "Error generating embeddings");
-    }
-    try {
-      return new String(response.getEntity().getBytes());
-    } catch (IOException e) {
-      throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-    }
+    return HttpRequestHelper.handleEmbeddingResponse(response, "Hugging face");
   }
   
   private String buildInferenceUrl(String modelName) {
@@ -97,17 +88,6 @@ public class HuggingFaceService implements EmbeddingService {
     Map<String, String> headers = new HashMap<>();
     headers.put("Authorization", "Bearer " + this.huggingFaceModelConnection.getApiKey());
     return headers;
-  }
-  
-  private String handleErrorResponse(HttpResponse response, String message) {
-    try {
-      String errorBody = new String(response.getEntity().getBytes());
-      String errorMsg = String.format("%s. Status: %d - %s", message, response.getStatusCode(), errorBody);
-      LOGGER.error(errorMsg);
-      throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
-    } catch (IOException e) {
-      throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-    }
   }
 
   @Override

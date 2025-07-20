@@ -17,7 +17,6 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -74,14 +73,7 @@ public class AzureOpenAIService implements EmbeddingService {
   }
 
   private String handleEmbeddingResponse(HttpResponse response) {
-      if (response.getStatusCode() != 200) {
-          return handleErrorResponse(response, "Error generating embeddings");
-      }
-      try {
-          return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-      } catch (IOException e) {
-          throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-      }
+    return HttpRequestHelper.handleEmbeddingResponse(response, "Azure AI Vision");
   }
 
   private String buildUrlForDeployment(String deploymentName) {
@@ -105,18 +97,6 @@ public class AzureOpenAIService implements EmbeddingService {
       headers.put("api-key", this.azureOpenAIModelConnection.getApiKey());
       headers.put("Content-Type", "application/json");
       return headers;
-  }
-
-  private String handleErrorResponse(HttpResponse response, String message) {
-      try {
-          String errorBody = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-          String errorMsg = String.format("%s. Azure OpenAI API error (HTTP %d): %s",
-                  message, response.getStatusCode(), errorBody);
-          LOGGER.error(errorMsg);
-          throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
-      } catch (IOException e) {
-          throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-      }
   }
 
   @Override

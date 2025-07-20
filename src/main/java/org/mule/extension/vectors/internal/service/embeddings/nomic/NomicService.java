@@ -15,7 +15,6 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,14 +89,7 @@ public class NomicService implements EmbeddingService {
     }
 
     private String handleEmbeddingResponse(HttpResponse response) {
-        if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Failed to generate embeddings");
-        }
-        try {
-            return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
+        return HttpRequestHelper.handleEmbeddingResponse(response, "Nomic  Error");
     }
     
     private List<HttpPart> buildImageMultipartPayload(List<byte[]> imageBytesList, String modelName) {
@@ -124,17 +116,6 @@ public class NomicService implements EmbeddingService {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + this.nomicModelConnection.getApiKey());
         return headers;
-    }
-
-    private String handleErrorResponse(HttpResponse response, String message) {
-        try {
-            String errorBody = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-            String errorMsg = String.format("%s: HTTP %d. Error: %s", message, response.getStatusCode(), errorBody);
-            LOGGER.error(errorMsg);
-            throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
     }
 
     @Override

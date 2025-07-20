@@ -47,16 +47,17 @@ class MistralAIServiceTest {
                 .put(new JSONObject().put("embedding", new JSONArray().put(0.1).put(0.2)))
                 .put(new JSONObject().put("embedding", new JSONArray().put(0.3).put(0.4)));
         JSONObject fakeResponse = new JSONObject().put("usage", fakeUsage).put("data", fakeData);
-        HttpResponse httpResponse = mock(HttpResponse.class);
-        when(httpResponse.getStatusCode()).thenReturn(200);
-        when(httpResponse.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(fakeResponse.toString().getBytes(StandardCharsets.UTF_8)));
+        String responseString = fakeResponse.toString();
         when(connection.getTimeout()).thenReturn(1000L);
         when(connection.getApiKey()).thenReturn("key");
         when(connection.getHttpClient()).thenReturn(null);
 
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
-                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(httpResponse));
+            HttpResponse mockResponse = mock(HttpResponse.class);
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(responseString);
             Response<List<Embedding>> resp = service.embedTexts(segments);
             assertNotNull(resp);
             assertEquals(2, resp.content().size());
@@ -70,19 +71,17 @@ class MistralAIServiceTest {
     void embedTexts_throwsOnErrorResponse() throws Exception {
         when(params.getEmbeddingModelName()).thenReturn("test-model");
         List<TextSegment> segments = List.of(dev.langchain4j.data.segment.TextSegment.from("foo"));
-        JSONObject fakeUsage = new JSONObject().put("total_tokens", 0);
-        JSONObject fakeResponse = new JSONObject().put("usage", fakeUsage).put("data", new JSONArray());
-        HttpResponse httpResponse = mock(HttpResponse.class);
-        when(httpResponse.getStatusCode()).thenReturn(500);
-        when(httpResponse.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("error".getBytes(StandardCharsets.UTF_8)));
         when(connection.getTimeout()).thenReturn(1000L);
         when(connection.getApiKey()).thenReturn("key");
         when(connection.getHttpClient()).thenReturn(null);
 
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
-                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(httpResponse));
-            assertThrows(RuntimeException.class, () -> service.embedTexts(segments));
+            HttpResponse mockResponse = mock(HttpResponse.class);
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new org.mule.runtime.extension.api.exception.ModuleException("Mistral AI API error (HTTP 500): error", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
+            assertThrows(org.mule.runtime.extension.api.exception.ModuleException.class, () -> service.embedTexts(segments));
         }
     }
 

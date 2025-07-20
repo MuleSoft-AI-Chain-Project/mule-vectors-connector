@@ -13,7 +13,6 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -110,26 +109,7 @@ public class AzureAIVisionService implements EmbeddingService {
     }
 
     private String handleEmbeddingResponse(HttpResponse response) {
-        if (response.getStatusCode() != 200) {
-            return handleErrorResponse(response, "Failed to generate embedding");
-        }
-        try {
-            return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
-    }
-
-    private String handleErrorResponse(HttpResponse response, String message) {
-        try {
-            String errorBody = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-            String errorMsg = String.format("%s. Azure AI Vision API error (HTTP %d): %s",
-                    message, response.getStatusCode(), errorBody);
-            LOGGER.error(errorMsg);
-            throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
+       return HttpRequestHelper.handleEmbeddingResponse(response, "Azure AI Vision");
     }
 
     @Override

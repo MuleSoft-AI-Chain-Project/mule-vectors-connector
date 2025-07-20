@@ -30,7 +30,7 @@ class AzureAIVisionServiceTest {
     @Mock AzureAIVisionModelConnection modelConnection;
     @Mock EmbeddingModelParameters modelParameters;
     @Mock HttpResponse httpResponse;
-    @Mock HttpEntity httpEntity;
+    @Mock org.mule.runtime.http.api.domain.entity.HttpEntity httpEntity;
 
     AzureAIVisionService service;
 
@@ -38,7 +38,7 @@ class AzureAIVisionServiceTest {
     void setUp() {
         modelConnection = mock(AzureAIVisionModelConnection.class);
         modelParameters = mock(EmbeddingModelParameters.class);
-        httpEntity = mock(HttpEntity.class);
+        httpEntity = mock(org.mule.runtime.http.api.domain.entity.HttpEntity.class);
         httpResponse = mock(HttpResponse.class);
         when(modelConnection.getEndpoint()).thenReturn("https://test-endpoint");
         when(modelConnection.getApiVersion()).thenReturn("v1");
@@ -67,12 +67,14 @@ class AzureAIVisionServiceTest {
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
             String fakeResponse = new JSONObject().put("vector", List.of(0.1, 0.2, 0.3)).toString();
             httpResponse = mock(HttpResponse.class);
-            httpEntity = mock(HttpEntity.class);
+            httpEntity = mock(org.mule.runtime.http.api.domain.entity.HttpEntity.class);
             when(httpResponse.getStatusCode()).thenReturn(200);
             when(httpResponse.getEntity()).thenReturn(httpEntity);
             when(httpEntity.getBytes()).thenReturn(fakeResponse.getBytes(StandardCharsets.UTF_8));
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.completedFuture(httpResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(fakeResponse);
             Object result = service.generateTextEmbeddings(List.of("hello"), "test-model");
             assertThat(result).isInstanceOf(String.class);
             assertThat(result.toString()).contains("vector");
@@ -92,12 +94,14 @@ class AzureAIVisionServiceTest {
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
             String fakeResponse = new JSONObject().put("vector", List.of(0.1, 0.2, 0.3)).toString();
             httpResponse = mock(HttpResponse.class);
-            httpEntity = mock(HttpEntity.class);
+            httpEntity = mock(org.mule.runtime.http.api.domain.entity.HttpEntity.class);
             when(httpResponse.getStatusCode()).thenReturn(200);
             when(httpResponse.getEntity()).thenReturn(httpEntity);
             when(httpEntity.getBytes()).thenReturn(fakeResponse.getBytes(StandardCharsets.UTF_8));
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.completedFuture(httpResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(fakeResponse);
             Object result = service.generateImageEmbeddings(List.of(new byte[1]), "test-model");
             assertThat(result).isInstanceOf(String.class);
             assertThat(result.toString()).contains("vector");
@@ -115,7 +119,7 @@ class AzureAIVisionServiceTest {
     @Test
     void handleEmbeddingResponse_handlesNon200() throws Exception {
         httpResponse = mock(HttpResponse.class);
-        httpEntity = mock(HttpEntity.class);
+        httpEntity = mock(org.mule.runtime.http.api.domain.entity.HttpEntity.class);
         when(httpResponse.getStatusCode()).thenReturn(400);
         when(httpResponse.getEntity()).thenReturn(httpEntity);
         when(httpEntity.getBytes()).thenReturn("fail".getBytes(StandardCharsets.UTF_8));
@@ -134,12 +138,14 @@ class AzureAIVisionServiceTest {
                 new TextSegment("foo", new dev.langchain4j.data.document.Metadata()),
                 new TextSegment("bar", new dev.langchain4j.data.document.Metadata())
             );
-            Response<List<Embedding>> response = Response.from(List.of(Embedding.from(new float[]{0.1f, 0.2f})));
-            when(httpEntity.getBytes()).thenReturn("{\"vector\": [0.1, 0.2]}".getBytes());
+            String fakeResponse = "{\"vector\": [0.1, 0.2]}";
+            when(httpEntity.getBytes()).thenReturn(fakeResponse.getBytes());
             when(httpResponse.getStatusCode()).thenReturn(200);
             when(httpResponse.getEntity()).thenReturn(httpEntity);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
                 .thenReturn(CompletableFuture.completedFuture(httpResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                .thenReturn(fakeResponse);
             // Act
             List<Embedding> result = service.embedTexts(segments).content();
             // Assert
