@@ -58,6 +58,8 @@ class OpenAIServiceTest {
             when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(fakeResponse.getBytes(StandardCharsets.UTF_8)));
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.completedFuture(httpResp));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(fakeResponse);
             Response<List<Embedding>> resp = service.embedTexts(segments);
             assertNotNull(resp);
             assertEquals(1, resp.content().size());
@@ -74,8 +76,10 @@ class OpenAIServiceTest {
             when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity("{\"error\":\"fail\"}".getBytes(StandardCharsets.UTF_8)));
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.completedFuture(httpResp));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new ModuleException("OpenAI API error (HTTP 500): {\"error\":\"fail\"}", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
             assertThatThrownBy(() -> service.embedTexts(segments))
-                    .isInstanceOf(RuntimeException.class)
+                    .isInstanceOf(ModuleException.class)
                     .hasMessageContaining("Failed to generate embeddings");
         }
     }
@@ -102,6 +106,8 @@ class OpenAIServiceTest {
             when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(fakeResponse.getBytes(StandardCharsets.UTF_8)));
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                     .thenReturn(CompletableFuture.completedFuture(httpResp));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(fakeResponse);
             Object resp = service.generateTextEmbeddings(inputs, modelName);
             assertTrue(resp instanceof String);
             assertTrue(((String) resp).contains("total_tokens"));

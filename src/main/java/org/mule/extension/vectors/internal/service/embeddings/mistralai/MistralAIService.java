@@ -10,7 +10,6 @@ import org.mule.extension.vectors.internal.connection.provider.embeddings.mistra
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
-import org.mule.extension.vectors.internal.service.embeddings.azureopenai.AzureOpenAIService;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MistralAIService implements EmbeddingService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MistralAIService.class);
   private MistralAIModelConnection mistralAIModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;
   private final ObjectMapper objectMapper = new ObjectMapper();
@@ -43,20 +41,17 @@ public class MistralAIService implements EmbeddingService {
   }
 
   public Object generateTextEmbeddings(List<String> inputs, String modelName) {
-      if (inputs == null || inputs.isEmpty()) {
-          throw new IllegalArgumentException("Input list cannot be null or empty");
-      }
-      if (modelName == null || modelName.isEmpty()) {
-          throw new IllegalArgumentException("Model name cannot be null or empty");
-      }
-
       try {
-          return generateTextEmbeddingsAsync(inputs, modelName).get();
+        if (inputs == null || inputs.isEmpty()) {
+          throw new IllegalArgumentException("Input list cannot be null or empty");
+        }
+        if (modelName == null || modelName.isEmpty()) {
+          throw new IllegalArgumentException("Model name cannot be null or empty");
+        }
+
+        return generateTextEmbeddingsAsync(inputs, modelName).get();
       } catch (InterruptedException | ExecutionException e) {
           Thread.currentThread().interrupt();
-          if (e.getCause() instanceof ModuleException) {
-              throw (ModuleException) e.getCause();
-          }
           throw new ModuleException("Failed to generate embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
       }
   }
@@ -72,14 +67,7 @@ public class MistralAIService implements EmbeddingService {
   }
 
   private String handleEmbeddingResponse(HttpResponse response) {
-      if (response.getStatusCode() != 200) {
-          return handleErrorResponse(response, "Error generating embeddings");
-      }
-      try {
-          return new String(response.getEntity().getBytes());
-      } catch (IOException e) {
-          throw new ModuleException("Failed to read embedding response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-      }
+    return HttpRequestHelper.handleEmbeddingResponse(response, "Mistral AI Error");
   }
 
  public byte[] buildEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
@@ -95,17 +83,6 @@ public class MistralAIService implements EmbeddingService {
       headers.put("Content-Type", "application/json");
       headers.put("Accept", "application/json");
       return headers;
-  }
-
-  private String handleErrorResponse(HttpResponse response, String message) {
-      try {
-          String errorBody = new String(response.getEntity().getBytes());
-          String errorMsg = String.format("%s. Error (HTTP %d): %s", message, response.getStatusCode(), errorBody);
-          LOGGER.error(errorMsg);
-          throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
-      } catch (IOException e) {
-          throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-      }
   }
 
   @Override

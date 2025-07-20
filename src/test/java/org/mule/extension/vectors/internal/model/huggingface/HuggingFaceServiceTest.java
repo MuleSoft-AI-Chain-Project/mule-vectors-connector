@@ -14,6 +14,7 @@ import org.mule.extension.vectors.internal.connection.provider.embeddings.huggin
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.huggingface.HuggingFaceService;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
@@ -42,16 +43,16 @@ class HuggingFaceServiceTest {
         when(params.getEmbeddingModelName()).thenReturn("test-model");
         List<TextSegment> segments = List.of(dev.langchain4j.data.segment.TextSegment.from("foo"), dev.langchain4j.data.segment.TextSegment.from("bar"));
         String fakeResponse = "[[0.1,0.2],[0.3,0.4]]";
-        HttpResponse httpResponse = mock(HttpResponse.class);
-        when(httpResponse.getStatusCode()).thenReturn(200);
-        when(httpResponse.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(fakeResponse.getBytes(StandardCharsets.UTF_8)));
         when(connection.getTimeout()).thenReturn(1000L);
         when(connection.getApiKey()).thenReturn("key");
         when(connection.getHttpClient()).thenReturn(null);
 
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
-                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(httpResponse));
+            HttpResponse mockResponse = mock(HttpResponse.class);
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(fakeResponse);
             Response<List<Embedding>> resp = service.embedTexts(segments);
             assertNotNull(resp);
             assertEquals(2, resp.content().size());
@@ -64,16 +65,16 @@ class HuggingFaceServiceTest {
     void embedTexts_throwsOnErrorResponse() throws Exception {
         when(params.getEmbeddingModelName()).thenReturn("test-model");
         List<TextSegment> segments = List.of(dev.langchain4j.data.segment.TextSegment.from("foo"));
-        HttpResponse httpResponse = mock(HttpResponse.class);
-        when(httpResponse.getStatusCode()).thenReturn(500);
-        when(httpResponse.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("error".getBytes(StandardCharsets.UTF_8)));
         when(connection.getTimeout()).thenReturn(1000L);
         when(connection.getApiKey()).thenReturn("key");
         when(connection.getHttpClient()).thenReturn(null);
 
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
-                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(httpResponse));
+            HttpResponse mockResponse = mock(HttpResponse.class);
+            helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+                    .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new ModuleException("Hugging Face API error (HTTP 500): error", MuleVectorsErrorType.AI_SERVICES_FAILURE));
             assertThrows(ModuleException.class, () -> service.embedTexts(segments));
         }
     }

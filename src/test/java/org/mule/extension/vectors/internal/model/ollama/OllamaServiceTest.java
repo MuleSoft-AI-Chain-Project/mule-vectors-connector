@@ -18,7 +18,6 @@ import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.ollama.OllamaService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -49,14 +48,14 @@ class OllamaServiceTest {
                 "}";
         String responseJson = embeddingJson;
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            HttpResponse httpResp = mock(HttpResponse.class);
-            when(httpResp.getStatusCode()).thenReturn(200);
-            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(responseJson.getBytes(StandardCharsets.UTF_8)));
             when(modelConnection.getHttpClient()).thenReturn(null);
             when(modelConnection.getBaseUrl()).thenReturn("http://localhost");
             when(modelConnection.getTimeout()).thenReturn(1000L);
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(responseJson);
             List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
             Response<List<Embedding>> resp = service.embedTexts(segments);
             assertNotNull(resp);
@@ -71,16 +70,16 @@ class OllamaServiceTest {
         when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
         String errorJson = "{\"error\":\"fail\"}";
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            HttpResponse httpResp = mock(HttpResponse.class);
-            when(httpResp.getStatusCode()).thenReturn(500);
-            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(errorJson.getBytes(StandardCharsets.UTF_8)));
             when(modelConnection.getHttpClient()).thenReturn(null);
             when(modelConnection.getBaseUrl()).thenReturn("http://localhost");
             when(modelConnection.getTimeout()).thenReturn(1000L);
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new ModuleException("Ollama API error (HTTP 500): " + errorJson, org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
             List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
-            assertThrows(RuntimeException.class, () -> service.embedTexts(segments));
+            assertThrows(ModuleException.class, () -> service.embedTexts(segments));
         }
     }
 
@@ -101,11 +100,11 @@ class OllamaServiceTest {
                 "\"embedding\": [0.1, 0.2, 0.3]" +
                 "}";
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            HttpResponse httpResp = mock(HttpResponse.class);
-            when(httpResp.getStatusCode()).thenReturn(200);
-            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(embeddingJson.getBytes(StandardCharsets.UTF_8)));
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(embeddingJson);
             Object result = service.generateTextEmbeddings(List.of("foo"), "test-model");
             assertTrue(result instanceof String);
             JSONObject json = new JSONObject((String) result);
@@ -132,8 +131,11 @@ class OllamaServiceTest {
         when(modelConnection.getBaseUrl()).thenReturn("http://localhost");
         when(modelConnection.getTimeout()).thenReturn(1000L);
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.failedFuture(new ModuleException("fail", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE)));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new ModuleException("fail", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
             assertThrows(ModuleException.class, () -> service.generateTextEmbeddings(List.of("foo"), "test-model"));
         }
     }

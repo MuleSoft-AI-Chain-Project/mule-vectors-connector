@@ -13,7 +13,6 @@ import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.azureopenai.AzureOpenAIService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,11 +57,11 @@ class AzureOpenAIServiceTest {
                 "\"data\": [{\"embedding\": [0.1, 0.2, 0.3]}]" +
                 "}";
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            HttpResponse httpResp = mock(HttpResponse.class);
-            when(httpResp.getStatusCode()).thenReturn(200);
-            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity(fakeResponse.getBytes(StandardCharsets.UTF_8)));
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenReturn(fakeResponse);
             Response<List<Embedding>> resp = service.embedTexts(segments);
             assertNotNull(resp);
             assertEquals(1, resp.content().size());
@@ -83,11 +82,11 @@ class AzureOpenAIServiceTest {
         AzureOpenAIService service = new AzureOpenAIService(modelConnection, modelParameters);
         List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
-            HttpResponse httpResp = mock(HttpResponse.class);
-            when(httpResp.getStatusCode()).thenReturn(500);
-            when(httpResp.getEntity()).thenReturn(new ByteArrayHttpEntity("fail".getBytes(StandardCharsets.UTF_8)));
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.completedFuture(httpResp));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new ModuleException("Azure OpenAI API error (HTTP 500): fail", MuleVectorsErrorType.AI_SERVICES_FAILURE));
             assertThrows(ModuleException.class, () -> service.embedTexts(segments));
         }
     }
@@ -116,8 +115,11 @@ class AzureOpenAIServiceTest {
         when(conn.getApiVersion()).thenReturn("2024-01-01");
         AzureOpenAIService svc = new AzureOpenAIService(conn, modelParameters);
         try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+            HttpResponse mockResponse = mock(HttpResponse.class);
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
-                    .thenReturn(CompletableFuture.failedFuture(new ModuleException("fail", MuleVectorsErrorType.AI_SERVICES_FAILURE)));
+                    .thenReturn(CompletableFuture.completedFuture(mockResponse));
+            helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+                    .thenThrow(new ModuleException("fail", MuleVectorsErrorType.AI_SERVICES_FAILURE));
             assertThatThrownBy(() -> svc.generateTextEmbeddings(List.of("foo"), "bar"))
                     .isInstanceOf(ModuleException.class)
                     .hasMessageContaining("fail");
