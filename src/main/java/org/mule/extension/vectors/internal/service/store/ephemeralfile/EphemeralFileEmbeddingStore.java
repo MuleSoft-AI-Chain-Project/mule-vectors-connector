@@ -1,6 +1,4 @@
 package org.mule.extension.vectors.internal.service.store.ephemeralfile;
-
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -13,6 +11,7 @@ import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.filter.Filter;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import lombok.SneakyThrows;
 
 public class EphemeralFileEmbeddingStore implements EmbeddingStore<TextSegment> {
 
@@ -129,16 +128,13 @@ public class EphemeralFileEmbeddingStore implements EmbeddingStore<TextSegment> 
         }
     }
 
+    @SneakyThrows
     @Override
     public void removeAll() {
 
         synchronized(this) {
-
-            try {
                 Files.deleteIfExists(Paths.get(ephemeralFileStorePath));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
         }
     }
 

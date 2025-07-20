@@ -11,8 +11,6 @@ import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 
 public class HuggingFaceService implements EmbeddingService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HuggingFaceService.class);
   private HuggingFaceModelConnection huggingFaceModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;;
   private static final String INFERENCE_ENDPOINT = "https://router.huggingface.co/hf-inference/models/";

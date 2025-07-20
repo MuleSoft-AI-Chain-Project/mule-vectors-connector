@@ -13,8 +13,6 @@ import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MistralAIService implements EmbeddingService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MistralAIService.class);
   private MistralAIModelConnection mistralAIModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;
   private final ObjectMapper objectMapper = new ObjectMapper();

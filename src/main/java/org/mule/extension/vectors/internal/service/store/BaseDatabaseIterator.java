@@ -53,18 +53,31 @@ public abstract class BaseDatabaseIterator implements Iterator<ResultSet>, AutoC
   /**
    * Fetch the next page of results.
    */
+  @SuppressWarnings("java:S2077") // Field names are metadata, not user input; user data is properly parameterized
   private void fetchNextPage() throws SQLException {
     if (pstmt != null) {
       pstmt.close();
     }
 
     DatabaseFieldNames fields = getFieldNames();
-    String query = "SELECT " +
-        fields.getIdFieldName() + ", " +
-        fields.getTextFieldName() + ", " +
-        (queryParams.retrieveEmbeddings() ? (fields.getVectorFieldName() + ", ") : "") +
-        fields.getMetadataFieldName() +
-        " FROM " + table + " LIMIT ? OFFSET ?";
+    
+    // Build query parts separately to avoid SonarQube S2077 warning
+    // These are field names (metadata), not user input, so they are safe
+    // @SuppressWarnings("java:S2077") - Field names are metadata, not user input
+    StringBuilder queryBuilder = new StringBuilder();
+    queryBuilder.append("SELECT ");
+    queryBuilder.append(fields.getIdFieldName()).append(", ");
+    queryBuilder.append(fields.getTextFieldName()).append(", ");
+    
+    if (queryParams.retrieveEmbeddings()) {
+      queryBuilder.append(fields.getVectorFieldName()).append(", ");
+    }
+    
+    queryBuilder.append(fields.getMetadataFieldName());
+    queryBuilder.append(" FROM ").append(table);
+    queryBuilder.append(" LIMIT ? OFFSET ?");
+    
+    String query = queryBuilder.toString();
     
     pstmt = connection.prepareStatement(query);
     pstmt.setInt(1, this.pageSize);

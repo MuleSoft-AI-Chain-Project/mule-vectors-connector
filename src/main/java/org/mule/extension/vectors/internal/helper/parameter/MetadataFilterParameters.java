@@ -2,12 +2,8 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import dev.langchain4j.store.embedding.filter.Filter;
 import org.mule.extension.vectors.internal.helper.metadata.MetadataFilterHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class MetadataFilterParameters {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterParameters.class);
 
   public abstract String getCondition();
 
