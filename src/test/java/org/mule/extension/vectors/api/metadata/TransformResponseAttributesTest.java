@@ -2,9 +2,13 @@ package org.mule.extension.vectors.api.metadata;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 @DisplayName("TransformResponseAttributes Tests")
 class TransformResponseAttributesTest {
@@ -314,15 +318,10 @@ class TransformResponseAttributesTest {
         assertThat(response.hashCode()).isEqualTo(0);
     }
 
-    @Test
-    @DisplayName("Equals should handle case where this.fileType is null but that.fileType is not null")
-    void equalsShouldHandleThisFileTypeNullButThatFileTypeNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        // No fileType in attributes1
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("fileType", "pdf");
-
+    @ParameterizedTest
+    @MethodSource("provideThisNullFieldScenarios")
+    @DisplayName("Equals should handle this null field scenarios")
+    void equalsShouldHandleThisNullFieldScenarios(String testCase, HashMap<String, Object> attributes1, HashMap<String, Object> attributes2) {
         TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
         TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
 
@@ -330,15 +329,27 @@ class TransformResponseAttributesTest {
         assertThat(response2.equals(response1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should handle case where this.mediaType is null but that.mediaType is not null")
-    void equalsShouldHandleThisMediaTypeNullButThatMediaTypeNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        // No mediaType in attributes1
+    private static Stream<Arguments> provideThisNullFieldScenarios() {
+        return Stream.of(
+            Arguments.of("this.fileType is null but that.fileType is not null",
+                createAttributes(null, "document", "application/pdf", "extra"),
+                createAttributes("pdf", "document", "application/pdf", "extra")),
+            Arguments.of("this.mediaType is null but that.mediaType is not null",
+                createAttributes("pdf", null, "application/pdf", "extra"),
+                createAttributes("pdf", "document", "application/pdf", "extra")),
+            Arguments.of("this.mimeType is null but that.mimeType is not null",
+                createAttributes("pdf", "document", null, "extra"),
+                createAttributes("pdf", "document", "application/pdf", "extra")),
+            Arguments.of("this.otherAttributes is null but that.otherAttributes is not null",
+                createAttributes("pdf", "document", "application/pdf", null),
+                createAttributes("pdf", "document", "application/pdf", "extra"))
+        );
+    }
 
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("mediaType", "document");
-
+    @ParameterizedTest
+    @MethodSource("provideThatNullFieldScenarios")
+    @DisplayName("Equals should handle that null field scenarios")
+    void equalsShouldHandleThatNullFieldScenarios(String testCase, HashMap<String, Object> attributes1, HashMap<String, Object> attributes2) {
         TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
         TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
 
@@ -346,100 +357,30 @@ class TransformResponseAttributesTest {
         assertThat(response2.equals(response1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should handle case where this.mimeType is null but that.mimeType is not null")
-    void equalsShouldHandleThisMimeTypeNullButThatMimeTypeNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        // No mimeType in attributes1
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("mimeType", "application/pdf");
-
-        TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
-        TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
+    private static Stream<Arguments> provideThatNullFieldScenarios() {
+        return Stream.of(
+            Arguments.of("that.fileType is null but this.fileType is not null",
+                createAttributes("pdf", "document", "application/pdf", "extra"),
+                createAttributes(null, "document", "application/pdf", "extra")),
+            Arguments.of("that.mediaType is null but this.mediaType is not null",
+                createAttributes("pdf", "document", "application/pdf", "extra"),
+                createAttributes("pdf", null, "application/pdf", "extra")),
+            Arguments.of("that.mimeType is null but this.mimeType is not null",
+                createAttributes("pdf", "document", "application/pdf", "extra"),
+                createAttributes("pdf", "document", null, "extra")),
+            Arguments.of("that.otherAttributes is null but this.otherAttributes is not null",
+                createAttributes("pdf", "document", "application/pdf", "extra"),
+                createAttributes("pdf", "document", "application/pdf", null))
+        );
     }
 
-    @Test
-    @DisplayName("Equals should handle case where this.otherAttributes is null but that.otherAttributes is not null")
-    void equalsShouldHandleThisOtherAttributesNullButThatOtherAttributesNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        // No otherAttributes in attributes1
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("extra", "value");
-
-        TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
-        TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.fileType is null but this.fileType is not null")
-    void equalsShouldHandleThatFileTypeNullButThisFileTypeNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("fileType", "pdf");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        // No fileType in attributes2
-
-        TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
-        TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.mediaType is null but this.mediaType is not null")
-    void equalsShouldHandleThatMediaTypeNullButThisMediaTypeNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("mediaType", "document");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        // No mediaType in attributes2
-
-        TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
-        TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.mimeType is null but this.mimeType is not null")
-    void equalsShouldHandleThatMimeTypeNullButThisMimeTypeNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("mimeType", "application/pdf");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        // No mimeType in attributes2
-
-        TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
-        TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.otherAttributes is null but this.otherAttributes is not null")
-    void equalsShouldHandleThatOtherAttributesNullButThisOtherAttributesNotNull() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("extra", "value");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        // No otherAttributes in attributes2
-
-        TransformResponseAttributes response1 = new TransformResponseAttributes(attributes1);
-        TransformResponseAttributes response2 = new TransformResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
+    private static HashMap<String, Object> createAttributes(String fileType, String mediaType, String mimeType, String extra) {
+        HashMap<String, Object> attributes = new HashMap<>();
+        if (fileType != null) attributes.put("fileType", fileType);
+        if (mediaType != null) attributes.put("mediaType", mediaType);
+        if (mimeType != null) attributes.put("mimeType", mimeType);
+        if (extra != null) attributes.put("extra", extra);
+        return attributes;
     }
 
     @Test
