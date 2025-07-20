@@ -2,7 +2,12 @@ package org.mule.extension.vectors.api.metadata;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.stream.Stream;
 
 @DisplayName("TokenUsage Tests")
 class TokenUsageTest {
@@ -72,34 +77,26 @@ class TokenUsageTest {
         assertThat(tokenUsage2.equals(tokenUsage1)).isTrue();
     }
 
-    @Test
-    @DisplayName("Equals should return false when inputCount differs")
-    void equalsShouldReturnFalseWhenInputCountDiffers() {
-        TokenUsage tokenUsage1 = new TokenUsage(10, 20, 30);
-        TokenUsage tokenUsage2 = new TokenUsage(15, 20, 30);
-        
+    @ParameterizedTest
+    @MethodSource("provideDifferentFieldValues")
+    @DisplayName("Equals should return false when specific fields differ")
+    void equalsShouldReturnFalseWhenFieldsDiffer(String testCase, TokenUsage tokenUsage1, TokenUsage tokenUsage2) {
         assertThat(tokenUsage1.equals(tokenUsage2)).isFalse();
         assertThat(tokenUsage2.equals(tokenUsage1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should return false when outputCount differs")
-    void equalsShouldReturnFalseWhenOutputCountDiffers() {
-        TokenUsage tokenUsage1 = new TokenUsage(10, 20, 30);
-        TokenUsage tokenUsage2 = new TokenUsage(10, 25, 30);
-        
-        assertThat(tokenUsage1.equals(tokenUsage2)).isFalse();
-        assertThat(tokenUsage2.equals(tokenUsage1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should return false when totalCount differs")
-    void equalsShouldReturnFalseWhenTotalCountDiffers() {
-        TokenUsage tokenUsage1 = new TokenUsage(10, 20, 30);
-        TokenUsage tokenUsage2 = new TokenUsage(10, 20, 35);
-        
-        assertThat(tokenUsage1.equals(tokenUsage2)).isFalse();
-        assertThat(tokenUsage2.equals(tokenUsage1)).isFalse();
+    private static Stream<Arguments> provideDifferentFieldValues() {
+        return Stream.of(
+            Arguments.of("inputCount differs", 
+                new TokenUsage(10, 20, 30), 
+                new TokenUsage(15, 20, 30)),
+            Arguments.of("outputCount differs", 
+                new TokenUsage(10, 20, 30), 
+                new TokenUsage(10, 25, 30)),
+            Arguments.of("totalCount differs", 
+                new TokenUsage(10, 20, 30), 
+                new TokenUsage(10, 20, 35))
+        );
     }
 
     @Test

@@ -2,9 +2,13 @@ package org.mule.extension.vectors.api.metadata;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 @DisplayName("MultimodalEmbeddingResponseAttributes Tests")
 class MultimodalEmbeddingResponseAttributesTest {
@@ -136,21 +140,10 @@ class MultimodalEmbeddingResponseAttributesTest {
         assertThat(response2.equals(response1)).isTrue();
     }
 
-    @Test
-    @DisplayName("Equals should return false when mimeType differs")
-    void equalsShouldReturnFalseWhenMimeTypeDiffers() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("embeddingModelName", "text-embedding-ada-002");
-        attributes1.put("embeddingModelDimension", 1536);
-        attributes1.put("mimeType", "image/jpeg");
-        attributes1.put("mediaType", "image");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("embeddingModelName", "text-embedding-ada-002");
-        attributes2.put("embeddingModelDimension", 1536);
-        attributes2.put("mimeType", "image/png");
-        attributes2.put("mediaType", "image");
-
+    @ParameterizedTest
+    @MethodSource("provideDifferentFieldValues")
+    @DisplayName("Equals should return false when specific fields differ")
+    void equalsShouldReturnFalseWhenFieldsDiffer(String testCase, HashMap<String, Object> attributes1, HashMap<String, Object> attributes2) {
         MultimodalEmbeddingResponseAttributes response1 = new MultimodalEmbeddingResponseAttributes(attributes1);
         MultimodalEmbeddingResponseAttributes response2 = new MultimodalEmbeddingResponseAttributes(attributes2);
 
@@ -158,90 +151,27 @@ class MultimodalEmbeddingResponseAttributesTest {
         assertThat(response2.equals(response1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should return false when mediaType differs")
-    void equalsShouldReturnFalseWhenMediaTypeDiffers() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("embeddingModelName", "text-embedding-ada-002");
-        attributes1.put("embeddingModelDimension", 1536);
-        attributes1.put("mimeType", "image/jpeg");
-        attributes1.put("mediaType", "image");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("embeddingModelName", "text-embedding-ada-002");
-        attributes2.put("embeddingModelDimension", 1536);
-        attributes2.put("mimeType", "image/jpeg");
-        attributes2.put("mediaType", "text");
-
-        MultimodalEmbeddingResponseAttributes response1 = new MultimodalEmbeddingResponseAttributes(attributes1);
-        MultimodalEmbeddingResponseAttributes response2 = new MultimodalEmbeddingResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
+    private static Stream<Arguments> provideDifferentFieldValues() {
+        return Stream.of(
+            Arguments.of("mimeType differs", 
+                createAttributes("text-embedding-ada-002", 1536, "image/jpeg", "image"),
+                createAttributes("text-embedding-ada-002", 1536, "image/png", "image")),
+            Arguments.of("mediaType differs", 
+                createAttributes("text-embedding-ada-002", 1536, "image/jpeg", "image"),
+                createAttributes("text-embedding-ada-002", 1536, "image/jpeg", "text")),
+            Arguments.of("parent class field differs", 
+                createAttributes("text-embedding-ada-002", 1536, "image/jpeg", "image"),
+                createAttributes("text-embedding-ada-001", 1536, "image/jpeg", "image"))
+        );
     }
 
-    @Test
-    @DisplayName("Equals should handle null mimeType correctly")
-    void equalsShouldHandleNullMimeTypeCorrectly() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("embeddingModelName", "text-embedding-ada-002");
-        attributes1.put("embeddingModelDimension", 1536);
-        attributes1.put("mediaType", "image");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("embeddingModelName", "text-embedding-ada-002");
-        attributes2.put("embeddingModelDimension", 1536);
-        attributes2.put("mimeType", "image/jpeg");
-        attributes2.put("mediaType", "image");
-
-        MultimodalEmbeddingResponseAttributes response1 = new MultimodalEmbeddingResponseAttributes(attributes1);
-        MultimodalEmbeddingResponseAttributes response2 = new MultimodalEmbeddingResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle null mediaType correctly")
-    void equalsShouldHandleNullMediaTypeCorrectly() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("embeddingModelName", "text-embedding-ada-002");
-        attributes1.put("embeddingModelDimension", 1536);
-        attributes1.put("mimeType", "image/jpeg");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("embeddingModelName", "text-embedding-ada-002");
-        attributes2.put("embeddingModelDimension", 1536);
-        attributes2.put("mimeType", "image/jpeg");
-        attributes2.put("mediaType", "image");
-
-        MultimodalEmbeddingResponseAttributes response1 = new MultimodalEmbeddingResponseAttributes(attributes1);
-        MultimodalEmbeddingResponseAttributes response2 = new MultimodalEmbeddingResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle parent class field differences")
-    void equalsShouldHandleParentClassFieldDifferences() {
-        HashMap<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("embeddingModelName", "text-embedding-ada-002");
-        attributes1.put("embeddingModelDimension", 1536);
-        attributes1.put("mimeType", "image/jpeg");
-        attributes1.put("mediaType", "image");
-
-        HashMap<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("embeddingModelName", "text-embedding-ada-001");
-        attributes2.put("embeddingModelDimension", 1536);
-        attributes2.put("mimeType", "image/jpeg");
-        attributes2.put("mediaType", "image");
-
-        MultimodalEmbeddingResponseAttributes response1 = new MultimodalEmbeddingResponseAttributes(attributes1);
-        MultimodalEmbeddingResponseAttributes response2 = new MultimodalEmbeddingResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
+    private static HashMap<String, Object> createAttributes(String modelName, int dimension, String mimeType, String mediaType) {
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("embeddingModelName", modelName);
+        attributes.put("embeddingModelDimension", dimension);
+        attributes.put("mimeType", mimeType);
+        attributes.put("mediaType", mediaType);
+        return attributes;
     }
 
     @Test

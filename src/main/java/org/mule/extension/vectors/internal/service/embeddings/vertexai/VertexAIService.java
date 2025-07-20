@@ -20,7 +20,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +84,7 @@ public class VertexAIService implements EmbeddingService {
     private String buildTextPayload(List<String> inputs, String modelName) {
         List<Map<String, String>> instances = inputs.stream()
                 .map(input -> Map.of(modelName.startsWith("text") ? "content" : "text", input))
-                .collect(Collectors.toList());
+                .toList();
         return buildPayload(instances);
     }
     
@@ -95,7 +94,7 @@ public class VertexAIService implements EmbeddingService {
                     String encodedImage = Base64.getEncoder().encodeToString(imageBytes);
                     return Map.of("image", Map.of("bytesBase64Encoded", encodedImage));
                 })
-                .collect(Collectors.toList());
+                .toList();
         return buildPayload(instances);
     }
 
@@ -147,45 +146,10 @@ public class VertexAIService implements EmbeddingService {
             }
             allEmbeddings.addAll(embeddings);
         } catch (Exception e) {
-            throw new RuntimeException(EMBEDDING_ERROR_MESSAGE, e);
+            throw new ModuleException(EMBEDDING_ERROR_MESSAGE, MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
         }
       }
       return Response.from(allEmbeddings);
-    }
-
-    private List<Embedding> parseEmbeddings(String jsonResponse) {
-        try {
-            JSONObject response = new JSONObject(jsonResponse);
-            JSONArray predictions = response.getJSONArray("predictions");
-            List<Embedding> embeddings = new ArrayList<>();
-            
-            for (int i = 0; i < predictions.length(); i++) {
-                JSONObject prediction = predictions.getJSONObject(i);
-                List<Float> vector = new ArrayList<>();
-                
-                if (prediction.has(IMAGE_EMBEDDING_FIELD_NAME)) {
-
-                JSONArray imageEmbedding = prediction.getJSONArray(IMAGE_EMBEDDING_FIELD_NAME);
-                for (int j = 0; j < imageEmbedding.length(); j++) {
-                    vector.add((float) imageEmbedding.getDouble(j));
-                }
-
-                // TODO: Change behavior, today text embedding is ignored if image embedding is present
-                } else if (prediction.has(TEXT_EMBEDDING_FIELD_NAME)) {
-
-                JSONArray textEmbedding = prediction.getJSONArray(TEXT_EMBEDDING_FIELD_NAME);
-                for (int j = 0; j < textEmbedding.length(); j++) {
-                    vector.add((float) textEmbedding.getDouble(j));
-                }
-                }
-                
-                embeddings.add(Embedding.from(vector));
-            }
-            
-            return embeddings;
-        } catch (Exception e) {
-        throw new ModuleException("Error parsing embeddings response", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
     }
 }
 

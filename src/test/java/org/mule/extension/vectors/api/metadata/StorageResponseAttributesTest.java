@@ -2,11 +2,15 @@ package org.mule.extension.vectors.api.metadata;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @DisplayName("StorageResponseAttributes Tests")
 class StorageResponseAttributesTest {
@@ -203,16 +207,10 @@ class StorageResponseAttributesTest {
         assertThat(response2.equals(response1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should handle null path correctly")
-    void equalsShouldHandleNullPathCorrectly() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("fileName", "document.pdf");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("path", "/path/to/file");
-        attributes2.put("fileName", "document.pdf");
-
+    @ParameterizedTest
+    @MethodSource("provideNullFieldScenarios")
+    @DisplayName("Equals should handle null field scenarios")
+    void equalsShouldHandleNullFieldScenarios(String testCase, Map<String, Object> attributes1, Map<String, Object> attributes2) {
         StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
         StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
 
@@ -220,16 +218,30 @@ class StorageResponseAttributesTest {
         assertThat(response2.equals(response1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should handle null fileName correctly")
-    void equalsShouldHandleNullFileNameCorrectly() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("path", "/path/to/file");
+    private static Stream<Arguments> provideNullFieldScenarios() {
+        return Stream.of(
+            Arguments.of("this.path is null but that.path is not null",
+                createAttributes(null, "test.txt", "text/plain", createMetadataMap(), "extra"),
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra")),
+            Arguments.of("this.fileName is null but that.fileName is not null",
+                createAttributes("/test/path", null, "text/plain", createMetadataMap(), "extra"),
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra")),
+            Arguments.of("this.mimeType is null but that.mimeType is not null",
+                createAttributes("/test/path", "test.txt", null, createMetadataMap(), "extra"),
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra")),
+            Arguments.of("this.metadata is null but that.metadata is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", null, "extra"),
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra")),
+            Arguments.of("this.otherAttributes is null but that.otherAttributes is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), null),
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra"))
+        );
+    }
 
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("path", "/path/to/file");
-        attributes2.put("fileName", "document.pdf");
-
+    @ParameterizedTest
+    @MethodSource("provideThatNullFieldScenarios")
+    @DisplayName("Equals should handle that null field scenarios")
+    void equalsShouldHandleThatNullFieldScenarios(String testCase, Map<String, Object> attributes1, Map<String, Object> attributes2) {
         StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
         StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
 
@@ -237,55 +249,34 @@ class StorageResponseAttributesTest {
         assertThat(response2.equals(response1)).isFalse();
     }
 
-    @Test
-    @DisplayName("Equals should handle null mimeType correctly")
-    void equalsShouldHandleNullMimeTypeCorrectly() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("path", "/path/to/file");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("path", "/path/to/file");
-        attributes2.put("mimeType", "application/pdf");
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
+    private static Stream<Arguments> provideThatNullFieldScenarios() {
+        return Stream.of(
+            Arguments.of("that.path is null but this.path is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra"),
+                createAttributes(null, "test.txt", "text/plain", createMetadataMap(), "extra")),
+            Arguments.of("that.fileName is null but this.fileName is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra"),
+                createAttributes("/test/path", null, "text/plain", createMetadataMap(), "extra")),
+            Arguments.of("that.mimeType is null but this.mimeType is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra"),
+                createAttributes("/test/path", "test.txt", null, createMetadataMap(), "extra")),
+            Arguments.of("that.metadata is null but this.metadata is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra"),
+                createAttributes("/test/path", "test.txt", "text/plain", null, "extra")),
+            Arguments.of("that.otherAttributes is null but this.otherAttributes is not null",
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), "extra"),
+                createAttributes("/test/path", "test.txt", "text/plain", createMetadataMap(), null))
+        );
     }
 
-    @Test
-    @DisplayName("Equals should handle null metadata correctly")
-    void equalsShouldHandleNullMetadataCorrectly() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("path", "/path/to/file");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("path", "/path/to/file");
-        attributes2.put("metadata", createMetadataMap());
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle null otherAttributes correctly")
-    void equalsShouldHandleNullOtherAttributesCorrectly() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("path", "/path/to/file");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("path", "/path/to/file");
-        attributes2.put("extra", "value");
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
+    private static Map<String, Object> createAttributes(String path, String fileName, String mimeType, Map<String, Object> metadata, String extra) {
+        Map<String, Object> attributes = new HashMap<>();
+        if (path != null) attributes.put("path", path);
+        if (fileName != null) attributes.put("fileName", fileName);
+        if (mimeType != null) attributes.put("mimeType", mimeType);
+        if (metadata != null) attributes.put("metadata", metadata);
+        if (extra != null) attributes.put("extra", extra);
+        return attributes;
     }
 
     @Test
@@ -355,170 +346,6 @@ class StorageResponseAttributesTest {
     }
 
     @Test
-    @DisplayName("Equals should handle case where this.path is null but that.path is not null")
-    void equalsShouldHandleThisPathNullButThatPathNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        // No path in attributes1
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("path", "/test/path");
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where this.fileName is null but that.fileName is not null")
-    void equalsShouldHandleThisFileNameNullButThatFileNameNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        // No fileName in attributes1
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("fileName", "test.txt");
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where this.mimeType is null but that.mimeType is not null")
-    void equalsShouldHandleThisMimeTypeNullButThatMimeTypeNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        // No mimeType in attributes1
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("mimeType", "text/plain");
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where this.metadata is null but that.metadata is not null")
-    void equalsShouldHandleThisMetadataNullButThatMetadataNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        // No metadata in attributes1
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("key", "value");
-        attributes2.put("metadata", metadata);
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where this.otherAttributes is null but that.otherAttributes is not null")
-    void equalsShouldHandleThisOtherAttributesNullButThatOtherAttributesNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        // No otherAttributes in attributes1
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        attributes2.put("extra", "value");
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.path is null but this.path is not null")
-    void equalsShouldHandleThatPathNullButThisPathNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("path", "/test/path");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        // No path in attributes2
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.fileName is null but this.fileName is not null")
-    void equalsShouldHandleThatFileNameNullButThisFileNameNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("fileName", "test.txt");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        // No fileName in attributes2
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.mimeType is null but this.mimeType is not null")
-    void equalsShouldHandleThatMimeTypeNullButThisMimeTypeNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("mimeType", "text/plain");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        // No mimeType in attributes2
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.metadata is null but this.metadata is not null")
-    void equalsShouldHandleThatMetadataNullButThisMetadataNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("key", "value");
-        attributes1.put("metadata", metadata);
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        // No metadata in attributes2
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("Equals should handle case where that.otherAttributes is null but this.otherAttributes is not null")
-    void equalsShouldHandleThatOtherAttributesNullButThisOtherAttributesNotNull() {
-        Map<String, Object> attributes1 = new HashMap<>();
-        attributes1.put("extra", "value");
-
-        Map<String, Object> attributes2 = new HashMap<>();
-        // No otherAttributes in attributes2
-
-        StorageResponseAttributes response1 = new StorageResponseAttributes(attributes1);
-        StorageResponseAttributes response2 = new StorageResponseAttributes(attributes2);
-
-        assertThat(response1.equals(response2)).isFalse();
-        assertThat(response2.equals(response1)).isFalse();
-    }
-
-    @Test
     @DisplayName("HashCode should work with mixed null and non-null values")
     void hashCodeShouldWorkWithMixedNullAndNonNullValues() {
         Map<String, Object> attributes = new HashMap<>();
@@ -552,19 +379,17 @@ class StorageResponseAttributesTest {
     }
 
     // Helper methods to create metadata maps for testing
-    private Map<String, Object> createMetadataMap() {
+    private static Map<String, Object> createMetadataMap() {
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("author", "John Doe");
-        metadata.put("category", "documentation");
-        metadata.put("version", 1.0);
+        metadata.put("key", "value");
+        metadata.put("number", 123);
         return metadata;
     }
 
-    private Map<String, Object> createDifferentMetadataMap() {
+    private static Map<String, Object> createDifferentMetadataMap() {
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("author", "Jane Smith");
-        metadata.put("category", "presentation");
-        metadata.put("version", 2.0);
+        metadata.put("key", "differentValue");
+        metadata.put("number", 456);
         return metadata;
     }
 } 

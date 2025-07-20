@@ -96,7 +96,7 @@ class VertexAIServiceTest {
             helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
                 .thenReturn(CompletableFuture.completedFuture(new JSONObject("{}")));
             assertThatThrownBy(() -> service.embedTexts(segments))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ModuleException.class)
                 .hasMessageContaining("Failed to generate embeddings");
         }
     }
