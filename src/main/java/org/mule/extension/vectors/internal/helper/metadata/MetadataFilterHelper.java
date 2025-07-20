@@ -24,7 +24,7 @@ public class MetadataFilterHelper {
   private static final Pattern FIELD_NAME_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)");
   private static final Pattern OPERATOR_PATTERN = Pattern.compile("([=!><]+)");
   // Fixed regex to avoid catastrophic backtracking by using possessive quantifiers
-  private static final Pattern CONTAINS_FUNCTION_PATTERN = Pattern.compile("CONTAINS\\s*+\\s*+([a-zA-Z_][a-zA-Z0-9_]*)\\s*+,\\s*+([^)]*+)\\s*+\\)");
+  private static final Pattern CONTAINS_FUNCTION_PATTERN = Pattern.compile("CONTAINS\\s*+\\(\\s*+([a-zA-Z_][a-zA-Z0-9_]*)\\s*+,\\s*+([^)]*+)\\s*+\\)");
 
   private static final Pattern NUMBER_PATTERN =
       Pattern.compile("^-?\\d+(\\.\\d+)?$");
