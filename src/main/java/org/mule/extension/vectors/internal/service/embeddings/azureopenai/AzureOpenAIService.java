@@ -27,12 +27,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class AzureOpenAIService implements EmbeddingService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AzureOpenAIService.class);
   private AzureOpenAIModelConnection azureOpenAIModelConnection;
   private EmbeddingModelParameters embeddingModelParameters;
   private static final int BATCH_SIZE = 16;

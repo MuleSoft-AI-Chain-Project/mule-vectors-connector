@@ -24,15 +24,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NomicService implements EmbeddingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NomicService.class);
     private NomicModelConnection nomicModelConnection;
     private EmbeddingModelParameters embeddingModelParameters;
     private final ObjectMapper objectMapper = new ObjectMapper();

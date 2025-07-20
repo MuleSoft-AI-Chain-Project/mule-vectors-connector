@@ -110,7 +110,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
     try {
 
       VectorStoreRow<Object> row = (VectorStoreRow<Object>) rowIterator.next();
-      if(row == null) return null; // Skip null media
+      if(row == null) return new LinkedList<>(); // Return empty collection instead of null
 
       JSONObject jsonObject = JsonUtils.rowToJson(row);
 
@@ -125,8 +125,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
       // Look for next page if any on error
       LOGGER.warn(String.format("Error while getting row from %s. Trying next page.", storeName));
-      e.printStackTrace();
-      return null;
+      return new LinkedList<>(); // Return empty collection instead of null
     }
   }
 
