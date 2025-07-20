@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.HashMap;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -41,7 +39,6 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private String nextUrl;
   private Iterator<JSONObject> currentBatch;
   private boolean hasMore;
-  // Constructor: pass all required fields
   public AISearchStoreIterator(
       String storeName,
       QueryParameters queryParams,
@@ -54,18 +51,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     this.hasMore = true;
     try {
       fetchNextBatch();
-    } catch (ModuleException me) {
-      throw me;
-    } catch (ConnectException e) {
-      throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-    } catch (InterruptedException | ExecutionException e) {
-      Thread.currentThread().interrupt();
-      throw new ModuleException("Request to Azure AI Search failed or was interrupted: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (IOException e) {
-      throw new ModuleException("I/O error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (RuntimeException e) {
-      throw new ModuleException("Runtime error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (Exception e) {
+    }  catch (Exception e) {
       throw new ModuleException("Unexpected error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
@@ -86,7 +72,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
         + queryParams.pageSize() + "&$select=" + fields + "&api-version=" + API_VERSION;
   }
 
-  private void fetchNextBatch() throws Exception {
+  private void fetchNextBatch() {
     if (nextUrl == null) {
       hasMore = false;
       return;
@@ -119,7 +105,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       currentBatch = batch.iterator();
     } catch (ConnectException e) {
       throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (InterruptedException | ExecutionException | IOException e) {
       Thread.currentThread().interrupt();
       throw new ModuleException("Request to Azure AI Search failed or was interrupted: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
@@ -158,16 +144,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       }
     } catch (ModuleException me) {
       throw me;
-    } catch (ConnectException e) {
-      throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
-    } catch (InterruptedException | ExecutionException e) {
-      Thread.currentThread().interrupt();
-      throw new ModuleException("Request to Azure AI Search failed or was interrupted: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (IOException e) {
-      throw new ModuleException("I/O error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (RuntimeException e) {
-      throw new ModuleException("Runtime error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (Exception e) {
+    }  catch (Exception e) {
       throw new ModuleException("Unexpected error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
     return currentBatch != null && currentBatch.hasNext();

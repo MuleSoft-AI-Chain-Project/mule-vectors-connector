@@ -8,14 +8,8 @@ import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.store.pinecone.PineconeStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 public class PineconeStore extends BaseStoreService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PineconeStore.class);
-
     private final String apiKey;
     private final String cloud;
     private final String region;
