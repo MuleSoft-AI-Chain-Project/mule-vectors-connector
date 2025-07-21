@@ -35,7 +35,7 @@ public class PineconeStoreConnectionProvider implements BaseStoreConnectionProvi
 
   @Override
   public void dispose() {
-
+    // Handled by Http client
   }
 
   @Override

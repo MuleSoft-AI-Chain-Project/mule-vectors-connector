@@ -265,31 +265,14 @@ public class MetadataFilterHelper {
       updateQuoteState(quoteState, c);
 
       if (!quoteState.inSingleQuote && !quoteState.inDoubleQuote) {
-        if (c == '(') {
-          openParens++;
-        } else if (c == ')') {
-          openParens--;
-          if (openParens < 0) {
-            throw new IllegalArgumentException("Mismatched parentheses in expression (extra closing): " + expression);
-          }
-        }
-
-        // Check for operators only if not inside parentheses or quotes
-        if (openParens == 0 && (Character.isUpperCase(c) || Character.isLetter(c))) {
+        openParens = updateParenthesesBalance(openParens, c, expression);
+        
+        if (openParens == 0 && isPotentialOperatorStart(c)) {
           OperatorType foundOp = detectLogicalOperator(expression, i);
           if (foundOp != OperatorType.NONE) {
             validateOperatorState(operatorState, foundOp, expression);
-            if (current.length() > 0) {
-              parts.add(current.toString().trim());
-              current.setLength(0);
-            }
-            int skipLength = (foundOp == OperatorType.AND ? "AND".length() : "OR".length()) - 1;
-            for (int skip = 0; skip < skipLength; skip++) {
-              if (i + skip + 1 < expression.length()) {
-                current.append(expression.charAt(i + skip + 1));
-              }
-            }
-            i += skipLength;
+            addCurrentTokenIfNotEmpty(parts, current);
+            i = skipOperatorAndContinue(expression, i, foundOp);
             continue;
           }
         }
@@ -298,10 +281,52 @@ public class MetadataFilterHelper {
       i++;
     }
 
+    validateFinalParenthesesBalance(openParens, expression);
+    addRemainingToken(parts, current, expression);
+    return parts;
+  }
+
+  private static boolean isPotentialOperatorStart(char c) {
+    return Character.isUpperCase(c) || Character.isLetter(c);
+  }
+
+  private static int updateParenthesesBalance(int openParens, char c, String expression) {
+    if (c == '(') {
+      return openParens + 1;
+    } else if (c == ')') {
+      int newBalance = openParens - 1;
+      if (newBalance < 0) {
+        throw new IllegalArgumentException("Mismatched parentheses in expression (extra closing): " + expression);
+      }
+      return newBalance;
+    }
+    return openParens;
+  }
+
+  private static void addCurrentTokenIfNotEmpty(List<String> parts, StringBuilder current) {
+    if (current.length() > 0) {
+      parts.add(current.toString().trim());
+      current.setLength(0);
+    }
+  }
+
+  private static int skipOperatorAndContinue(String expression, int currentIndex, OperatorType foundOp) {
+    int skipLength = (foundOp == OperatorType.AND ? "AND".length() : "OR".length()) - 1;
+    for (int skip = 0; skip < skipLength; skip++) {
+      if (currentIndex + skip + 1 < expression.length()) {
+        // Skip the operator characters
+      }
+    }
+    return currentIndex + skipLength;
+  }
+
+  private static void validateFinalParenthesesBalance(int openParens, String expression) {
     if (openParens != 0) {
       throw new IllegalArgumentException("Mismatched parentheses in expression (extra opening): " + expression);
     }
+  }
 
+  private static void addRemainingToken(List<String> parts, StringBuilder current, String expression) {
     if (current.length() > 0) {
       parts.add(current.toString().trim());
     }
@@ -309,7 +334,6 @@ public class MetadataFilterHelper {
     if (parts.isEmpty() && !expression.trim().isEmpty()) {
       parts.add(expression.trim());
     }
-    return parts;
   }
 
   private static boolean checkLogicalOperator(String expression, int index, String operator) {

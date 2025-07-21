@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AISearchStoreIterator.class);
+  private String UNEXPECTED_ERROR_MESSAGE = "Unexpected error during Azure AI Search operation: ";
   private final String storeName;
   private final QueryParameters queryParams;
   private final AISearchStoreConnection aiSearchStoreConnection;
@@ -52,7 +53,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     try {
       fetchNextBatch();
     }  catch (Exception e) {
-      throw new ModuleException("Unexpected error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException(UNEXPECTED_ERROR_MESSAGE + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
@@ -145,7 +146,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     } catch (ModuleException me) {
       throw me;
     }  catch (Exception e) {
-      throw new ModuleException("Unexpected error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException(UNEXPECTED_ERROR_MESSAGE + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
     return currentBatch != null && currentBatch.hasNext();
   }
@@ -201,7 +202,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     } catch (RuntimeException e) {
       throw new ModuleException("Runtime error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     } catch (Exception e) {
-      throw new ModuleException("Unexpected error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException(UNEXPECTED_ERROR_MESSAGE + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 

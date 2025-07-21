@@ -57,6 +57,10 @@ public class EinsteinModelConnection implements BaseModelConnection {
         return this.httpClient;
     }
 
+    public long getTimeout() {
+        return this.timeout;
+    }
+
     @Override
     public String getEmbeddingModelService() {
         return Constants.EMBEDDING_MODEL_SERVICE_EINSTEIN;

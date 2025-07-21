@@ -52,6 +52,7 @@ import static org.mule.sdk.api.annotation.param.MediaType.ANY;
 public class StoreOperations {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StoreOperations.class);
+  private static final String STORE_NAME_KEY = "storeName";
 
   /**
    * Queries an embedding store based on the provided embedding and text segment, and applies a metadata filter.
@@ -227,20 +228,20 @@ public class StoreOperations {
 
   private static HashMap<String, Object> createStoreNameAndSearchFilterMap(String storeName, Object searchFilterParams) {
     HashMap<String, Object> map = new HashMap<>();
-    map.put("storeName", storeName);
+    map.put(STORE_NAME_KEY, storeName);
     map.put("searchFilter", searchFilterParams);
     return map;
   }
 
   private static HashMap<String, Object> createStoreNameMap(String storeName) {
     HashMap<String, Object> map = new HashMap<>();
-    map.put("storeName", storeName);
+    map.put(STORE_NAME_KEY, storeName);
     return map;
   }
 
   private static HashMap<String, Object> createStoreNameAndRemoveFilterMap(String storeName, Object removeFilterParams) {
     HashMap<String, Object> map = new HashMap<>();
-    map.put("storeName", storeName);
+    map.put(STORE_NAME_KEY, storeName);
     map.put("removeFilter", removeFilterParams);
     return map;
   }
