@@ -77,7 +77,7 @@ public class EinsteinService implements EmbeddingService {
       String urlString = buildEmbeddingRequestUrl(modelName);
       Map<String, String> headers = buildEmbeddingRequestHeaders();
 
-      return HttpRequestHelper.executePostRequest(this.einsteinModelConnection.getHttpClient(), urlString, headers, payload.getBytes(), TIMEOUT)
+      return HttpRequestHelper.executePostRequest(this.einsteinModelConnection.getHttpClient(), urlString, headers, payload.getBytes(), (int)this.einsteinModelConnection.getTimeout())
               .thenCompose(response -> {
                   if (response.getStatusCode() == 200) {
                       try {
