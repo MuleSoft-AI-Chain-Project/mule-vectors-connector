@@ -125,7 +125,11 @@ class NomicServiceTest {
                     .thenReturn(CompletableFuture.completedFuture(mockResponse));
             helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
                     .thenThrow(new ModuleException("fail", org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
-            assertThrows(ModuleException.class, () -> service.generateTextEmbeddings(List.of("foo"), "test-model"));
+            // Extract the method call to avoid multiple invocations in lambda
+            org.junit.jupiter.api.function.Executable methodCall = 
+                () -> service.generateTextEmbeddings(List.of("foo"), "test-model");
+            
+            assertThrows(ModuleException.class, methodCall);
         }
     }
 

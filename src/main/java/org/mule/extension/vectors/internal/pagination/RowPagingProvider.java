@@ -33,7 +33,7 @@ public class RowPagingProvider implements PagingProvider<BaseStoreConnection, Re
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RowPagingProvider.class);
 
-  private VectoreStoreIterator<Object> rowIterator;
+  private VectoreStoreIterator<?> rowIterator;
   private StoreConfiguration storeConfiguration;
   private String storeName;
   private QueryParameters queryParams;

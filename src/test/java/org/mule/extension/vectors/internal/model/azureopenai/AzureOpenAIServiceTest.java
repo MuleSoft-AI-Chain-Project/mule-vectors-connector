@@ -120,7 +120,11 @@ class AzureOpenAIServiceTest {
                     .thenReturn(CompletableFuture.completedFuture(mockResponse));
             helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
                     .thenThrow(new ModuleException("fail", MuleVectorsErrorType.AI_SERVICES_FAILURE));
-            assertThatThrownBy(() -> svc.generateTextEmbeddings(List.of("foo"), "bar"))
+            // Extract the method call to avoid multiple invocations in lambda
+            org.assertj.core.api.ThrowableAssert.ThrowingCallable methodCall = 
+                () -> svc.generateTextEmbeddings(List.of("foo"), "bar");
+            
+            assertThatThrownBy(methodCall)
                     .isInstanceOf(ModuleException.class)
                     .hasMessageContaining("fail");
         }
