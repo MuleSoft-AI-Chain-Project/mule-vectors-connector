@@ -35,8 +35,6 @@ public class VertexAIService implements EmbeddingService {
     // Vertex AI Constants
     private static final String VERTEX_AI_ENDPOINT_FORMAT = "https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict";
 
-    private static final String TEXT_EMBEDDING_FIELD_NAME = "textEmbedding";
-    private static final String IMAGE_EMBEDDING_FIELD_NAME = "imageEmbedding";
     private static final String EMBEDDING_ERROR_MESSAGE = "Failed to generate embeddings";
 
     public VertexAIService(VertexAIModelConnection vertexAIModelConnection, EmbeddingModelParameters embeddingModelParameters) {

@@ -32,7 +32,6 @@ public class EinsteinService implements EmbeddingService {
   private EmbeddingModelParameters embeddingModelParameters;
   private static final int BATCH_SIZE = 16;
   private static final String EINSTEIN_PLATFORM_MODELS_URL = "https://api.salesforce.com/einstein/platform/v1/models/";
-  private static final int TIMEOUT = 30000;
 
   public EinsteinService(EinsteinModelConnection einsteinModelConnection, EmbeddingModelParameters embeddingModelParameters) {
     this.einsteinModelConnection = einsteinModelConnection;
