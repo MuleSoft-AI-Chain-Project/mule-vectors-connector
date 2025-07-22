@@ -47,6 +47,7 @@ public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttr
     return mimeType;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
@@ -58,6 +59,7 @@ public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttr
     return mediaType != null ? mediaType.equals(that.mediaType) : that.mediaType == null;
   }
 
+  @Override
   public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
