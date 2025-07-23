@@ -1,8 +1,6 @@
 package org.mule.extension.vectors.internal.helper;
 
-import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
-import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
-import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
+import org.mule.extension.vectors.api.metadata.*;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -77,24 +75,24 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static Result<InputStream,  Map<String, Object>> createParsedDocumentResponse(
+  public static Result<InputStream, ParserResponseAttributes> createParsedDocumentResponse(
       String response,
       Map<String, Object> documentAttributes) {
 
-    return Result.<InputStream,  Map<String, Object>>builder()
-        .attributes( documentAttributes)
+    return Result.<InputStream, ParserResponseAttributes>builder()
+        .attributes(new ParserResponseAttributes((HashMap<String, Object>) documentAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
         .output(toInputStream(response, StandardCharsets.UTF_8))
         .mediaType(MediaType.TEXT)
         .build();
   }
 
-  public static Result<InputStream,  Map<String, Object>> createChunkedTextResponse(
+  public static Result<InputStream, ChunkResponseAttributes> createChunkedTextResponse(
       String response,
       Map<String, Object> documentAttributes) {
 
-    return Result.<InputStream,  Map<String, Object>>builder()
-        .attributes(documentAttributes)
+    return Result.<InputStream, ChunkResponseAttributes>builder()
+        .attributes(new ChunkResponseAttributes((HashMap<String, Object>) documentAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
         .output(toInputStream(response, StandardCharsets.UTF_8))
         .mediaType(MediaType.APPLICATION_JSON)

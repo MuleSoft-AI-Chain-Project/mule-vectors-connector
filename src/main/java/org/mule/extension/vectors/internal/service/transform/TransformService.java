@@ -2,6 +2,8 @@ package org.mule.extension.vectors.internal.service.transform;
 
 import dev.langchain4j.data.segment.TextSegment;
 import org.json.JSONArray;
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
@@ -19,7 +21,7 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPa
 
 public class TransformService {
 
-    public Result<InputStream, Map<String, Object>> parseDocument(
+    public Result<InputStream, ParserResponseAttributes> parseDocument(
             InputStream documentStream,
             DocumentParserParameters documentParserParameters) {
         try {
@@ -39,7 +41,7 @@ public class TransformService {
         }
     }
 
-    public Result<InputStream,  Map<String, Object>> chunkText(
+    public Result<InputStream, ChunkResponseAttributes> chunkText(
             String text,
             SegmentationParameters segmentationParameters) {
         try {

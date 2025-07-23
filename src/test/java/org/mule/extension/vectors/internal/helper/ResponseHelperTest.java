@@ -1,9 +1,7 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
-import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
-import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
+import org.mule.extension.vectors.api.metadata.*;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -83,7 +81,7 @@ class ResponseHelperTest {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put("doc", "parsed");
         String response = "parsed text";
-        Result<InputStream,  Map<String, Object>> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
+        Result<InputStream, ParserResponseAttributes> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
         assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
         assertThat(result.getMediaType().get()).isEqualTo(MediaType.TEXT);
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
@@ -94,7 +92,7 @@ class ResponseHelperTest {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put("chunk", 1);
         String response = "chunked";
-        Result<InputStream,  Map<String, Object>> result = ResponseHelper.createChunkedTextResponse(response, attrs);
+        Result<InputStream, ChunkResponseAttributes> result = ResponseHelper.createChunkedTextResponse(response, attrs);
         assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
         assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
