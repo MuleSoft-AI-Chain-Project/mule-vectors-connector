@@ -1,7 +1,6 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
-import org.mule.extension.vectors.api.metadata.MultimodalEmbeddingResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
@@ -66,17 +65,6 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static Result<InputStream, MultimodalEmbeddingResponseAttributes> createMultimodalEmbeddingResponse(
-      String response,
-      Map<String, Object> embeddingAttributes) {
-
-    return Result.<InputStream, MultimodalEmbeddingResponseAttributes>builder()
-        .attributes(new MultimodalEmbeddingResponseAttributes((HashMap<String, Object>) embeddingAttributes))
-        .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(toInputStream(response, StandardCharsets.UTF_8))
-        .mediaType(MediaType.APPLICATION_JSON)
-        .build();
-  }
 
   public static Result<InputStream, StorageResponseAttributes> createFileResponse(
       InputStream content,
