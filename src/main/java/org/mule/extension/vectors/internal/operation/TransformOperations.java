@@ -58,7 +58,7 @@ public class TransformOperations {
   public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
   parseDocument(@Config TransformConfiguration transformConfiguration,
                 @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
-                @Alias("documentParserParameters") @DisplayName("Document parser") MultiformatDocumentParserParameters documentParserParameters) {
+                @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
     return transformService.parseDocument(documentStream, documentParserParameters);
   }
 

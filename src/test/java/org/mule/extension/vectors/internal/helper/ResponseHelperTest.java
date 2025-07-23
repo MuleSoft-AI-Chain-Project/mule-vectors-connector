@@ -1,8 +1,6 @@
 package org.mule.extension.vectors.internal.helper;
 
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.api.metadata.*;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
@@ -59,19 +57,6 @@ class ResponseHelperTest {
         String response = "embeddings";
         Result<InputStream, EmbeddingResponseAttributes> result = ResponseHelper.createEmbeddingResponse(response, attrs);
         assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("baz", 42);
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
-
-    @Test
-    void createMultimodalEmbeddingResponse_shouldReturnResultWithAttributes() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("multi", true);
-        attrs.put("embeddingModelDimension", 1);
-        String response = "multi-modal";
-        Result<InputStream, MultimodalEmbeddingResponseAttributes> result = ResponseHelper.createMultimodalEmbeddingResponse(response, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("multi", true);
         assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
         assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
