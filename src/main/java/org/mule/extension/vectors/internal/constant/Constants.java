@@ -9,7 +9,8 @@ public class Constants {
 
   public static final String PAYLOAD_CONTENT_TYPE_BASE64 = "base64";
   public static final String PAYLOAD_CONTENT_TYPE_BINARY = "binary";
-
+  public static final String TRANSORMER_PARSER_MULTIFORMAT = "Multiformat document parse";
+  public static final String TRANSORMER_PARSER_TEXTFORMAT = "Text document parse";
   public static final String FILE_PARSER_TYPE_APACHE_TIKA = "Apache Tika";
   public static final String FILE_PARSER_TYPE_TEXT = "Text";
 

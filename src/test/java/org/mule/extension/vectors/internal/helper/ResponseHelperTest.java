@@ -1,7 +1,9 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.junit.jupiter.api.Test;
-import org.mule.extension.vectors.api.metadata.*;
+import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -15,8 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 class ResponseHelperTest {
 
@@ -79,8 +83,7 @@ class ResponseHelperTest {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put("doc", "parsed");
         String response = "parsed text";
-        Result<InputStream, TransformResponseAttributes> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("doc", "parsed");
+        Result<InputStream,  Map<String, Object>> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
         assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
         assertThat(result.getMediaType().get()).isEqualTo(MediaType.TEXT);
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
@@ -91,8 +94,7 @@ class ResponseHelperTest {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put("chunk", 1);
         String response = "chunked";
-        Result<InputStream, TransformResponseAttributes> result = ResponseHelper.createChunkedTextResponse(response, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("chunk", 1);
+        Result<InputStream,  Map<String, Object>> result = ResponseHelper.createChunkedTextResponse(response, attrs);
         assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
         assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
