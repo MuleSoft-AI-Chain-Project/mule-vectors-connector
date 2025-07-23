@@ -22,7 +22,7 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
     MilvusStoreConnectionProvider.class,
     MongoDBAtlasStoreConnectionProvider.class,
     OpenSearchStoreConnectionProvider.class,
-    PGVectorStoreConnectionProvider.class,
+    // PGVectorStoreConnectionProvider.class,
     PineconeStoreConnectionProvider.class,
     QdrantStoreConnectionProvider.class,
     EphemeralFileStoreConnectionProvider.class})
