@@ -1,13 +1,8 @@
 package org.mule.extension.vectors.internal.operation;
-
-
-import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
-
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
-import org.mule.extension.vectors.internal.helper.parameter.MultiformatDocumentParserParameters;
 import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
@@ -21,6 +16,8 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.io.InputStream;
+import java.util.Map;
+
 import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 
 /**
@@ -48,7 +45,7 @@ public class TransformOperations {
   @Alias("Transform-parse-document")
   @DisplayName("[Transform] Parse document")
   @Throws(TransformErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, Map<String, Object>>
   parseDocument(@Config TransformConfiguration transformConfiguration,
                 @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
                 @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
@@ -73,7 +70,7 @@ public class TransformOperations {
   @DisplayName("[Transform] Chunk text")
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream,  Map<String, Object>>
   chunkText(@Alias("text") @DisplayName("Text") @Content String text,
             @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
     return transformService.chunkText(text, segmentationParameters);

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
+
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
@@ -21,6 +21,7 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,7 +43,7 @@ class TransformServiceTest {
         when(documentParserParameters.getDocumentParser()).thenReturn(documentParser);
         when(documentParser.parse(any(InputStream.class))).thenReturn("parsed text");
         InputStream input = new ByteArrayInputStream("test".getBytes());
-        Result<InputStream, TransformResponseAttributes> result = service.parseDocument(input, documentParserParameters);
+        Result<InputStream, Map<String, Object>> result = service.parseDocument(input, documentParserParameters);
         assertThat(result).isNotNull();
         assertThat(result.getOutput()).isNotNull();
         assertThat(new String(result.getOutput().readAllBytes())).contains("parsed text");
@@ -78,7 +79,7 @@ class TransformServiceTest {
         );
         try (MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class)) {
             utils.when(() -> Utils.splitTextIntoTextSegments(anyString(), anyInt(), anyInt())).thenReturn(segments);
-            Result<InputStream, TransformResponseAttributes> result = service.chunkText("sometext", segmentationParameters);
+            Result<InputStream,  Map<String, Object>> result = service.chunkText("sometext", segmentationParameters);
             assertThat(result).isNotNull();
             String json = new String(result.getOutput().readAllBytes());
             JSONArray arr = new JSONArray(json);

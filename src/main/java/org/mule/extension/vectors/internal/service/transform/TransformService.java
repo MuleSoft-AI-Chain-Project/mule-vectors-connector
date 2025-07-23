@@ -2,8 +2,6 @@ package org.mule.extension.vectors.internal.service.transform;
 
 import dev.langchain4j.data.segment.TextSegment;
 import org.json.JSONArray;
-import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
-import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
@@ -14,18 +12,20 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createChunkedTextResponse;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createParsedDocumentResponse;
 
 public class TransformService {
 
-    public Result<InputStream, TransformResponseAttributes> parseDocument(
+    public Result<InputStream, Map<String, Object>> parseDocument(
             InputStream documentStream,
             DocumentParserParameters documentParserParameters) {
         try {
             String text = documentParserParameters.getDocumentParser().parse(documentStream);
             HashMap<String, Object> attributes = new HashMap<>();
+            attributes.put("documentParserName", documentParserParameters.getName());
             return createParsedDocumentResponse(
                     text,
                     attributes);
@@ -39,7 +39,7 @@ public class TransformService {
         }
     }
 
-    public Result<InputStream, TransformResponseAttributes> chunkText(
+    public Result<InputStream,  Map<String, Object>> chunkText(
             String text,
             SegmentationParameters segmentationParameters) {
         try {
