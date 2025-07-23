@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
@@ -43,7 +45,7 @@ class TransformServiceTest {
         when(documentParserParameters.getDocumentParser()).thenReturn(documentParser);
         when(documentParser.parse(any(InputStream.class))).thenReturn("parsed text");
         InputStream input = new ByteArrayInputStream("test".getBytes());
-        Result<InputStream, Map<String, Object>> result = service.parseDocument(input, documentParserParameters);
+        Result<InputStream, ParserResponseAttributes> result = service.parseDocument(input, documentParserParameters);
         assertThat(result).isNotNull();
         assertThat(result.getOutput()).isNotNull();
         assertThat(new String(result.getOutput().readAllBytes())).contains("parsed text");
@@ -79,7 +81,7 @@ class TransformServiceTest {
         );
         try (MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class)) {
             utils.when(() -> Utils.splitTextIntoTextSegments(anyString(), anyInt(), anyInt())).thenReturn(segments);
-            Result<InputStream,  Map<String, Object>> result = service.chunkText("sometext", segmentationParameters);
+            Result<InputStream, ChunkResponseAttributes> result = service.chunkText("sometext", segmentationParameters);
             assertThat(result).isNotNull();
             String json = new String(result.getOutput().readAllBytes());
             JSONArray arr = new JSONArray(json);

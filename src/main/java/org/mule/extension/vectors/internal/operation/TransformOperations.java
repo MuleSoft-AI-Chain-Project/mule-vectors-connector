@@ -1,4 +1,6 @@
 package org.mule.extension.vectors.internal.operation;
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
@@ -52,7 +54,7 @@ public class TransformOperations {
   @Alias("Transform-parse-document")
   @DisplayName("[Transform] Parse document")
   @Throws(TransformErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, Map<String, Object>>
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ParserResponseAttributes>
   parseDocument(@Config TransformConfiguration transformConfiguration,
                 @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
                 @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
@@ -77,7 +79,7 @@ public class TransformOperations {
   @DisplayName("[Transform] Chunk text")
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream,  Map<String, Object>>
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ChunkResponseAttributes>
   chunkText(@Alias("text") @DisplayName("Text") @Content String text,
             @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
     return transformService.chunkText(text, segmentationParameters);
