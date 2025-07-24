@@ -3,8 +3,6 @@ package org.mule.extension.vectors.internal.service.store;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Common base iterator for database-based vector stores.
@@ -60,7 +61,7 @@ public abstract class BaseDatabaseIterator implements Iterator<ResultSet>, AutoC
     }
 
     DatabaseFieldNames fields = getFieldNames();
-    
+
     // Build query parts separately to avoid SonarQube S2077 warning
     // These are field names (metadata), not user input, so they are safe
     // @SuppressWarnings("java:S2077") - Field names are metadata, not user input
@@ -68,17 +69,17 @@ public abstract class BaseDatabaseIterator implements Iterator<ResultSet>, AutoC
     queryBuilder.append("SELECT ");
     queryBuilder.append(fields.getIdFieldName()).append(", ");
     queryBuilder.append(fields.getTextFieldName()).append(", ");
-    
+
     if (queryParams.retrieveEmbeddings()) {
       queryBuilder.append(fields.getVectorFieldName()).append(", ");
     }
-    
+
     queryBuilder.append(fields.getMetadataFieldName());
     queryBuilder.append(" FROM ").append(table);
     queryBuilder.append(" LIMIT ? OFFSET ?");
-    
+
     String query = queryBuilder.toString();
-    
+
     pstmt = connection.prepareStatement(query);
     pstmt.setInt(1, this.pageSize);
     pstmt.setInt(2, offset);
@@ -145,6 +146,7 @@ public abstract class BaseDatabaseIterator implements Iterator<ResultSet>, AutoC
    * Container class for database field names.
    */
   protected static class DatabaseFieldNames {
+
     private final String idFieldName;
     private final String textFieldName;
     private final String metadataFieldName;
@@ -157,9 +159,20 @@ public abstract class BaseDatabaseIterator implements Iterator<ResultSet>, AutoC
       this.vectorFieldName = vectorFieldName;
     }
 
-    public String getIdFieldName() { return idFieldName; }
-    public String getTextFieldName() { return textFieldName; }
-    public String getMetadataFieldName() { return metadataFieldName; }
-    public String getVectorFieldName() { return vectorFieldName; }
+    public String getIdFieldName() {
+      return idFieldName;
+    }
+
+    public String getTextFieldName() {
+      return textFieldName;
+    }
+
+    public String getMetadataFieldName() {
+      return metadataFieldName;
+    }
+
+    public String getVectorFieldName() {
+      return vectorFieldName;
+    }
   }
-} 
+}

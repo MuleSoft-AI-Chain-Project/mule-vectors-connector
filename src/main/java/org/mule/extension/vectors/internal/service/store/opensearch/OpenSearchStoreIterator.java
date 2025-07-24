@@ -1,19 +1,22 @@
 package org.mule.extension.vectors.internal.service.store.opensearch;
 
-
 import org.mule.extension.vectors.internal.connection.provider.store.opensearch.OpenSearchStoreConnection;
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import org.json.JSONObject;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.Time;
 import org.opensearch.client.opensearch.core.ScrollRequest;
@@ -21,12 +24,8 @@ import org.opensearch.client.opensearch.core.ScrollResponse;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -42,10 +41,9 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
   private int currentIndex;
 
   public OpenSearchStoreIterator(
-      OpenSearchStoreConnection openSearchStoreConnection,
-      String storeName,
-      QueryParameters queryParams
-  )  {
+                                 OpenSearchStoreConnection openSearchStoreConnection,
+                                 String storeName,
+                                 QueryParameters queryParams) {
     this.OpenSearchStoreConnection = openSearchStoreConnection;
     this.openSearchClient = openSearchStoreConnection.getOpenSearchClient();
     this.storeName = storeName;
@@ -55,7 +53,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
     try {
       fetchNextBatch();
     } catch (IOException e) {
-      throw new ModuleException("Store issue",MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException("Store issue", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
@@ -124,7 +122,8 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
       }
 
       SearchRequest searchRequest = searchRequestBuilder.build();
-      SearchResponse<Map<String, Object>> searchResponse = openSearchClient.search(searchRequest, (Class<Map<String, Object>>)(Class<?>)Map.class);
+      SearchResponse<Map<String, Object>> searchResponse =
+          openSearchClient.search(searchRequest, (Class<Map<String, Object>>) (Class<?>) Map.class);
       currentBatch = searchResponse.hits().hits();
       scrollId = searchResponse.scrollId();
     } else {
@@ -132,7 +131,8 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
           .scrollId(scrollId)
           .scroll(Time.of(t -> t.time("1m")))
           .build();
-      ScrollResponse<Map<String, Object>> scrollResponse = openSearchClient.scroll(scrollRequest, (Class<Map<String, Object>>)(Class<?>)Map.class);
+      ScrollResponse<Map<String, Object>> scrollResponse =
+          openSearchClient.scroll(scrollRequest, (Class<Map<String, Object>>) (Class<?>) Map.class);
       currentBatch = scrollResponse.hits().hits();
       scrollId = scrollResponse.scrollId();
     }

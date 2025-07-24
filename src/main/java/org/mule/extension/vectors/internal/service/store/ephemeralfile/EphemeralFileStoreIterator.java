@@ -1,22 +1,24 @@
 package org.mule.extension.vectors.internal.service.store.ephemeralfile;
+
 import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnection;
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.util.NoSuchElementException;
+
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EphemeralFileStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -29,10 +31,9 @@ public class EphemeralFileStoreIterator<Embedded> implements VectoreStoreIterato
   private String storeName;
 
   public EphemeralFileStoreIterator(
-      EphemeralFileStoreConnection ephemeralFileStoreConnection,
-      QueryParameters queryParams,
-      String storeName
-  ) {
+                                    EphemeralFileStoreConnection ephemeralFileStoreConnection,
+                                    QueryParameters queryParams,
+                                    String storeName) {
     this.storeFilePath = ephemeralFileStoreConnection.getWorkingDir();
     this.queryParams = queryParams;
     this.storeName = storeName;
@@ -42,20 +43,24 @@ public class EphemeralFileStoreIterator<Embedded> implements VectoreStoreIterato
       JSONObject jsonObject = new JSONObject(jsonSerializedStore);
       this.entries = jsonObject.getJSONArray("entries");
     } catch (JSONException e) {
-      throw new ModuleException("Invalid file format, failed to parse JSON: " + e.getMessage(), MuleVectorsErrorType.INVALID_FILE_FORMAT, e);
+      throw new ModuleException("Invalid file format, failed to parse JSON: " + e.getMessage(),
+                                MuleVectorsErrorType.INVALID_FILE_FORMAT, e);
     } catch (RuntimeException e) {
       if (e.getCause() instanceof NoSuchFileException) {
         throw new ModuleException("Store file not found: " + e.getMessage(), MuleVectorsErrorType.STORE_NOT_FOUND, e);
       } else if (e.getCause() instanceof IOException) {
         throw new ModuleException("Failed to read store file: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
       } else {
-        throw new ModuleException("An unexpected error occurred while reading the store file.", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+        throw new ModuleException("An unexpected error occurred while reading the store file.",
+                                  MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
       }
     }
   }
+
   public String getEphemeralFileStorePath() {
     return (storeFilePath != null && !storeFilePath.isBlank() ? storeFilePath + "/" : "") + storeName + ".store";
   }
+
   @Override
   public boolean hasNext() {
     return currentIndex < this.entries.length();
@@ -97,10 +102,9 @@ public class EphemeralFileStoreIterator<Embedded> implements VectoreStoreIterato
       Embedded embedded = (Embedded) new TextSegment(text, Metadata.from(metadataObject.toMap()));
 
       return new VectorStoreRow<>(
-          embeddingId,
-          vector != null ? new Embedding(vector) : null,
-          embedded
-      );
+                                  embeddingId,
+                                  vector != null ? new Embedding(vector) : null,
+                                  embedded);
 
     } catch (Exception e) {
       LOGGER.error("Error while fetching next row", e);

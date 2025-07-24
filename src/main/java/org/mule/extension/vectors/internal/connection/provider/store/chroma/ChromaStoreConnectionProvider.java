@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.connection.provider.store.chroma;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.HttpBasedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -9,12 +11,10 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
-
 @Alias("chroma")
 @DisplayName("Chroma")
 @ExternalLib(name = "LangChain4J Chroma",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "LangChain4J Chroma",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore",
@@ -33,7 +33,7 @@ public class ChromaStoreConnectionProvider extends HttpBasedConnectionProvider {
           new ChromaStoreConnection(chromaStoreConnectionParameters, getHttpClient());
       return chromaStoreConnection;
 
-    }  catch (Exception e) {
+    } catch (Exception e) {
 
       throw new ConnectionException("Failed to connect to Chroma", e);
     }

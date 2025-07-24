@@ -1,19 +1,16 @@
 package org.mule.extension.vectors.internal.connection.provider.embeddings.einstein;
 
-
 import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
-
 import org.mule.runtime.extension.api.annotation.Alias;
-
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 @Alias("einstein")
 @DisplayName("Einstein")
-public class EinsteinModelConnectionProvider extends BaseModelConnectionProvider  {
+public class EinsteinModelConnectionProvider extends BaseModelConnectionProvider {
 
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
@@ -24,10 +21,15 @@ public class EinsteinModelConnectionProvider extends BaseModelConnectionProvider
   public BaseModelConnection connect() throws ConnectionException {
     try {
       EinsteinModelConnection einsteinModelConnection = new EinsteinModelConnection(
-          einsteinModelConnectionParameters.getSalesforceOrg(),
-          einsteinModelConnectionParameters.getClientId(),
-          einsteinModelConnectionParameters.getClientSecret(),
-          getHttpClient(), einsteinModelConnectionParameters.getTimeout());
+                                                                                    einsteinModelConnectionParameters
+                                                                                        .getSalesforceOrg(),
+                                                                                    einsteinModelConnectionParameters
+                                                                                        .getClientId(),
+                                                                                    einsteinModelConnectionParameters
+                                                                                        .getClientSecret(),
+                                                                                    getHttpClient(),
+                                                                                    einsteinModelConnectionParameters
+                                                                                        .getTimeout());
       return einsteinModelConnection;
     } catch (Exception e) {
       throw new ConnectionException("Failed to connect to Einstein", e);

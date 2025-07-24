@@ -1,5 +1,10 @@
 package org.mule.extension.vectors.internal.connection.provider.store;
 
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
+import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+
+import static java.util.Optional.ofNullable;
+
 import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.tls.TlsContextFactory;
@@ -15,11 +20,8 @@ import org.mule.runtime.http.api.client.HttpClientConfiguration;
 
 import javax.inject.Inject;
 
-import static java.util.Optional.ofNullable;
-import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-import static org.mule.runtime.core.api.lifecycle.LifecycleUtils.initialiseIfNeeded;
+public abstract class HttpBasedConnectionProvider implements BaseStoreConnectionProvider {
 
-public abstract  class HttpBasedConnectionProvider implements BaseStoreConnectionProvider {
   @RefName
   private String configName;
 

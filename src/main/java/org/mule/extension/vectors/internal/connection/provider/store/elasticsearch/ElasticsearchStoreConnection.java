@@ -1,5 +1,17 @@
 package org.mule.extension.vectors.internal.connection.provider.store.elasticsearch;
 
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
+import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.io.IOException;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import dev.langchain4j.internal.Utils;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -7,20 +19,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
-import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
-
 import org.elasticsearch.client.RestClient;
-
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.ElasticsearchTransport;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
-import org.mule.runtime.extension.api.exception.ModuleException;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-
-import java.io.IOException;
 
 public class ElasticsearchStoreConnection implements BaseStoreConnection {
 
@@ -92,29 +91,30 @@ public class ElasticsearchStoreConnection implements BaseStoreConnection {
     if (parameters.getUrl() == null || parameters.getUrl().isBlank()) {
       throw new ModuleException("URL is required for Elasticsearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if ((parameters.getPassword() == null || parameters.getPassword().isBlank()) && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
-      throw new ModuleException("Either password or API Key is required for Elasticsearch connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }  
+    if ((parameters.getPassword() == null || parameters.getPassword().isBlank())
+        && (parameters.getApiKey() == null || parameters.getApiKey().isBlank())) {
+      throw new ModuleException("Either password or API Key is required for Elasticsearch connection",
+                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    }
     try {
       this.restClient.getNodes();
     } catch (Exception e) {
       throw new ModuleException("Failed to connect to Elastic search", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
+
   public void initialise() throws IOException {
 
     if (!Utils.isNullOrBlank(user)) {
 
       BasicCredentialsProvider credsProv = new BasicCredentialsProvider();
       credsProv.setCredentials(
-          AuthScope.ANY, new UsernamePasswordCredentials(user, password)
-      );
+                               AuthScope.ANY, new UsernamePasswordCredentials(user, password));
 
       this.restClient = RestClient
           .builder(HttpHost.create(url))
           .setHttpClientConfigCallback(hc -> hc
-              .setDefaultCredentialsProvider(credsProv)
-          )
+              .setDefaultCredentialsProvider(credsProv))
           .build();
 
     } else if (!Utils.isNullOrBlank(apiKey)) {
@@ -130,11 +130,11 @@ public class ElasticsearchStoreConnection implements BaseStoreConnection {
 
     // Create the transport with a Jackson mapper
     ElasticsearchTransport transport = new RestClientTransport(
-        restClient, new JacksonJsonpMapper());
+                                                               restClient, new JacksonJsonpMapper());
 
     // And create the API client
     ElasticsearchClient esClient = new ElasticsearchClient(transport);
-    if(!esClient.ping().value()) {
+    if (!esClient.ping().value()) {
 
       throw new IOException("Impossible to connect to Elasticsearch.");
     }

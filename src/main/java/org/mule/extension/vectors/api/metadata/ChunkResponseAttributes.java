@@ -1,15 +1,16 @@
 package org.mule.extension.vectors.api.metadata;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
  * Represents the attributes of a parser operation response.
@@ -45,10 +46,10 @@ public class ChunkResponseAttributes implements Serializable {
    *                          Remaining entries are stored in {@code otherAttributes}.
    */
   public ChunkResponseAttributes(HashMap<String, Object> requestAttributes) {
-    this.maxSegmentSizeInChars = requestAttributes.containsKey("maxSegmentSizeInChars") ? 
-        (Integer) requestAttributes.remove("maxSegmentSizeInChars") : null;
-    this.maxOverlapSizeInChars = requestAttributes.containsKey("maxOverlapSizeInChars") ? 
-        (Integer) requestAttributes.remove("maxOverlapSizeInChars") : null;
+    this.maxSegmentSizeInChars = requestAttributes.containsKey("maxSegmentSizeInChars")
+        ? (Integer) requestAttributes.remove("maxSegmentSizeInChars") : null;
+    this.maxOverlapSizeInChars = requestAttributes.containsKey("maxOverlapSizeInChars")
+        ? (Integer) requestAttributes.remove("maxOverlapSizeInChars") : null;
     this.otherAttributes = requestAttributes;
   }
 
@@ -83,13 +84,19 @@ public class ChunkResponseAttributes implements Serializable {
   }
 
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     ChunkResponseAttributes that = (ChunkResponseAttributes) o;
 
-    if (maxSegmentSizeInChars != null ? !maxSegmentSizeInChars.equals(that.maxSegmentSizeInChars) : that.maxSegmentSizeInChars != null) return false;
-    if (maxOverlapSizeInChars != null ? !maxOverlapSizeInChars.equals(that.maxOverlapSizeInChars) : that.maxOverlapSizeInChars != null) return false;
+    if (maxSegmentSizeInChars != null ? !maxSegmentSizeInChars.equals(that.maxSegmentSizeInChars)
+        : that.maxSegmentSizeInChars != null)
+      return false;
+    if (maxOverlapSizeInChars != null ? !maxOverlapSizeInChars.equals(that.maxOverlapSizeInChars)
+        : that.maxOverlapSizeInChars != null)
+      return false;
     return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
   }
 
@@ -99,4 +106,4 @@ public class ChunkResponseAttributes implements Serializable {
     result = 31 * result + (otherAttributes != null ? otherAttributes.hashCode() : 0);
     return result;
   }
-} 
+}

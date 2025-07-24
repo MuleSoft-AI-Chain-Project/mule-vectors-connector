@@ -6,7 +6,6 @@ import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 public class QueryParameters {
@@ -26,7 +25,9 @@ public class QueryParameters {
   @Optional(defaultValue = "5000")
   private Number pageSize;
 
-  public int pageSize() {return pageSize != null ? pageSize.intValue() : 5000;}
+  public int pageSize() {
+    return pageSize != null ? pageSize.intValue() : 5000;
+  }
 
   public boolean retrieveEmbeddings() {
     return retrieveEmbeddings;

@@ -11,6 +11,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 public abstract class BaseModelConnectionParameters {
+
   @Parameter
   @DisplayName("Timeout")
   @Summary("Timeout for the operation in milliseconds")

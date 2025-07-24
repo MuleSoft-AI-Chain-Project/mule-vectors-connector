@@ -1,7 +1,8 @@
 package org.mule.extension.vectors.internal.helper.parameter;
 
-import dev.langchain4j.store.embedding.filter.Filter;
 import org.mule.extension.vectors.internal.helper.metadata.MetadataFilterHelper;
+
+import dev.langchain4j.store.embedding.filter.Filter;
 
 public abstract class MetadataFilterParameters {
 

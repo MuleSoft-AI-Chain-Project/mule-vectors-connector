@@ -13,20 +13,24 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class NomicBuilder implements EmbeddingServiceBuilder {
-    private NomicModelConnection nomicModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
-    public NomicBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public NomicBuilder modelConnections(NomicModelConnection nomicModelConnection) {
-      this.nomicModelConnection = nomicModelConnection;
-      return this;
-    }
-    @Override
-    public EmbeddingService build() {
-      return new NomicService(this.nomicModelConnection, this.embeddingModelParameters);
-    }
+
+  private NomicModelConnection nomicModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
+
+  public NomicBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
+
+  public NomicBuilder modelConnections(NomicModelConnection nomicModelConnection) {
+    this.nomicModelConnection = nomicModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new NomicService(this.nomicModelConnection, this.embeddingModelParameters);
+  }
 
 }
 

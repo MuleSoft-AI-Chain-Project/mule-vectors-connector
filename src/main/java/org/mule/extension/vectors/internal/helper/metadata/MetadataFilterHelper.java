@@ -1,11 +1,9 @@
 package org.mule.extension.vectors.internal.helper.metadata;
 
-import dev.langchain4j.store.embedding.filter.Filter;
-import dev.langchain4j.store.embedding.filter.MetadataFilterBuilder;
+import static dev.langchain4j.store.embedding.filter.MetadataFilterBuilder.metadataKey;
+
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.util.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,7 +12,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dev.langchain4j.store.embedding.filter.MetadataFilterBuilder.metadataKey;
+import dev.langchain4j.store.embedding.filter.Filter;
+import dev.langchain4j.store.embedding.filter.MetadataFilterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MetadataFilterHelper {
 
@@ -24,7 +25,8 @@ public class MetadataFilterHelper {
   private static final Pattern FIELD_NAME_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)");
   private static final Pattern OPERATOR_PATTERN = Pattern.compile("([=!><]+)");
   // Fixed regex to avoid catastrophic backtracking by using possessive quantifiers
-  private static final Pattern CONTAINS_FUNCTION_PATTERN = Pattern.compile("CONTAINS\\s*+\\(\\s*+([a-zA-Z_][a-zA-Z0-9_]*)\\s*+,\\s*+([^)]*+)\\s*+\\)");
+  private static final Pattern CONTAINS_FUNCTION_PATTERN =
+      Pattern.compile("CONTAINS\\s*+\\(\\s*+([a-zA-Z_][a-zA-Z0-9_]*)\\s*+,\\s*+([^)]*+)\\s*+\\)");
 
   private static final Pattern NUMBER_PATTERN =
       Pattern.compile("^-?\\d+(\\.\\d+)?$");
@@ -80,7 +82,9 @@ public class MetadataFilterHelper {
     } else if (opType == OperatorType.OR) {
       currentLevelIsAnd = false;
     } else {
-      throw new IllegalArgumentException(String.format("Could not determine consistent logical operator for expression: %s. Tokens found: %d", expression, tokens.size()));
+      throw new IllegalArgumentException(String.format(
+                                                       "Could not determine consistent logical operator for expression: %s. Tokens found: %d",
+                                                       expression, tokens.size()));
     }
     List<Filter> subFilters = new ArrayList<>();
     for (String token : tokens) {
@@ -109,7 +113,7 @@ public class MetadataFilterHelper {
 
     // Parse regular condition: field operator value
     String trimmedExpression = expression.trim();
-    
+
     // Find field name
     Matcher fieldMatcher = FIELD_NAME_PATTERN.matcher(trimmedExpression);
     if (!fieldMatcher.find()) {
@@ -117,7 +121,7 @@ public class MetadataFilterHelper {
     }
     String field = fieldMatcher.group(1);
     int fieldEnd = fieldMatcher.end();
-    
+
     // Find operator
     String remainingAfterField = trimmedExpression.substring(fieldEnd).trim();
     Matcher operatorMatcher = OPERATOR_PATTERN.matcher(remainingAfterField);
@@ -126,19 +130,19 @@ public class MetadataFilterHelper {
     }
     String operator = operatorMatcher.group(1);
     int operatorEnd = operatorMatcher.end();
-    
+
     // Get value
     String valueStr = remainingAfterField.substring(operatorEnd).trim();
     if (valueStr.isEmpty()) {
       throw new IllegalArgumentException(String.format("Missing value in condition: %s", expression));
     }
-    
+
     // Handle quoted strings
     if ((valueStr.startsWith("'") && valueStr.endsWith("'")) ||
         (valueStr.startsWith("\"") && valueStr.endsWith("\""))) {
       valueStr = valueStr.substring(1, valueStr.length() - 1);
     }
-    
+
     // Parse value
     Object value = parseValue(valueStr);
     return createFilter(field, operator, value);
@@ -149,7 +153,7 @@ public class MetadataFilterHelper {
       return false;
     }
     int balance = 0;
-    for (int i = 0; i < expression.length() -1; i++) {
+    for (int i = 0; i < expression.length() - 1; i++) {
       if (expression.charAt(i) == '(') {
         balance++;
       } else if (expression.charAt(i) == ')') {
@@ -171,7 +175,8 @@ public class MetadataFilterHelper {
       } else if (c == ')') {
         balance--;
         if (balance < 0) {
-          throw new IllegalArgumentException(String.format("Mismatched parentheses leading to negative balance at index %d in: %s", i, expression));
+          throw new IllegalArgumentException(String
+              .format("Mismatched parentheses leading to negative balance at index %d in: %s", i, expression));
         }
       } else if (balance == 0) {
         if (checkLogicalOperator(expression, i, "AND")) {
@@ -194,7 +199,8 @@ public class MetadataFilterHelper {
           return Long.parseLong(value);
         }
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException(String.format("Invalid number format for value '%s' that matched number pattern.", value));
+        throw new IllegalArgumentException(String.format("Invalid number format for value '%s' that matched number pattern.",
+                                                         value));
       }
     }
     return value;
@@ -202,15 +208,15 @@ public class MetadataFilterHelper {
 
   private static Filter createFilter(String field, String operator, Object value) {
 
-    String methodName ="";
+    String methodName = "";
     try {
       MetadataFilterBuilder filterBuilder = metadataKey(field);
-      
+
       // Handle CONTAINS operator specially
       if ("CONTAINS".equals(operator)) {
         String stringValue = value.toString();
         // Remove quotes if present
-        if ((stringValue.startsWith("'") && stringValue.endsWith("'")) || 
+        if ((stringValue.startsWith("'") && stringValue.endsWith("'")) ||
             (stringValue.startsWith("\"") && stringValue.endsWith("\""))) {
           stringValue = stringValue.substring(1, stringValue.length() - 1);
         }
@@ -229,7 +235,9 @@ public class MetadataFilterHelper {
       Class<?> expectedParamType = Utils.getPrimitiveTypeClass(value);
       String expectedParamTypeName = expectedParamType.getName();
 
-      throw new IllegalArgumentException(String.format("Failed to create filter. Method '%s' with parameter type '%s' not found. Details: %s", methodName, expectedParamTypeName, nsme.getMessage()));
+      throw new IllegalArgumentException(String.format(
+                                                       "Failed to create filter. Method '%s' with parameter type '%s' not found. Details: %s",
+                                                       methodName, expectedParamTypeName, nsme.getMessage()));
     }
   }
 
@@ -266,7 +274,7 @@ public class MetadataFilterHelper {
 
       if (!quoteState.inSingleQuote && !quoteState.inDoubleQuote) {
         openParens = updateParenthesesBalance(openParens, c, expression);
-        
+
         if (openParens == 0 && isPotentialOperatorStart(c)) {
           OperatorType foundOp = detectLogicalOperator(expression, i);
           if (foundOp != OperatorType.NONE) {
@@ -376,6 +384,7 @@ public class MetadataFilterHelper {
   }
 
   private static class QuoteState {
+
     boolean inSingleQuote = false;
     boolean inDoubleQuote = false;
   }
@@ -389,6 +398,7 @@ public class MetadataFilterHelper {
   }
 
   private static class OperatorState {
+
     boolean firstOperatorIsAnd = false;
     boolean firstOperatorIsOr = false;
     boolean firstOperatorFound = false;
@@ -411,7 +421,8 @@ public class MetadataFilterHelper {
       state.firstOperatorFound = true;
     } else {
       if ((state.firstOperatorIsAnd && foundOp == OperatorType.OR) || (state.firstOperatorIsOr && foundOp == OperatorType.AND)) {
-        throw new IllegalArgumentException("Mixed AND/OR operations at the same level must be explicitly grouped with parentheses. Expression: " + expression);
+        throw new IllegalArgumentException("Mixed AND/OR operations at the same level must be explicitly grouped with parentheses. Expression: "
+            + expression);
       }
     }
   }

@@ -1,6 +1,10 @@
 package org.mule.extension.vectors.internal.helper;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.mule.extension.vectors.api.metadata.*;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
@@ -15,54 +19,52 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
+import org.junit.jupiter.api.Test;
 
 class ResponseHelperTest {
 
-    @Test
-    void createStoreResponse_shouldReturnResultWithAttributesAndOutput() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("foo", "bar");
-        String response = "{\"status\":\"ok\"}";
-        Result<InputStream, StoreResponseAttributes> result = ResponseHelper.createStoreResponse(response, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("foo", "bar");
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+  @Test
+  void createStoreResponse_shouldReturnResultWithAttributesAndOutput() {
+    Map<String, Object> attrs = new HashMap<>();
+    attrs.put("foo", "bar");
+    String response = "{\"status\":\"ok\"}";
+    Result<InputStream, StoreResponseAttributes> result = ResponseHelper.createStoreResponse(response, attrs);
+    assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("foo", "bar");
+    assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
+    assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
+    assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
+  }
 
-    @Test
-    void createPageStoreResponse_shouldReturnListWithResult() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("foo", "bar");
-        String response = "{\"status\":\"ok\"}";
-        StreamingHelper streamingHelper = mock(StreamingHelper.class);
-        CursorProvider<Cursor> cursorProvider = mock(CursorProvider.class);
-        when(streamingHelper.resolveCursorProvider(any(InputStream.class))).thenReturn(cursorProvider);
-        List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> page = ResponseHelper.createPageStoreResponse(response, attrs, streamingHelper);
-        assertThat(page).hasSize(1);
-        Result<CursorProvider<Cursor>, StoreResponseAttributes> result = page.get(0);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("foo", "bar");
-        assertThat(result.getOutput()).isSameAs(cursorProvider);
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+  @Test
+  void createPageStoreResponse_shouldReturnListWithResult() {
+    Map<String, Object> attrs = new HashMap<>();
+    attrs.put("foo", "bar");
+    String response = "{\"status\":\"ok\"}";
+    StreamingHelper streamingHelper = mock(StreamingHelper.class);
+    CursorProvider<Cursor> cursorProvider = mock(CursorProvider.class);
+    when(streamingHelper.resolveCursorProvider(any(InputStream.class))).thenReturn(cursorProvider);
+    List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> page =
+        ResponseHelper.createPageStoreResponse(response, attrs, streamingHelper);
+    assertThat(page).hasSize(1);
+    Result<CursorProvider<Cursor>, StoreResponseAttributes> result = page.get(0);
+    assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("foo", "bar");
+    assertThat(result.getOutput()).isSameAs(cursorProvider);
+    assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
+    assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
+  }
 
-    @Test
-    void createEmbeddingResponse_shouldReturnResultWithAttributes() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("baz", 42);
-        attrs.put("embeddingModelDimension", 1);
-        String response = "embeddings";
-        Result<InputStream, EmbeddingResponseAttributes> result = ResponseHelper.createEmbeddingResponse(response, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("baz", 42);
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+  @Test
+  void createEmbeddingResponse_shouldReturnResultWithAttributes() {
+    Map<String, Object> attrs = new HashMap<>();
+    attrs.put("baz", 42);
+    attrs.put("embeddingModelDimension", 1);
+    String response = "embeddings";
+    Result<InputStream, EmbeddingResponseAttributes> result = ResponseHelper.createEmbeddingResponse(response, attrs);
+    assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("baz", 42);
+    assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
+    assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
+    assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
+  }
 
     @Test
     void createFileResponse_shouldReturnResultWithAttributesAndBinaryMediaType() {
@@ -76,27 +78,27 @@ class ResponseHelperTest {
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
     }
 
-    @Test
-    void createParsedDocumentResponse_shouldReturnResultWithTextMediaType() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("doc", "parsed");
-        String response = "parsed text";
-        Result<InputStream, ParserResponseAttributes> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.TEXT);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+  @Test
+  void createParsedDocumentResponse_shouldReturnResultWithTextMediaType() {
+    Map<String, Object> attrs = new HashMap<>();
+    attrs.put("doc", "parsed");
+    String response = "parsed text";
+    Result<InputStream, ParserResponseAttributes> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
+    assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
+    assertThat(result.getMediaType().get()).isEqualTo(MediaType.TEXT);
+    assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
+  }
 
-    @Test
-    void createChunkedTextResponse_shouldReturnResultWithJsonMediaType() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("chunk", 1);
-        String response = "chunked";
-        Result<InputStream, ChunkResponseAttributes> result = ResponseHelper.createChunkedTextResponse(response, attrs);
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+  @Test
+  void createChunkedTextResponse_shouldReturnResultWithJsonMediaType() {
+    Map<String, Object> attrs = new HashMap<>();
+    attrs.put("chunk", 1);
+    String response = "chunked";
+    Result<InputStream, ChunkResponseAttributes> result = ResponseHelper.createChunkedTextResponse(response, attrs);
+    assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
+    assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
+    assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
+  }
 
     @Test
     void createPageFileResponse_shouldReturnListWithResult() {
@@ -127,3 +129,4 @@ class ResponseHelperTest {
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
     }
 } 
+

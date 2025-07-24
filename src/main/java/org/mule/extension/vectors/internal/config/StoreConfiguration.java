@@ -2,7 +2,6 @@ package org.mule.extension.vectors.internal.config;
 
 import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.chroma.ChromaStoreConnectionProvider;
-import org.mule.extension.vectors.internal.connection.provider.store.elasticsearch.ElasticsearchStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.milvus.MilvusStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.mongodbatlas.MongoDBAtlasStoreConnectionProvider;

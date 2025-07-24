@@ -3,19 +3,21 @@ package org.mule.extension.vectors.internal.connection.provider.embeddings.huggi
 import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Alias("huggingFace")
 @DisplayName("Hugging Face")
@@ -63,7 +65,8 @@ public class HuggingFaceModelConnection implements BaseModelConnection {
       validateCredentialsAsync().get();
     } catch (InterruptedException | ExecutionException e) {
       Thread.currentThread().interrupt();
-      throw new ModuleException("Failed to validate connection to Hugging Face", MuleVectorsErrorType.INVALID_CONNECTION, e.getCause());
+      throw new ModuleException("Failed to validate connection to Hugging Face", MuleVectorsErrorType.INVALID_CONNECTION,
+                                e.getCause());
     }
   }
 
@@ -80,13 +83,13 @@ public class HuggingFaceModelConnection implements BaseModelConnection {
           }
         });
   }
-  
+
   private Map<String, String> buildAuthHeaders() {
     Map<String, String> headers = new HashMap<>();
     headers.put("Authorization", "Bearer " + apiKey);
     return headers;
   }
-  
+
   private String handleErrorResponse(HttpResponse response, String message) {
     try {
       String errorBody = new String(response.getEntity().getBytes());

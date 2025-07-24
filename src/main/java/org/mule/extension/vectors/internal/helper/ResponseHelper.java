@@ -1,6 +1,12 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.mule.extension.vectors.api.metadata.*;
+import static org.apache.commons.io.IOUtils.toInputStream;
+
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
+import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -14,16 +20,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.io.IOUtils.toInputStream;
-
 public final class ResponseHelper {
 
-  private ResponseHelper() {
-  }
+  private ResponseHelper() {}
 
   public static Result<InputStream, StoreResponseAttributes> createStoreResponse(
-      String response,
-      Map<String, Object> storeAttributes) {
+                                                                                 String response,
+                                                                                 Map<String, Object> storeAttributes) {
 
     return Result.<InputStream, StoreResponseAttributes>builder()
         .attributes(new StoreResponseAttributes((HashMap<String, Object>) storeAttributes))
@@ -34,25 +37,25 @@ public final class ResponseHelper {
   }
 
   public static List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> createPageStoreResponse(
-      String response,
-      Map<String, Object> storeAttributes,
-      StreamingHelper streamingHelper) {
+                                                                                                      String response,
+                                                                                                      Map<String, Object> storeAttributes,
+                                                                                                      StreamingHelper streamingHelper) {
 
     List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> page = new LinkedList<>();
 
     page.add(Result.<CursorProvider<Cursor>, StoreResponseAttributes>builder()
-                 .attributes(new StoreResponseAttributes((HashMap<String, Object>) storeAttributes))
-                 .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
-                 .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
-                 .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
-                 .build());
+        .attributes(new StoreResponseAttributes((HashMap<String, Object>) storeAttributes))
+        .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(toInputStream(response, StandardCharsets.UTF_8)))
+        .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
+        .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
+        .build());
 
     return page;
   }
 
   public static Result<InputStream, EmbeddingResponseAttributes> createEmbeddingResponse(
-      String response,
-      Map<String, Object> embeddingAttributes) {
+                                                                                         String response,
+                                                                                         Map<String, Object> embeddingAttributes) {
 
     return Result.<InputStream, EmbeddingResponseAttributes>builder()
         .attributes(new EmbeddingResponseAttributes((HashMap<String, Object>) embeddingAttributes))
@@ -76,8 +79,8 @@ public final class ResponseHelper {
   }
 
   public static Result<InputStream, ParserResponseAttributes> createParsedDocumentResponse(
-      String response,
-      Map<String, Object> documentAttributes) {
+                                                                                           String response,
+                                                                                           Map<String, Object> documentAttributes) {
 
     return Result.<InputStream, ParserResponseAttributes>builder()
         .attributes(new ParserResponseAttributes((HashMap<String, Object>) documentAttributes))
@@ -88,8 +91,8 @@ public final class ResponseHelper {
   }
 
   public static Result<InputStream, ChunkResponseAttributes> createChunkedTextResponse(
-      String response,
-      Map<String, Object> documentAttributes) {
+                                                                                       String response,
+                                                                                       Map<String, Object> documentAttributes) {
 
     return Result.<InputStream, ChunkResponseAttributes>builder()
         .attributes(new ChunkResponseAttributes((HashMap<String, Object>) documentAttributes))

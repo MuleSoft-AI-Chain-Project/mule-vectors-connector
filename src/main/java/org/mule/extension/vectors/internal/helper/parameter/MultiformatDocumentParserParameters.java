@@ -13,7 +13,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 @Alias("multiformatDocumentParserParameters")
 @DisplayName(Constants.TRANSORMER_PARSER_MULTIFORMAT)
-public class MultiformatDocumentParserParameters implements DocumentParserParameters{
+public class MultiformatDocumentParserParameters implements DocumentParserParameters {
 
   @Parameter
   @Alias("includeMetadata")

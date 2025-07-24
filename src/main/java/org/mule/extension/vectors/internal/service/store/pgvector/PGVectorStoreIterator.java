@@ -1,23 +1,27 @@
 package org.mule.extension.vectors.internal.service.store.pgvector;
 
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnection;
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import org.mule.extension.vectors.internal.service.store.BaseDatabaseIterator;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.BaseDatabaseIterator;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import javax.sql.DataSource;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
+import javax.sql.DataSource;
+
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import org.json.JSONObject;
+
 public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
+
   private final DataSource dataSource;
   private final QueryParameters queryParams;
   private final int pageSize;
@@ -25,17 +29,16 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private PGVectorDatabaseIterator iterator;
 
   public PGVectorStoreIterator(
-      PGVectorStoreConnection pgVectorStoreConnection,
-      String storeName,
-      QueryParameters queryParams
-  ) {
+                               PGVectorStoreConnection pgVectorStoreConnection,
+                               String storeName,
+                               QueryParameters queryParams) {
     this.dataSource = pgVectorStoreConnection.getDataSource();
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
     try {
       this.iterator = new PGVectorDatabaseIterator(storeName, pageSize, queryParams);
     } catch (SQLException e) {
-      throw new ModuleException("Store issue",MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException("Store issue", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
@@ -56,10 +59,10 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     @Override
     protected DatabaseFieldNames getFieldNames() {
       return new DatabaseFieldNames(
-          "embedding_id",  // id field
-          "text",          // text field
-          "metadata",      // metadata field
-          "embedding"      // vector field
+                                    "embedding_id", // id field
+                                    "text", // text field
+                                    "metadata", // metadata field
+                                    "embedding" // vector field
       );
     }
   }
@@ -74,7 +77,7 @@ public class PGVectorStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     if (!hasNext()) {
       throw new NoSuchElementException("No more elements available");
     }
-    
+
     try {
       ResultSet resultSet = iterator.next();
       if (resultSet == null || resultSet.isAfterLast()) {

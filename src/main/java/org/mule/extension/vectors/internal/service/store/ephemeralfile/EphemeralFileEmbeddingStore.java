@@ -1,161 +1,162 @@
 package org.mule.extension.vectors.internal.service.store.ephemeralfile;
 
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
-import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
 import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.filter.Filter;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.runtime.extension.api.exception.ModuleException;
 
 public class EphemeralFileEmbeddingStore implements EmbeddingStore<TextSegment> {
 
-    private String ephemeralFileStorePath;
+  private String ephemeralFileStorePath;
 
-    public EphemeralFileEmbeddingStore(String ephemeralFileStorePath) {
+  public EphemeralFileEmbeddingStore(String ephemeralFileStorePath) {
 
-        this.ephemeralFileStorePath = ephemeralFileStorePath;
+    this.ephemeralFileStorePath = ephemeralFileStorePath;
+  }
+
+  private InMemoryEmbeddingStore<TextSegment> loadEmbeddingStore() {
+
+    InMemoryEmbeddingStore<TextSegment> embeddingStore;
+    if (Files.exists(Paths.get(this.ephemeralFileStorePath))) {
+
+      embeddingStore = InMemoryEmbeddingStore.fromFile(ephemeralFileStorePath);
+    } else {
+
+      embeddingStore = new InMemoryEmbeddingStore<>();
     }
+    return embeddingStore;
+  }
 
-    private InMemoryEmbeddingStore<TextSegment> loadEmbeddingStore() {
-        
-        InMemoryEmbeddingStore<TextSegment> embeddingStore;
-        if (Files.exists(Paths.get(this.ephemeralFileStorePath))) {
+  @Override
+  public String add(Embedding embedding) {
 
-            embeddingStore = InMemoryEmbeddingStore.fromFile(ephemeralFileStorePath);
-        } else {
+    String id = null;
+    synchronized (this) {
 
-            embeddingStore = new InMemoryEmbeddingStore<>();
-        }
-        return embeddingStore;
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      id = embeddingStore.add(embedding);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+    return id;
+  }
 
-    @Override
-    public String add(Embedding embedding) {
-        
-        String id = null;
-        synchronized(this) {
+  @Override
+  public void add(String id, Embedding embedding) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            id = embeddingStore.add(embedding);
-            embeddingStore.serializeToFile(ephemeralFileStorePath);    
-        }
-        return id;
+    synchronized (this) {
+
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      embeddingStore.add(id, embedding);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+  }
 
-    @Override
-    public void add(String id, Embedding embedding) {
-        
-        synchronized(this) {
-         
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            embeddingStore.add(id, embedding);
-            embeddingStore.serializeToFile(ephemeralFileStorePath);
-        }
+  @Override
+  public String add(Embedding embedding, TextSegment embedded) {
+
+    String id = null;
+    synchronized (this) {
+
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      id = embeddingStore.add(embedding, embedded);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+    return id;
+  }
 
-    @Override
-    public String add(Embedding embedding, TextSegment embedded) {
-        
-        String id = null;
-        synchronized(this) {
+  public void add(String id, Embedding embedding, TextSegment embedded) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            id = embeddingStore.add(embedding, embedded);
-            embeddingStore.serializeToFile(ephemeralFileStorePath);    
-        }
-        return id;
+    synchronized (this) {
+
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      embeddingStore.add(id, embedding, embedded);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+  }
 
-    public void add(String id, Embedding embedding, TextSegment embedded) {
+  @Override
+  public List<String> addAll(List<Embedding> embeddings) {
 
-        synchronized(this) {
+    List<String> newEntries = null;
+    synchronized (this) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            embeddingStore.add(id, embedding, embedded);
-            embeddingStore.serializeToFile(ephemeralFileStorePath);
-        }
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      newEntries = embeddingStore.addAll(embeddings);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+    return newEntries;
+  }
 
-    @Override
-    public List<String> addAll(List<Embedding> embeddings) {
-        
-        List<String> newEntries = null;
-        synchronized(this) {
+  @Override
+  public void addAll(List<String> ids, List<Embedding> embeddings, List<TextSegment> embedded) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            newEntries = embeddingStore.addAll(embeddings);
-            embeddingStore.serializeToFile(ephemeralFileStorePath); 
-        }
-        return newEntries;
+    synchronized (this) {
+
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      embeddingStore.addAll(ids, embeddings, embedded);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+  }
 
-    @Override
-    public void addAll(List<String> ids, List<Embedding> embeddings, List<TextSegment> embedded) {
+  @Override
+  public void removeAll(Collection<String> ids) {
 
-        synchronized(this) {
+    synchronized (this) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            embeddingStore.addAll(ids, embeddings, embedded);
-            embeddingStore.serializeToFile(ephemeralFileStorePath); 
-        }
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      embeddingStore.removeAll(ids);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+  }
 
-    @Override
-    public void removeAll(Collection<String> ids) {
+  @Override
+  public void removeAll(Filter filter) {
 
-        synchronized(this) {
+    synchronized (this) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            embeddingStore.removeAll(ids);
-            embeddingStore.serializeToFile(ephemeralFileStorePath); 
-        }
+      InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+      embeddingStore.removeAll(filter);
+      embeddingStore.serializeToFile(ephemeralFileStorePath);
     }
+  }
 
-    @Override
-    public void removeAll(Filter filter) {
+  @Override
+  public void removeAll() {
 
-        synchronized(this) {
+    synchronized (this) {
 
-            InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-            embeddingStore.removeAll(filter);
-            embeddingStore.serializeToFile(ephemeralFileStorePath); 
-        }
+      try {
+        Files.deleteIfExists(Paths.get(ephemeralFileStorePath));
+      } catch (IOException e) {
+        throw new ModuleException(
+                                  e.getMessage(),
+                                  MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+      }
     }
+  }
 
-    @Override
-    public void removeAll() {
+  @Override
+  public EmbeddingSearchResult<TextSegment> search(EmbeddingSearchRequest request) {
 
-        synchronized(this) {
+    InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+    return embeddingStore.search(request);
+  }
 
-            try {
-                Files.deleteIfExists(Paths.get(ephemeralFileStorePath));
-            } catch (IOException e) {
-                throw new ModuleException(
-                    e.getMessage(),
-                    MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-            }
-        }
-    }
+  public String serializeToJson() {
 
-    @Override
-    public EmbeddingSearchResult<TextSegment> search(EmbeddingSearchRequest request) {
-        
-        InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-        return embeddingStore.search(request);
-    }
-    
-    public String serializeToJson() {
-
-        InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
-        return embeddingStore.serializeToJson();
-    }
+    InMemoryEmbeddingStore<TextSegment> embeddingStore = loadEmbeddingStore();
+    return embeddingStore.serializeToJson();
+  }
 }

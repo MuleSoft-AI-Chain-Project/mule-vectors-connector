@@ -14,23 +14,14 @@ import org.mule.extension.vectors.internal.connection.provider.embeddings.vertex
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
 import org.mule.extension.vectors.internal.service.embeddings.azureaivision.AzureAIVisionBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.azureopenai.AzureOpenAIBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.einstein.EinsteinBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.huggingface.HuggingFaceBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.mistralai.MistralAIBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.nomic.NomicBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.ollama.OllamaBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.openai.OpenAIBuilder;
-
 import org.mule.extension.vectors.internal.service.embeddings.vertexai.VertexAIBuilder;
-
 
 public class EmbeddingServiceFactoryBuilder {
 
@@ -47,7 +38,8 @@ public class EmbeddingServiceFactoryBuilder {
    * Returns the appropriate EmbeddingServiceBuilder for the given model connection and parameters.
    * This bypasses the EmbeddingServiceProvider indirection.
    */
-  public EmbeddingServiceBuilder getBuilder(BaseModelConnection modelConnection, EmbeddingModelParameters embeddingModelParameters) {
+  public EmbeddingServiceBuilder getBuilder(BaseModelConnection modelConnection,
+                                            EmbeddingModelParameters embeddingModelParameters) {
     switch (modelConnection.getEmbeddingModelService()) {
       case Constants.EMBEDDING_MODEL_SERVICE_AZURE_AI_VISION:
         return new AzureAIVisionBuilder()

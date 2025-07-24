@@ -15,8 +15,6 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,82 +22,87 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Alias("openAI")
 @DisplayName("OpenAI")
 public class OpenAIModelConnection implements BaseModelConnection {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnection.class);
-    private static final String MODELS_ENDPOINT = "https://api.openai.com/v1/models";
+  private static final Logger LOGGER = LoggerFactory.getLogger(OpenAIModelConnection.class);
+  private static final String MODELS_ENDPOINT = "https://api.openai.com/v1/models";
 
-    private final String apiKey;
-    private final HttpClient httpClient;
-    private final long timeout;
-    public OpenAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
-        this.apiKey = apiKey;
-        this.timeout = timeout;
-        this.httpClient = httpClient;
-    }
+  private final String apiKey;
+  private final HttpClient httpClient;
+  private final long timeout;
 
-    public long getTimeout() {
-        return timeout;
-    }
+  public OpenAIModelConnection(String apiKey, long timeout, HttpClient httpClient) {
+    this.apiKey = apiKey;
+    this.timeout = timeout;
+    this.httpClient = httpClient;
+  }
 
-    public HttpClient getHttpClient() {
-        return this.httpClient;
-    }
+  public long getTimeout() {
+    return timeout;
+  }
 
-    public String getApiKey() {
-        return this.apiKey;
-    }
+  public HttpClient getHttpClient() {
+    return this.httpClient;
+  }
 
-    @Override
-    public String getEmbeddingModelService() {
-        return Constants.EMBEDDING_MODEL_SERVICE_OPENAI;
-    }
+  public String getApiKey() {
+    return this.apiKey;
+  }
 
-    @Override
-    public void disconnect() {
-        // HttpClient lifecycle is managed by the provider
-    }
+  @Override
+  public String getEmbeddingModelService() {
+    return Constants.EMBEDDING_MODEL_SERVICE_OPENAI;
+  }
 
-    @Override
-    public void validate() {
-        try {
-            getModelsAsync().get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new ModuleException("Failed to validate connection to OpenAI.", MuleVectorsErrorType.INVALID_CONNECTION, e.getCause());
-        }
-    }
+  @Override
+  public void disconnect() {
+    // HttpClient lifecycle is managed by the provider
+  }
 
-    private CompletableFuture<Void> getModelsAsync() {
-        return HttpRequestHelper.executeGetRequest(httpClient, MODELS_ENDPOINT, buildAuthHeaders(), (int) timeout)
-                .thenAccept(response -> {
-                    int statusCode = response.getStatusCode();
-                    if (statusCode == 401 || statusCode == 403) {
-                        LOGGER.error("Authentication failed. Please check your credentials.");
-                        throw new ModuleException("Invalid credentials", MuleVectorsErrorType.INVALID_CONNECTION);
-                    }
-                    if (statusCode != 200) {
-                        handleErrorResponse(response, "Failed to validate credentials");
-                    }
-                });
+  @Override
+  public void validate() {
+    try {
+      getModelsAsync().get();
+    } catch (InterruptedException | ExecutionException e) {
+      Thread.currentThread().interrupt();
+      throw new ModuleException("Failed to validate connection to OpenAI.", MuleVectorsErrorType.INVALID_CONNECTION,
+                                e.getCause());
     }
+  }
 
-    private Map<String, String> buildAuthHeaders() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + apiKey);
-        return headers;
-    }
+  private CompletableFuture<Void> getModelsAsync() {
+    return HttpRequestHelper.executeGetRequest(httpClient, MODELS_ENDPOINT, buildAuthHeaders(), (int) timeout)
+        .thenAccept(response -> {
+          int statusCode = response.getStatusCode();
+          if (statusCode == 401 || statusCode == 403) {
+            LOGGER.error("Authentication failed. Please check your credentials.");
+            throw new ModuleException("Invalid credentials", MuleVectorsErrorType.INVALID_CONNECTION);
+          }
+          if (statusCode != 200) {
+            handleErrorResponse(response, "Failed to validate credentials");
+          }
+        });
+  }
 
-    private String handleErrorResponse(HttpResponse response, String message) {
-        try {
-            String errorBody = new String(response.getEntity().getBytes());
-            String errorMsg = String.format("%s. Status: %d - %s", message, response.getStatusCode(), errorBody);
-            LOGGER.error(errorMsg);
-            throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
-        } catch (IOException e) {
-            throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
-        }
+  private Map<String, String> buildAuthHeaders() {
+    Map<String, String> headers = new HashMap<>();
+    headers.put("Authorization", "Bearer " + apiKey);
+    return headers;
+  }
+
+  private String handleErrorResponse(HttpResponse response, String message) {
+    try {
+      String errorBody = new String(response.getEntity().getBytes());
+      String errorMsg = String.format("%s. Status: %d - %s", message, response.getStatusCode(), errorBody);
+      LOGGER.error(errorMsg);
+      throw new ModuleException(errorMsg, MuleVectorsErrorType.AI_SERVICES_FAILURE);
+    } catch (IOException e) {
+      throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
     }
+  }
 }

@@ -13,23 +13,25 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class OpenAIBuilder implements EmbeddingServiceBuilder {
-    private OpenAIModelConnection openAIModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
-    public OpenAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public OpenAIBuilder modelConnections(OpenAIModelConnection openAIModelConnection) {
-      this.openAIModelConnection = openAIModelConnection;
-      return this;
-    }
 
-    @Override
-    public EmbeddingService build() {
-      return new OpenAIService(this.openAIModelConnection, this.embeddingModelParameters);
-    }
+  private OpenAIModelConnection openAIModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
+
+  public OpenAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
+
+  public OpenAIBuilder modelConnections(OpenAIModelConnection openAIModelConnection) {
+    this.openAIModelConnection = openAIModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new OpenAIService(this.openAIModelConnection, this.embeddingModelParameters);
+  }
 
 }
-
 
 

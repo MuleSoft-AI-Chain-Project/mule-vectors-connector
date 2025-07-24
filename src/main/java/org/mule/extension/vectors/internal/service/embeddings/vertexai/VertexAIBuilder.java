@@ -13,25 +13,26 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class VertexAIBuilder implements EmbeddingServiceBuilder {
-    private VertexAIModelConnection vertexAIModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
+
+  private VertexAIModelConnection vertexAIModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
 
 
-    public VertexAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public VertexAIBuilder modelConnections(VertexAIModelConnection vertexAIModelConnection) {
-      this.vertexAIModelConnection = vertexAIModelConnection;
-      return this;
-    }
-    @Override
-    public EmbeddingService build() {
-      return new VertexAIService(this.vertexAIModelConnection, this.embeddingModelParameters);
-    }
+  public VertexAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
+
+  public VertexAIBuilder modelConnections(VertexAIModelConnection vertexAIModelConnection) {
+    this.vertexAIModelConnection = vertexAIModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new VertexAIService(this.vertexAIModelConnection, this.embeddingModelParameters);
+  }
 
 }
-
-
 
 

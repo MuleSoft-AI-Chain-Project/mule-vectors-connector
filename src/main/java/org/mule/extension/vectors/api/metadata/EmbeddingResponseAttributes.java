@@ -1,12 +1,12 @@
 package org.mule.extension.vectors.api.metadata;
 
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
  * Represents the attributes of an embedding operation response.
@@ -42,8 +42,10 @@ public class EmbeddingResponseAttributes implements Serializable {
    *                          Remaining entries are stored in {@code otherAttributes}.
    */
   public EmbeddingResponseAttributes(HashMap<String, Object> requestAttributes) {
-    this.embeddingModelName = requestAttributes.containsKey("embeddingModelName") ? (String) requestAttributes.remove("embeddingModelName") : null;
-    this.embeddingModelDimension = requestAttributes.containsKey("embeddingModelDimension") ? (int) requestAttributes.remove("embeddingModelDimension") : null;
+    this.embeddingModelName =
+        requestAttributes.containsKey("embeddingModelName") ? (String) requestAttributes.remove("embeddingModelName") : null;
+    this.embeddingModelDimension = requestAttributes.containsKey("embeddingModelDimension")
+        ? (int) requestAttributes.remove("embeddingModelDimension") : null;
     this.tokenUsage = requestAttributes.containsKey("tokenUsage") ? (TokenUsage) requestAttributes.remove("tokenUsage") : null;
     this.otherAttributes = requestAttributes;
   }
@@ -66,7 +68,9 @@ public class EmbeddingResponseAttributes implements Serializable {
     return embeddingModelDimension;
   }
 
-  public TokenUsage getTokenUsage() { return tokenUsage; }
+  public TokenUsage getTokenUsage() {
+    return tokenUsage;
+  }
 
   /**
    * Gets additional attributes of the embedding response.
@@ -81,15 +85,19 @@ public class EmbeddingResponseAttributes implements Serializable {
   }
 
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     EmbeddingResponseAttributes that = (EmbeddingResponseAttributes) o;
 
-    if (embeddingModelDimension != that.embeddingModelDimension) return false;
+    if (embeddingModelDimension != that.embeddingModelDimension)
+      return false;
     if (embeddingModelName != null ? !embeddingModelName.equals(that.embeddingModelName) : that.embeddingModelName != null)
       return false;
-    if (tokenUsage != null ? !tokenUsage.equals(that.tokenUsage) : that.tokenUsage != null) return false;
+    if (tokenUsage != null ? !tokenUsage.equals(that.tokenUsage) : that.tokenUsage != null)
+      return false;
     return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
   }
 

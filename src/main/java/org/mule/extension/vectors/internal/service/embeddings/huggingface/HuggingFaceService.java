@@ -1,9 +1,5 @@
 package org.mule.extension.vectors.internal.service.embeddings.huggingface;
 
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.output.Response;
-import org.json.JSONArray;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.huggingface.HuggingFaceModelConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParameters;
@@ -12,15 +8,19 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.model.output.Response;
+import org.json.JSONArray;
 
 public class HuggingFaceService implements EmbeddingService {
 
@@ -30,7 +30,8 @@ public class HuggingFaceService implements EmbeddingService {
   private static final String PIPELINE_FEATURE_EXTRACTION_PATH = "/pipeline/feature-extraction";
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  public HuggingFaceService(HuggingFaceModelConnection huggingFaceModelConnection, EmbeddingModelParameters embeddingModelParameters) {
+  public HuggingFaceService(HuggingFaceModelConnection huggingFaceModelConnection,
+                            EmbeddingModelParameters embeddingModelParameters) {
     this.huggingFaceModelConnection = huggingFaceModelConnection;
     this.embeddingModelParameters = embeddingModelParameters;
   }
@@ -60,17 +61,19 @@ public class HuggingFaceService implements EmbeddingService {
       Map<String, String> headers = buildAuthHeaders();
       headers.put("Content-Type", "application/json");
 
-      return HttpRequestHelper.executePostRequest(this.huggingFaceModelConnection.getHttpClient(), url, headers, body, (int) this.huggingFaceModelConnection.getTimeout())
+      return HttpRequestHelper.executePostRequest(this.huggingFaceModelConnection.getHttpClient(), url, headers, body,
+                                                  (int) this.huggingFaceModelConnection.getTimeout())
           .thenApply(this::handleEmbeddingResponse);
     } catch (JsonProcessingException e) {
-      return CompletableFuture.failedFuture(new ModuleException("Failed to create request body", MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
+      return CompletableFuture.failedFuture(new ModuleException("Failed to create request body",
+                                                                MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE, e));
     }
   }
 
   private String handleEmbeddingResponse(HttpResponse response) {
     return HttpRequestHelper.handleEmbeddingResponse(response, "Hugging face");
   }
-  
+
   private String buildInferenceUrl(String modelName) {
     return INFERENCE_ENDPOINT + modelName + PIPELINE_FEATURE_EXTRACTION_PATH;
   }
@@ -80,7 +83,7 @@ public class HuggingFaceService implements EmbeddingService {
     requestBody.put("inputs", inputs);
     return objectMapper.writeValueAsBytes(requestBody);
   }
-  
+
   public Map<String, String> buildAuthHeaders() {
     Map<String, String> headers = new HashMap<>();
     headers.put("Authorization", "Bearer " + this.huggingFaceModelConnection.getApiKey());
@@ -90,25 +93,25 @@ public class HuggingFaceService implements EmbeddingService {
   @Override
   public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
     List<String> texts = textSegments.stream()
-          .map(TextSegment::text)
-          .toList();
+        .map(TextSegment::text)
+        .toList();
 
     String result = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
     {
-        List<Embedding> embeddings = new ArrayList<>();
-        JSONArray embeddingsArray = new JSONArray(result);
-        
-        for (int i = 0; i < embeddingsArray.length(); i++) {
-            JSONArray embeddingArray = embeddingsArray.getJSONArray(i);
-            float[] vector = new float[embeddingArray.length()];
-            
-            for (int j = 0; j < embeddingArray.length(); j++) {
-            vector[j] = (float) embeddingArray.getDouble(j);
-            }
-            
-            embeddings.add(Embedding.from(vector));
+      List<Embedding> embeddings = new ArrayList<>();
+      JSONArray embeddingsArray = new JSONArray(result);
+
+      for (int i = 0; i < embeddingsArray.length(); i++) {
+        JSONArray embeddingArray = embeddingsArray.getJSONArray(i);
+        float[] vector = new float[embeddingArray.length()];
+
+        for (int j = 0; j < embeddingArray.length(); j++) {
+          vector[j] = (float) embeddingArray.getDouble(j);
         }
-        return Response.from(embeddings);
+
+        embeddings.add(Embedding.from(vector));
+      }
+      return Response.from(embeddings);
     }
   }
 }

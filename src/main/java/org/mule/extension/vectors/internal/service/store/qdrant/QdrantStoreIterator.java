@@ -1,35 +1,34 @@
 package org.mule.extension.vectors.internal.service.store.qdrant;
 
+import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
 import com.google.protobuf.util.JsonFormat;
-import io.qdrant.client.grpc.JsonWithInt;
-import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
+import io.grpc.StatusRuntimeException;
+import io.qdrant.client.QdrantClient;
+import io.qdrant.client.grpc.JsonWithInt;
+import io.qdrant.client.grpc.Points;
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.runtime.extension.api.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.qdrant.client.QdrantClient;
-import io.qdrant.client.grpc.Points;
-import io.grpc.StatusRuntimeException;
-
-import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -45,10 +44,9 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
   private boolean hasMorePages = true;
 
   public QdrantStoreIterator(
-      QdrantStoreConnection connection,
-      String storeName,
-      QueryParameters queryParams
-  ) {
+                             QdrantStoreConnection connection,
+                             String storeName,
+                             QueryParameters queryParams) {
     this.client = connection.getClient();
     this.storeName = storeName;
     this.payloadTextKey = connection.getTextSegmentKey();
@@ -73,7 +71,8 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       Points.RetrievedPoint currentPoint = pointIterator.next();
       String id = currentPoint.getId().getUuid();
       String text = currentPoint.getPayloadOrDefault(payloadTextKey,
-                                                     io.qdrant.client.grpc.JsonWithInt.Value.getDefaultInstance()).getStringValue();
+                                                     io.qdrant.client.grpc.JsonWithInt.Value.getDefaultInstance())
+          .getStringValue();
       JSONObject metadataObject = new JSONObject(JsonFactory.toJson(currentPoint.getPayloadMap()));
 
       // Convert BigDecimal values to a supported type
@@ -140,24 +139,30 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
         StatusRuntimeException sre = (StatusRuntimeException) e.getCause();
         switch (sre.getStatus().getCode()) {
           case UNAUTHENTICATED:
-            throw new ModuleException("Authentication failed: " + sre.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, sre);
+            throw new ModuleException("Authentication failed: " + sre.getStatus().getDescription(),
+                                      MuleVectorsErrorType.AUTHENTICATION, sre);
           case INVALID_ARGUMENT:
-            throw new ModuleException("Invalid request to Qdrant: " + sre.getStatus().getDescription(), MuleVectorsErrorType.INVALID_REQUEST, sre);
+            throw new ModuleException("Invalid request to Qdrant: " + sre.getStatus().getDescription(),
+                                      MuleVectorsErrorType.INVALID_REQUEST, sre);
           default:
-            throw new ModuleException("Qdrant service error: " + sre.getStatus().getDescription(), MuleVectorsErrorType.SERVICE_ERROR, sre);
+            throw new ModuleException("Qdrant service error: " + sre.getStatus().getDescription(),
+                                      MuleVectorsErrorType.SERVICE_ERROR, sre);
         }
       } else {
         throw new ModuleException("Error fetching Qdrant points", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new ModuleException("Thread was interrupted while fetching Qdrant points", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException("Thread was interrupted while fetching Qdrant points",
+                                MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
 }
 
+
 final class JsonFactory {
+
   private JsonFactory() {}
 
   public static String toJson(Map<String, JsonWithInt.Value> map)
@@ -190,9 +195,9 @@ final class JsonFactory {
         value.getStructValue()
             .getFieldsMap()
             .forEach(
-                (key, val) -> {
-                  structBuilder.putFields(key, toProtobufValue(val));
-                });
+                     (key, val) -> {
+                       structBuilder.putFields(key, toProtobufValue(val));
+                     });
         return Value.newBuilder().setStructValue(structBuilder).build();
 
       case LIST_VALUE:

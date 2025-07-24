@@ -27,13 +27,17 @@ public class TokenUsage implements Serializable {
   }
 
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     TokenUsage that = (TokenUsage) o;
 
-    if (inputCount != that.inputCount) return false;
-    if (outputCount != that.outputCount) return false;
+    if (inputCount != that.inputCount)
+      return false;
+    if (outputCount != that.outputCount)
+      return false;
     return totalCount == that.totalCount;
   }
 

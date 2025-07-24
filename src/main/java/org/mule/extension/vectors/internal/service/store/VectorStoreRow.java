@@ -1,18 +1,19 @@
 package org.mule.extension.vectors.internal.service.store;
 
+import java.util.Objects;
+
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.internal.ValidationUtils;
 
-import java.util.Objects;
-
 public class VectorStoreRow<Embedded> {
+
   private final String id;
   private final Embedding embedding;
   private final Embedded embedded;
 
 
   public VectorStoreRow(String id, Embedding embedding) {
-    this(id, embedding, (Embedded)null);
+    this(id, embedding, (Embedded) null);
   }
 
   public VectorStoreRow(String id, Embedding embedding, Embedded embedded) {
@@ -25,15 +26,16 @@ public class VectorStoreRow<Embedded> {
     if (this == o) {
       return true;
     } else if (o != null && this.getClass() == o.getClass()) {
-      VectorStoreRow<?> that = (VectorStoreRow<?>)o;
-      return Objects.equals(this.id, that.id) && Objects.equals(this.embedding, that.embedding) && Objects.equals(this.embedded, that.embedded);
+      VectorStoreRow<?> that = (VectorStoreRow<?>) o;
+      return Objects.equals(this.id, that.id) && Objects.equals(this.embedding, that.embedding)
+          && Objects.equals(this.embedded, that.embedded);
     } else {
       return false;
     }
   }
 
   public int hashCode() {
-    return Objects.hash(new Object[]{this.id, this.embedding, this.embedded});
+    return Objects.hash(new Object[] {this.id, this.embedding, this.embedded});
   }
 
   public String getId() {

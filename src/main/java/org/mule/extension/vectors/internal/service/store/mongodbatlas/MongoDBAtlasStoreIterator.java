@@ -1,25 +1,25 @@
 package org.mule.extension.vectors.internal.service.store.mongodbatlas;
 
-
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.connection.provider.store.mongodbatlas.MongoDBAtlasStoreConnection;
-import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import com.mongodb.client.MongoClient;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import com.mongodb.MongoCommandException;
 import com.mongodb.MongoException;
 import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoSocketReadException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import com.mongodb.client.MongoClient;
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
 
 public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -36,10 +36,9 @@ public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator
   private boolean noMoreData;
 
   public MongoDBAtlasStoreIterator(
-      MongoDBAtlasStoreConnection mongoDBAtlasStoreConnection,
-      String storeName,
-      QueryParameters queryParams
-  ) {
+                                   MongoDBAtlasStoreConnection mongoDBAtlasStoreConnection,
+                                   String storeName,
+                                   QueryParameters queryParams) {
     this.mongoClient = mongoDBAtlasStoreConnection.getMongoClient();
     this.databaseName = mongoDBAtlasStoreConnection.getDatabase();
     this.queryParams = queryParams;
@@ -119,9 +118,8 @@ public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator
     Embedded embedded = (Embedded) new TextSegment(text, Metadata.from(metadataDoc));
 
     return new VectorStoreRow<>(
-        id,
-        vector != null ? new Embedding(vector) : null,
-        embedded
-    );
+                                id,
+                                vector != null ? new Embedding(vector) : null,
+                                embedded);
   }
 }

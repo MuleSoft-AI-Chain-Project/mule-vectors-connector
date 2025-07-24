@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.connection.provider.embeddings;
 
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
 
 import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -20,11 +21,10 @@ import org.mule.runtime.http.api.client.HttpClientConfiguration;
 
 import javax.inject.Inject;
 
-import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-
 public abstract class BaseModelConnectionProvider implements CachedConnectionProvider<BaseModelConnection>,
     Initialisable,
     Disposable {
+
   private HttpClient httpClient;
   @Inject
   private HttpService httpService;
@@ -43,6 +43,7 @@ public abstract class BaseModelConnectionProvider implements CachedConnectionPro
   private HttpProxyConfig proxyConfig;
   @RefName
   private String configName;
+
   @Override
   public void initialise() {
     HttpClientConfiguration config = createClientConfiguration();
@@ -75,6 +76,7 @@ public abstract class BaseModelConnectionProvider implements CachedConnectionPro
       httpClient = null;
     }
   }
+
   @Override
   public ConnectionValidationResult validate(BaseModelConnection connection) {
     try {

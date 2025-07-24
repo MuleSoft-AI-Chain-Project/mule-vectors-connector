@@ -5,5 +5,6 @@ import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParame
 
 public interface EmbeddingServiceProvider {
 
-  public EmbeddingServiceBuilder getBuilder(BaseModelConnection baseModelConnection, EmbeddingModelParameters embeddingModelParameters);
+  public EmbeddingServiceBuilder getBuilder(BaseModelConnection baseModelConnection,
+                                            EmbeddingModelParameters embeddingModelParameters);
 }
