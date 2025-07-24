@@ -56,10 +56,10 @@ public class TransformOperations {
   @Alias("Transform-parse-document")
   @DisplayName("[Transform] Parse document")
   @Throws(TransformErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ParserResponseAttributes> parseDocument(@Config TransformConfiguration transformConfiguration,
-                                                                                                                      @Alias("documentBinary") @DisplayName("Document binary") @Content(
-                                                                                                                          primary = true) InputStream documentStream,
-                                                                                                                      @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
+  public Result<InputStream, ParserResponseAttributes> parseDocument(@Config TransformConfiguration transformConfiguration,
+                                                                     @Alias("documentBinary") @DisplayName("Document binary") @Content(
+                                                                         primary = true) InputStream documentStream,
+                                                                     @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
     return transformService.parseDocument(documentStream, documentParserParameters);
   }
 
@@ -81,9 +81,9 @@ public class TransformOperations {
   @DisplayName("[Transform] Chunk text")
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ChunkResponseAttributes> chunkText(@Alias("text") @DisplayName("Text") @Content String text,
-                                                                                                                 @ParameterGroup(
-                                                                                                                     name = "Segmentation") SegmentationParameters segmentationParameters) {
+  public Result<InputStream, ChunkResponseAttributes> chunkText(@Alias("text") @DisplayName("Text") @Content String text,
+                                                                @ParameterGroup(
+                                                                    name = "Segmentation") SegmentationParameters segmentationParameters) {
     return transformService.chunkText(text, segmentationParameters);
   }
 
