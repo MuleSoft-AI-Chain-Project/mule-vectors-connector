@@ -70,11 +70,8 @@ public class AISearchStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (url == null) {
+    if (url == null || apiKey == null) {
       throw new ModuleException("URL is required for AI Search connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (apiKey == null) {
-      throw new ModuleException("API Key is required for AI Search connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     try {
       doAuthenticatedHttpRequest().get();
