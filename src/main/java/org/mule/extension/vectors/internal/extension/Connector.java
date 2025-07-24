@@ -38,5 +38,6 @@ import org.mule.sdk.api.annotation.JavaVersionSupport;
 @SubTypeMapping(baseType = HttpProxyConfig.class, subTypes = {DefaultProxyConfig.class, DefaultNtlmProxyConfig.class})
 @Export(classes = {HttpProxyConfig.class})
 public class Connector {
+public class VectorsConnector {
 
 }
