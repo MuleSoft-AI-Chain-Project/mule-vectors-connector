@@ -13,52 +13,52 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("https")
   private String scheme;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("localhost")
   private String host;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Example("8181")
   @Optional
   private Integer port;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Optional(defaultValue = "false")
   private boolean securedGrpc;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Optional
   private Integer grpcPort;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Optional(defaultValue = "false")
   private boolean useGrpcForInserts;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   @Password
   private String apiKey;
 
   @Parameter
   @DisplayName("Avoid duplicates")
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Optional(defaultValue = "true")
   private boolean avoidDups;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Optional(defaultValue = "ALL")
   private String consistencyLevel;
 

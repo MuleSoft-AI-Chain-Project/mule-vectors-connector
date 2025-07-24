@@ -14,13 +14,13 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 public class ElasticsearchStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("http://localhost:9200")
   private String url;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("elasticsearch")
   @Optional
@@ -28,13 +28,13 @@ public class ElasticsearchStoreConnectionParameters extends BaseStoreConnectionP
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   private String password;
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Optional
   private String apiKey;
 

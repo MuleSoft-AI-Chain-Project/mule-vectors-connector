@@ -10,7 +10,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 public class ChromaStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("http://localhost:8000")
   private String url;

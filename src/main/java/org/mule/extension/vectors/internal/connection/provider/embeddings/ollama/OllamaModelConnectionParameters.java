@@ -14,7 +14,7 @@ public class OllamaModelConnectionParameters extends BaseModelConnectionParamete
   @Parameter
   @DisplayName("Base URL")
   @Summary("Ollama base URL")
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("http://127.0.0.1:11434")
   private String baseUrl;

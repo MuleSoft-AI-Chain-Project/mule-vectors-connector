@@ -11,20 +11,20 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 public class AzureAIVisionModelConnectionParameters extends BaseModelConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("https://<resource-name>.cognitiveservices.azure.com")
   private String endpoint;
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("<your-api-key>")
   private String apiKey;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   @Example("2023-04-01-preview")
   private String apiVersion = "2023-04-01-preview";
