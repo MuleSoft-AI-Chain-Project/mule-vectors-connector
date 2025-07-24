@@ -12,32 +12,32 @@ public class PGVectorStoreConnectionParameters extends BaseStoreConnectionParame
 
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("localhost")
   private String host;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("5432")
   private int port;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   @Example("default")
   private String database;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 4)
   @Example("postgres")
   private String user;
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 5)
   private String password;
 

@@ -11,14 +11,14 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 public class AISearchStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("https://<resource-name>.search.windows.net")
   private String url;
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("<your-api-key>")
   private String apiKey;

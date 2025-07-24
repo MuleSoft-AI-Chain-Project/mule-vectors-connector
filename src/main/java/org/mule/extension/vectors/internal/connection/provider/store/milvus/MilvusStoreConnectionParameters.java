@@ -16,34 +16,34 @@ import org.mule.runtime.extension.api.annotation.values.OfValues;
 public class MilvusStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 1)
   @Example("http://localhost:19530")
   @Optional
   private String uri;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 2)
   @Example("localhost")
   @Optional
   private String host;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 3)
   @Example("19530")
   @Optional
   private Integer port;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 4)
   @Optional
   private String token;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 5)
   @Optional
   private String username;

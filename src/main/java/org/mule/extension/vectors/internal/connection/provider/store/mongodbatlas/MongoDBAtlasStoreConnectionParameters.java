@@ -13,13 +13,13 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 public class MongoDBAtlasStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("localhost")
   private String host;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("27017")
   @Optional
@@ -27,7 +27,7 @@ public class MongoDBAtlasStoreConnectionParameters extends BaseStoreConnectionPa
 
   @Parameter
   @DisplayName("Username")
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 3)
   @Example("user")
   @Optional
@@ -35,20 +35,20 @@ public class MongoDBAtlasStoreConnectionParameters extends BaseStoreConnectionPa
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 4)
   private String password;
 
   @Parameter
   @DisplayName("Database Name")
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 5)
   @Example("default")
   @Optional
   private String database;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 6)
   @Example("directConnection=true")
   @Optional

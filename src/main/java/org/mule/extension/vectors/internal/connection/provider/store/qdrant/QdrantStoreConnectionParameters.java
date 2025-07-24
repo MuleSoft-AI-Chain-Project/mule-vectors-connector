@@ -7,39 +7,33 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 public class QdrantStoreConnectionParameters extends BaseStoreConnectionParameters {
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Example("localhost")
   private String host;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @DisplayName("GPRC Port")
-  @Placement(tab = Placement.DEFAULT_TAB, order = 2)
   @Example("6334")
   private int gprcPort;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Example("false")
   private boolean useTLS;
 
   @Parameter
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 4)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Example("text-segment")
   private String textSegmentKey;
 
   @Parameter
   @Password
-  @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(tab = Placement.DEFAULT_TAB, order = 5)
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Example("<your-apikey>")
   private String apiKey;
 
