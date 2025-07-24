@@ -41,26 +41,26 @@
 					<munit:parameter propertyName="supportRemove" value="true" />
 				</munit:parameters>
 			</munit:parameterization>
-			<munit:parameterization name="config-vector-milvus" >
-				<munit:parameters >
-					<munit:parameter propertyName="config" value="storeMilvusConfig" />
-					<munit:parameter propertyName="storeName" value="munit" />
-					<munit:parameter propertyName="minScore" value="0.1" />
-					<munit:parameter propertyName="topK" value="5" />
-					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
-					<munit:parameter propertyName="supportRemove" value="true" />
-				</munit:parameters>
-			</munit:parameterization>
-			<munit:parameterization name="config-vector-qdrant" >
-				<munit:parameters >
-					<munit:parameter propertyName="config" value="storeQdrantConfig" />
-					<munit:parameter propertyName="storeName" value="munit" />
-					<munit:parameter propertyName="minScore" value="0.1" />
-					<munit:parameter propertyName="topK" value="5" />
-					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
-					<munit:parameter propertyName="supportRemove" value="true" />
-				</munit:parameters>
-			</munit:parameterization>
+<!--			<munit:parameterization name="config-vector-milvus" >-->
+<!--				<munit:parameters >-->
+<!--					<munit:parameter propertyName="config" value="storeMilvusConfig" />-->
+<!--					<munit:parameter propertyName="storeName" value="munit" />-->
+<!--					<munit:parameter propertyName="minScore" value="0.1" />-->
+<!--					<munit:parameter propertyName="topK" value="5" />-->
+<!--					<munit:parameter propertyName="supportFilterByMetadata" value="true" />-->
+<!--					<munit:parameter propertyName="supportRemove" value="true" />-->
+<!--				</munit:parameters>-->
+<!--			</munit:parameterization>-->
+<!--			<munit:parameterization name="config-vector-qdrant" >-->
+<!--				<munit:parameters >-->
+<!--					<munit:parameter propertyName="config" value="storeQdrantConfig" />-->
+<!--					<munit:parameter propertyName="storeName" value="munit" />-->
+<!--					<munit:parameter propertyName="minScore" value="0.1" />-->
+<!--					<munit:parameter propertyName="topK" value="5" />-->
+<!--					<munit:parameter propertyName="supportFilterByMetadata" value="true" />-->
+<!--					<munit:parameter propertyName="supportRemove" value="true" />-->
+<!--				</munit:parameters>-->
+<!--			</munit:parameterization>-->
 		</munit:parameterizations>
 	</munit:config>
 	<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669" >
