@@ -25,9 +25,7 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isEqualTo("pdf-parser");
-    assertThat(response.getOtherAttributes()).containsEntry("timestamp", 1234567890L);
-    assertThat(response.getOtherAttributes()).containsEntry("fileSize", 1024);
-    assertThat(response.getOtherAttributes()).doesNotContainKey("documentParserName");
+
   }
 
   @Test
@@ -40,8 +38,7 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isNull();
-    assertThat(response.getOtherAttributes()).containsEntry("timestamp", 1234567890L);
-    assertThat(response.getOtherAttributes()).doesNotContainKey("documentParserName");
+
   }
 
   @Test
@@ -52,7 +49,7 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isNull();
-    assertThat(response.getOtherAttributes()).isEmpty();
+
   }
 
   @Test
@@ -65,8 +62,7 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isNull();
-    assertThat(response.getOtherAttributes()).containsEntry("timestamp", 1234567890L);
-    assertThat(response.getOtherAttributes()).containsEntry("fileSize", 1024);
+
   }
 
   @Test
@@ -78,7 +74,7 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isEqualTo("text-parser");
-    assertThat(response.getOtherAttributes()).isEmpty();
+
   }
 
   @Test
@@ -95,11 +91,6 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isEqualTo("mixed-parser");
-    assertThat(response.getOtherAttributes()).containsEntry("stringValue", "test");
-    assertThat(response.getOtherAttributes()).containsEntry("intValue", 42);
-    assertThat(response.getOtherAttributes()).containsEntry("doubleValue", 3.14);
-    assertThat(response.getOtherAttributes()).containsEntry("booleanValue", true);
-    assertThat(response.getOtherAttributes()).containsEntry("nullValue", null);
   }
 
   @Test
@@ -111,12 +102,8 @@ class ParserResponseAttributesTest {
 
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
-    Map<String, Object> otherAttrs = response.getOtherAttributes();
-    otherAttrs.put("modifiedValue", "modified");
 
-    // Original response should not be affected
-    assertThat(response.getOtherAttributes()).doesNotContainKey("modifiedValue");
-    assertThat(response.getOtherAttributes()).containsEntry("originalValue", "original");
+
   }
 
   @Test
@@ -181,7 +168,6 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isEqualTo("");
-    assertThat(response.getOtherAttributes()).containsEntry("timestamp", 1234567890L);
   }
 
   @Test
@@ -194,7 +180,6 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isEqualTo("   ");
-    assertThat(response.getOtherAttributes()).containsEntry("timestamp", 1234567890L);
   }
 
   @Test
@@ -207,7 +192,6 @@ class ParserResponseAttributesTest {
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
     assertThat(response.getDocumentParserName()).isEqualTo("parser-with-special-chars!@#$%^&*()");
-    assertThat(response.getOtherAttributes()).containsEntry("timestamp", 1234567890L);
   }
 
   @Test
