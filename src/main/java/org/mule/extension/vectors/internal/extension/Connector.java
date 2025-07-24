@@ -28,6 +28,6 @@ import org.mule.sdk.api.annotation.JavaVersionSupport;
 @JavaVersionSupport({JAVA_17})
 @SubTypeMapping(baseType = DocumentParserParameters.class,
     subTypes = {MultiformatDocumentParserParameters.class, TextDocumentParserParameters.class})
-public class Connector {
+public class VectorsConnector {
 
 }
