@@ -25,7 +25,6 @@ public class ParserResponseAttributes implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private final String documentParserName;
-  private transient final HashMap<String, Object> otherAttributes;
 
   /**
    * Constructs a {@code ParserResponseAttributes} instance.
@@ -39,8 +38,6 @@ public class ParserResponseAttributes implements Serializable {
    */
   public ParserResponseAttributes(HashMap<String, Object> requestAttributes) {
     this.documentParserName = (String) requestAttributes.get("documentParserName");
-    this.otherAttributes = new HashMap<>(requestAttributes);
-    this.otherAttributes.remove("documentParserName");
   }
 
   /**
@@ -52,18 +49,6 @@ public class ParserResponseAttributes implements Serializable {
     return documentParserName;
   }
 
-  /**
-   * Gets additional attributes that were not explicitly mapped to fields.
-   * <p>
-   * This method returns a copy of the additional attributes map to prevent
-   * external modification of the internal state.
-   * </p>
-   *
-   * @return a copy of the additional attributes map
-   */
-  public HashMap<String, Object> getOtherAttributes() {
-    return new HashMap<>(otherAttributes);
-  }
 
   @Override
   public boolean equals(Object o) {
@@ -72,20 +57,18 @@ public class ParserResponseAttributes implements Serializable {
     if (o == null || getClass() != o.getClass())
       return false;
     ParserResponseAttributes that = (ParserResponseAttributes) o;
-    return Objects.equals(documentParserName, that.documentParserName) &&
-        Objects.equals(otherAttributes, that.otherAttributes);
+    return Objects.equals(documentParserName, that.documentParserName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(documentParserName, otherAttributes);
+    return Objects.hash(documentParserName);
   }
 
   @Override
   public String toString() {
     return "ParserResponseAttributes{" +
         "documentParserName='" + documentParserName + '\'' +
-        ", otherAttributes=" + otherAttributes +
         '}';
   }
 }

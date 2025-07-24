@@ -1,12 +1,7 @@
 package org.mule.extension.vectors.api.metadata;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
-
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -33,11 +28,6 @@ public class ChunkResponseAttributes implements Serializable {
   private final Integer maxOverlapSizeInChars;
 
   /**
-   * Additional attributes not explicitly defined as fields in this class.
-   */
-  private transient final HashMap<String, Object> otherAttributes;
-
-  /**
    * Constructs a {@code ParserResponseAttributes} instance.
    *
    * @param requestAttributes a map containing parser operation attributes.
@@ -50,7 +40,6 @@ public class ChunkResponseAttributes implements Serializable {
         ? (Integer) requestAttributes.remove("maxSegmentSizeInChars") : null;
     this.maxOverlapSizeInChars = requestAttributes.containsKey("maxOverlapSizeInChars")
         ? (Integer) requestAttributes.remove("maxOverlapSizeInChars") : null;
-    this.otherAttributes = requestAttributes;
   }
 
   /**
@@ -71,17 +60,6 @@ public class ChunkResponseAttributes implements Serializable {
     return maxOverlapSizeInChars;
   }
 
-  /**
-   * Gets additional attributes of the parser operation.
-   * <p>
-   * These are attributes not explicitly defined in this class.
-   *
-   * @return a map of additional attributes.
-   */
-  @MediaType(value = APPLICATION_JSON, strict = false)
-  public Map<String, Object> getOtherAttributes() {
-    return otherAttributes;
-  }
 
   public boolean equals(Object o) {
     if (this == o)
@@ -97,13 +75,12 @@ public class ChunkResponseAttributes implements Serializable {
     if (maxOverlapSizeInChars != null ? !maxOverlapSizeInChars.equals(that.maxOverlapSizeInChars)
         : that.maxOverlapSizeInChars != null)
       return false;
-    return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
+    return true;
   }
 
   public int hashCode() {
     int result = maxSegmentSizeInChars != null ? maxSegmentSizeInChars.hashCode() : 0;
     result = 31 * result + (maxOverlapSizeInChars != null ? maxOverlapSizeInChars.hashCode() : 0);
-    result = 31 * result + (otherAttributes != null ? otherAttributes.hashCode() : 0);
     return result;
   }
 }
