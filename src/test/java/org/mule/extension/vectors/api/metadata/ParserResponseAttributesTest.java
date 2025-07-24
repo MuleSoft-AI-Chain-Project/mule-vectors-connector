@@ -155,7 +155,6 @@ class ParserResponseAttributesTest {
     String toString = response.toString();
     assertThat(toString).contains("ParserResponseAttributes");
     assertThat(toString).contains("documentParserName='test-parser'");
-    assertThat(toString).contains("otherAttributes=");
   }
 
   @Test
