@@ -1,6 +1,9 @@
 package org.mule.extension.vectors.internal.helper;
 
-import org.mule.extension.vectors.api.metadata.*;
+import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -62,19 +65,6 @@ public final class ResponseHelper {
         .build();
   }
 
-
-  public static Result<InputStream, StorageResponseAttributes> createFileResponse(
-      InputStream content,
-      Map<String, Object> storageAttributes) {
-
-    return Result.<InputStream, StorageResponseAttributes>builder()
-        .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
-        .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(content)
-        .mediaType(MediaType.BINARY)
-        .build();
-  }
-
   public static Result<InputStream, ParserResponseAttributes> createParsedDocumentResponse(
       String response,
       Map<String, Object> documentAttributes) {
@@ -97,22 +87,5 @@ public final class ResponseHelper {
         .output(toInputStream(response, StandardCharsets.UTF_8))
         .mediaType(MediaType.APPLICATION_JSON)
         .build();
-  }
-
-  public static List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> createPageFileResponse(
-      InputStream content,
-      Map<String, Object> storageAttributes,
-      StreamingHelper streamingHelper) {
-
-    List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> page =  new LinkedList<>();
-
-    page.add(Result.<CursorProvider<Cursor>, StorageResponseAttributes>builder()
-        .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
-        .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(content))
-        .mediaType(MediaType.BINARY)
-        .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
-        .build());
-
-    return page;
   }
 }

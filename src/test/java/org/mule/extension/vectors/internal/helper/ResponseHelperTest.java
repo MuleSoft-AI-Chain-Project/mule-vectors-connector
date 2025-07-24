@@ -64,17 +64,6 @@ class ResponseHelperTest {
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
     }
 
-    @Test
-    void createFileResponse_shouldReturnResultWithAttributesAndBinaryMediaType() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("file", "yes");
-        InputStream content = new ByteArrayInputStream(new byte[]{1,2,3});
-        Result<InputStream, StorageResponseAttributes> result = ResponseHelper.createFileResponse(content, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("file", "yes");
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(new byte[]{1,2,3}));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
 
     @Test
     void createParsedDocumentResponse_shouldReturnResultWithTextMediaType() {
@@ -98,20 +87,5 @@ class ResponseHelperTest {
         assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
     }
 
-    @Test
-    void createPageFileResponse_shouldReturnListWithResult() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("foo", "bar");
-        InputStream content = new ByteArrayInputStream(new byte[]{1,2,3});
-        StreamingHelper streamingHelper = mock(StreamingHelper.class);
-        CursorProvider<Cursor> cursorProvider = mock(CursorProvider.class);
-        when(streamingHelper.resolveCursorProvider(content)).thenReturn(cursorProvider);
-        List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> page = ResponseHelper.createPageFileResponse(content, attrs, streamingHelper);
-        assertThat(page).hasSize(1);
-        Result<CursorProvider<Cursor>, StorageResponseAttributes> result = page.get(0);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("foo", "bar");
-        assertThat(result.getOutput()).isSameAs(cursorProvider);
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+    
 } 

@@ -18,11 +18,11 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
 @ConnectionProviders({
     AISearchStoreConnectionProvider.class,
     ChromaStoreConnectionProvider.class,
-    ElasticsearchStoreConnectionProvider.class,
+    //ElasticsearchStoreConnectionProvider.class,
     MilvusStoreConnectionProvider.class,
     MongoDBAtlasStoreConnectionProvider.class,
     OpenSearchStoreConnectionProvider.class,
-    // PGVectorStoreConnectionProvider.class,
+    PGVectorStoreConnectionProvider.class,
     PineconeStoreConnectionProvider.class,
     QdrantStoreConnectionProvider.class,
     EphemeralFileStoreConnectionProvider.class})
