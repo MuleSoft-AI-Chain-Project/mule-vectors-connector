@@ -1,12 +1,12 @@
 package org.mule.extension.vectors.internal.connection.provider.store.weaviate;
 
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
-import org.mule.runtime.http.api.client.HttpClient;
-import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.runtime.http.api.client.HttpClient;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,6 +50,7 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
   public HttpClient getHttpClient() {
     return httpClient;
   }
+
   public String getScheme() {
     return scheme;
   }
@@ -62,11 +63,17 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
     return port;
   }
 
-  public boolean isSecuredGrpc() { return securedGrpc; }
+  public boolean isSecuredGrpc() {
+    return securedGrpc;
+  }
 
-  public Integer getGrpcPort() { return grpcPort; }
+  public Integer getGrpcPort() {
+    return grpcPort;
+  }
 
-  public boolean isUseGrpcForInserts() { return useGrpcForInserts; }
+  public boolean isUseGrpcForInserts() {
+    return useGrpcForInserts;
+  }
 
   public String getApikey() {
     return apikey;
@@ -142,12 +149,13 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
             if (connectionResponse.getStatusCode() != 200) {
               try {
                 String errorBody = new String(connectionResponse.getEntity().getBytes());
-                String errorMsg = String.format("Unable to connect to Weaviate. Status: %d - %s", connectionResponse.getStatusCode(), errorBody);
+                String errorMsg = String.format("Unable to connect to Weaviate. Status: %d - %s",
+                                                connectionResponse.getStatusCode(), errorBody);
                 LOGGER.error(errorMsg);
                 throw new ModuleException(errorMsg, MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
               } catch (IOException e) {
                 throw new ModuleException("Failed to read error response body", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
-               }
+              }
             }
           });
     } catch (Exception e) {

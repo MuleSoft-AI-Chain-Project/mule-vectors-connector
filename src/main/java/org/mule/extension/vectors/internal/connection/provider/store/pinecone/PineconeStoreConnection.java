@@ -1,11 +1,12 @@
 package org.mule.extension.vectors.internal.connection.provider.store.pinecone;
 
-import io.pinecone.clients.Pinecone;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
-import org.mule.runtime.extension.api.exception.ModuleException;
+import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import io.pinecone.clients.Pinecone;
 
 public class PineconeStoreConnection implements BaseStoreConnection {
 

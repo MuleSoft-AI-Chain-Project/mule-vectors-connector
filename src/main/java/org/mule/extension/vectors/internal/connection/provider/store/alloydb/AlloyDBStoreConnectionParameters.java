@@ -3,11 +3,11 @@ package org.mule.extension.vectors.internal.connection.provider.store.alloydb;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.mule.runtime.extension.api.annotation.param.Optional;
 
 public class AlloyDBStoreConnectionParameters extends BaseStoreConnectionParameters {
 
@@ -80,23 +80,23 @@ public class AlloyDBStoreConnectionParameters extends BaseStoreConnectionParamet
   public String getProjectId() {
     return projectId;
   }
-  
+
   public String getRegion() {
     return region;
   }
-  
+
   public String getCluster() {
     return cluster;
   }
-  
+
   public String getInstance() {
     return instance;
   }
-  
+
   public String getIamAccountEmail() {
     return iamAccountEmail;
   }
-  
+
   public String getIpType() {
     return ipType;
   }

@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.internal.helper;
 
 import org.mule.extension.vectors.internal.constant.Constants;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,83 +47,78 @@ public class OperationValidator {
   private void initializeOperationMappings() {
     // Mapping operation types to supported vector stores
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_STORE_METADATA,
-            new HashSet<>(Arrays.asList(
-              Constants.VECTOR_STORE_ALLOYDB,
-              Constants.VECTOR_STORE_PGVECTOR,
-              Constants.VECTOR_STORE_ELASTICSEARCH,
-              Constants.VECTOR_STORE_OPENSEARCH,
-              Constants.VECTOR_STORE_MILVUS,
-              Constants.VECTOR_STORE_MONGODB_ATLAS,
-              Constants.VECTOR_STORE_CHROMA,
-              Constants.VECTOR_STORE_PINECONE,
-              Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT,
-              Constants.VECTOR_STORE_WEAVIATE,
-              Constants.VECTOR_STORE_EPHEMERAL_FILE
-            )));
+                                                            new HashSet<>(Arrays.asList(
+                                                                                        Constants.VECTOR_STORE_ALLOYDB,
+                                                                                        Constants.VECTOR_STORE_PGVECTOR,
+                                                                                        Constants.VECTOR_STORE_ELASTICSEARCH,
+                                                                                        Constants.VECTOR_STORE_OPENSEARCH,
+                                                                                        Constants.VECTOR_STORE_MILVUS,
+                                                                                        Constants.VECTOR_STORE_MONGODB_ATLAS,
+                                                                                        Constants.VECTOR_STORE_CHROMA,
+                                                                                        Constants.VECTOR_STORE_PINECONE,
+                                                                                        Constants.VECTOR_STORE_AI_SEARCH,
+                                                                                        Constants.VECTOR_STORE_QDRANT,
+                                                                                        Constants.VECTOR_STORE_WEAVIATE,
+                                                                                        Constants.VECTOR_STORE_EPHEMERAL_FILE)));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA,
-            new HashSet<>(Arrays.asList(
-              Constants.VECTOR_STORE_ALLOYDB,
-              Constants.VECTOR_STORE_PGVECTOR,
-              Constants.VECTOR_STORE_ELASTICSEARCH,
-              // Constants.VECTOR_STORE_OPENSEARCH,
-              Constants.VECTOR_STORE_MILVUS,
-              Constants.VECTOR_STORE_MONGODB_ATLAS,
-              Constants.VECTOR_STORE_CHROMA,
-              Constants.VECTOR_STORE_PINECONE, // Do not support GTE with strings.
-              Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT,
-              // Constants.VECTOR_STORE_WEAVIATE, // Not supported yet.
-              Constants.VECTOR_STORE_EPHEMERAL_FILE
-            )));
+                                                            new HashSet<>(Arrays.asList(
+                                                                                        Constants.VECTOR_STORE_ALLOYDB,
+                                                                                        Constants.VECTOR_STORE_PGVECTOR,
+                                                                                        Constants.VECTOR_STORE_ELASTICSEARCH,
+                                                                                        // Constants.VECTOR_STORE_OPENSEARCH,
+                                                                                        Constants.VECTOR_STORE_MILVUS,
+                                                                                        Constants.VECTOR_STORE_MONGODB_ATLAS,
+                                                                                        Constants.VECTOR_STORE_CHROMA,
+                                                                                        Constants.VECTOR_STORE_PINECONE, // Do not support GTE with strings.
+                                                                                        Constants.VECTOR_STORE_AI_SEARCH,
+                                                                                        Constants.VECTOR_STORE_QDRANT,
+                                                                                        // Constants.VECTOR_STORE_WEAVIATE, // Not supported yet.
+                                                                                        Constants.VECTOR_STORE_EPHEMERAL_FILE)));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS,
-            new HashSet<>(Arrays.asList(
-              Constants.VECTOR_STORE_ALLOYDB,
-              Constants.VECTOR_STORE_PGVECTOR,
-              Constants.VECTOR_STORE_ELASTICSEARCH,
-              // Constants.VECTOR_STORE_OPENSEARCH, // Not supported yet.
-              Constants.VECTOR_STORE_MILVUS,
-              Constants.VECTOR_STORE_MONGODB_ATLAS,
-              Constants.VECTOR_STORE_CHROMA,
-              // Constants.VECTOR_STORE_PINECONE,
-              Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT,
-              Constants.VECTOR_STORE_WEAVIATE,
-              Constants.VECTOR_STORE_EPHEMERAL_FILE
-            )));
+                                                            new HashSet<>(Arrays.asList(
+                                                                                        Constants.VECTOR_STORE_ALLOYDB,
+                                                                                        Constants.VECTOR_STORE_PGVECTOR,
+                                                                                        Constants.VECTOR_STORE_ELASTICSEARCH,
+                                                                                        // Constants.VECTOR_STORE_OPENSEARCH, // Not supported yet.
+                                                                                        Constants.VECTOR_STORE_MILVUS,
+                                                                                        Constants.VECTOR_STORE_MONGODB_ATLAS,
+                                                                                        Constants.VECTOR_STORE_CHROMA,
+                                                                                        // Constants.VECTOR_STORE_PINECONE,
+                                                                                        Constants.VECTOR_STORE_AI_SEARCH,
+                                                                                        Constants.VECTOR_STORE_QDRANT,
+                                                                                        Constants.VECTOR_STORE_WEAVIATE,
+                                                                                        Constants.VECTOR_STORE_EPHEMERAL_FILE)));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_REMOVE_EMBEDDINGS_ALL,
-            new HashSet<>(Arrays.asList(
-                Constants.VECTOR_STORE_ALLOYDB,
-                Constants.VECTOR_STORE_PGVECTOR,
-                Constants.VECTOR_STORE_ELASTICSEARCH,
-                // Constants.VECTOR_STORE_OPENSEARCH, // Not supported yet.
-                Constants.VECTOR_STORE_MILVUS,
-                Constants.VECTOR_STORE_MONGODB_ATLAS,
-                Constants.VECTOR_STORE_CHROMA,
-                // Constants.VECTOR_STORE_PINECONE,
-                Constants.VECTOR_STORE_AI_SEARCH,
-                Constants.VECTOR_STORE_QDRANT,
-                //Constants.VECTOR_STORE_WEAVIATE, // Not supported yet.
-                Constants.VECTOR_STORE_EPHEMERAL_FILE
-            )));
+                                                            new HashSet<>(Arrays.asList(
+                                                                                        Constants.VECTOR_STORE_ALLOYDB,
+                                                                                        Constants.VECTOR_STORE_PGVECTOR,
+                                                                                        Constants.VECTOR_STORE_ELASTICSEARCH,
+                                                                                        // Constants.VECTOR_STORE_OPENSEARCH, // Not supported yet.
+                                                                                        Constants.VECTOR_STORE_MILVUS,
+                                                                                        Constants.VECTOR_STORE_MONGODB_ATLAS,
+                                                                                        Constants.VECTOR_STORE_CHROMA,
+                                                                                        // Constants.VECTOR_STORE_PINECONE,
+                                                                                        Constants.VECTOR_STORE_AI_SEARCH,
+                                                                                        Constants.VECTOR_STORE_QDRANT,
+                                                                                        //Constants.VECTOR_STORE_WEAVIATE, // Not supported yet.
+                                                                                        Constants.VECTOR_STORE_EPHEMERAL_FILE)));
 
     EMBEDDING_OPERATION_TYPE_TO_SUPPORTED_VECTOR_STORES.put(Constants.STORE_OPERATION_TYPE_QUERY_ALL,
-            new HashSet<>(Arrays.asList(
-              Constants.VECTOR_STORE_ALLOYDB,
-              Constants.VECTOR_STORE_PGVECTOR,
-              Constants.VECTOR_STORE_ELASTICSEARCH,
-              Constants.VECTOR_STORE_OPENSEARCH,
-              Constants.VECTOR_STORE_MILVUS,
-              Constants.VECTOR_STORE_MONGODB_ATLAS,
-              Constants.VECTOR_STORE_CHROMA,
-              Constants.VECTOR_STORE_PINECONE,
-              Constants.VECTOR_STORE_AI_SEARCH,
-              Constants.VECTOR_STORE_QDRANT,
-              Constants.VECTOR_STORE_EPHEMERAL_FILE
-            )));
+                                                            new HashSet<>(Arrays.asList(
+                                                                                        Constants.VECTOR_STORE_ALLOYDB,
+                                                                                        Constants.VECTOR_STORE_PGVECTOR,
+                                                                                        Constants.VECTOR_STORE_ELASTICSEARCH,
+                                                                                        Constants.VECTOR_STORE_OPENSEARCH,
+                                                                                        Constants.VECTOR_STORE_MILVUS,
+                                                                                        Constants.VECTOR_STORE_MONGODB_ATLAS,
+                                                                                        Constants.VECTOR_STORE_CHROMA,
+                                                                                        Constants.VECTOR_STORE_PINECONE,
+                                                                                        Constants.VECTOR_STORE_AI_SEARCH,
+                                                                                        Constants.VECTOR_STORE_QDRANT,
+                                                                                        Constants.VECTOR_STORE_EPHEMERAL_FILE)));
 
   }
 

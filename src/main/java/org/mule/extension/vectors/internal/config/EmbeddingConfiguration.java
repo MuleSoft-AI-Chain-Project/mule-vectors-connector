@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.config;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 import org.mule.extension.vectors.internal.connection.provider.embeddings.azureaivision.AzureAIVisionModelConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.azureopenai.AzureOpenAIModelConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.embeddings.einstein.EinsteinModelConnectionProvider;
@@ -13,8 +15,6 @@ import org.mule.runtime.extension.api.annotation.ExternalLib;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
-
 @org.mule.runtime.extension.api.annotation.Configuration(name = "embeddingConfig")
 @ConnectionProviders({
     AzureOpenAIModelConnectionProvider.class,
@@ -27,7 +27,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     OpenAIModelConnectionProvider.class})
 @Operations({EmbeddingOperations.class})
 @ExternalLib(name = "LangChain4J",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "LangChain4J",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.data.document.DocumentSplitter",

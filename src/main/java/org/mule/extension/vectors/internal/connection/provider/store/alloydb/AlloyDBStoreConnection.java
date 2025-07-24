@@ -1,20 +1,20 @@
 package org.mule.extension.vectors.internal.connection.provider.store.alloydb;
 
-import java.sql.SQLException;
-
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.service.store.alloydb.CustomAlloyDBEngine;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+
+import java.sql.SQLException;
+
+import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dev.langchain4j.community.store.embedding.alloydb.AlloyDBEngine;
-import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
-
 public class AlloyDBStoreConnection implements BaseStoreConnection {
-  
+
   private static final Logger LOGGER = LoggerFactory.getLogger(AlloyDBStoreConnection.class);
 
   private String projectId;
@@ -76,31 +76,33 @@ public class AlloyDBStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (parameters.getProjectId() == null ) {
+    if (parameters.getProjectId() == null) {
       throw new ModuleException("Project ID is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if (parameters.getRegion() == null ) {
+    if (parameters.getRegion() == null) {
       throw new ModuleException("Region is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getCluster() == null) {
       throw new ModuleException("Cluster is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if (parameters.getInstance() == null ) {
+    if (parameters.getInstance() == null) {
       throw new ModuleException("Instance is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if (parameters.getIamAccountEmail() == null ) {
-      throw new ModuleException("IAM Account Email is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+    if (parameters.getIamAccountEmail() == null) {
+      throw new ModuleException("IAM Account Email is required for AlloyDB connection",
+                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if (parameters.getHost() == null ) {
+    if (parameters.getHost() == null) {
       throw new ModuleException("Host is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPort() <= 0) {
-      throw new ModuleException("Port is required for AlloyDB connection and must be > 0", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+      throw new ModuleException("Port is required for AlloyDB connection and must be > 0",
+                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if (parameters.getDatabase() == null ) {
+    if (parameters.getDatabase() == null) {
       throw new ModuleException("Database is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
-    if (parameters.getUser() == null ) {
+    if (parameters.getUser() == null) {
       throw new ModuleException("User is required for AlloyDB connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPassword() == null) {
@@ -120,19 +122,19 @@ public class AlloyDBStoreConnection implements BaseStoreConnection {
   public void initialise() {
 
 
-      this.alloyDBEngine = new CustomAlloyDBEngine.Builder()
-          .projectId(projectId)
-          .region(region)
-          .cluster(cluster)
-          .instance(instance)
-          .iamAccountEmail(iamAccountEmail)
-          .host(host)
-          .ipType(ipType)
-          .port(port)
-          .database(database)
-          .user(user)
-          .password(password)
-          .build();
+    this.alloyDBEngine = new CustomAlloyDBEngine.Builder()
+        .projectId(projectId)
+        .region(region)
+        .cluster(cluster)
+        .instance(instance)
+        .iamAccountEmail(iamAccountEmail)
+        .host(host)
+        .ipType(ipType)
+        .port(port)
+        .database(database)
+        .user(user)
+        .password(password)
+        .build();
 
 
   }

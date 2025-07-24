@@ -13,22 +13,25 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class MistralAIBuilder implements EmbeddingServiceBuilder {
-    private MistralAIModelConnection mistralAIModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
+
+  private MistralAIModelConnection mistralAIModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
 
 
-    public MistralAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public MistralAIBuilder modelConnections(MistralAIModelConnection mistralAIModelConnection) {
-      this.mistralAIModelConnection = mistralAIModelConnection;
-      return this;
-    }
-    @Override
-    public EmbeddingService build() {
-      return new MistralAIService(this.mistralAIModelConnection, this.embeddingModelParameters);
-    }
+  public MistralAIBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
+
+  public MistralAIBuilder modelConnections(MistralAIModelConnection mistralAIModelConnection) {
+    this.mistralAIModelConnection = mistralAIModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new MistralAIService(this.mistralAIModelConnection, this.embeddingModelParameters);
+  }
 
 }
 

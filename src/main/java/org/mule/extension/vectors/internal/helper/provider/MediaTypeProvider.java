@@ -1,6 +1,5 @@
 package org.mule.extension.vectors.internal.helper.provider;
 
-
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.value.Value;
 import org.mule.runtime.extension.api.values.ValueBuilder;
@@ -15,7 +14,7 @@ public class MediaTypeProvider implements ValueProvider {
   public Set<Value> resolve() throws ValueResolvingException {
 
     return ValueBuilder.getValuesFor(
-            Constants.MEDIA_TYPE_IMAGE);
+                                     Constants.MEDIA_TYPE_IMAGE);
   }
 
 }

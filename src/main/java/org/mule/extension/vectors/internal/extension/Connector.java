@@ -1,20 +1,21 @@
 package org.mule.extension.vectors.internal.extension;
 
-import org.mule.extension.vectors.internal.config.TransformConfiguration;
+import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
+
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
+import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
-import org.mule.extension.vectors.internal.helper.parameter.TextDocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.MultiformatDocumentParserParameters;
+import org.mule.extension.vectors.internal.helper.parameter.TextDocumentParserParameters;
 import org.mule.runtime.api.meta.Category;
-import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Configurations;
+import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
 import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.sdk.api.annotation.JavaVersionSupport;
-import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 
 /**
  * This is the main class of an extension, is the entry point from which configurations, connection providers, operations

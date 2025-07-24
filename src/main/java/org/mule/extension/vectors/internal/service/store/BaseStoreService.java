@@ -1,5 +1,16 @@
 package org.mule.extension.vectors.internal.service.store;
 
+import static java.util.stream.Collectors.joining;
+
+import org.mule.extension.vectors.internal.config.StoreConfiguration;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.helper.OperationValidator;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
+
+import java.util.List;
+
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -10,15 +21,6 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.filter.Filter;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.helper.OperationValidator;
-import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
-import java.util.List;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * An abstract base class that provides common implementations for {@link VectorStoreService} methods.
@@ -34,7 +36,8 @@ public abstract class BaseStoreService implements VectorStoreService {
   protected boolean createStore;
   protected OperationValidator operationValidator;
 
-  protected BaseStoreService(StoreConfiguration storeConfiguration, BaseStoreConnection storeConnection, String storeName, int dimension, boolean createStore) {
+  protected BaseStoreService(StoreConfiguration storeConfiguration, BaseStoreConnection storeConnection, String storeName,
+                             int dimension, boolean createStore) {
 
     this.storeConfiguration = storeConfiguration;
     this.storeConnection = storeConnection;
@@ -58,16 +61,17 @@ public abstract class BaseStoreService implements VectorStoreService {
     EmbeddingStore<TextSegment> embeddingStore = buildEmbeddingStore();
 
     EmbeddingSearchRequest.EmbeddingSearchRequestBuilder searchRequestBuilder = EmbeddingSearchRequest.builder()
-            .queryEmbedding(embeddings.get(0))
-            .maxResults(maximumResults)
-            .minScore(minScore);
+        .queryEmbedding(embeddings.get(0))
+        .maxResults(maximumResults)
+        .minScore(minScore);
 
     JSONObject jsonObject = new JSONObject();
 
-    if(searchFilterParams != null && searchFilterParams.isConditionSet()) {
+    if (searchFilterParams != null && searchFilterParams.isConditionSet()) {
 
       operationValidator.validateOperationType(
-              Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA, storeConnection.getVectorStore());
+                                               Constants.STORE_OPERATION_TYPE_FILTER_BY_METADATA,
+                                               storeConnection.getVectorStore());
       Filter filter = searchFilterParams.buildMetadataFilter();
       searchRequestBuilder.filter(filter);
     }
@@ -78,12 +82,12 @@ public abstract class BaseStoreService implements VectorStoreService {
     List<EmbeddingMatch<TextSegment>> embeddingMatches = searchResult.matches();
 
     String information = embeddingMatches.stream()
-            .map(match -> match.embedded().text())
-            .collect(joining("\n\n"));
+        .map(match -> match.embedded().text())
+        .collect(joining("\n\n"));
 
     jsonObject.put(Constants.JSON_KEY_RESPONSE, information);
     jsonObject.put(Constants.JSON_KEY_STORE_NAME, storeName);
-    if(textSegments.size() == 1 && textSegments.get(0).text() != null && !textSegments.get(0).text().isEmpty()) {
+    if (textSegments.size() == 1 && textSegments.get(0).text() != null && !textSegments.get(0).text().isEmpty()) {
 
       jsonObject.put(Constants.JSON_KEY_QUESTION, textSegments.get(0).text());
     }

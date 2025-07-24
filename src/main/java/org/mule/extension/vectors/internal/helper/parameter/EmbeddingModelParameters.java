@@ -26,5 +26,7 @@ public class EmbeddingModelParameters {
     return embeddingModelName;
   }
 
-  public EmbeddingModelHelper.EmbeddingModelType getEmbeddingModelType() { return EmbeddingModelHelper.getModelType(embeddingModelName); }
+  public EmbeddingModelHelper.EmbeddingModelType getEmbeddingModelType() {
+    return EmbeddingModelHelper.getModelType(embeddingModelName);
+  }
 }

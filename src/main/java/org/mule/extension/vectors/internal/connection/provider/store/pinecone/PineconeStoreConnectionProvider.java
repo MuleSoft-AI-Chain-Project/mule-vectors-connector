@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.connection.provider.store.pinecone;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -10,12 +12,10 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
-
 @Alias("pinecone")
 @DisplayName("Pinecone")
 @ExternalLib(name = "LangChain4J Pinecone",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "LangChain4J Pinecone",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore",

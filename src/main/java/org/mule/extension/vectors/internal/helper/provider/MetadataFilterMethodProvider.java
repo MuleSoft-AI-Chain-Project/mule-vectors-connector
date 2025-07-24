@@ -26,10 +26,10 @@ public class MetadataFilterMethodProvider implements ValueProvider {
   public Set<Value> resolve() throws ValueResolvingException {
 
     return ValueBuilder.getValuesFor(
-        Constants.METADATA_FILTER_METHOD_IS_EQUAL_TO,
-        Constants.METADATA_FILTER_METHOD_IS_NOT_EQUAL_TO,
-        Constants.METADATA_FILTER_METHOD_IS_GREATER_THAN,
-        Constants.METADATA_FILTER_METHOD_IS_LESS_THAN); // Additional methods can be added as needed
+                                     Constants.METADATA_FILTER_METHOD_IS_EQUAL_TO,
+                                     Constants.METADATA_FILTER_METHOD_IS_NOT_EQUAL_TO,
+                                     Constants.METADATA_FILTER_METHOD_IS_GREATER_THAN,
+                                     Constants.METADATA_FILTER_METHOD_IS_LESS_THAN); // Additional methods can be added as needed
   }
 
 }

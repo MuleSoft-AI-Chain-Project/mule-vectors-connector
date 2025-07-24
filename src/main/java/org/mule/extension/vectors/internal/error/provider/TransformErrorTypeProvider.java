@@ -3,17 +3,18 @@
  */
 package org.mule.extension.vectors.internal.error.provider;
 
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_PARAMETER;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.TRANSFORM_DOCUMENT_PARSING_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
-import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_PARAMETER;
-import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE;
-import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.TRANSFORM_DOCUMENT_PARSING_FAILURE;
 
 public class TransformErrorTypeProvider implements ErrorTypeProvider {
 
@@ -21,8 +22,8 @@ public class TransformErrorTypeProvider implements ErrorTypeProvider {
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
     return unmodifiableSet(new HashSet<>(asList(
-        INVALID_PARAMETER,
-        TRANSFORM_OPERATIONS_FAILURE,
-        TRANSFORM_DOCUMENT_PARSING_FAILURE)));
+                                                INVALID_PARAMETER,
+                                                TRANSFORM_OPERATIONS_FAILURE,
+                                                TRANSFORM_DOCUMENT_PARSING_FAILURE)));
   }
 }

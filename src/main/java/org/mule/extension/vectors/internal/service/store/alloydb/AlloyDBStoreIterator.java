@@ -1,22 +1,25 @@
 package org.mule.extension.vectors.internal.service.store.alloydb;
 
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import org.mule.extension.vectors.internal.service.store.BaseDatabaseIterator;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnection;
-import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.BaseDatabaseIterator;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import org.json.JSONObject;
+
 public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
+
   private final AlloyDBStoreConnection alloyDBStoreConnection;
   private final QueryParameters queryParams;
   private final int pageSize;
@@ -25,17 +28,16 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
 
   // Constructor: pass all required fields
   public AlloyDBStoreIterator(
-      AlloyDBStoreConnection alloyDBStoreConnection,
-      String storeName,
-      QueryParameters queryParams
-  )  {
+                              AlloyDBStoreConnection alloyDBStoreConnection,
+                              String storeName,
+                              QueryParameters queryParams) {
     this.alloyDBStoreConnection = alloyDBStoreConnection;
     this.queryParams = queryParams;
     this.pageSize = queryParams.pageSize();
     try {
       this.iterator = new AlloyDBDatabaseIterator(storeName, pageSize, queryParams);
     } catch (SQLException e) {
-     throw new ModuleException("Authentication failed: " , MuleVectorsErrorType.AUTHENTICATION, e);
+      throw new ModuleException("Authentication failed: ", MuleVectorsErrorType.AUTHENTICATION, e);
     }
   }
 
@@ -56,10 +58,10 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
     @Override
     protected DatabaseFieldNames getFieldNames() {
       return new DatabaseFieldNames(
-          "langchain_id",      // id field
-          "content",           // text field
-          "langchain_metadata", // metadata field
-          "embedding"          // vector field
+                                    "langchain_id", // id field
+                                    "content", // text field
+                                    "langchain_metadata", // metadata field
+                                    "embedding" // vector field
       );
     }
   }
@@ -74,7 +76,7 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
     if (!hasNext()) {
       throw new NoSuchElementException("No more elements available");
     }
-    
+
     try {
       ResultSet resultSet = iterator.next();
       if (resultSet == null) {

@@ -13,21 +13,24 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class EinsteinBuilder implements EmbeddingServiceBuilder {
-    private EinsteinModelConnection einsteinModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
+
+  private EinsteinModelConnection einsteinModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
 
 
-    public EinsteinBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public EinsteinBuilder modelConnections(EinsteinModelConnection einsteinModelConnection) {
-      this.einsteinModelConnection = einsteinModelConnection;
-      return this;
-    }
-    @Override
-    public EmbeddingService build() {
-      return new EinsteinService(this.einsteinModelConnection, this.embeddingModelParameters);
-    }
+  public EinsteinBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
+
+  public EinsteinBuilder modelConnections(EinsteinModelConnection einsteinModelConnection) {
+    this.einsteinModelConnection = einsteinModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new EinsteinService(this.einsteinModelConnection, this.embeddingModelParameters);
+  }
 
 }

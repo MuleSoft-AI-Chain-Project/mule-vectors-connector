@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.connection.provider.store.elasticsearch;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -12,20 +14,19 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 import java.io.IOException;
 
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
-
 @Alias("elasticsearch")
 @DisplayName("Elasticsearch")
 @ExternalLib(name = "LangChain4J Elasticsearch",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "LangChain4J Elasticsearch",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.elasticsearch.ElasticsearchEmbeddingStore",
     coordinates = "dev.langchain4j:langchain4j-elasticsearch:1.1.0-beta7")
 public class ElasticsearchStoreConnectionProvider implements BaseStoreConnectionProvider {
+
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private ElasticsearchStoreConnectionParameters elasticsearchStoreConnectionParameters;
-  private  ElasticsearchStoreConnection elasticsearchStoreConnection;
+  private ElasticsearchStoreConnection elasticsearchStoreConnection;
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
@@ -35,7 +36,7 @@ public class ElasticsearchStoreConnectionProvider implements BaseStoreConnection
 
       return elasticsearchStoreConnection;
 
-    }  catch (Exception e) {
+    } catch (Exception e) {
 
       throw new ConnectionException("Failed to connect to Elasticsearch", e);
     }

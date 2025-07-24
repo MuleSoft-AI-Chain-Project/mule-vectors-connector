@@ -3,13 +3,10 @@ package org.mule.extension.vectors.internal.connection.provider.embeddings.azure
 import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
-import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 public class AzureAIVisionModelConnectionParameters extends BaseModelConnectionParameters {
 
@@ -40,8 +37,12 @@ public class AzureAIVisionModelConnectionParameters extends BaseModelConnectionP
     return apiKey;
   }
 
-  public String getApiVersion() { return apiVersion; }
+  public String getApiVersion() {
+    return apiVersion;
+  }
 
-  public long getTotalTimeout() { return this.getTimeout(); }
+  public long getTotalTimeout() {
+    return this.getTimeout();
+  }
 }
 

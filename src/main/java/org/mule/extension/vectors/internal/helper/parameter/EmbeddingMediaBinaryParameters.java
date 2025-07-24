@@ -50,9 +50,13 @@ public class EmbeddingMediaBinaryParameters {
     return mediaType;
   }
 
-  public InputStream getBinaryInputStream() { return binaryInputStream;}
+  public InputStream getBinaryInputStream() {
+    return binaryInputStream;
+  }
 
-  public String getLabel() { return label; }
+  public String getLabel() {
+    return label;
+  }
 
   @Override
   public String toString() {

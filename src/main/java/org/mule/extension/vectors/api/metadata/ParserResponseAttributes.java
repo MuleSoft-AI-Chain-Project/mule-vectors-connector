@@ -1,15 +1,12 @@
 package org.mule.extension.vectors.api.metadata;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
  * Response attributes for document parsing operations.
@@ -70,8 +67,10 @@ public class ParserResponseAttributes implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     ParserResponseAttributes that = (ParserResponseAttributes) o;
     return Objects.equals(documentParserName, that.documentParserName) &&
         Objects.equals(otherAttributes, that.otherAttributes);

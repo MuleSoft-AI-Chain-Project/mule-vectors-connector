@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.connection.provider.store.qdrant;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
@@ -10,12 +12,10 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
-
 @Alias("qdrant")
 @DisplayName("Qdrant")
 @ExternalLib(name = "LangChain4J Qdrant",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "LangChain4J Qdrant",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore",
@@ -24,14 +24,14 @@ public class QdrantStoreConnectionProvider implements BaseStoreConnectionProvide
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private QdrantStoreConnectionParameters qdrantStoreConnectionParameters;
-  private  QdrantStoreConnection qdrantStoreConnection;
+  private QdrantStoreConnection qdrantStoreConnection;
 
   @Override
   public BaseStoreConnection connect() throws ConnectionException {
 
 
 
-      return qdrantStoreConnection;
+    return qdrantStoreConnection;
 
 
   }

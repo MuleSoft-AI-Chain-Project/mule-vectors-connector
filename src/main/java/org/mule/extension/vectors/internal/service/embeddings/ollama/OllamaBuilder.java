@@ -13,21 +13,24 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class OllamaBuilder implements EmbeddingServiceBuilder {
-    private OllamaModelConnection ollamaModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
 
-    public OllamaBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public OllamaBuilder modelConnections(OllamaModelConnection ollamaModelConnection) {
-      this.ollamaModelConnection = ollamaModelConnection;
-      return this;
-    }
-    @Override
-    public EmbeddingService build() {
-      return new OllamaService(this.ollamaModelConnection, this.embeddingModelParameters);
-    }
+  private OllamaModelConnection ollamaModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
+
+  public OllamaBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
+
+  public OllamaBuilder modelConnections(OllamaModelConnection ollamaModelConnection) {
+    this.ollamaModelConnection = ollamaModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new OllamaService(this.ollamaModelConnection, this.embeddingModelParameters);
+  }
 
 }
 

@@ -74,11 +74,17 @@ public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParame
     return port;
   }
 
-  public boolean isSecuredGrpc() { return securedGrpc; }
+  public boolean isSecuredGrpc() {
+    return securedGrpc;
+  }
 
-  public Integer getGrpcPort() { return grpcPort; }
+  public Integer getGrpcPort() {
+    return grpcPort;
+  }
 
-  public boolean isUseGrpcForInserts() { return useGrpcForInserts; }
+  public boolean isUseGrpcForInserts() {
+    return useGrpcForInserts;
+  }
 
   public String getApiKey() {
     return apiKey;

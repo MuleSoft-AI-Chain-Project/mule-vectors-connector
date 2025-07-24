@@ -35,7 +35,7 @@
 		<runtimeProduct>MULE_EE</runtimeProduct>
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
-		<formatterGoal>validate</formatterGoal>	
+		<formatterGoal>validate</formatterGoal>
 		<langchain4jBomVersion>1.1.0</langchain4jBomVersion>
 		<langchain4jCommunityVersion>1.1.0-beta7</langchain4jCommunityVersion>
 		<mule.sdk.api.version>0.11.4</mule.sdk.api.version>
@@ -47,6 +47,14 @@
 		<jacoco.version>0.8.12</jacoco.version>
 		<maven.surefire.version>2.22.2</maven.surefire.version>
 		<skip.unit.tests>false</skip.unit.tests>
+
+		<maven.impsort.plugin.version>1.12.0</maven.impsort.plugin.version>
+		<maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+		<maven.checkstyle.plugin.version>3.3.1</maven.checkstyle.plugin.version>
+		<formatterConfigPath>formatter.xml</formatterConfigPath>
+		<formatterGoal>validate</formatterGoal>
+		<skipVerifications>false</skipVerifications>
+		<importGoal>check</importGoal>
     </properties>
 
 	<build>
@@ -205,6 +213,88 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven.checkstyle.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>verify-style</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<skip>${skipVerifications}</skip>
+					<logViolationsToConsole>true</logViolationsToConsole>
+					<checkstyleRules>
+						<module name="Checker">
+							<module name="TreeWalker">
+								<module name="AvoidStarImport"/>
+								<module name="UnusedImports"/>
+							</module>
+						</module>
+					</checkstyleRules>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.revelc.code</groupId>
+				<artifactId>impsort-maven-plugin</artifactId>
+				<version>${maven.impsort.plugin.version}</version>
+				<configuration>
+					<groups>org.mule.,com.mulesoft.,java.,javax.</groups>
+					<staticGroups>org.mule.,com.mulesoft.,java.,javax.</staticGroups>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate-imports</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>${importGoal}</goal>
+						</goals>
+						<configuration>
+							<skip>${skipVerifications}</skip>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<!-- Needed because of maven 3.9.0 backward compatibility issue,
+                                   See : https://github.com/eclipse/leshan/issues/1410 -->
+					<dependency>
+						<groupId>org.codehaus.plexus</groupId>
+						<artifactId>plexus-utils</artifactId>
+						<version>3.5.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>net.revelc.code.formatter</groupId>
+				<artifactId>formatter-maven-plugin</artifactId>
+				<version>${javaFormatter.plugin.version}</version>
+				<configuration>
+					<compilerCompliance>${java.release.version}</compilerCompliance>
+					<compilerSource>${java.release.version}</compilerSource>
+					<compilerTargetPlatform>${java.release.version}</compilerTargetPlatform>
+					<configFile>${basedir}/${formatterConfigPath}</configFile>
+					<configJsFile>${basedir}/${formatterConfigPath}</configJsFile>
+					<aggregator>false</aggregator>
+					<executionRoot>true</executionRoot>
+				</configuration>
+				<executions>
+					<execution>
+						<id>apply-format</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>${formatterGoal}</goal>
+						</goals>
+						<configuration>
+							<skipFormatting>${skipVerifications}</skipFormatting>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

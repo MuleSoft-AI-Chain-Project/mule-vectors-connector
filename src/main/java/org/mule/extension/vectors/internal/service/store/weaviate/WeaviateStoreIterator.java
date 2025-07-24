@@ -1,12 +1,13 @@
 package org.mule.extension.vectors.internal.service.store.weaviate;
 
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 
 import java.util.NoSuchElementException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WeaviateStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -14,9 +15,7 @@ public class WeaviateStoreIterator<Embedded> implements VectoreStoreIterator<Vec
 
 
   public WeaviateStoreIterator(
-      QueryParameters queryParams
-  ) {
-  }
+                               QueryParameters queryParams) {}
 
   @Override
   public boolean hasNext() {

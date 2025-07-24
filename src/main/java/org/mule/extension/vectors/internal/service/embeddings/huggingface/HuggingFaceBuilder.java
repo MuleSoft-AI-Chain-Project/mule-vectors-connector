@@ -13,23 +13,25 @@ import org.mule.extension.vectors.internal.service.embeddings.EmbeddingServiceBu
  * This bypasses the provider indirection for clarity and maintainability.</p>
  */
 public class HuggingFaceBuilder implements EmbeddingServiceBuilder {
-    private HuggingFaceModelConnection huggingFaceModelConnection;
-    private EmbeddingModelParameters embeddingModelParameters;
+
+  private HuggingFaceModelConnection huggingFaceModelConnection;
+  private EmbeddingModelParameters embeddingModelParameters;
 
 
-    public HuggingFaceBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
-      this.embeddingModelParameters = embeddingModelParameters;
-      return this;
-    }
-    public HuggingFaceBuilder modelConnections(HuggingFaceModelConnection huggingFaceModelConnection) {
-      this.huggingFaceModelConnection = huggingFaceModelConnection;
-      return this;
-    }
+  public HuggingFaceBuilder modelParameters(EmbeddingModelParameters embeddingModelParameters) {
+    this.embeddingModelParameters = embeddingModelParameters;
+    return this;
+  }
 
-    @Override
-    public EmbeddingService build() {
-      return new HuggingFaceService(this.huggingFaceModelConnection, this.embeddingModelParameters);
-    }
+  public HuggingFaceBuilder modelConnections(HuggingFaceModelConnection huggingFaceModelConnection) {
+    this.huggingFaceModelConnection = huggingFaceModelConnection;
+    return this;
+  }
+
+  @Override
+  public EmbeddingService build() {
+    return new HuggingFaceService(this.huggingFaceModelConnection, this.embeddingModelParameters);
+  }
 
 }
 

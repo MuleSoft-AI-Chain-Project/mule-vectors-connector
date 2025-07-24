@@ -1,21 +1,15 @@
 package org.mule.extension.vectors.internal.service.store.aisearch;
 
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnection;
-import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,6 +21,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -40,11 +42,11 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
   private String nextUrl;
   private Iterator<JSONObject> currentBatch;
   private boolean hasMore;
+
   public AISearchStoreIterator(
-      String storeName,
-      QueryParameters queryParams,
-      AISearchStoreConnection aiSearchStoreConnection
-  ) {
+                               String storeName,
+                               QueryParameters queryParams,
+                               AISearchStoreConnection aiSearchStoreConnection) {
     this.storeName = storeName;
     this.queryParams = queryParams;
     this.aiSearchStoreConnection = aiSearchStoreConnection;
@@ -52,7 +54,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     this.hasMore = true;
     try {
       fetchNextBatch();
-    }  catch (Exception e) {
+    } catch (Exception e) {
       throw new ModuleException(UNEXPECTED_ERROR_MESSAGE + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
@@ -63,11 +65,10 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     String METADATA_DEFAULT_FIELD_NAME = "metadata";
     String VECTOR_DEFAULT_FIELD_NAME = "content_vector";
 
-    String fields = queryParams.retrieveEmbeddings() ?
-        String.join(",", ID_DEFAULT_FIELD_NAME, METADATA_DEFAULT_FIELD_NAME,
-                    TEXT_DEFAULT_FIELD_NAME, VECTOR_DEFAULT_FIELD_NAME) :
-        String.join(",", ID_DEFAULT_FIELD_NAME, METADATA_DEFAULT_FIELD_NAME,
-                    TEXT_DEFAULT_FIELD_NAME);
+    String fields = queryParams.retrieveEmbeddings() ? String.join(",", ID_DEFAULT_FIELD_NAME, METADATA_DEFAULT_FIELD_NAME,
+                                                                   TEXT_DEFAULT_FIELD_NAME, VECTOR_DEFAULT_FIELD_NAME)
+        : String.join(",", ID_DEFAULT_FIELD_NAME, METADATA_DEFAULT_FIELD_NAME,
+                      TEXT_DEFAULT_FIELD_NAME);
 
     return aiSearchStoreConnection.getUrl() + "/indexes/" + storeName + "/docs?search=*&$top="
         + queryParams.pageSize() + "&$select=" + fields + "&api-version=" + API_VERSION;
@@ -108,7 +109,8 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       throw new ModuleException("Connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
     } catch (InterruptedException | ExecutionException | IOException e) {
       Thread.currentThread().interrupt();
-      throw new ModuleException("Request to Azure AI Search failed or was interrupted: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException("Request to Azure AI Search failed or was interrupted: " + e.getMessage(),
+                                MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }
 
@@ -145,7 +147,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       }
     } catch (ModuleException me) {
       throw me;
-    }  catch (Exception e) {
+    } catch (Exception e) {
       throw new ModuleException(UNEXPECTED_ERROR_MESSAGE + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
     return currentBatch != null && currentBatch.hasNext();
@@ -200,7 +202,8 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     } catch (ModuleException me) {
       throw me;
     } catch (RuntimeException e) {
-      throw new ModuleException("Runtime error during Azure AI Search operation: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+      throw new ModuleException("Runtime error during Azure AI Search operation: " + e.getMessage(),
+                                MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     } catch (Exception e) {
       throw new ModuleException(UNEXPECTED_ERROR_MESSAGE + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }

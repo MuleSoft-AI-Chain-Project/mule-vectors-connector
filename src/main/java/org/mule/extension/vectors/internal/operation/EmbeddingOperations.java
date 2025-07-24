@@ -3,16 +3,6 @@ package org.mule.extension.vectors.internal.operation;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createEmbeddingResponse;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import dev.langchain4j.data.document.Metadata;
-import dev.langchain4j.model.output.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
 import org.mule.extension.vectors.api.metadata.TokenUsage;
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
@@ -28,12 +18,23 @@ import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
 import org.mule.runtime.extension.api.annotation.param.Config;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
-import org.mule.runtime.extension.api.exception.ModuleException;
+import dev.langchain4j.model.output.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Container for embedding operations, providing methods to generate embeddings from text or documents.
@@ -55,11 +56,11 @@ public class EmbeddingOperations {
   @DisplayName("[Embedding] Generate from text")
   @Throws(EmbeddingErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/EmbeddingGenerateResponse.json")
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes>
-  generateEmbeddingFromText(@Config EmbeddingConfiguration embeddingConfiguration,
-                            @Connection BaseModelConnection modelConnection,
-                            @Alias("inputs") @DisplayName("Input Texts") @Content List<String> inputs,
-                            @ParameterGroup(name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, EmbeddingResponseAttributes> generateEmbeddingFromText(@Config EmbeddingConfiguration embeddingConfiguration,
+                                                                                                                                     @Connection BaseModelConnection modelConnection,
+                                                                                                                                     @Alias("inputs") @DisplayName("Input Texts") @Content List<String> inputs,
+                                                                                                                                     @ParameterGroup(
+                                                                                                                                         name = "Embedding Model") EmbeddingModelParameters embeddingModelParameters) {
 
     try {
 
@@ -70,19 +71,23 @@ public class EmbeddingOperations {
 
       for (int i = 0; i < inputs.size(); i++) {
         textSegments.add(TextSegment.from(
-            inputs.get(i),
-            new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
+                                          inputs.get(i),
+                                          new Metadata().put(Constants.METADATA_KEY_INDEX, i)));
       }
-      Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection).getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
+      Response<List<Embedding>> embeddingsResponse = new EmbeddingServiceFactoryBuilder(modelConnection)
+          .getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(textSegments);
 
       embeddings = embeddingsResponse.content();
       if (embeddingsResponse.tokenUsage() != null) {
-          Integer inputTokenCount = embeddingsResponse.tokenUsage().inputTokenCount() != null ? embeddingsResponse.tokenUsage().inputTokenCount() : 0;
-          Integer outputTokenCount = embeddingsResponse.tokenUsage().outputTokenCount() != null ? embeddingsResponse.tokenUsage().outputTokenCount() : 0;
-          Integer totalTokenCount = embeddingsResponse.tokenUsage().totalTokenCount() != null ? embeddingsResponse.tokenUsage().totalTokenCount() : 0;
-          tokenUsage = new TokenUsage(inputTokenCount, outputTokenCount, totalTokenCount);
+        Integer inputTokenCount =
+            embeddingsResponse.tokenUsage().inputTokenCount() != null ? embeddingsResponse.tokenUsage().inputTokenCount() : 0;
+        Integer outputTokenCount =
+            embeddingsResponse.tokenUsage().outputTokenCount() != null ? embeddingsResponse.tokenUsage().outputTokenCount() : 0;
+        Integer totalTokenCount =
+            embeddingsResponse.tokenUsage().totalTokenCount() != null ? embeddingsResponse.tokenUsage().totalTokenCount() : 0;
+        tokenUsage = new TokenUsage(inputTokenCount, outputTokenCount, totalTokenCount);
       } else {
-          tokenUsage = null;
+        tokenUsage = null;
       }
 
       JSONObject jsonObject = new JSONObject();
@@ -119,7 +124,7 @@ public class EmbeddingOperations {
       HashMap<String, Object> attributes = new HashMap<>();
       attributes.put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
       attributes.put("embeddingModelDimension", finalDimension);
-      if(tokenUsage != null) {
+      if (tokenUsage != null) {
         attributes.put("tokenUsage", tokenUsage);
       }
       return createEmbeddingResponse(jsonObject.toString(), attributes);
@@ -130,9 +135,9 @@ public class EmbeddingOperations {
     } catch (Exception e) {
 
       throw new ModuleException(
-          String.format("Error while generating embedding from texts \"%s\"", inputs),
-          MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE,
-          e);
+                                String.format("Error while generating embedding from texts \"%s\"", inputs),
+                                MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE,
+                                e);
     }
   }
 }

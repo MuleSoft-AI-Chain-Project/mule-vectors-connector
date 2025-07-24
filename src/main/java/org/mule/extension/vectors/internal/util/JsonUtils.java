@@ -5,8 +5,14 @@
  */
 package org.mule.extension.vectors.internal.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.media.Media;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
@@ -15,16 +21,6 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.internal.ValidationUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.media.Media;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Utility class for JSON operations, providing methods to convert strings to JSON nodes,
@@ -137,7 +133,7 @@ public final class JsonUtils {
   public static JSONObject mediaToJson(Media media) {
 
     JSONObject jsonObject = new JSONObject();
-    if(media.hasImage()) {
+    if (media.hasImage()) {
 
       jsonObject.put(Constants.JSON_KEY_BASE64DATA, media.image().base64Data());
       jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(media.metadata().toMap()));
@@ -145,13 +141,14 @@ public final class JsonUtils {
     return jsonObject;
   }
 
-    public static JSONObject rowToJson( VectorStoreRow<?> row) {
+  public static JSONObject rowToJson(VectorStoreRow<?> row) {
 
-      JSONObject jsonObject = new JSONObject();
-      if(row.getEmbedding() != null) jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
-      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment)row.getEmbedded()).metadata().toMap()));
-      jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment)row.getEmbedded()).text());
-      jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());
-      return jsonObject;
-    }
+    JSONObject jsonObject = new JSONObject();
+    if (row.getEmbedding() != null)
+      jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
+    jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment) row.getEmbedded()).metadata().toMap()));
+    jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment) row.getEmbedded()).text());
+    jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());
+    return jsonObject;
+  }
 }

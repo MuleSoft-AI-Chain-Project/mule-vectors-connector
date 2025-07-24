@@ -1,13 +1,14 @@
 package org.mule.extension.vectors.internal.connection.provider.store.milvus;
 
-import dev.langchain4j.internal.Utils;
-import io.milvus.client.MilvusServiceClient;
-import io.milvus.param.ConnectParam;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import dev.langchain4j.internal.Utils;
+import io.milvus.client.MilvusServiceClient;
+import io.milvus.param.ConnectParam;
 
 public class MilvusStoreConnection implements BaseStoreConnection {
 
@@ -98,7 +99,7 @@ public class MilvusStoreConnection implements BaseStoreConnection {
   @Override
   public void disconnect() {
 
-    if(client != null) {
+    if (client != null) {
 
       client.close();
     }
@@ -125,12 +126,16 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
     connectBuilder
         .withToken(token)
-        .withAuthorization((String)Utils.getOrDefault(username, ""), (String)Utils.getOrDefault(password, ""));
+        .withAuthorization((String) Utils.getOrDefault(username, ""), (String) Utils.getOrDefault(password, ""));
 
-    if (uri != null && !uri.isBlank()) connectBuilder.withUri(uri);
-    if (host != null && !host.isBlank()) connectBuilder.withHost(host);
-    if (port != null && port != 0) connectBuilder.withPort((Integer)Utils.getOrDefault(port, 19530));
-    if (databaseName != null && !databaseName.isBlank()) connectBuilder.withDatabaseName(databaseName);
+    if (uri != null && !uri.isBlank())
+      connectBuilder.withUri(uri);
+    if (host != null && !host.isBlank())
+      connectBuilder.withHost(host);
+    if (port != null && port != 0)
+      connectBuilder.withPort((Integer) Utils.getOrDefault(port, 19530));
+    if (databaseName != null && !databaseName.isBlank())
+      connectBuilder.withDatabaseName(databaseName);
 
     client = new MilvusServiceClient(connectBuilder.build());
   }

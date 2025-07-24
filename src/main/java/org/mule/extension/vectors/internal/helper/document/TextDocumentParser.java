@@ -11,11 +11,11 @@ public class TextDocumentParser implements DocumentParser {
 
   private Charset charset;
 
-  public TextDocumentParser(){
+  public TextDocumentParser() {
     this.charset = StandardCharsets.UTF_8;
   }
 
-  public TextDocumentParser(String charset){
+  public TextDocumentParser(String charset) {
 
     this.charset = charset != null ? Charset.availableCharsets().get(charset) : StandardCharsets.UTF_8;
   }

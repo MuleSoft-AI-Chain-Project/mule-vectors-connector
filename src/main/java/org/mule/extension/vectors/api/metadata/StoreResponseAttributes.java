@@ -1,8 +1,7 @@
 package org.mule.extension.vectors.api.metadata;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+
 import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -12,7 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 /**
  * Represents the attributes of a store operation response.
@@ -29,15 +30,15 @@ public class StoreResponseAttributes implements Serializable {
    */
   private final String storeName;
 
-/**
- * The list of IDs associated with the store response.
- */
-private List<String> ids;
+  /**
+   * The list of IDs associated with the store response.
+   */
+  private List<String> ids;
 
-/**
- * The metadata condition associated with the store response.
- */
-private String metadataCondition;
+  /**
+   * The metadata condition associated with the store response.
+   */
+  private String metadataCondition;
 
   /**
    * Additional attributes not explicitly defined as fields in this class.
@@ -55,16 +56,20 @@ private String metadataCondition;
   public StoreResponseAttributes(HashMap<String, Object> requestAttributes) {
     this.storeName = requestAttributes.containsKey("storeName") ? (String) requestAttributes.remove("storeName") : null;
 
-    if(requestAttributes.containsKey("searchFilter")) {
+    if (requestAttributes.containsKey("searchFilter")) {
 
       SearchFilterParameters filterParams = (SearchFilterParameters) requestAttributes.remove("searchFilter");
-      if(filterParams.isConditionSet())this.metadataCondition = filterParams.getCondition();
+      if (filterParams.isConditionSet())
+        this.metadataCondition = filterParams.getCondition();
 
-    } if (requestAttributes.containsKey("removeFilter")) {
+    }
+    if (requestAttributes.containsKey("removeFilter")) {
 
       RemoveFilterParameters filterParams = (RemoveFilterParameters) requestAttributes.remove("removeFilter");
-      if(filterParams.isConditionSet()) this.metadataCondition = filterParams.getCondition();
-      if(filterParams.isIdsSet()) this.ids = filterParams.getIds();
+      if (filterParams.isConditionSet())
+        this.metadataCondition = filterParams.getCondition();
+      if (filterParams.isIdsSet())
+        this.ids = filterParams.getIds();
     }
 
     this.otherAttributes = requestAttributes;
@@ -110,13 +115,17 @@ private String metadataCondition;
   }
 
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
     StoreResponseAttributes that = (StoreResponseAttributes) o;
 
-    if (storeName != null ? !storeName.equals(that.storeName) : that.storeName != null) return false;
-    if (ids != null ? !ids.equals(that.ids) : that.ids != null) return false;
+    if (storeName != null ? !storeName.equals(that.storeName) : that.storeName != null)
+      return false;
+    if (ids != null ? !ids.equals(that.ids) : that.ids != null)
+      return false;
     if (metadataCondition != null ? !metadataCondition.equals(that.metadataCondition) : that.metadataCondition != null)
       return false;
     return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;

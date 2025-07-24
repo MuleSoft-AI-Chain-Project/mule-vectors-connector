@@ -1,25 +1,27 @@
 package org.mule.extension.vectors.internal.service.store.milvus;
+
 import org.mule.extension.vectors.internal.connection.provider.store.milvus.MilvusStoreConnection;
-import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
-import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.data.document.Metadata;
-import org.json.JSONObject;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+import org.mule.extension.vectors.internal.service.store.VectoreStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import io.milvus.client.MilvusServiceClient;
-import io.milvus.exception.MilvusException;
-import io.milvus.orm.iterator.QueryIterator;
-import io.milvus.param.dml.QueryIteratorParam;
-import io.milvus.param.R;
-import io.grpc.StatusRuntimeException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import dev.langchain4j.data.document.Metadata;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
+import io.grpc.StatusRuntimeException;
+import io.milvus.client.MilvusServiceClient;
+import io.milvus.exception.MilvusException;
+import io.milvus.orm.iterator.QueryIterator;
+import io.milvus.param.R;
+import io.milvus.param.dml.QueryIteratorParam;
+import org.json.JSONObject;
 
 public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<VectorStoreRow<Embedded>> {
 
@@ -35,10 +37,9 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
   private int currentIndex;
 
   public MilvusStoreIterator(
-      MilvusStoreConnection milvusStoreConnection,
-      String storeName,
-      QueryParameters queryParams
-  ) {
+                             MilvusStoreConnection milvusStoreConnection,
+                             String storeName,
+                             QueryParameters queryParams) {
     this.client = milvusStoreConnection.getClient();
     this.queryParams = queryParams;
     this.idFieldName = milvusStoreConnection.getIdFieldName();
@@ -46,9 +47,9 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     this.metadataFieldName = milvusStoreConnection.getMetadataFieldName();
     this.vectorFieldName = milvusStoreConnection.getVectorFieldName();
 
-    List<String> outFields = queryParams.retrieveEmbeddings() ?
-        Arrays.asList(idFieldName, vectorFieldName, textFieldName, metadataFieldName) :
-        Arrays.asList(idFieldName, textFieldName, metadataFieldName);
+    List<String> outFields =
+        queryParams.retrieveEmbeddings() ? Arrays.asList(idFieldName, vectorFieldName, textFieldName, metadataFieldName)
+            : Arrays.asList(idFieldName, textFieldName, metadataFieldName);
 
     QueryIteratorParam iteratorParam = QueryIteratorParam.newBuilder()
         .withCollectionName(storeName)
@@ -118,11 +119,14 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     } catch (StatusRuntimeException e) {
       switch (e.getStatus().getCode()) {
         case UNAUTHENTICATED:
-          throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION, e);
+          throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(),
+                                    MuleVectorsErrorType.AUTHENTICATION, e);
         case INVALID_ARGUMENT:
-          throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(), MuleVectorsErrorType.INVALID_REQUEST, e);
+          throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(),
+                                    MuleVectorsErrorType.INVALID_REQUEST, e);
         default:
-          throw new ModuleException("Milvus service error: " + e.getStatus().getDescription(), MuleVectorsErrorType.SERVICE_ERROR, e);
+          throw new ModuleException("Milvus service error: " + e.getStatus().getDescription(), MuleVectorsErrorType.SERVICE_ERROR,
+                                    e);
       }
     } catch (MilvusException e) {
       throw new ModuleException("Milvus error: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);

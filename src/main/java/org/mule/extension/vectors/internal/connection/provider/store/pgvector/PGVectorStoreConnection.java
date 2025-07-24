@@ -1,17 +1,19 @@
 package org.mule.extension.vectors.internal.connection.provider.store.pgvector;
 
-import dev.langchain4j.internal.ValidationUtils;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.runtime.extension.api.exception.ModuleException;
+
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import dev.langchain4j.internal.ValidationUtils;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
 
 public class PGVectorStoreConnection implements BaseStoreConnection {
 
@@ -70,7 +72,8 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
       throw new ModuleException("Host is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getPort() <= 0) {
-      throw new ModuleException("Port is required for PGVector connection and must be > 0", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
+      throw new ModuleException("Port is required for PGVector connection and must be > 0",
+                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
     }
     if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
       throw new ModuleException("Database is required for PGVector connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
@@ -101,14 +104,15 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
     source.setDatabaseName(database);
     source.setUser(user);
     source.setPassword(password);
-    this.dataSource =  source;
+    this.dataSource = source;
   }
 
 
   public void dispose() throws SQLException {
-      this.dataSource.getConnection().close();
+    this.dataSource.getConnection().close();
   }
-  public void initialise()  {
+
+  public void initialise() {
     createDataSource();
   }
 }
