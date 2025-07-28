@@ -5,6 +5,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
@@ -70,12 +71,7 @@ public class AISearchStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (url == null) {
-      throw new ModuleException("URL is required for AI Search connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (apiKey == null) {
-      throw new ModuleException("API Key is required for AI Search connection.", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
+    ConnectionValidationStrategies.validateAISearch(parameters);
     try {
       doAuthenticatedHttpRequest().get();
     } catch (InterruptedException e) {

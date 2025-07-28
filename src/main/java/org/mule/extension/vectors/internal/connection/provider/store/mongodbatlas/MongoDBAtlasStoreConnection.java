@@ -4,6 +4,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import com.mongodb.client.MongoClient;
@@ -70,20 +71,7 @@ public class MongoDBAtlasStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new ModuleException("Host is required for MongoDB Atlas connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getUser() == null || parameters.getUser().isBlank()) {
-      throw new ModuleException("User is required for MongoDB Atlas connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getPassword() == null || parameters.getPassword().isBlank()) {
-      throw new ModuleException("Password is required for MongoDB Atlas connection",
-                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getDatabase() == null || parameters.getDatabase().isBlank()) {
-      throw new ModuleException("Database is required for MongoDB Atlas connection",
-                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
+    ConnectionValidationStrategies.validateMongoDBAtlas(parameters);
     try {
       mongoClient.listDatabaseNames().first();
     } catch (Exception e) {

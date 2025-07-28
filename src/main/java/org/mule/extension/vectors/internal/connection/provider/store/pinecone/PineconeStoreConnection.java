@@ -4,6 +4,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import io.pinecone.clients.Pinecone;
@@ -61,15 +62,7 @@ public class PineconeStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (parameters.getCloud() == null || parameters.getCloud().isBlank()) {
-      throw new ModuleException("Cloud is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getRegion() == null || parameters.getRegion().isBlank()) {
-      throw new ModuleException("Region is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
-      throw new ModuleException("API Key is required for Pinecone connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
+    ConnectionValidationStrategies.validatePinecone(parameters);
     try {
       client.listIndexes();
     } catch (Exception e) {

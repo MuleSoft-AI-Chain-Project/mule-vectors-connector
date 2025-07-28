@@ -16,7 +16,7 @@ public abstract class BaseModelConnectionParameters {
   @DisplayName("Timeout")
   @Summary("Timeout for the operation in milliseconds")
   @Expression(ExpressionSupport.SUPPORTED)
-  @Placement(order = 2, tab = Placement.ADVANCED_TAB)
+  @Placement(tab = Placement.ADVANCED_TAB)
   @Example("60000")
   @Optional(defaultValue = "60000")
   @ConfigOverride
