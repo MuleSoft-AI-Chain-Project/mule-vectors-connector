@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.connection.provider.store.ephemeralf
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 
 public class EphemeralFileStoreConnection implements BaseStoreConnection {
 
@@ -39,8 +40,6 @@ public class EphemeralFileStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (parameters.getWorkingDir() == null || parameters.getWorkingDir().isBlank()) {
-      throw new IllegalArgumentException("Working directory is required for Ephemeral File connection");
-    }
+    ConnectionValidationStrategies.validateEphemeralFile(parameters);
   }
 }

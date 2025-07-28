@@ -4,6 +4,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
@@ -79,20 +80,7 @@ public class QdrantStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new ModuleException("Host is required for Qdrant connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getGprcPort() <= 0) {
-      throw new ModuleException("gprcPort is required for Qdrant connection and must be > 0",
-                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getTextSegmentKey() == null || parameters.getTextSegmentKey().isBlank()) {
-      throw new ModuleException("TextSegmentKey is required for Qdrant connection",
-                                MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
-      throw new ModuleException("API Key is required for Qdrant connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
+    ConnectionValidationStrategies.validateQdrant(parameters);
     try {
       doHealthCheck();
     } catch (Exception e) {

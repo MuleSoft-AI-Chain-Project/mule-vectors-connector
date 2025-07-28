@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.runtime.extension.api.exception.ModuleException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,16 +53,16 @@ class EphemeralFileStoreConnectionTest {
   void validateShouldThrowIfWorkingDirNull() {
     when(parameters.getWorkingDir()).thenReturn(null);
     EphemeralFileStoreConnection conn = new EphemeralFileStoreConnection(parameters);
-    assertThrows(IllegalArgumentException.class, conn::validate);
+    assertThrows(ModuleException.class, conn::validate);
   }
 
   @Test
   void validateShouldThrowIfWorkingDirBlank() {
     when(parameters.getWorkingDir()).thenReturn("");
     EphemeralFileStoreConnection conn = new EphemeralFileStoreConnection(parameters);
-    assertThrows(IllegalArgumentException.class, conn::validate);
+    assertThrows(ModuleException.class, conn::validate);
     when(parameters.getWorkingDir()).thenReturn("   ");
     conn = new EphemeralFileStoreConnection(parameters);
-    assertThrows(IllegalArgumentException.class, conn::validate);
+    assertThrows(ModuleException.class, conn::validate);
   }
 }

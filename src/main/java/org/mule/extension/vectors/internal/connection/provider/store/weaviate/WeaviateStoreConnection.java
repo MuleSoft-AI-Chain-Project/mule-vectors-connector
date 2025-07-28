@@ -5,6 +5,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
 
@@ -116,15 +117,7 @@ public class WeaviateStoreConnection implements BaseStoreConnection {
    */
   @Override
   public void validate() {
-    if (parameters.getScheme() == null || parameters.getScheme().isBlank()) {
-      throw new ModuleException("Scheme is required for Weaviate connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getHost() == null || parameters.getHost().isBlank()) {
-      throw new ModuleException("Host is required for Weaviate connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
-    if (parameters.getApiKey() == null || parameters.getApiKey().isBlank()) {
-      throw new ModuleException("API Key is required for Weaviate connection", MuleVectorsErrorType.STORE_CONNECTION_FAILURE);
-    }
+    ConnectionValidationStrategies.validateWeaviate(parameters);
     try {
       testConnection().get();
     } catch (InterruptedException e) {
