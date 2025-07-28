@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.helper.parameter;
+package org.mule.extension.vectors.api.parameter;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;

@@ -5,10 +5,10 @@ import static org.mockito.Mockito.*;
 
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.extension.vectors.internal.util.Utils;
@@ -18,7 +18,6 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import dev.langchain4j.data.segment.TextSegment;
 import org.json.JSONArray;

@@ -5,8 +5,8 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPa
 
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.util.Utils;
 import org.mule.runtime.extension.api.exception.ModuleException;

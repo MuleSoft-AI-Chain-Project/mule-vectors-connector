@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.mule.extension.vectors.api.parameter.TextDocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 import org.mule.extension.vectors.internal.helper.document.TextDocumentParser;
 
