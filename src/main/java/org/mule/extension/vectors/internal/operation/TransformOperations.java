@@ -5,17 +5,9 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.TEXT_PLA
 
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.document.DocumentParser;
-import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
-import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
-import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
-import org.mule.extension.vectors.internal.helper.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.runtime.extension.api.annotation.Alias;
@@ -49,7 +41,7 @@ public class TransformOperations {
    * @param transformConfiguration the configuration for the transformation.
    * @param documentStream the input stream containing the document to parse.
    * @return a {@link Result} containing the document's content as an {@link InputStream} and
-   *         additional metadata in {@link TransformResponseAttributes}.
+   *         additional metadata in {@link ParserResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or processing the document.
    */
   @MediaType(value = TEXT_PLAIN, strict = false)
@@ -73,7 +65,7 @@ public class TransformOperations {
    *
    * @param text the input text to be chunked.
    * @param segmentationParameters parameters that define how the text should be segmented, including maximum segment size and overlap size.
-   * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link TransformResponseAttributes}.
+   * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link ChunkResponseAttributes}.
    * @throws ModuleException if an error occurs during text chunking.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
