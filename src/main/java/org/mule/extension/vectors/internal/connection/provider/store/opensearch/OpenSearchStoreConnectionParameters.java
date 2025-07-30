@@ -9,6 +9,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 @ExclusiveOptionals(isOneRequired = true)
 public class OpenSearchStoreConnectionParameters extends BaseStoreConnectionParameters {
@@ -17,6 +18,7 @@ public class OpenSearchStoreConnectionParameters extends BaseStoreConnectionPara
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("https://search-mydomain-xyz123456.us-west-1.es.amazonaws.com")
+  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
   private String url;
 
   @Parameter

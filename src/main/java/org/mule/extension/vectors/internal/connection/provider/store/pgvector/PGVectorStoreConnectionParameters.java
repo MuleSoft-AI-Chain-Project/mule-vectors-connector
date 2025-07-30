@@ -7,6 +7,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 public class PGVectorStoreConnectionParameters extends BaseStoreConnectionParameters {
 
@@ -15,6 +16,7 @@ public class PGVectorStoreConnectionParameters extends BaseStoreConnectionParame
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("localhost")
+  @Summary("This is vector store is supported as beta and not supported in GovCloud. Please refer to the product documentation.")
   private String host;
 
   @Parameter
