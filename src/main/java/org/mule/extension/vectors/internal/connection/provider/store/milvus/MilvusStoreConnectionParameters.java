@@ -20,7 +20,7 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 1)
   @Example("http://localhost:19530")
-  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
+  @Summary("This vector store is supported as beta. Please refer to the product documentation.")
   @Optional
   private String uri;
 

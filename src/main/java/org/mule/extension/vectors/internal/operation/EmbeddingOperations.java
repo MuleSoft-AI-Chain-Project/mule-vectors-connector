@@ -127,6 +127,7 @@ public class EmbeddingOperations {
       if (tokenUsage != null) {
         attributes.put("tokenUsage", tokenUsage);
       }
+      System.out.print("End of embedding operation");
       return createEmbeddingResponse(jsonObject.toString(), attributes);
 
     } catch (ModuleException me) {
