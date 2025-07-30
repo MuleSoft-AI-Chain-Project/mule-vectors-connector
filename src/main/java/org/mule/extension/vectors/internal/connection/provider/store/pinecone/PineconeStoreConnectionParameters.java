@@ -16,7 +16,7 @@ public class PineconeStoreConnectionParameters extends BaseStoreConnectionParame
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("AWS")
-  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
+  @Summary("This vector store is supported as beta. Please refer to the product documentation.")
   private String cloud;
 
   @Parameter

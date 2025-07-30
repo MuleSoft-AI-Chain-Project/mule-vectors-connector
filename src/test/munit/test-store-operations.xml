@@ -11,16 +11,16 @@
 					<munit:parameter propertyName="supportRemove" value="false" />
 				</munit:parameters>
 			</munit:parameterization>
-<!--			<munit:parameterization name="config-vector-pgvector" >-->
-<!--				<munit:parameters >-->
-<!--					<munit:parameter propertyName="config" value="storePGVectorConfig" />-->
-<!--					<munit:parameter propertyName="storeName" value="munit" />-->
-<!--					<munit:parameter propertyName="minScore" value="0.1" />-->
-<!--					<munit:parameter propertyName="topK" value="5" />-->
-<!--					<munit:parameter propertyName="supportFilterByMetadata" value="true" />-->
-<!--					<munit:parameter propertyName="supportRemove" value="true" />-->
-<!--				</munit:parameters>-->
-<!--			</munit:parameterization>-->
+			<munit:parameterization name="config-vector-pgvector" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storePGVectorConfig" />
+					<munit:parameter propertyName="storeName" value="munit" />
+					<munit:parameter propertyName="minScore" value="0.1" />
+					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
+					<munit:parameter propertyName="supportRemove" value="true" />
+				</munit:parameters>
+			</munit:parameterization>
 			<munit:parameterization name="config-vector-aisearch" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="storeAISearchConfig" />

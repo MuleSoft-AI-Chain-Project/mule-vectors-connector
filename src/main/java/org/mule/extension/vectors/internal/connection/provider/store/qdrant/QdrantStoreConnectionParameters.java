@@ -14,7 +14,7 @@ public class QdrantStoreConnectionParameters extends BaseStoreConnectionParamete
   @Parameter
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Example("localhost")
-  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
+  @Summary("This vector store is supported as beta. Please refer to the product documentation.")
   private String host;
 
   @Parameter

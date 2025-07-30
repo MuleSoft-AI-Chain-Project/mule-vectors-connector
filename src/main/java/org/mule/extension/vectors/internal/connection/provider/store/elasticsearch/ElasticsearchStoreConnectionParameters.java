@@ -18,7 +18,7 @@ public class ElasticsearchStoreConnectionParameters extends BaseStoreConnectionP
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("http://localhost:9200")
-  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
+  @Summary("This vector store is supported as beta. Please refer to the product documentation.")
   private String url;
 
   @Parameter

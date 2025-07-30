@@ -17,7 +17,7 @@ public class EphemeralFileStoreConnectionParameters extends BaseStoreConnectionP
   @Placement(tab = DEFAULT_TAB, order = 1)
   @Optional
   @DisplayName("Working Directory")
-  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
+  @Summary("This vector store is supported as beta. Please refer to the product documentation.")
   @org.mule.runtime.extension.api.annotation.param.display.Path(location = EXTERNAL)
   private String workingDir;
 
