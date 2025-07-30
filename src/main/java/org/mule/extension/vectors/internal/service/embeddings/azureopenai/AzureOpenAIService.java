@@ -114,7 +114,6 @@ public class AzureOpenAIService implements EmbeddingService {
         // Generate embeddings for current batch
         String response = (String) generateTextEmbeddings(batch, embeddingModelParameters.getEmbeddingModelName());
         JSONObject jsonResponse = new JSONObject(response);
-        System.out.print("Counter" + x);
 
         // Accumulate token usage
         tokenUsage += jsonResponse
