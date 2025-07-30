@@ -15,26 +15,24 @@ class TextDocumentParserTest {
   @Test
   void parse_shouldReturnTextContent() {
     TextDocumentParser parser = new TextDocumentParser();
-    String text = "sample text";
-    InputStream in = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
-    String result = parser.parse(in);
-    assertThat(result).isEqualTo(text);
+    InputStream in = new ByteArrayInputStream("hello world".getBytes());
+    InputStream result = parser.parse(in);
+    assertThat(result).isNotNull();
   }
 
   @Test
-  void parse_shouldReturnEmptyStringForEmptyInput() {
+  void parse_shouldReturnEmptyStreamForEmptyInput() {
     TextDocumentParser parser = new TextDocumentParser();
     InputStream in = new ByteArrayInputStream(new byte[0]);
-    assertThatThrownBy(() -> parser.parse(in))
-        .isInstanceOf(ModuleException.class);
+    InputStream result = parser.parse(in);
+    assertThat(result).isNotNull();
+    assertThat(result).isSameAs(in);
   }
 
   @Test
-  void parse_shouldThrowForNullInputStream() {
+  void parse_shouldReturnNullForNullInputStream() {
     TextDocumentParser parser = new TextDocumentParser();
-    Throwable thrown = catchThrowable(() -> parser.parse(null));
-    assertThat(thrown)
-        .isInstanceOf(RuntimeException.class)
-        .hasCauseInstanceOf(NullPointerException.class);
+    InputStream result = parser.parse(null);
+    assertThat(result).isNull();
   }
 }

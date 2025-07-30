@@ -3,6 +3,7 @@ package org.mule.extension.vectors.internal.helper.document;
 import java.io.InputStream;
 
 import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
+import org.apache.commons.io.IOUtils;
 
 public class MultiformatDocumentParser implements DocumentParser {
 
@@ -17,8 +18,8 @@ public class MultiformatDocumentParser implements DocumentParser {
   }
 
   @Override
-  public String parse(InputStream inputStream) {
+  public InputStream parse(InputStream inputStream) {
 
-    return documentParser.parse(inputStream).text();
+    return IOUtils.toInputStream(documentParser.parse(inputStream).text());
   }
 }

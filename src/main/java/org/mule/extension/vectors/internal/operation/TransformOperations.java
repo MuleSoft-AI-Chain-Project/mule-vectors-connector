@@ -39,7 +39,7 @@ public class TransformOperations {
    * Parse document from a raw binary or base64-encoded content.
    *
    * @param transformConfiguration the configuration for the transformation.
-   * @param documentStream the input stream containing the document to parse.
+   * @param content the input stream containing the document to parse.
    * @return a {@link Result} containing the document's content as an {@link InputStream} and
    *         additional metadata in {@link ParserResponseAttributes}.
    * @throws ModuleException if an error occurs while loading or processing the document.
@@ -50,9 +50,9 @@ public class TransformOperations {
   @Throws(TransformErrorTypeProvider.class)
   public Result<InputStream, ParserResponseAttributes> parseDocument(@Config TransformConfiguration transformConfiguration,
                                                                      @Alias("documentBinary") @DisplayName("Document binary") @Content(
-                                                                         primary = true) InputStream documentStream,
+                                                                         primary = true) InputStream content,
                                                                      @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
-    return transformService.parseDocument(documentStream, documentParserParameters);
+    return transformService.parseDocument(content, documentParserParameters);
   }
 
   /**
@@ -63,7 +63,7 @@ public class TransformOperations {
    * segments and associated metadata.
    * </p>
    *
-   * @param text the input text to be chunked.
+   * @param content the InputStream to be chunked.
    * @param segmentationParameters parameters that define how the text should be segmented, including maximum segment size and overlap size.
    * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link ChunkResponseAttributes}.
    * @throws ModuleException if an error occurs during text chunking.
@@ -73,9 +73,9 @@ public class TransformOperations {
   @DisplayName("[Transform] Chunk text")
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
-  public Result<InputStream, ChunkResponseAttributes> chunkText(@Alias("text") @DisplayName("Text") @Content String text,
+  public Result<InputStream, ChunkResponseAttributes> chunkText(@Alias("text") @DisplayName("Text") @Content InputStream content,
                                                                 @ParameterGroup(
                                                                     name = "Segmentation") SegmentationParameters segmentationParameters) {
-    return transformService.chunkText(text, segmentationParameters);
+    return transformService.chunkText(content, segmentationParameters);
   }
 }

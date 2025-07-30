@@ -72,18 +72,18 @@ class ResponseHelperTest {
     Map<String, Object> attrs = new HashMap<>();
     attrs.put("doc", "parsed");
     String response = "parsed text";
-    Result<InputStream, ParserResponseAttributes> result = ResponseHelper.createParsedDocumentResponse(response, attrs);
+    InputStream responseStream = new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8));
+    Result<InputStream, ParserResponseAttributes> result = ResponseHelper.createParsedDocumentResponse(responseStream, attrs);
     assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
     assertThat(result.getMediaType().get()).isEqualTo(MediaType.TEXT);
     assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
   }
 
   @Test
-  void createChunkedTextResponse_shouldReturnResultWithJsonMediaType() {
-    Map<String, Object> attrs = new HashMap<>();
-    attrs.put("chunk", 1);
-    String response = "chunked";
-    Result<InputStream, ChunkResponseAttributes> result = ResponseHelper.createChunkedTextResponse(response, attrs);
+  void createChunkedTextResponse_shouldReturnResultWithJSONMediaType() {
+    String response = "[\"chunk1\",\"chunk2\"]";
+    InputStream responseStream = new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8));
+    Result<InputStream, ChunkResponseAttributes> result = ResponseHelper.createChunkedTextResponse(responseStream);
     assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
     assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
     assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);

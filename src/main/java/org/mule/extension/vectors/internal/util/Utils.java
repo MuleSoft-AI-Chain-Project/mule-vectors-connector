@@ -3,6 +3,9 @@ package org.mule.extension.vectors.internal.util;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -18,6 +21,8 @@ import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.segment.TextSegment;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 
 /**
  * Utility class for commonly used methods in the MAC Vectors connecotr.
@@ -209,18 +214,20 @@ public class Utils {
    * @param maxOverlapSizeInChars The maximum number of overlapping characters between segments.
    * @return A list of {@link TextSegment} objects representing the split text.
    */
-  public static List<TextSegment> splitTextIntoTextSegments(String text, int maxSegmentSizeInChars, int maxOverlapSizeInChars) {
+  public static InputStream splitTextIntoTextSegments(InputStream content, int maxSegmentSizeInChars, int maxOverlapSizeInChars)
+      throws IOException {
 
     List<TextSegment> textSegments = new LinkedList<>();
     if (maxSegmentSizeInChars > 0) {
-
       DocumentSplitter documentSplitter = DocumentSplitters.recursive(maxSegmentSizeInChars, maxOverlapSizeInChars);
-      textSegments = documentSplitter.split(new DefaultDocument(text));
+      textSegments = documentSplitter.split(new DefaultDocument(IOUtils.toString(content, StandardCharsets.UTF_8)));
+      JSONArray responseJsonArray = new JSONArray();
+      textSegments.forEach(textSegment -> responseJsonArray.put(textSegment.text()));
+      InputStream responseStream = IOUtils.toInputStream(responseJsonArray.toString(), StandardCharsets.UTF_8);
+      return responseStream;
     } else {
-
-      textSegments.add(TextSegment.from(text));
+      return content;
     }
-    return textSegments;
   }
 
   public static DocumentParser getDocumentParser(String fileParserType) {

@@ -17,10 +17,8 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
-import dev.langchain4j.data.segment.TextSegment;
-import org.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -45,7 +43,8 @@ class TransformServiceTest {
   @Test
   void parseDocument_success() throws Exception {
     when(documentParserParameters.getDocumentParser()).thenReturn(documentParser);
-    when(documentParser.parse(any(InputStream.class))).thenReturn("parsed text");
+    when(documentParser.parse(any(InputStream.class))).thenReturn(new ByteArrayInputStream("parsed text".getBytes()));
+    when(documentParserParameters.getName()).thenReturn("Test Parser");
     InputStream input = new ByteArrayInputStream("test".getBytes());
     Result<InputStream, ParserResponseAttributes> result = service.parseDocument(input, documentParserParameters);
     assertThat(result).isNotNull();
@@ -61,6 +60,7 @@ class TransformServiceTest {
     InputStream input = new ByteArrayInputStream("test".getBytes());
     assertThatThrownBy(() -> service.parseDocument(input, documentParserParameters))
         .isInstanceOf(ModuleException.class)
+        .getCause()
         .hasMessageContaining("fail");
   }
 
@@ -75,21 +75,29 @@ class TransformServiceTest {
   }
 
   @Test
-  void chunkText_success() throws java.io.IOException {
+  void chunkText_success() throws Exception {
     when(segmentationParameters.getMaxSegmentSizeInChars()).thenReturn(10);
     when(segmentationParameters.getMaxOverlapSizeInChars()).thenReturn(2);
-    List<TextSegment> segments = List.of(
-                                         dev.langchain4j.data.segment.TextSegment.from("chunk1"),
-                                         dev.langchain4j.data.segment.TextSegment.from("chunk2"));
+
+    // Mock the Utils method to return a JSON array as InputStream
+    String jsonResponse = "[\"chunk1\",\"chunk2\"]";
+    InputStream mockResponse = new ByteArrayInputStream(jsonResponse.getBytes(StandardCharsets.UTF_8));
+
     try (MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class)) {
-      utils.when(() -> Utils.splitTextIntoTextSegments(anyString(), anyInt(), anyInt())).thenReturn(segments);
-      Result<InputStream, ChunkResponseAttributes> result = service.chunkText("sometext", segmentationParameters);
+      utils.when(() -> Utils.splitTextIntoTextSegments(any(InputStream.class), anyInt(), anyInt())).thenReturn(mockResponse);
+
+      InputStream input = new ByteArrayInputStream("sometext".getBytes());
+      Result<InputStream, ChunkResponseAttributes> result = service.chunkText(input, segmentationParameters);
       assertThat(result).isNotNull();
+      assertThat(result.getOutput()).isNotNull();
+
+      // Reset the stream for reading
+      mockResponse = new ByteArrayInputStream(jsonResponse.getBytes(StandardCharsets.UTF_8));
+      utils.when(() -> Utils.splitTextIntoTextSegments(any(InputStream.class), anyInt(), anyInt())).thenReturn(mockResponse);
+
+      result = service.chunkText(input, segmentationParameters);
       String json = new String(result.getOutput().readAllBytes());
-      JSONArray arr = new JSONArray(json);
-      assertThat(arr.length()).isEqualTo(2);
-      assertThat(arr.getString(0)).isEqualTo("chunk1");
-      assertThat(arr.getString(1)).isEqualTo("chunk2");
+      assertThat(json).isEqualTo("[\"chunk1\",\"chunk2\"]");
     }
   }
 
@@ -98,10 +106,12 @@ class TransformServiceTest {
     when(segmentationParameters.getMaxSegmentSizeInChars()).thenReturn(10);
     when(segmentationParameters.getMaxOverlapSizeInChars()).thenReturn(2);
     try (MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class)) {
-      utils.when(() -> Utils.splitTextIntoTextSegments(anyString(), anyInt(), anyInt()))
+      utils.when(() -> Utils.splitTextIntoTextSegments(any(InputStream.class), anyInt(), anyInt()))
           .thenThrow(new ModuleException("fail", MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE));
-      assertThatThrownBy(() -> service.chunkText("sometext", segmentationParameters))
+      InputStream input = new ByteArrayInputStream("sometext".getBytes());
+      assertThatThrownBy(() -> service.chunkText(input, segmentationParameters))
           .isInstanceOf(ModuleException.class)
+          .getCause()
           .hasMessageContaining("fail");
     }
   }
@@ -111,9 +121,10 @@ class TransformServiceTest {
     when(segmentationParameters.getMaxSegmentSizeInChars()).thenReturn(10);
     when(segmentationParameters.getMaxOverlapSizeInChars()).thenReturn(2);
     try (MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class)) {
-      utils.when(() -> Utils.splitTextIntoTextSegments(anyString(), anyInt(), anyInt()))
+      utils.when(() -> Utils.splitTextIntoTextSegments(any(InputStream.class), anyInt(), anyInt()))
           .thenThrow(new RuntimeException("boom"));
-      assertThatThrownBy(() -> service.chunkText("sometext", segmentationParameters))
+      InputStream input = new ByteArrayInputStream("sometext".getBytes());
+      assertThatThrownBy(() -> service.chunkText(input, segmentationParameters))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Error while chunking text");
     }

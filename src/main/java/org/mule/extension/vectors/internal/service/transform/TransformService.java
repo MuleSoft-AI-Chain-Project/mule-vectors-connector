@@ -14,55 +14,33 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
-
-import dev.langchain4j.data.segment.TextSegment;
-import org.json.JSONArray;
 
 public class TransformService {
 
   public Result<InputStream, ParserResponseAttributes> parseDocument(
-                                                                     InputStream documentStream,
+                                                                     InputStream content,
                                                                      DocumentParserParameters documentParserParameters) {
     try {
-      String text = documentParserParameters.getDocumentParser().parse(documentStream);
+      content = documentParserParameters.getDocumentParser().parse(content);
       HashMap<String, Object> attributes = new HashMap<>();
       attributes.put("documentParserName", documentParserParameters.getName());
       return createParsedDocumentResponse(
-                                          text,
-                                          attributes);
-    } catch (ModuleException me) {
-      throw me;
+                                          content, attributes);
     } catch (Exception e) {
-      throw new ModuleException(
-                                "Error while parsing document.",
-                                MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-                                e);
+      throw new ModuleException("Error while parsing document.", MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE, e);
     }
   }
 
   public Result<InputStream, ChunkResponseAttributes> chunkText(
-                                                                String text,
+                                                                InputStream content,
                                                                 SegmentationParameters segmentationParameters) {
     try {
-      List<TextSegment> textSegments = Utils.splitTextIntoTextSegments(text,
-                                                                       segmentationParameters.getMaxSegmentSizeInChars(),
-                                                                       segmentationParameters.getMaxOverlapSizeInChars());
-      JSONArray responseJsonArray = new JSONArray();
-      for (TextSegment textSegment : textSegments) {
-        responseJsonArray.put(textSegment.text());
-      }
-      HashMap<String, Object> attributes = new HashMap<>();
-      return createChunkedTextResponse(
-                                       responseJsonArray.toString(),
-                                       attributes);
-    } catch (ModuleException me) {
-      throw me;
+      content = Utils.splitTextIntoTextSegments(content, segmentationParameters.getMaxSegmentSizeInChars(),
+                                                segmentationParameters.getMaxOverlapSizeInChars());
+
+      return createChunkedTextResponse(content);
     } catch (Exception e) {
-      throw new ModuleException(
-                                "Error while chunking text.",
-                                MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-                                e);
+      throw new ModuleException("Error while chunking text.", MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE, e);
     }
   }
 }
