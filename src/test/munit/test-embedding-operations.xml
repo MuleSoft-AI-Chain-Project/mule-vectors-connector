@@ -7,7 +7,7 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
-	<munit:config minMuleVersion="4.9.4" name="test-embedding-operations.xml">
+	<munit:config minMuleVersion="4.9.0" name="test-embedding-operations.xml">
 		<munit:parameterizations >
 			<munit:parameterization name="config-embedding-einstein" >
 				<munit:parameters >
