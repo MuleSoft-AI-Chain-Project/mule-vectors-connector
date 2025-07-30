@@ -140,9 +140,7 @@ class AzureAIVisionServiceTest {
   void embedTexts_success() throws Exception {
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       // Arrange
-      List<TextSegment> segments = List.of(
-                                           new TextSegment("foo", new dev.langchain4j.data.document.Metadata()),
-                                           new TextSegment("bar", new dev.langchain4j.data.document.Metadata()));
+      List<String> texts = List.of("foo", "bar");
       String fakeResponse = "{\"vector\": [0.1, 0.2]}";
       when(httpEntity.getBytes()).thenReturn(fakeResponse.getBytes());
       when(httpResponse.getStatusCode()).thenReturn(200);
@@ -152,7 +150,7 @@ class AzureAIVisionServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenReturn(fakeResponse);
       // Act
-      List<Embedding> result = service.embedTexts(segments).content();
+      List<Embedding> result = service.embedTexts(texts).content();
       // Assert
       assertThat(result).isNotNull();
       assertThat(result).hasSize(2);

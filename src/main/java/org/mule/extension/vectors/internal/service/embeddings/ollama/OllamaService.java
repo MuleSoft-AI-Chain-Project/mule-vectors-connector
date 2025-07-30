@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.output.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -88,10 +87,7 @@ public class OllamaService implements EmbeddingService {
 
 
   @Override
-  public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
-    List<String> texts = textSegments.stream()
-        .map(TextSegment::text)
-        .toList();
+  public Response<List<Embedding>> embedTexts(List<String> texts) {
     {
       List<Embedding> embeddings = new ArrayList<>();
 

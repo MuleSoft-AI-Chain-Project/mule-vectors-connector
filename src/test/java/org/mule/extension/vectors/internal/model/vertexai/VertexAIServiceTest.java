@@ -74,7 +74,7 @@ class VertexAIServiceTest {
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(httpResponse));
-      Response<List<Embedding>> response = service.embedTexts(segments);
+      Response<List<Embedding>> response = service.embedTexts(List.of("foo"));
       assertThat(response.content()).hasSize(1);
       assertThat(response.content().get(0).vector()).containsExactly(0.1f, 0.2f);
     }
@@ -82,12 +82,12 @@ class VertexAIServiceTest {
 
   @Test
   void embedTexts_throwsOnError() throws Exception {
-    List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+    List<String> texts = List.of("foo");
     when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenThrow(new ModuleException("fail", MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      assertThatThrownBy(() -> service.embedTexts(segments))
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("fail");
     }
@@ -95,13 +95,13 @@ class VertexAIServiceTest {
 
   @Test
   void embedTexts_handlesEmptyResponse() throws Exception {
-    List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+    List<String> texts = List.of("foo");
     when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       // Simulate a response with no 'predictions' key
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(new JSONObject("{}")));
-      assertThatThrownBy(() -> service.embedTexts(segments))
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to generate embeddings");
     }

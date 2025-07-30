@@ -62,7 +62,7 @@ class NomicServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenReturn(embeddingJson);
       List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
-      Response<List<Embedding>> resp = service.embedTexts(segments);
+      Response<List<Embedding>> resp = service.embedTexts(List.of("foo"));
       assertNotNull(resp);
       assertEquals(1, resp.content().size());
       float[] expected = new float[] {0.1f, 0.2f, 0.3f};
@@ -84,14 +84,14 @@ class NomicServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenThrow(new ModuleException("Nomic API error (HTTP 500): " + errorJson,
                                          org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
-      assertThrows(ModuleException.class, () -> service.embedTexts(segments));
+      List<String> texts = List.of("foo");
+      assertThrows(ModuleException.class, () -> service.embedTexts(texts));
     }
   }
 
   @Test
   void embedTexts_handlesNullOrEmptyInput() {
-    List<TextSegment> emptyList = Collections.emptyList();
+    List<String> emptyList = Collections.emptyList();
     assertThrows(NullPointerException.class, () -> service.embedTexts(null));
     assertThrows(NullPointerException.class, () -> service.embedTexts(emptyList));
   }

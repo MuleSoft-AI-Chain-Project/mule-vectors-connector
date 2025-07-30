@@ -61,7 +61,7 @@ class MistralAIServiceTest {
           .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(mockResponse));
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenReturn(responseString);
-      Response<List<Embedding>> resp = service.embedTexts(segments);
+      Response<List<Embedding>> resp = service.embedTexts(List.of("foo"));
       assertNotNull(resp);
       assertEquals(2, resp.content().size());
       assertEquals(0.1f, resp.content().get(0).vectorAsList().get(0));
@@ -85,7 +85,7 @@ class MistralAIServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenThrow(new org.mule.runtime.extension.api.exception.ModuleException("Mistral AI API error (HTTP 500): error",
                                                                                   org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      assertThrows(org.mule.runtime.extension.api.exception.ModuleException.class, () -> service.embedTexts(segments));
+      assertThrows(org.mule.runtime.extension.api.exception.ModuleException.class, () -> service.embedTexts(List.of("foo")));
     }
   }
 

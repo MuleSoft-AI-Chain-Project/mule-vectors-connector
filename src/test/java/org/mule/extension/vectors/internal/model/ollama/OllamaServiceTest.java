@@ -61,7 +61,7 @@ class OllamaServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenReturn(responseJson);
       List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
-      Response<List<Embedding>> resp = service.embedTexts(segments);
+      Response<List<Embedding>> resp = service.embedTexts(List.of("foo"));
       assertNotNull(resp);
       assertEquals(1, resp.content().size());
       float[] expected = new float[] {0.1f, 0.2f, 0.3f};
@@ -83,8 +83,8 @@ class OllamaServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenThrow(new ModuleException("Ollama API error (HTTP 500): " + errorJson,
                                          org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
-      assertThrows(ModuleException.class, () -> service.embedTexts(segments));
+      List<String> texts = List.of("foo");
+      assertThrows(ModuleException.class, () -> service.embedTexts(texts));
     }
   }
 

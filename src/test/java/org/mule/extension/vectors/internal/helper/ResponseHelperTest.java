@@ -59,7 +59,8 @@ class ResponseHelperTest {
     attrs.put("baz", 42);
     attrs.put("embeddingModelDimension", 1);
     String response = "embeddings";
-    Result<InputStream, EmbeddingResponseAttributes> result = ResponseHelper.createEmbeddingResponse(response, attrs);
+    InputStream responseStream = new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8));
+    Result<InputStream, EmbeddingResponseAttributes> result = ResponseHelper.createEmbeddingResponse(responseStream, attrs);
     assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("baz", 42);
     assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(response.getBytes(StandardCharsets.UTF_8)));
     assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);

@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.output.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -119,8 +118,7 @@ public class AzureAIVisionService implements EmbeddingService {
   }
 
   @Override
-  public Response<List<Embedding>> embedTexts(List<TextSegment> textSegments) {
-    List<String> texts = textSegments.stream().map(TextSegment::text).toList();
+  public Response<List<Embedding>> embedTexts(List<String> texts) {
     List<Embedding> embeddings = new ArrayList<>();
     try {
       for (int index = 0; index < texts.size(); index += 1) {
