@@ -64,7 +64,7 @@ class AzureOpenAIServiceTest {
           .thenReturn(CompletableFuture.completedFuture(mockResponse));
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenReturn(fakeResponse);
-      Response<List<Embedding>> resp = service.embedTexts(segments);
+      Response<List<Embedding>> resp = service.embedTexts(List.of("foo"));
       assertNotNull(resp);
       assertEquals(1, resp.content().size());
       // TokenUsage: use getTotal() if available, otherwise skip
@@ -82,14 +82,14 @@ class AzureOpenAIServiceTest {
     when(modelConnection.getTimeout()).thenReturn(1000L);
     when(modelParameters.getEmbeddingModelName()).thenReturn("text-embedding-ada-002");
     AzureOpenAIService service = new AzureOpenAIService(modelConnection, modelParameters);
-    List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+    List<String> texts = List.of("foo");
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       HttpResponse mockResponse = mock(HttpResponse.class);
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(mockResponse));
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenThrow(new ModuleException("Azure OpenAI API error (HTTP 500): fail", MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      assertThrows(ModuleException.class, () -> service.embedTexts(segments));
+      assertThrows(ModuleException.class, () -> service.embedTexts(texts));
     }
   }
 

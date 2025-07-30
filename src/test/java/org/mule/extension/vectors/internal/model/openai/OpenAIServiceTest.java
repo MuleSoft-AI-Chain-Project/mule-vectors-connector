@@ -52,7 +52,7 @@ class OpenAIServiceTest {
 
   @Test
   void embedTexts_success() throws Exception {
-    List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+    List<String> texts = List.of("foo");
     String fakeResponse = "{" +
         "\"usage\": {\"total_tokens\": 42}," +
         "\"data\": [{\"embedding\": [0.1, 0.2, 0.3]}]" +
@@ -65,7 +65,7 @@ class OpenAIServiceTest {
           .thenReturn(CompletableFuture.completedFuture(httpResp));
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenReturn(fakeResponse);
-      Response<List<Embedding>> resp = service.embedTexts(segments);
+      Response<List<Embedding>> resp = service.embedTexts(texts);
       assertNotNull(resp);
       assertEquals(1, resp.content().size());
       assertThat(resp.content().get(0).vector()).containsExactly(0.1f, 0.2f, 0.3f);
@@ -74,7 +74,7 @@ class OpenAIServiceTest {
 
   @Test
   void embedTexts_handlesErrorResponse() throws Exception {
-    List<TextSegment> segments = List.of(new TextSegment("foo", new dev.langchain4j.data.document.Metadata()));
+    List<String> texts = List.of("foo");
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       HttpResponse httpResp = mock(HttpResponse.class);
       when(httpResp.getStatusCode()).thenReturn(500);
@@ -84,7 +84,7 @@ class OpenAIServiceTest {
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenThrow(new ModuleException("OpenAI API error (HTTP 500): {\"error\":\"fail\"}",
                                          org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      assertThatThrownBy(() -> service.embedTexts(segments))
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to generate embeddings");
     }

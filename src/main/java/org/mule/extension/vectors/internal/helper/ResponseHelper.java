@@ -54,13 +54,13 @@ public final class ResponseHelper {
   }
 
   public static Result<InputStream, EmbeddingResponseAttributes> createEmbeddingResponse(
-                                                                                         String response,
+                                                                                         InputStream response,
                                                                                          Map<String, Object> embeddingAttributes) {
 
     return Result.<InputStream, EmbeddingResponseAttributes>builder()
         .attributes(new EmbeddingResponseAttributes((HashMap<String, Object>) embeddingAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(toInputStream(response, StandardCharsets.UTF_8))
+        .output(response)
         .mediaType(MediaType.APPLICATION_JSON)
         .build();
   }

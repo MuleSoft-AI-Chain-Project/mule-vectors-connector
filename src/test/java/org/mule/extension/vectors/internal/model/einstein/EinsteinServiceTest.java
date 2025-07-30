@@ -85,7 +85,7 @@ class EinsteinServiceTest {
           .getBytes(StandardCharsets.UTF_8)));
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(httpResp));
-      Response<List<Embedding>> resp = service.embedTexts(segments);
+      Response<List<Embedding>> resp = service.embedTexts(List.of("foo"));
       assertNotNull(resp);
       assertEquals(1, resp.content().size());
       assertNotNull(resp.tokenUsage());
@@ -105,7 +105,7 @@ class EinsteinServiceTest {
           .thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("fail".getBytes(StandardCharsets.UTF_8)));
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(httpResp));
-      assertThatThrownBy(() -> service.embedTexts(segments))
+      assertThatThrownBy(() -> service.embedTexts(List.of("foo")))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Einstein API");
     }
@@ -124,7 +124,7 @@ class EinsteinServiceTest {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(httpResp))
           .thenReturn(CompletableFuture.completedFuture(httpResp));
-      assertThrows(org.mule.runtime.extension.api.exception.ModuleException.class, () -> service.embedTexts(segments));
+      assertThrows(org.mule.runtime.extension.api.exception.ModuleException.class, () -> service.embedTexts(List.of("foo")));
     }
   }
 
