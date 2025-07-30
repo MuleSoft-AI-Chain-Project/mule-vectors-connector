@@ -13,10 +13,10 @@ public class OllamaModelConnectionParameters extends BaseModelConnectionParamete
 
   @Parameter
   @DisplayName("Base URL")
-  @Summary("Ollama base URL")
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   @Example("http://127.0.0.1:11434")
+  @Summary("This embedding model is supported as beta. Please refer to the product documentation.")
   private String baseUrl;
 
   public String getBaseUrl() {

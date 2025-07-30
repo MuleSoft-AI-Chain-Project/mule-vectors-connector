@@ -11,6 +11,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.values.OfValues;
 
 public class MilvusStoreConnectionParameters extends BaseStoreConnectionParameters {
@@ -19,6 +20,7 @@ public class MilvusStoreConnectionParameters extends BaseStoreConnectionParamete
   @Expression(ExpressionSupport.NOT_SUPPORTED)
   @Placement(order = 1)
   @Example("http://localhost:19530")
+  @Summary("This is vector store is supported as beta. Please refer to the product documentation.")
   @Optional
   private String uri;
 
