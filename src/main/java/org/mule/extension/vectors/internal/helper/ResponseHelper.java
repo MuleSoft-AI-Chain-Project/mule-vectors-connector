@@ -79,25 +79,22 @@ public final class ResponseHelper {
   }
 
   public static Result<InputStream, ParserResponseAttributes> createParsedDocumentResponse(
-                                                                                           String response,
+                                                                                           InputStream response,
                                                                                            Map<String, Object> documentAttributes) {
 
     return Result.<InputStream, ParserResponseAttributes>builder()
         .attributes(new ParserResponseAttributes((HashMap<String, Object>) documentAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(toInputStream(response, StandardCharsets.UTF_8))
+        .output(response)
         .mediaType(MediaType.TEXT)
         .build();
   }
 
-  public static Result<InputStream, ChunkResponseAttributes> createChunkedTextResponse(
-                                                                                       String response,
-                                                                                       Map<String, Object> documentAttributes) {
+  public static Result<InputStream, ChunkResponseAttributes> createChunkedTextResponse(InputStream content) {
 
     return Result.<InputStream, ChunkResponseAttributes>builder()
-        .attributes(new ChunkResponseAttributes((HashMap<String, Object>) documentAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
-        .output(toInputStream(response, StandardCharsets.UTF_8))
+        .output(content)
         .mediaType(MediaType.APPLICATION_JSON)
         .build();
   }

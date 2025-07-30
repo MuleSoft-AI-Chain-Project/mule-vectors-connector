@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.*;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -13,6 +17,7 @@ import dev.langchain4j.data.document.DocumentParser;
 import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
 import dev.langchain4j.data.segment.TextSegment;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class UtilsTest {
@@ -86,15 +91,20 @@ class UtilsTest {
   }
 
   @Test
-  void splitTextIntoTextSegments_shouldSplitOrReturnSingle() {
+  void splitTextIntoTextSegments_shouldSplitOrReturnSingle() throws IOException {
     String text = "abcdefghij";
-    List<TextSegment> segments = Utils.splitTextIntoTextSegments(text, 3, 1);
-    assertThat(segments).isNotEmpty();
-    assertThat(segments.get(0).text()).contains("a");
-    // No split
-    List<TextSegment> single = Utils.splitTextIntoTextSegments(text, 0, 0);
-    assertThat(single).hasSize(1);
-    assertThat(single.get(0).text()).isEqualTo(text);
+    InputStream textStream = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+    InputStream result = Utils.splitTextIntoTextSegments(textStream, 3, 1);
+    assertThat(result).isNotNull();
+    String jsonResult = IOUtils.toString(result, StandardCharsets.UTF_8);
+    assertThat(jsonResult).isNotEmpty();
+
+    // No split - should return original content
+    InputStream textStream2 = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+    InputStream single = Utils.splitTextIntoTextSegments(textStream2, 0, 0);
+    assertThat(single).isNotNull();
+    String singleResult = IOUtils.toString(single, StandardCharsets.UTF_8);
+    assertThat(singleResult).isEqualTo(text);
   }
 
   @Test
