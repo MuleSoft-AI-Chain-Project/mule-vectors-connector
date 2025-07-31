@@ -68,7 +68,7 @@ public class MongoDBAtlasStoreIterator<Embedded> implements VectoreStoreIterator
     } catch (MongoSocketOpenException | MongoSocketReadException e) {
       throw new ModuleException("MongoDB connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
     } catch (MongoSecurityException e) {
-      throw new ModuleException("MongoDB authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+      throw new ModuleException("MongoDB authentication failed: " + e.getMessage(), MuleVectorsErrorType.INVALID_CONNECTION, e);
     } catch (MongoCommandException e) {
       throw new ModuleException("MongoDB query failed: " + e.getErrorMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
     } catch (MongoException e) {

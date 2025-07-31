@@ -48,7 +48,7 @@ public class AISearchStore extends BaseStoreService {
       switch (e.getResponse().getStatusCode()) {
         case 401:
         case 403:
-          throw new ModuleException("Authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+          throw new ModuleException("Authentication failed: " + e.getMessage(), MuleVectorsErrorType.INVALID_CONNECTION, e);
         case 400:
           throw new ModuleException("Invalid request to Azure AI Search: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST,
                                     e);

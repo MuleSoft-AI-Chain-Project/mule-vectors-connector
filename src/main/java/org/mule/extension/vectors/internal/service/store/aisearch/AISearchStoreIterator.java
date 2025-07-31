@@ -131,7 +131,7 @@ public class AISearchStoreIterator<Embedded> implements VectoreStoreIterator<Vec
     switch (responseCode) {
       case 401:
       case 403:
-        throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.AUTHENTICATION);
+        throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.INVALID_CONNECTION);
       case 400:
         throw new ModuleException("Invalid request to Azure AI Search: " + errorMessage, MuleVectorsErrorType.INVALID_REQUEST);
       default:

@@ -120,7 +120,7 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       switch (e.getStatus().getCode()) {
         case UNAUTHENTICATED:
           throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(),
-                                    MuleVectorsErrorType.AUTHENTICATION, e);
+                                    MuleVectorsErrorType.INVALID_CONNECTION, e);
         case INVALID_ARGUMENT:
           throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(),
                                     MuleVectorsErrorType.INVALID_REQUEST, e);

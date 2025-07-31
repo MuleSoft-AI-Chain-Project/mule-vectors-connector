@@ -140,7 +140,7 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
         switch (sre.getStatus().getCode()) {
           case UNAUTHENTICATED:
             throw new ModuleException("Authentication failed: " + sre.getStatus().getDescription(),
-                                      MuleVectorsErrorType.AUTHENTICATION, sre);
+                                      MuleVectorsErrorType.INVALID_CONNECTION, sre);
           case INVALID_ARGUMENT:
             throw new ModuleException("Invalid request to Qdrant: " + sre.getStatus().getDescription(),
                                       MuleVectorsErrorType.INVALID_REQUEST, sre);
