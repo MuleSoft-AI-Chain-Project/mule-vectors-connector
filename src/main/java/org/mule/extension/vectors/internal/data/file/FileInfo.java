@@ -3,7 +3,7 @@ package org.mule.extension.vectors.internal.data.file;
 import java.io.InputStream;
 import java.util.Map;
 
-public class File {
+public class FileInfo {
 
   private InputStream content;
   private String path;
@@ -11,23 +11,23 @@ public class File {
   private String mimeType;
   private Map<String, Object> metadata;
 
-  public File(InputStream content, String path, String fileName) {
+  public FileInfo(InputStream content, String path, String fileName) {
     this.content = content;
     this.path = path;
     this.fileName = fileName;
   }
 
-  public File(InputStream content, String path, String fileName, String mimeType) {
+  public FileInfo(InputStream content, String path, String fileName, String mimeType) {
     this(content, path, fileName);
     this.mimeType = mimeType;
   }
 
-  public File(InputStream content, String path, String fileName, Map<String, Object> metadata) {
+  public FileInfo(InputStream content, String path, String fileName, Map<String, Object> metadata) {
     this(content, path, fileName);
     this.metadata = metadata;
   }
 
-  public File(InputStream content, String path, String fileName, String mimeType, Map<String, Object> metadata) {
+  public FileInfo(InputStream content, String path, String fileName, String mimeType, Map<String, Object> metadata) {
     this(content, path, fileName, mimeType);
     this.metadata = metadata;
   }

@@ -55,7 +55,7 @@ public class MongoDBAtlasStore extends BaseStoreService {
 
       return embeddingStoreBuilder.build();
     } catch (MongoSecurityException e) {
-      throw new ModuleException("MongoDB authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+      throw new ModuleException("MongoDB authentication failed: " + e.getMessage(), MuleVectorsErrorType.INVALID_CONNECTION, e);
     } catch (MongoCommandException e) {
       throw new ModuleException("MongoDB command failed: " + e.getErrorMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
     } catch (MongoException e) {

@@ -9,12 +9,12 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-class FileTest {
+class FileInfoTest {
 
   @Test
   void constructorAndGetters_basic() {
     InputStream content = new ByteArrayInputStream(new byte[] {1, 2, 3});
-    File file = new File(content, "/foo/bar", "baz.txt");
+    FileInfo file = new FileInfo(content, "/foo/bar", "baz.txt");
     assertThat(file.getContent()).isSameAs(content);
     assertThat(file.getPath()).isEqualTo("/foo/bar");
     assertThat(file.getFileName()).isEqualTo("baz.txt");
@@ -25,7 +25,7 @@ class FileTest {
   @Test
   void constructorAndGetters_withMimeType() {
     InputStream content = new ByteArrayInputStream(new byte[] {4, 5, 6});
-    File file = new File(content, "/foo/bar", "baz.txt", "text/plain");
+    FileInfo file = new FileInfo(content, "/foo/bar", "baz.txt", "text/plain");
     assertThat(file.getContent()).isSameAs(content);
     assertThat(file.getPath()).isEqualTo("/foo/bar");
     assertThat(file.getFileName()).isEqualTo("baz.txt");
@@ -38,7 +38,7 @@ class FileTest {
     InputStream content = new ByteArrayInputStream(new byte[] {7, 8, 9});
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("foo", "bar");
-    File file = new File(content, "/foo/bar", "baz.txt", metadata);
+    FileInfo file = new FileInfo(content, "/foo/bar", "baz.txt", metadata);
     assertThat(file.getContent()).isSameAs(content);
     assertThat(file.getPath()).isEqualTo("/foo/bar");
     assertThat(file.getFileName()).isEqualTo("baz.txt");
@@ -51,7 +51,7 @@ class FileTest {
     InputStream content = new ByteArrayInputStream(new byte[] {10, 11, 12});
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("key", 123);
-    File file = new File(content, "/foo/bar", "baz.txt", "application/pdf", metadata);
+    FileInfo file = new FileInfo(content, "/foo/bar", "baz.txt", "application/pdf", metadata);
     assertThat(file.getContent()).isSameAs(content);
     assertThat(file.getPath()).isEqualTo("/foo/bar");
     assertThat(file.getFileName()).isEqualTo("baz.txt");
@@ -61,7 +61,7 @@ class FileTest {
 
   @Test
   void getters_nullFields() {
-    File file = new File(null, null, null, (String) null, null);
+    FileInfo file = new FileInfo(null, null, null, (String) null, null);
     assertThat(file.getContent()).isNull();
     assertThat(file.getPath()).isNull();
     assertThat(file.getFileName()).isNull();

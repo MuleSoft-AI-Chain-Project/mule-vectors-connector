@@ -57,7 +57,7 @@ public class WeaviateStore extends BaseStoreService {
           .map(Throwable::getCause)
           .map(Throwable::getMessage)
           .orElse(e.getMessage());
-      throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.AUTHENTICATION, e);
+      throw new ModuleException("Authentication failed: " + errorMessage, MuleVectorsErrorType.INVALID_CONNECTION, e);
     } catch (Exception e) {
       throw new ModuleException("Failed to build Weaviate embedding store: " + e.getMessage(),
                                 MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);

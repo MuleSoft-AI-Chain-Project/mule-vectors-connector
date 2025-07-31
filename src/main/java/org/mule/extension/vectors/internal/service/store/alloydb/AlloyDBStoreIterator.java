@@ -37,7 +37,7 @@ public class AlloyDBStoreIterator<Embedded> implements VectoreStoreIterator<Vect
     try {
       this.iterator = new AlloyDBDatabaseIterator(storeName, pageSize, queryParams);
     } catch (SQLException e) {
-      throw new ModuleException("Authentication failed: ", MuleVectorsErrorType.AUTHENTICATION, e);
+      throw new ModuleException("Authentication failed: ", MuleVectorsErrorType.INVALID_CONNECTION, e);
     }
   }
 

@@ -70,19 +70,6 @@ class JsonUtilsTest {
   }
 
   @Test
-  void mediaToJson_shouldReturnBase64AndMetadata() {
-    Media media = mock(Media.class);
-    Image image = mock(Image.class);
-    when(media.hasImage()).thenReturn(true);
-    when(media.image()).thenReturn(image);
-    when(image.base64Data()).thenReturn("base64data");
-    when(media.metadata()).thenReturn(Metadata.from("foo", "bar"));
-    JSONObject obj = JsonUtils.mediaToJson(media);
-    assertThat(obj.getString(Constants.JSON_KEY_BASE64DATA)).isEqualTo("base64data");
-    assertThat(obj.getJSONObject(Constants.JSON_KEY_METADATA).getString("foo")).isEqualTo("bar");
-  }
-
-  @Test
   void rowToJson_shouldReturnRowFields() {
     TextSegment segment = new TextSegment("text", Metadata.from("foo", "bar"));
     VectorStoreRow<TextSegment> row = mock(VectorStoreRow.class);

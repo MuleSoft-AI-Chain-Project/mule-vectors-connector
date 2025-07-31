@@ -107,11 +107,6 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
   STORE_SERVICES_FAILURE(MuleErrors.CONNECTIVITY),
 
   /**
-   * The request was rejected due to an authentication failure (e.g., invalid API key).
-   */
-  AUTHENTICATION(MuleErrors.CONNECTIVITY),
-
-  /**
    * The request was invalid or malformed.
    */
   INVALID_REQUEST(MuleErrors.VALIDATION),

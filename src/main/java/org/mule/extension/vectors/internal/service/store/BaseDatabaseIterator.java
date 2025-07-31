@@ -136,7 +136,8 @@ public abstract class BaseDatabaseIterator implements Iterator<ResultSet>, AutoC
       if (sqlState.startsWith("08")) { // Connection Exception
         throw new ModuleException("Database connection failed: " + e.getMessage(), MuleVectorsErrorType.CONNECTION_FAILED, e);
       } else if (sqlState.equals("28P01")) { // Invalid Password
-        throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.AUTHENTICATION, e);
+        throw new ModuleException("Database authentication failed: " + e.getMessage(), MuleVectorsErrorType.INVALID_CONNECTION,
+                                  e);
       }
     }
     throw new ModuleException("A database error occurred: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);

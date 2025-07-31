@@ -48,7 +48,7 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       fetchNextPage(); // Load first batch
     } catch (StatusRuntimeException e) {
       throw new ModuleException("Authentication failed while connecting to Pinecone: " + e.getStatus().getDescription(),
-                                MuleVectorsErrorType.AUTHENTICATION, e);
+                                MuleVectorsErrorType.INVALID_CONNECTION, e);
     } catch (Exception e) {
       throw new ModuleException("Failed to initialize Pinecone connection: " + e.getMessage(),
                                 MuleVectorsErrorType.CONNECTION_FAILED, e);
@@ -131,7 +131,8 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       }
 
     } catch (StatusRuntimeException e) {
-      throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION,
+      throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(),
+                                MuleVectorsErrorType.INVALID_CONNECTION,
                                 e);
     } catch (IllegalArgumentException e) {
       throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);
@@ -156,7 +157,8 @@ public class PineconeStoreIterator<Embedded> implements VectoreStoreIterator<Vec
       return ids;
 
     } catch (StatusRuntimeException e) {
-      throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(), MuleVectorsErrorType.AUTHENTICATION,
+      throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(),
+                                MuleVectorsErrorType.INVALID_CONNECTION,
                                 e);
     } catch (IllegalArgumentException e) {
       throw new ModuleException("Invalid request to Pinecone: " + e.getMessage(), MuleVectorsErrorType.INVALID_REQUEST, e);

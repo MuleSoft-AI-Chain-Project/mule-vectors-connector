@@ -5,6 +5,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
+import org.mule.extension.vectors.internal.util.FipsUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.sql.SQLException;
@@ -29,6 +30,9 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   private final PGVectorStoreConnectionParameters parameters;
 
   public PGVectorStoreConnection(PGVectorStoreConnectionParameters parameters) {
+    if (FipsUtils.isFipsEnabled()) {
+      LOGGER.warn("This vector store is not supported in GovCloud");
+    }
     this.parameters = parameters;
     this.host = parameters.getHost();
     this.port = parameters.getPort();

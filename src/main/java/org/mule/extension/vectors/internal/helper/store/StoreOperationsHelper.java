@@ -6,7 +6,7 @@ import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
@@ -215,7 +215,7 @@ public class StoreOperationsHelper {
     }
   }
 
-  public static Map<String, Object> getMetadataMap(File file) {
+  public static Map<String, Object> getMetadataMap(FileInfo file) {
     Map<String, Object> map = new HashMap<>();
     map.put("path", file.getPath());
     map.put("fileName", file.getFileName());

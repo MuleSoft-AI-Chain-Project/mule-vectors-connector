@@ -6,7 +6,6 @@
 package org.mule.extension.vectors.internal.util;
 
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.media.Media;
 import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
 
 import java.util.Collection;
@@ -127,17 +126,6 @@ public final class JsonUtils {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put(Constants.JSON_KEY_TEXT_SEGMENTS, jsonTextSegments);
 
-    return jsonObject;
-  }
-
-  public static JSONObject mediaToJson(Media media) {
-
-    JSONObject jsonObject = new JSONObject();
-    if (media.hasImage()) {
-
-      jsonObject.put(Constants.JSON_KEY_BASE64DATA, media.image().base64Data());
-      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(media.metadata().toMap()));
-    }
     return jsonObject;
   }
 
