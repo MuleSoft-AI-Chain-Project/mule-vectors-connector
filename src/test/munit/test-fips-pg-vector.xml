@@ -6,13 +6,9 @@
 		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
 	</ms-vectors:store-config>
 
-	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY">
+	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY" ignore="#[ p('mule.security.model') == null or p('mule.security.model') != 'fips140-2']">
         <munit:execution>
-			<choice doc:name="Fips test">
-				<when expression="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
-					<mtf:test-connectivity config-ref="storePGVectorConfigFIPS"/>
-				</when>
-        	</choice>
+			<mtf:test-connectivity config-ref="storePGVectorConfigFIPS"/>
         </munit:execution>
     </munit:test>
 </mule>
