@@ -4,10 +4,9 @@ import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreCo
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.extension.vectors.internal.error.exception.VectorsRuntimeException;
+import org.mule.extension.vectors.internal.error.exception.VectorsException;
 import org.mule.extension.vectors.internal.helper.validation.ConnectionValidationStrategies;
 import org.mule.extension.vectors.internal.util.FipsUtils;
-import org.mule.runtime.api.i18n.I18nMessageFactory;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.sql.SQLException;
@@ -34,8 +33,8 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   public PGVectorStoreConnection(PGVectorStoreConnectionParameters parameters) {
     if (FipsUtils.isFipsEnabled()) {
       LOGGER.error("Vector store is not allowed in FIPS enabled environments.");
-      throw new VectorsRuntimeException(I18nMessageFactory
-          .createStaticMessage("This vector store is not FIPS compliant and cannot be used in FIPS configured environments"));
+      throw new VectorsException("This vector store is not FIPS compliant and cannot be used in FIPS configured environments",
+                                 MuleVectorsErrorType.SECURITY);
     }
     this.parameters = parameters;
     this.host = parameters.getHost();
