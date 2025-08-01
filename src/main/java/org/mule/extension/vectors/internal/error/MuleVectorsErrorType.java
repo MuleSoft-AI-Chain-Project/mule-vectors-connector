@@ -129,8 +129,13 @@ public enum MuleVectorsErrorType implements ErrorTypeDefinition<MuleVectorsError
   /**
    * The format of a file-based vector store is invalid or corrupt.
    */
-  INVALID_FILE_FORMAT(MuleErrors.VALIDATION);
+  INVALID_FILE_FORMAT(MuleErrors.VALIDATION),
   // endregion
+
+  /**
+   * The connection used is not security-compliant
+   */
+  SECURITY(MuleErrors.SECURITY);
 
   private final ErrorTypeDefinition<? extends Enum<?>> parent;
 
