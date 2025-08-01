@@ -11,7 +11,7 @@
 					<munit:parameter propertyName="supportRemove" value="false" />
 				</munit:parameters>
 			</munit:parameterization>
-			<munit:parameterization name="config-vector-pgvector" >
+			<munit:parameterization name="config-vector-pgvector" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2']">
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="storePGVectorConfig" />
 					<munit:parameter propertyName="storeName" value="munit" />
