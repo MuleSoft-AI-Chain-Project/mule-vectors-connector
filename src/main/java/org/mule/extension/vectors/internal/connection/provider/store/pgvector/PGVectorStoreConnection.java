@@ -34,7 +34,8 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
   public PGVectorStoreConnection(PGVectorStoreConnectionParameters parameters) {
     if (FipsUtils.isFipsEnabled()) {
       LOGGER.error("Vector store is not allowed in FIPS enabled environments.");
-      throw new VectorsRuntimeException(I18nMessageFactory.createStaticMessage("This vector store is not FIPS compliant and cannot be used in FIPS configured environments"));
+      throw new VectorsRuntimeException(I18nMessageFactory
+          .createStaticMessage("This vector store is not FIPS compliant and cannot be used in FIPS configured environments"));
     }
     this.parameters = parameters;
     this.host = parameters.getHost();
