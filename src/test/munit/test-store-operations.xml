@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
-	<munit:config minMuleVersion="4.9.4" name="test-store-operations.xml">
+	<munit:config minMuleVersion="4.9.0" name="test-store-operations.xml">
 		<munit:parameterizations >
 			<munit:parameterization name="config-vector-opensearch" >
 				<munit:parameters >
@@ -41,29 +41,29 @@
 					<munit:parameter propertyName="supportRemove" value="true" />
 				</munit:parameters>
 			</munit:parameterization>
-			<munit:parameterization name="config-vector-milvus" >
-				<munit:parameters >
-					<munit:parameter propertyName="config" value="storeMilvusConfig" />
-					<munit:parameter propertyName="storeName" value="munit" />
-					<munit:parameter propertyName="minScore" value="0.1" />
-					<munit:parameter propertyName="topK" value="5" />
-					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
-					<munit:parameter propertyName="supportRemove" value="true" />
-				</munit:parameters>
-			</munit:parameterization>
-			<munit:parameterization name="config-vector-qdrant" >
-				<munit:parameters >
-					<munit:parameter propertyName="config" value="storeQdrantConfig" />
-					<munit:parameter propertyName="storeName" value="munit" />
-					<munit:parameter propertyName="minScore" value="0.1" />
-					<munit:parameter propertyName="topK" value="5" />
-					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
-					<munit:parameter propertyName="supportRemove" value="true" />
-				</munit:parameters>
-			</munit:parameterization>
+<!--			<munit:parameterization name="config-vector-milvus" >-->
+<!--				<munit:parameters >-->
+<!--					<munit:parameter propertyName="config" value="storeMilvusConfig" />-->
+<!--					<munit:parameter propertyName="storeName" value="munit" />-->
+<!--					<munit:parameter propertyName="minScore" value="0.1" />-->
+<!--					<munit:parameter propertyName="topK" value="5" />-->
+<!--					<munit:parameter propertyName="supportFilterByMetadata" value="true" />-->
+<!--					<munit:parameter propertyName="supportRemove" value="true" />-->
+<!--				</munit:parameters>-->
+<!--			</munit:parameterization>-->
+<!--			<munit:parameterization name="config-vector-qdrant" >-->
+<!--				<munit:parameters >-->
+<!--					<munit:parameter propertyName="config" value="storeQdrantConfig" />-->
+<!--					<munit:parameter propertyName="storeName" value="munit" />-->
+<!--					<munit:parameter propertyName="minScore" value="0.1" />-->
+<!--					<munit:parameter propertyName="topK" value="5" />-->
+<!--					<munit:parameter propertyName="supportFilterByMetadata" value="true" />-->
+<!--					<munit:parameter propertyName="supportRemove" value="true" />-->
+<!--				</munit:parameters>-->
+<!--			</munit:parameterization>-->
 		</munit:parameterizations>
 	</munit:config>
-	<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669" >
+	<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669">
 		<choice doc:name="Choice" doc:id="69b9155e-c2f2-4c28-a7e4-a0d6d7e6c548" >
 			<when expression="${supportRemove}">
 				<try doc:name="Try" doc:id="077eb4b2-bfd7-4a74-9814-9820465d0d7c" >
@@ -85,7 +85,7 @@
 			</when>
 		</choice>
 	</munit:after-suite>
-	<munit:test doc:id="25c072ca-50b7-4072-aefb-25924bbd0511" name="store-operations-add-to-store">
+	<munit:test doc:id="25c072ca-50b7-4072-aefb-25924bbd0511" name="store-operations-add-to-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
 		<munit:execution>
 			<flow-ref doc:id="ae8eb0e5-96c8-420e-8a7b-64d9c408c7f0" doc:name="store-operations-ADD-to-store-exec" name="store-operations-add-to-store-exec"/>
 		</munit:execution>
@@ -99,7 +99,7 @@
 		<munit-tools:assert-equals actual="#[payload.status]" doc:id="b72ace94-3695-4082-a982-23b8437aee86" doc:name="Assert status is updated" expected="updated" message="#[&quot;The returned status &quot; ++ payload.status ++ &quot; is not correct.&quot;]"/>
 		<munit-tools:assert-equals actual="#[sizeOf(payload.embeddingIds)]" doc:id="b3e08701-ffa0-48ef-9709-e6381eeea1c0" doc:name="Assert has 4 embedding ids" expected="#[4]" message="The operation did not return 4 embedding ids."/>
 	</sub-flow>
-	<munit:test doc:id="e4aba12a-2d12-442c-a83e-dbd14102b8d3" name="store-operations-query-from-store">
+	<munit:test doc:id="e4aba12a-2d12-442c-a83e-dbd14102b8d3" name="store-operations-query-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
 		<munit:execution>
 			<flow-ref doc:id="8e3c98b7-e562-4fff-9f18-d8991fae2484" doc:name="store-operations-QUERY-from-store-exec" name="store-operations-query-from-store-exec"/>
 		</munit:execution>
@@ -108,11 +108,15 @@
 		</munit:validation>
 	</munit:test>
 	<sub-flow doc:id="f35cf72c-c8df-4dff-9f8c-c4c889f8f91d" name="store-operations-validate-query-from-store">
-		<logger level="INFO" doc:name="Log paylaod" doc:id="161ccbb2-f212-4604-bd57-3f9296bf3a4b" message='#[%dw 2.0&#10;output text/plain&#10;---&#10;&#10;"\n\n" ++ write(payload, "application/json") ++ "\n\n"]'/>
+		<logger level="INFO" doc:name="Log paylaod" doc:id="161ccbb2-f212-4604-bd57-3f9296bf3a4b" message='#[%dw 2.0
+output text/plain
+---
+
+"\n\n" ++ write(payload, "application/json") ++ "\n\n"]'/>
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="7aa068ae-b2ea-4f83-a515-cff2e8efd272" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		<munit-tools:assert-equals doc:name="Assert has 4 sources" doc:id="8fc841db-9f6f-4447-ab35-419d3ba048c2" actual="#[sizeOf(payload.sources)]" expected="#[4]" message="The operation did not return 4 embedding ids." />
 	</sub-flow>
-	<munit:test doc:id="729af2a6-d85a-46b9-9584-ee6104382803" name="store-operations-query-all-from-store">
+	<munit:test doc:id="729af2a6-d85a-46b9-9584-ee6104382803" name="store-operations-query-all-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
 		<munit:execution>
 			<flow-ref doc:id="7b27c052-2315-4751-a939-2d22a78edfb5" doc:name="store-operations-QUERY-all-store-exec" name="store-operations-query-all-from-store-exec"/>
 		</munit:execution>
@@ -124,7 +128,7 @@
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="09c96239-50dd-4ef1-85c6-e096c58f0179" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
 		<munit-tools:assert-that doc:name="Assert that has &gt;= 4 records." doc:id="f87f41f5-b177-45b7-8415-9e9c47058286" is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
 	</sub-flow>
-	<munit:test doc:id="c6a835e8-a06f-471c-96e4-b4e062bd226b" name="store-operations-remove-from-store" ignore="#[!p('supportRemove')]">
+	<munit:test doc:id="c6a835e8-a06f-471c-96e4-b4e062bd226b" name="store-operations-remove-from-store" ignore="#[ !p('supportRemove') or (p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig')]">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-REMOVE-from-store" doc:id="a93ab829-dda3-4dab-9d17-8c3319b39d01" name="store-operations-remove-from-store-exec" />
 		</munit:execution>

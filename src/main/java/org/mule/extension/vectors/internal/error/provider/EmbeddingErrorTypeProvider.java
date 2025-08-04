@@ -3,15 +3,20 @@
  */
 package org.mule.extension.vectors.internal.error.provider;
 
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_RATE_LIMITING_ERROR;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.EMBEDDING_OPERATIONS_FAILURE;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_CONNECTION;
+import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.INVALID_PARAMETER;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+
 import org.mule.runtime.extension.api.annotation.error.ErrorTypeProvider;
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
-import static org.mule.extension.vectors.internal.error.MuleVectorsErrorType.*;
 
 public class EmbeddingErrorTypeProvider implements ErrorTypeProvider {
 
@@ -19,9 +24,10 @@ public class EmbeddingErrorTypeProvider implements ErrorTypeProvider {
   @Override
   public Set<ErrorTypeDefinition> getErrorTypes() {
     return unmodifiableSet(new HashSet<>(asList(
-        INVALID_PARAMETERS_ERROR,
-        EMBEDDING_OPERATIONS_FAILURE,
-        AI_SERVICES_RATE_LIMITING_ERROR,
-        AI_SERVICES_FAILURE)));
+                                                INVALID_CONNECTION,
+                                                INVALID_PARAMETER,
+                                                EMBEDDING_OPERATIONS_FAILURE,
+                                                AI_SERVICES_RATE_LIMITING_ERROR,
+                                                AI_SERVICES_FAILURE)));
   }
 }

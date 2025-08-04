@@ -1,11 +1,11 @@
 package org.mule.extension.vectors.internal.util;
 
-import dev.langchain4j.data.document.DefaultDocument;
-import dev.langchain4j.data.document.DocumentSplitter;
-import dev.langchain4j.data.document.splitter.DocumentSplitters;
-import dev.langchain4j.data.segment.TextSegment;
+import org.mule.extension.vectors.internal.constant.Constants;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -14,10 +14,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import dev.langchain4j.data.document.DefaultDocument;
+import dev.langchain4j.data.document.DocumentParser;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.parser.TextDocumentParser;
+import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.segment.TextSegment;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+
 /**
  * Utility class for commonly used methods in the MAC Vectors connecotr.
  */
 public class Utils {
+
+  /**
+   * Private constructor to prevent instantiation of utility class.
+   */
+  private Utils() {
+    // Utility class - no instantiation allowed
+  }
 
   /**
    * Returns the current date and time in ISO 8601 format (UTC).
@@ -31,8 +48,8 @@ public class Utils {
    */
   public static String getCurrentISO8601Timestamp() {
     return DateTimeFormatter.ISO_INSTANT
-            .withZone(ZoneOffset.UTC)
-            .format(Instant.now());
+        .withZone(ZoneOffset.UTC)
+        .format(Instant.now());
   }
 
   /**
@@ -70,13 +87,13 @@ public class Utils {
    */
   public static Class<?> getPrimitiveTypeClass(Object value) {
     if (value instanceof Integer) {
-      return int.class;  // Return primitive int class
+      return int.class; // Return primitive int class
     } else if (value instanceof Long) {
-      return long.class;  // Return primitive long class
+      return long.class; // Return primitive long class
     } else if (value instanceof Double) {
-      return double.class;  // Return primitive double class
+      return double.class; // Return primitive double class
     } else {
-      return value.getClass();  // Return class for unsupported types
+      return value.getClass(); // Return class for unsupported types
     }
   }
 
@@ -95,22 +112,22 @@ public class Utils {
   public static Object convertStringToType(String stringValue) {
     try {
       // Try to parse as UUID
-      return UUID.fromString(stringValue);  // Returns a UUID object
+      return UUID.fromString(stringValue); // Returns a UUID object
     } catch (IllegalArgumentException e1) {
       try {
         // Try to parse as int
-        return Integer.parseInt(stringValue);  // Returns Integer
+        return Integer.parseInt(stringValue); // Returns Integer
       } catch (NumberFormatException e2) {
         try {
           // Try to parse as long
-          return Long.parseLong(stringValue);  // Returns Long
+          return Long.parseLong(stringValue); // Returns Long
         } catch (NumberFormatException e3) {
           try {
             // Try to parse as double
-            return Double.parseDouble(stringValue);  // Returns Double
+            return Double.parseDouble(stringValue); // Returns Double
           } catch (NumberFormatException e4) {
             // If none of the above, return the string
-            return stringValue;  // Keeps the value as a String
+            return stringValue; // Keeps the value as a String
           }
         }
       }
@@ -197,17 +214,36 @@ public class Utils {
    * @param maxOverlapSizeInChars The maximum number of overlapping characters between segments.
    * @return A list of {@link TextSegment} objects representing the split text.
    */
-  public static List<TextSegment> splitTextIntoTextSegments(String text, int maxSegmentSizeInChars, int maxOverlapSizeInChars) {
+  public static InputStream splitTextIntoTextSegments(InputStream content, int maxSegmentSizeInChars, int maxOverlapSizeInChars)
+      throws IOException {
 
     List<TextSegment> textSegments = new LinkedList<>();
-    if(maxSegmentSizeInChars > 0) {
-
+    if (maxSegmentSizeInChars > 0) {
       DocumentSplitter documentSplitter = DocumentSplitters.recursive(maxSegmentSizeInChars, maxOverlapSizeInChars);
-      textSegments = documentSplitter.split(new DefaultDocument(text));
+      textSegments = documentSplitter.split(new DefaultDocument(IOUtils.toString(content, StandardCharsets.UTF_8)));
+      JSONArray responseJsonArray = new JSONArray();
+      textSegments.forEach(textSegment -> responseJsonArray.put(textSegment.text()));
+      InputStream responseStream = IOUtils.toInputStream(responseJsonArray.toString(), StandardCharsets.UTF_8);
+      return responseStream;
     } else {
-
-      textSegments.add(TextSegment.from(text));
+      return content;
     }
-    return textSegments;
+  }
+
+  public static DocumentParser getDocumentParser(String fileParserType) {
+
+    DocumentParser documentParser = null;
+    switch (fileParserType) {
+
+      case Constants.FILE_PARSER_TYPE_TEXT:
+        documentParser = new TextDocumentParser();
+        break;
+      case Constants.FILE_PARSER_TYPE_APACHE_TIKA:
+        documentParser = new ApacheTikaDocumentParser();
+        break;
+      default:
+        throw new IllegalArgumentException("Unsupported File Parser Type: " + fileParserType);
+    }
+    return documentParser;
   }
 }

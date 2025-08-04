@@ -7,7 +7,7 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
-	<munit:config minMuleVersion="4.9.4" name="test-embedding-operations.xml">
+	<munit:config minMuleVersion="4.9.0" name="test-embedding-operations.xml">
 		<munit:parameterizations >
 			<munit:parameterization name="config-embedding-einstein" >
 				<munit:parameters >
@@ -64,47 +64,33 @@
 					<munit:parameter propertyName="isMultimodal" value="false" />
 				</munit:parameters>
 			</munit:parameterization>
+			<munit:parameterization name="config-embedding-visionai" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="embeddingAzureAIVisionConfig" />
+					<munit:parameter propertyName="textModelName" value="2023-04-15" />
+					<munit:parameter propertyName="multimodalModelName" value="2023-04-15" />
+					<munit:parameter propertyName="maxSegmentSize" value="1000" />
+					<munit:parameter propertyName="maxOverlapSize" value="100" />
+					<munit:parameter propertyName="isMultimodal" value="true" />
+				</munit:parameters>
+			</munit:parameterization>
 		</munit:parameterizations>
 	</munit:config>
-	<munit:test name="embedding-operations-generate-from-text" doc:id="d73c7241-7da9-4e34-8b0c-793b7d541c67" >
+	<munit:test name="embedding-operations-generate-from-text" doc:id="fa0c3ab8-5d99-40db-a0e0-d5b6f6c5b4dd" >
 		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-text-exec" doc:id="43efb92b-bcdd-450e-ac53-058db49a0ad8" name="embedding-operations-generate-from-text-exec"/>
+			<flow-ref doc:name="embedding-operations-generate-from-text-exec" doc:id="a5b87491-2254-4703-b92b-6bfb7ec11442" name="embedding-operations-generate-from-text-exec"/>
 		</munit:execution>
 		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="e65b3a4e-923a-4f76-8af7-aed98714d88f" name="embedding-operations-validate-generate-from"/>
+			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="82679aa1-a5cb-4b02-a3a2-220366b6dcd7" name="embedding-operations-validate-generate-from"/>
 		</munit:validation>
 	</munit:test>
-	<munit:test name="embedding-operations-generate-from-document" doc:id="810e1d26-76bf-4d72-b399-fe062476cc3f" >
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="1d5bcc0a-f0a4-4ed6-a16a-7fe7ecf8c4f8" name="embedding-operations-generate-from-document-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="fe5838f2-dca1-49cc-b49d-b550bbfd72b5" name="embedding-operations-validate-generate-from" />
-		</munit:validation>
-	</munit:test>
-	<munit:test name="embedding-operations-generate-from-media" doc:id="9dd8d5bd-6e4e-41b0-adcb-e0a8cb5b5ebd" ignore="#[!p('isMultimodal')]">
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="52ef2389-20ac-43d6-a93d-e6579d301fea" name="embedding-operations-generate-from-media-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="d8d0940a-a47a-47bb-b120-7c702b9ae7db" name="embedding-operations-validate-generate-from" />
-		</munit:validation>
-	</munit:test>
-	<munit:test name="embedding-operations-generate-from-binary" doc:id="a52449fc-7ca6-47af-b0eb-eea7f72673ff" ignore="#[!p('isMultimodal')]">
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-binary-exec" doc:id="78170d3a-d85a-44ae-9dc0-4d2625451b3b" name="embedding-operations-generate-from-binary-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="b0381033-31cc-4175-a8a3-66d573b2c10c" name="embedding-operations-validate-generate-from" />
-		</munit:validation>
-	</munit:test>
-	<sub-flow name="embedding-operations-validate-generate-from" doc:id="fa574441-0280-4181-9c42-db60aa747fc8" >
-		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="79862a69-4ccd-46e7-9795-f8506178d08f" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that embeddings is not null" doc:id="c7f19ed7-2ed0-4c13-8471-44a14c0c250f" message="Payload is null" expression="#[payload.embeddings]" is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that text-segments is not null" doc:id="231a525b-919a-473e-b41e-1edcf986606f" message="Payload is null" expression='#[payload."text-segments"]' is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that dimension is not null and greater than 0" doc:id="fe4e6b26-9362-41eb-8894-af6995c908e6" message="Invalid dimension" expression="#[payload.dimension]" is="#[MunitTools::greaterThan(0)]"/>
-		<munit-tools:assert-equals doc:name="Assert dimension match embedding size." doc:id="c5777871-e2ee-49d6-bb0e-403369ed841a" actual="#[sizeOf(payload.embeddings[0])]" expected="#[payload.dimension]" message="Model dimension do not match embedding size."/>
-		<munit-tools:assert-equals doc:name="Assert number of embedding vectors match number of text segments." doc:id="8585ef9b-b73e-48b5-88b0-e832d82374c2" actual="#[sizeOf(payload.embeddings)]" expected='#[sizeOf(payload."text-segments")]' message="Number of embedding vectors do not match number of text segments." />
+	<sub-flow name="embedding-operations-validate-generate-from" doc:id="3df16ae4-e3f7-4134-9686-8a21686d3f1a" >
+		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="5d1a4133-28fc-4154-9499-b73dee3d4e41" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that embeddings is not null" doc:id="d99d21e5-2dc1-4d4e-9cba-3cbc2752cab5" message="Payload is null" expression="#[payload.embeddings]" is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that text-segments is not null" doc:id="f4ffe2da-fb79-4211-bd06-2302afa2bad6" message="Payload is null" expression='#[payload."text-segments"]' is="#[MunitTools::notNullValue()]" />
+		<munit-tools:assert-that doc:name="Assert that dimension is not null and greater than 0" doc:id="643138af-283d-4196-9a52-9b14e05225bc" message="Invalid dimension" expression="#[payload.dimension]" is="#[MunitTools::greaterThan(0)]"/>
+		<munit-tools:assert-equals doc:name="Assert dimension match embedding size." doc:id="df76786c-3cc9-4204-b05e-0222d9aa541d" actual="#[sizeOf(payload.embeddings[0])]" expected="#[payload.dimension]" message="Model dimension do not match embedding size."/>
+		<munit-tools:assert-equals doc:name="Assert number of embedding vectors match number of text segments." doc:id="0c381af8-7b15-400d-b4a9-08e2f010198a" actual="#[sizeOf(payload.embeddings)]" expected='#[sizeOf(payload."text-segments")]' message="Number of embedding vectors do not match number of text segments." />
 	</sub-flow>
 
 </mule>

@@ -20,12 +20,16 @@ public class RowsOutputTypeMetadataResolver implements OutputTypeResolver<StoreC
   }
 
   @Override
-  public MetadataType getOutputType(MetadataContext metadataContext, StoreConfiguration StoreConfiguration)
+  public MetadataType getOutputType(MetadataContext metadataContext, StoreConfiguration storeConfiguration)
       throws MetadataResolvingException, ConnectionException {
 
     InputStream resourceAsStream = Thread.currentThread()
         .getContextClassLoader()
         .getResourceAsStream("api/metadata/StoreQueryAllResponse.json");
+
+    if (resourceAsStream == null) {
+      return null;
+    }
 
     Optional<MetadataType> metadataType = new JsonTypeLoader(IOUtils.toString(resourceAsStream))
         .load(null, "Load Store Response");

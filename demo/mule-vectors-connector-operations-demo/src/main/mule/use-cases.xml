@@ -1,46 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 	<flow name="add-doc-to-store-use-case" doc:id="885632fc-3930-445d-bb6d-93a19d839f26" >
-		<ms-vectors:document-load-single doc:name="[Document] Load single" doc:id="ee14b4f9-f351-4293-8cbb-21dbbb76f6b5" config-ref="Local_Storage_config" fileType="any" contextPath="#[attributes.queryParams.contextPath]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" />
-		<ms-vectors:embedding-generate-from-document doc:name="[Embedding] Generate from document" doc:id="03c28d70-70c2-47b5-9fc2-b89147ae72d5" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002"/>
-		<ms-vectors:store-add doc:name="[Store] Add" doc:id="efb1dbd4-6a02-4d7c-a5e0-1fe29f08a351" config-ref="PGVector_Store_config" storeName="demo"/>
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+(attributes as Object default {}).queryParams]" doc:name="Set requestQueryParams" doc:id="ed2c83af-42c7-4949-b545-cde099b316bf" variableName="requestQueryParams"/>
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="25873dff-acf4-4368-a5cd-50e68e8f0e60" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]"/>
+		<set-variable value="#[attributes.path]" doc:name="Set path" doc:id="fe8b9573-5801-4c8c-bbaa-f1363412c3a0" variableName="path" />
+		<set-variable value="#[attributes.fileName]" doc:name="Set fileName" doc:id="148d0551-598e-47c2-a16d-2a0c3d44c65a" variableName="fileName"/>
+		<ms-vectors:transform-parse-document doc:name="[Transform] Parse document" doc:id="631587dc-2382-4b0c-8f71-77e551d8ae89" config-ref="Transform_config">
+			<ms-vectors:document-parser-parameters >
+				<ms-vectors:multiformat-document-parser-parameters />
+			</ms-vectors:document-parser-parameters>
+		</ms-vectors:transform-parse-document>
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="0be211d6-15f9-4f4b-8550-3b714e5fa887" maxSegmentSizeInChar="#[vars.requestQueryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[vars.requestQueryParams.maxOverlapSize default 0]"/>
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="2835a3fe-28e1-4407-b4c0-ff681923d8ea" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002"/>
+		<ms-vectors:store-add doc:name="[Store] Add" doc:id="efb1dbd4-6a02-4d7c-a5e0-1fe29f08a351" config-ref="PGVector_Store_config" storeName="demo">
+			<ms-vectors:metadata-entries >
+				<ms-vectors:metadata-entry key="path" value="#[vars.path]" />
+				<ms-vectors:metadata-entry key="filename" value="#[vars.filename]" />
+			</ms-vectors:metadata-entries>
+		</ms-vectors:store-add>
 	</flow>
 	<flow name="add-text-to-store-use-case" doc:id="abacef92-37ce-41b3-b8da-20f47bda8c2a" >
-		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="42441873-1902-4d03-96c5-a379c7ce491b" config-ref="Einstein_Embedding_config" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
+		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="72558cdf-fe9e-4935-aee0-ceda3624bb71" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize default 0]" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize default 0]">
 			<ms-vectors:text ><![CDATA[#[payload.text]]]></ms-vectors:text>
+		</ms-vectors:transform-chunk-text>
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="42441873-1902-4d03-96c5-a379c7ce491b" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="03497871-8337-43e9-8934-02a4e871c130" config-ref="PGVector_Store_config" storeName="demo"/>
 	</flow>
-	<flow name="add-media-to-store" doc:id="d5848981-d9a7-44bc-b56b-386984fb2a73">
-		<ms-vectors:media-load-single doc:name="[Media] Load single" doc:id="4eb68934-b314-4e39-92f2-3dce2ffe57ff" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]" >
-			<ms-vectors:media-processor-parameters >
-				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
+	<flow name="add-media-file-to-store" doc:id="d5848981-d9a7-44bc-b56b-386984fb2a73">
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+(attributes as Object default {}).queryParams]" doc:name="Set requestQueryParams" doc:id="56769cfe-0f4f-411f-8377-06e5488ee148" variableName="requestQueryParams" />
+		<ms-vectors:storage-load-file doc:name="[Storage] Load file" doc:id="7181a4d4-f5a0-4fe9-aa05-b68edb194b9a" config-ref="Local_Storage_config" contextPath="#[attributes.queryParams.contextPath]" />
+		<set-variable value="#[attributes.path]" doc:name="Set path" doc:id="745969da-e671-441f-8a59-aa837fca781e" variableName="path" />
+		<set-variable value="#[attributes.fileName]" doc:name="Set fileName" doc:id="978d6791-fc05-41cf-b33d-862698627878" variableName="fileName" />
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="d4755123-dcc2-41ce-b7f7-7f7c4c4a1679">
+			<ms-vectors:media-processor-parameters>
+				<ms-vectors:image-processor-parameters targetWidth="#[vars.requestQueryParams.targetWidth default 512]" targetHeight="#[vars.requestQueryParams.targetHeight default 512]" compressionQuality="#[vars.requestQueryParams.compressionQuality default 1]" scaleStrategy='#[vars.requestQueryParams.scaleStrategy default "FIT"]' />
 			</ms-vectors:media-processor-parameters>
-		</ms-vectors:media-load-single>
-		<ms-vectors:embedding-generate-from-media doc:name="[Embedding] Generate from media" doc:id="5280a1fb-f92e-4271-a9ba-6b8f988070e9" config-ref="Azure_AI_Vision_Embedding_Config" embeddingModelName="2023-04-15">
-			<ms-vectors:media ><![CDATA[#[payload]]]></ms-vectors:media>
-			<ms-vectors:label ><![CDATA[An image]]></ms-vectors:label>
+		</ms-vectors:transform-process-media>
+		<ms-vectors:embedding-generate-from-media embeddingModelName="2023-04-15" doc:name="[Embedding] Generate from media" doc:id="f31a6bbf-c1ea-4fbd-930c-d1431f4a84e2" config-ref="Azure_AI_Vision_Embedding_Config">
+			<ms-vectors:binary><![CDATA[#[payload]]]></ms-vectors:binary>
+			<ms-vectors:label><![CDATA[An image]]></ms-vectors:label>
 		</ms-vectors:embedding-generate-from-media>
-		<ms-vectors:store-add doc:name="[Store] Add" doc:id="7669e276-e484-453b-ae97-55c2d12fe380" config-ref="PGVector_Store_config" storeName="demo_multimodal"/>
+		<ms-vectors:store-add doc:name="[Store] Add" doc:id="7669e276-e484-453b-ae97-55c2d12fe380" config-ref="PGVector_Store_config" storeName="demo_multimodal">
+			<ms-vectors:metadata-entries >
+				<ms-vectors:metadata-entry key="path" value="#[vars.path]" />
+				<ms-vectors:metadata-entry key="filename" value="#[vars.filename]" />
+			</ms-vectors:metadata-entries>
+		</ms-vectors:store-add>
 	</flow>
-	<flow name="add-binary-to-store" doc:id="a54f174c-17ee-472f-90cd-63bec46831f2" >
-		<ms-vectors:embedding-generate-from-binary doc:name="[Embedding] Generate from binary" doc:id="80059599-7954-4ea5-82b6-8fdaae8db9bb" config-ref="Azure_AI_Vision_Embedding_Config" embeddingModelName="2023-04-15">
-			<ms-vectors:binary ><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
-			<ms-vectors:label ><![CDATA[#[payload.parts.imageLabel.content default "An image"]]]></ms-vectors:label>
-			<ms-vectors:media-processor-parameters >
+	<flow name="add-media-binary-to-store" doc:id="a54f174c-17ee-472f-90cd-63bec46831f2" >
+		<set-variable value='#[%dw 2.0
+output text
+---
+(payload default {}).parts.imageLabel.content default ""]' doc:name="Set imageLabel" doc:id="19c42a52-4c7f-4dff-b3ac-01c493a61656" variableName="imageLabel" />
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="8426c4ba-e905-400c-ab3c-7fd424e146fe">
+			<ms-vectors:binary><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
+			<ms-vectors:media-processor-parameters>
 				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
 			</ms-vectors:media-processor-parameters>
-		</ms-vectors:embedding-generate-from-binary>
+		</ms-vectors:transform-process-media>
+		<ms-vectors:embedding-generate-from-media embeddingModelName="2023-04-15" doc:name="[Embedding] Generate from media" doc:id="9aa812de-4ffa-4d65-92a2-0c861a56e630" config-ref="Azure_AI_Vision_Embedding_Config">
+			<ms-vectors:binary><![CDATA[#[payload]]]></ms-vectors:binary>
+			<ms-vectors:label><![CDATA[#[vars.imageLabel]]]></ms-vectors:label>
+		</ms-vectors:embedding-generate-from-media>
 		<ms-vectors:store-add doc:name="[Store] Add" doc:id="c8decaa7-086d-4fca-9763-4e5604435616" config-ref="PGVector_Store_config" storeName="demo_multimodal" />
 	</flow>
 	<flow name="query-by-text-from-store-use-case" doc:id="aec824fc-a224-4f80-a3b1-1e9931ff2d28" >
-		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
-		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0">
-			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+payload as Object default {}]" doc:name="requestBody" doc:id="e1dd921e-3c8d-431b-9458-c831acc8ed2e" variableName="requestBody" />
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="139bd865-fab3-4a19-be0f-b7df2a69e294" config-ref="Einstein_Embedding_config" embeddingModelName="sfdc_ai__DefaultOpenAITextEmbeddingAda_002">
+			<ms-vectors:inputs ><![CDATA[#[[payload.prompt]]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:query doc:name="[Store] Query" doc:id="40ee5ee9-ce0d-427f-b023-9ff703e947c6" config-ref="PGVector_Store_config" storeName="demo" maxResults="5" minScore="0.5">
 			<ms-vectors:text-segment-and-embedding><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
@@ -48,21 +90,32 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		</ms-vectors:query>
 	</flow>
 	<flow name="query-by-binary-from-store-use-case" doc:id="ddd93b08-af85-402b-b94a-3dee3b7b2ce2" >
-		<ms-vectors:embedding-generate-from-binary embeddingModelName="2023-04-15" doc:name="[Embedding] Generate from binary" doc:id="64959300-9cf2-47a0-8dfd-6e94a4e4a2df" config-ref="Azure_AI_Vision_Embedding_Config" >
+		<set-variable value='#[%dw 2.0
+output text
+---
+(payload default {}).parts.imageLabel.content default ""]' doc:name="Set imageLabel" doc:id="8cc60aee-b833-48ce-94c8-abed11047ffe" variableName="imageLabel"/>
+		<ms-vectors:transform-process-media doc:name="[Transform] Process media" doc:id="4f991c9a-a120-4f63-a89e-c546879c4ea9">
 			<ms-vectors:binary ><![CDATA[#[payload.parts.imageBinary.content]]]></ms-vectors:binary>
-			<ms-vectors:label ><![CDATA[#[payload.parts.imageLabel.content default ""]]]></ms-vectors:label>
 			<ms-vectors:media-processor-parameters >
 				<ms-vectors:image-processor-parameters targetWidth="#[attributes.queryParams.targetWidth default 512]" targetHeight="#[attributes.queryParams.targetHeight default 512]" compressionQuality="#[attributes.queryParams.compressionQuality default 1]" scaleStrategy='#[attributes.queryParams.scaleStrategy default "FIT"]' />
 			</ms-vectors:media-processor-parameters>
-		</ms-vectors:embedding-generate-from-binary>
+		</ms-vectors:transform-process-media>
+		<ms-vectors:embedding-generate-from-media embeddingModelName="2023-04-15" doc:name="[Embedding] Generate from media" doc:id="64959300-9cf2-47a0-8dfd-6e94a4e4a2df" config-ref="Azure_AI_Vision_Embedding_Config" >
+			<ms-vectors:binary ><![CDATA[#[payload]]]></ms-vectors:binary>
+			<ms-vectors:label ><![CDATA[#[vars.imageLabel]]]></ms-vectors:label>
+
+		</ms-vectors:embedding-generate-from-media>
 		<ms-vectors:query doc:name="[Store] Query" doc:id="90c8f975-b5b2-48ee-b99c-6615e1d41e07" config-ref="PGVector_Store_config" storeName="demo_multimodal" maxResults="5" minScore="0.5" >
 			<ms-vectors:text-segment-and-embedding ><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>
 		</ms-vectors:query>
 	</flow>
 	<flow name="query-media-by-text-from-store-use-case" doc:id="f4a5fa27-e6ef-4c78-a80c-8a4884c105c1" >
-		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload as Object default {}]" doc:name="requestBody" doc:id="c8ce99dd-334e-4308-a9b6-78b2b5660255" variableName="requestBody" />
-		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="5656ac10-5243-4fa5-94bf-93aa116bc605" config-ref="Azure_AI_Vision_Embedding_Config" maxSegmentSizeInChar="0" maxOverlapSizeInChars="0" embeddingModelName="2023-04-15">
-			<ms-vectors:text ><![CDATA[#[payload.prompt]]]></ms-vectors:text>
+		<set-variable value="#[%dw 2.0
+output application/json
+---
+payload as Object default {}]" doc:name="requestBody" doc:id="c8ce99dd-334e-4308-a9b6-78b2b5660255" variableName="requestBody" />
+		<ms-vectors:embedding-generate-from-text doc:name="[Embedding] Generate from text" doc:id="5656ac10-5243-4fa5-94bf-93aa116bc605" config-ref="Azure_AI_Vision_Embedding_Config" embeddingModelName="2023-04-15">
+			<ms-vectors:inputs ><![CDATA[#[[payload.prompt]]]]></ms-vectors:inputs>
 		</ms-vectors:embedding-generate-from-text>
 		<ms-vectors:query doc:name="[Store] Query" doc:id="ca6ffde2-129f-4926-b278-967890873a57" config-ref="PGVector_Store_config" storeName="demo_multimodal" maxResults="5" minScore="0.5" >
 			<ms-vectors:text-segment-and-embedding ><![CDATA[#[payload]]]></ms-vectors:text-segment-and-embedding>

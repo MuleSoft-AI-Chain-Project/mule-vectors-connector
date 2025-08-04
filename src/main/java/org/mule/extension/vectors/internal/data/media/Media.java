@@ -1,17 +1,18 @@
 package org.mule.extension.vectors.internal.data.media;
 
+import java.util.Objects;
+
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.image.Image;
 import dev.langchain4j.data.video.Video;
 import dev.langchain4j.internal.Utils;
 import dev.langchain4j.internal.ValidationUtils;
 
-import java.util.Objects;
-
 /**
  * Represents a segment of multimodal data that can include text, image, video, and audio data, along with metadata.
  */
 public class Media {
+
   private final String text;
   private final Image image;
   private final Video video;
@@ -52,8 +53,10 @@ public class Media {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     Media that = (Media) o;
     return Objects.equals(text, that.text) &&
         Objects.equals(image, that.image) &&

@@ -25,4 +25,26 @@ public class TokenUsage implements Serializable {
   public int getTotalCount() {
     return totalCount;
   }
+
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    TokenUsage that = (TokenUsage) o;
+
+    if (inputCount != that.inputCount)
+      return false;
+    if (outputCount != that.outputCount)
+      return false;
+    return totalCount == that.totalCount;
+  }
+
+  public int hashCode() {
+    int result = inputCount;
+    result = 31 * result + outputCount;
+    result = 31 * result + totalCount;
+    return result;
+  }
 }

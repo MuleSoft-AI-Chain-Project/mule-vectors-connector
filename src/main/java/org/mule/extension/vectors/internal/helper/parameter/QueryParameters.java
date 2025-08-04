@@ -6,7 +6,6 @@ import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 public class QueryParameters {
@@ -15,7 +14,6 @@ public class QueryParameters {
   @Alias("retrieveEmbeddings")
   @Expression(ExpressionSupport.SUPPORTED)
   @Summary("Flag to indicate whether embeddings should be retrieved. Defaults to true.")
-  @Placement(order = 1)
   @Optional(defaultValue = "false")
   private boolean retrieveEmbeddings;
 
@@ -24,11 +22,12 @@ public class QueryParameters {
   @Alias("pageSize")
   @Expression(ExpressionSupport.SUPPORTED)
   @Summary("The page size used when querying the vector store. Defaults to 5000 rows.")
-  @Placement(order = 2)
   @Optional(defaultValue = "5000")
   private Number pageSize;
 
-  public int pageSize() {return pageSize != null ? pageSize.intValue() : 5000;}
+  public int pageSize() {
+    return pageSize != null ? pageSize.intValue() : 5000;
+  }
 
   public boolean retrieveEmbeddings() {
     return retrieveEmbeddings;
