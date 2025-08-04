@@ -24,15 +24,12 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.model.output.Response;
 import org.apache.commons.io.IOUtils;
@@ -79,10 +76,6 @@ public class EmbeddingOperations {
                                     usage.outputTokenCount() != null ? usage.outputTokenCount() : 0,
                                     usage.totalTokenCount() != null ? usage.totalTokenCount() : 0);
       }
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      JsonGenerator generator = new JsonFactory().createGenerator(out);
-      generator.writeStartObject();
-
       JSONObject jsonObject = new JSONObject();
       JSONArray jsonTextSegments = IntStream.range(0, inputs.size())
           .mapToObj(i -> {
