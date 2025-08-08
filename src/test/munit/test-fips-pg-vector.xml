@@ -9,6 +9,7 @@
 	</ms-vectors:store-config>
 
 
+
 </munit:config>
 	<munit:config minMuleVersion="4.9.0" name="test-fips-pg-vector.xml"  ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2'">
 
@@ -56,6 +57,10 @@
 
 	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY"   ignore="#[ p('mule.security.model') ==null">
 		<munit:execution>
+=======
+	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY">
+        <munit:execution>
+>>>>>>> e598f633e3c250113c4e456f694ba35a9b9ba402
 			<mtf:test-connectivity config-ref="storePGVectorConfigFIPS"/>
 		</munit:execution>
 	</munit:test>
