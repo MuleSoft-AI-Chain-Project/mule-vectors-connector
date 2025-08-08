@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
-	<munit:config minMuleVersion="4.9.0" name="test-store-operations.xml">
+	<munit:config minMuleVersion="4.9.0" name="test-fips-pg-vector.xml" ignore="#[ p('mule.security.model') == null or p('mule.security.model') != 'fips140-2']"/>
 
 	<ms-vectors:store-config name="storePGVectorConfigFIPS" doc:name="MuleSoft Vectors Connector Store config" doc:id="8a721354-89f1-4ea1-89f5-68ddb48cd678" >
 		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
 	</ms-vectors:store-config>
 
-	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY" ignore="#[ p('mule.security.model') == null or p('mule.security.model') != 'fips140-2']">
+	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY">
         <munit:execution>
 			<mtf:test-connectivity config-ref="storePGVectorConfigFIPS"/>
         </munit:execution>
