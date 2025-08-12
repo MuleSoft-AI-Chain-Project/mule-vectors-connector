@@ -6,6 +6,7 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.TEXT_PLA
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
+import org.mule.extension.vectors.internal.helper.parameter.TransformMediaBinaryParameters;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
@@ -83,7 +84,7 @@ public class TransformOperations {
   @Alias("Transform-process-media")
   @DisplayName("[Transform] Process media")
   @Throws(EmbeddingErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ParserResponseAttributes>
   processMedia(@ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
     return transformService.processMedia(mediaBinaryParameters);
   }

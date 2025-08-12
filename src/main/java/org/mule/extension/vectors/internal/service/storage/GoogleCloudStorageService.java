@@ -3,7 +3,7 @@ package org.mule.extension.vectors.internal.service.storage;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
 import org.mule.extension.vectors.internal.storage.FileIterator;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudFileIterator;
 import com.google.cloud.storage.Blob;
 import java.io.InputStream;
@@ -18,7 +18,7 @@ public class GoogleCloudStorageService implements StorageService {
     }
 
     @Override
-    public File getFile(String path) {
+    public FileInfo getFile(String path) {
         String[] bucketAndObject = GoogleCloudStorage.parseContextPath(path);
         String bucket = bucketAndObject[0];
         String objectKey = bucketAndObject[1];
@@ -34,7 +34,7 @@ public class GoogleCloudStorageService implements StorageService {
             put("createTime", blob.getCreateTimeOffsetDateTime().toString());
             put("updateTime", blob.getUpdateTimeOffsetDateTime().toString());
         }};
-        return new File(content, bucket + "/" + objectKey, objectKey, metadata);
+        return new FileInfo(content, bucket + "/" + objectKey, objectKey, metadata);
     }
 
     @Override

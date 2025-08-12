@@ -7,4 +7,6 @@ public interface BaseStorageConnection extends ConnectorConnection {
 
   String getStorageType();
 
+
+
 }

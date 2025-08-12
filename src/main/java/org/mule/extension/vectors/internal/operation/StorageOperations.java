@@ -1,10 +1,9 @@
 package org.mule.extension.vectors.internal.operation;
 
-import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StorageErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.FileParameters;
@@ -58,7 +57,7 @@ public class StorageOperations {
            @ParameterGroup(name = "File") FileParameters fileParameters) {
     try {
       StorageService storageService = StorageServiceFactory.getService(storageConfiguration, storageConnection);
-      File file = storageService.getFile(fileParameters.getContextPath());
+      FileInfo file = storageService.getFile(fileParameters.getContextPath());
       return createFileResponse(
           file.getContent(),
           StoreOperationsHelper.getMetadataMap(file));

@@ -5,7 +5,7 @@ import com.azure.storage.blob.models.BlobProperties;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
 import org.mule.extension.vectors.internal.storage.FileIterator;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobFileIterator;
 import com.azure.storage.blob.models.BlobItem;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ public class AzureBlobStorageService implements StorageService {
     }
 
     @Override
-    public File getFile(String path) {
+    public FileInfo getFile(String path) {
         // Assume azureName is available from the client
         String container = AzureBlobStorage.parseContainer(path, azureClient.azureName);
         String blobName = AzureBlobStorage.parseBlobName(path, azureClient.azureName);
@@ -37,7 +37,7 @@ public class AzureBlobStorageService implements StorageService {
             put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));
         }};
 
-        return new File(content, container + "/" + blobName, blobName, properties.getContentType(), metadata);
+        return new FileInfo(content, container + "/" + blobName, blobName, properties.getContentType(), metadata);
     }
 
     @Override

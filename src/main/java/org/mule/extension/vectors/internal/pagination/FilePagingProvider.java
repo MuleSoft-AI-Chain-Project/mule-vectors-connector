@@ -3,7 +3,7 @@ package org.mule.extension.vectors.internal.pagination;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
 import org.mule.extension.vectors.internal.service.StorageServiceFactory;
@@ -40,7 +40,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
         fileIterator = storageService.getFileIterator(contextPath);
       }
       while (fileIterator.hasNext()) {
-        File file = fileIterator.next();
+        FileInfo file = fileIterator.next();
         if (file == null) continue;
         return createPageFileResponse(
             file.getContent(),

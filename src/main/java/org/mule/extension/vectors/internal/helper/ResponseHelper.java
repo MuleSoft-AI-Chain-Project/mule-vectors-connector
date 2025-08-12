@@ -3,10 +3,6 @@ package org.mule.extension.vectors.internal.helper;
 import org.mule.extension.vectors.api.metadata.*;
 import static org.apache.commons.io.IOUtils.toInputStream;
 
-import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
-import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
-import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
-import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
@@ -99,16 +95,16 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> createPageFileResponse(
+  public static List<Result<CursorProvider, StorageResponseAttributes>> createPageFileResponse(
       InputStream content,
       Map<String, Object> storageAttributes,
       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> page =  new LinkedList<>();
+    List<Result<CursorProvider, StorageResponseAttributes>> page =  new LinkedList<>();
 
-    page.add(Result.<CursorProvider<Cursor>, StorageResponseAttributes>builder()
+    page.add(Result.<CursorProvider, StorageResponseAttributes>builder()
         .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
-        .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(content))
+        .output((CursorProvider) streamingHelper.resolveCursorProvider(content))
         .mediaType(MediaType.BINARY)
         .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
         .build());
@@ -116,12 +112,12 @@ public final class ResponseHelper {
     return page;
   }
 
-  public static Result<InputStream, TransformResponseAttributes> createProcessedMediaResponse(
+  public static Result<InputStream, ParserResponseAttributes> createProcessedMediaResponse(
       InputStream content,
       Map<String, Object> transformAttributes) {
 
-    return Result.<InputStream, TransformResponseAttributes>builder()
-        .attributes(new TransformResponseAttributes((HashMap<String, Object>) transformAttributes))
+    return Result.<InputStream, ParserResponseAttributes>builder()
+        .attributes(new ParserResponseAttributes((HashMap<String, Object>) transformAttributes))
         .attributesMediaType(MediaType.APPLICATION_JAVA)
         .output(content)
         .mediaType(MediaType.BINARY)

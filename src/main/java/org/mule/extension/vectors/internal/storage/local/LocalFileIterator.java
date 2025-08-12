@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.storage.local;
 
 import org.mule.extension.vectors.internal.storage.FileIterator;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.util.Utils;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class LocalFileIterator implements FileIterator {
     }
 
     @Override
-    public File next() {
+    public FileInfo next() {
         if (!hasNext()) throw new NoSuchElementException();
         Path path = getPathIterator().next();
         InputStream content = localClient.loadFile(path);
@@ -59,6 +59,6 @@ public class LocalFileIterator implements FileIterator {
                 mimeType = Utils.getMimeTypeFallback(path);
             }
         }
-        return new File(content, path.toString(), LocalStorage.parseFileName(path.toString()), mimeType);
+        return new FileInfo(content, path.toString(), LocalStorage.parseFileName(path.toString()), mimeType);
     }
 } 

@@ -32,6 +32,21 @@ public class AzureBlobStorageConnectionProvider extends BaseStorageConnectionPro
       return azureBlobStorageConnection;
   }
 
+  @Override
+  public void disconnect(BaseStorageConnection connection) {
+
+  }
+
+  @Override
+  public ConnectionValidationResult validate(BaseStorageConnection connection) {
+    try {
+      connection.validate();
+      return ConnectionValidationResult.success();
+    } catch (Exception e) {
+      return ConnectionValidationResult.failure(e.getMessage(), e);
+    }
+  }
+
 
   @Override
   public void dispose() {

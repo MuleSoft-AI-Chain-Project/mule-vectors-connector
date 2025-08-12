@@ -96,6 +96,19 @@
 							<groupId>dev.langchain4j</groupId>
 							<artifactId>langchain4j-document-transformer-jsoup</artifactId>
 						</sharedLibrary>
+						<!-- Storage Services Dependencies -->
+						<sharedLibrary>
+							<groupId>software.amazon.awssdk</groupId>
+							<artifactId>s3</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.azure</groupId>
+							<artifactId>azure-storage-blob</artifactId>
+						</sharedLibrary>
+						<sharedLibrary>
+							<groupId>com.google.cloud</groupId>
+							<artifactId>google-cloud-storage</artifactId>
+						</sharedLibrary>
 						<!-- Vector Stores Dependencies -->
 						<sharedLibrary>
 							<groupId>dev.langchain4j</groupId>
@@ -396,6 +409,28 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Storage Dependencies (Optionals) -->
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-storage-blob</artifactId>
+			<version>12.30.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.31.6</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>2.43.0</version>
 			<scope>provided</scope>
 		</dependency>
 
