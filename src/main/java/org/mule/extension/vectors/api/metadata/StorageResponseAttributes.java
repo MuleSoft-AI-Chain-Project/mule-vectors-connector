@@ -56,9 +56,15 @@ public class StorageResponseAttributes implements Serializable {
   public String getFileName() {
     return fileName;
   }
-  public String getMimeType() { return mimeType; }
 
-  public Map<String, Object> getMetadata() { return metadata; }
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  public Map<String, Object> getMetadata() {
+    return metadata;
+  }
+
   /**
    * Gets additional attributes of the file.
    * <p>
@@ -73,8 +79,10 @@ public class StorageResponseAttributes implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     StorageResponseAttributes that = (StorageResponseAttributes) o;
     return java.util.Objects.equals(path, that.path)
         && java.util.Objects.equals(fileName, that.fileName)

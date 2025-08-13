@@ -14,34 +14,36 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class LocalStorageService implements StorageService {
-    private final LocalStorage localClient;
 
-    public LocalStorageService(LocalStorage localClient) {
-        this.localClient = localClient;
-    }
+  private final LocalStorage localClient;
 
-    @Override
-    public FileInfo getFile(String contextPath) {
-        String fullPath = localClient.getConnection().getWorkingDir() != null ?  localClient.getConnection().getWorkingDir() + "/" + contextPath : contextPath;
-        InputStream content = localClient.loadFile(Path.of(fullPath));
-        String mimeType = null;
-        try {
-            mimeType = Files.probeContentType(Path.of(fullPath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            // Fallback if mimeType is null
-            if (mimeType == null) {
-                mimeType = Utils.getMimeTypeFallback(Path.of(fullPath));
-            }
-        }
-        return new FileInfo(content, contextPath, LocalStorage.parseFileName(contextPath), mimeType);
-    }
+  public LocalStorageService(LocalStorage localClient) {
+    this.localClient = localClient;
+  }
 
-    @Override
-    public FileIterator getFileIterator(String contextPath)
-    {
-        String fullPath = this.localClient.getConnection().getWorkingDir() != null ? this.localClient.getConnection().getWorkingDir() + "/" + contextPath : contextPath;
-        return new LocalFileIterator(localClient, fullPath);
+  @Override
+  public FileInfo getFile(String contextPath) {
+    String fullPath = localClient.getConnection().getWorkingDir() != null
+        ? localClient.getConnection().getWorkingDir() + "/" + contextPath : contextPath;
+    InputStream content = localClient.loadFile(Path.of(fullPath));
+    String mimeType = null;
+    try {
+      mimeType = Files.probeContentType(Path.of(fullPath));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      // Fallback if mimeType is null
+      if (mimeType == null) {
+        mimeType = Utils.getMimeTypeFallback(Path.of(fullPath));
+      }
     }
-} 
+    return new FileInfo(content, contextPath, LocalStorage.parseFileName(contextPath), mimeType);
+  }
+
+  @Override
+  public FileIterator getFileIterator(String contextPath) {
+    String fullPath = this.localClient.getConnection().getWorkingDir() != null
+        ? this.localClient.getConnection().getWorkingDir() + "/" + contextPath : contextPath;
+    return new LocalFileIterator(localClient, fullPath);
+  }
+}

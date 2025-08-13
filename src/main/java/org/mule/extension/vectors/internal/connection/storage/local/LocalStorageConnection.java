@@ -56,7 +56,7 @@ public class LocalStorageConnection implements BaseStorageConnection {
     try {
       validateWorkingDir();
     } catch (ConnectionException e) {
-//      throw new RuntimeException(e);
+      //      throw new RuntimeException(e);
     }
   }
 

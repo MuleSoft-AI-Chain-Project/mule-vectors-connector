@@ -68,17 +68,17 @@ class ResponseHelperTest {
     assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
   }
 
-    @Test
-    void createFileResponse_shouldReturnResultWithAttributesAndBinaryMediaType() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("file", "yes");
-        InputStream content = new ByteArrayInputStream(new byte[]{1,2,3});
-        Result<InputStream, StorageResponseAttributes> result = ResponseHelper.createFileResponse(content, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("file", "yes");
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(new byte[]{1,2,3}));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
+  @Test
+  void createFileResponse_shouldReturnResultWithAttributesAndBinaryMediaType() {
+    Map<String, Object> attrs = new HashMap<>();
+    attrs.put("file", "yes");
+    InputStream content = new ByteArrayInputStream(new byte[] {1, 2, 3});
+    Result<InputStream, StorageResponseAttributes> result = ResponseHelper.createFileResponse(content, attrs);
+    assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("file", "yes");
+    assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(new byte[] {1, 2, 3}));
+    assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
+    assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
+  }
 
   @Test
   void createParsedDocumentResponse_shouldReturnResultWithTextMediaType() {
@@ -101,5 +101,5 @@ class ResponseHelperTest {
     assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
     assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
   }
-} 
+}
 

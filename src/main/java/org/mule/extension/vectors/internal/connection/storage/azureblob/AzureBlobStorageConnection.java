@@ -36,7 +36,9 @@ public class AzureBlobStorageConnection implements BaseStorageConnection {
   }
 
   @Override
-  public String getStorageType() { return Constants.STORAGE_TYPE_AZURE_BLOB; }
+  public String getStorageType() {
+    return Constants.STORAGE_TYPE_AZURE_BLOB;
+  }
 
 
   public void initialise() {

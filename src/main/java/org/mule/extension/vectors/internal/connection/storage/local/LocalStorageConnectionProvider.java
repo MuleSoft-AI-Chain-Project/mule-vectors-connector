@@ -17,12 +17,13 @@ public class LocalStorageConnectionProvider implements BaseStorageConnectionProv
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private LocalStorageConnectionParameters localStorageConnectionParameters;
-private  LocalStorageConnection localStorageConnection;
+  private LocalStorageConnection localStorageConnection;
+
   @Override
   public BaseStorageConnection connect() throws ConnectionException {
 
 
-      return localStorageConnection;
+    return localStorageConnection;
 
 
   }

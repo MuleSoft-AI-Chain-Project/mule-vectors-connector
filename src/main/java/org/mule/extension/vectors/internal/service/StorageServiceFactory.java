@@ -17,23 +17,24 @@ import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
 import org.mule.extension.vectors.internal.storage.local.LocalStorage;
 
 public class StorageServiceFactory {
-    public static StorageService getService(StorageConfiguration config, BaseStorageConnection connection) {
-        if (connection instanceof AmazonS3StorageConnection) {
-            AmazonS3Storage s3Client = new AmazonS3Storage(config, (AmazonS3StorageConnection) connection);
-            return new S3StorageService(s3Client);
-        }
-        if (connection instanceof AzureBlobStorageConnection) {
-            AzureBlobStorage azureClient = new AzureBlobStorage(config, (AzureBlobStorageConnection) connection);
-            return new AzureBlobStorageService(azureClient);
-        }
-        if (connection instanceof GoogleCloudStorageConnection) {
-            GoogleCloudStorage gcsClient = new GoogleCloudStorage(config, (GoogleCloudStorageConnection) connection);
-            return new GoogleCloudStorageService(gcsClient);
-        }
-        if (connection instanceof LocalStorageConnection) {
-            LocalStorage localClient = new LocalStorage(config, (LocalStorageConnection) connection);
-            return new LocalStorageService(localClient);
-        }
-        throw new IllegalArgumentException("Unsupported storage type");
+
+  public static StorageService getService(StorageConfiguration config, BaseStorageConnection connection) {
+    if (connection instanceof AmazonS3StorageConnection) {
+      AmazonS3Storage s3Client = new AmazonS3Storage(config, (AmazonS3StorageConnection) connection);
+      return new S3StorageService(s3Client);
     }
-} 
+    if (connection instanceof AzureBlobStorageConnection) {
+      AzureBlobStorage azureClient = new AzureBlobStorage(config, (AzureBlobStorageConnection) connection);
+      return new AzureBlobStorageService(azureClient);
+    }
+    if (connection instanceof GoogleCloudStorageConnection) {
+      GoogleCloudStorage gcsClient = new GoogleCloudStorage(config, (GoogleCloudStorageConnection) connection);
+      return new GoogleCloudStorageService(gcsClient);
+    }
+    if (connection instanceof LocalStorageConnection) {
+      LocalStorage localClient = new LocalStorage(config, (LocalStorageConnection) connection);
+      return new LocalStorageService(localClient);
+    }
+    throw new IllegalArgumentException("Unsupported storage type");
+  }
+}

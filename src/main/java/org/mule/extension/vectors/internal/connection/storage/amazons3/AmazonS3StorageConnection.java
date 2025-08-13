@@ -50,14 +50,14 @@ public class AmazonS3StorageConnection implements BaseStorageConnection {
     this.s3Client = S3Client.builder()
         .region(Region.of(awsRegion))
         .credentialsProvider(StaticCredentialsProvider.create(
-            AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey)))
+                                                              AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey)))
         .build();
   }
 
   @Override
   public void disconnect() {
 
-    if(this.s3Client != null) {
+    if (this.s3Client != null) {
 
       this.s3Client.close();
     }

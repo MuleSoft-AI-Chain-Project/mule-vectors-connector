@@ -52,23 +52,23 @@ public class StorageOperations {
   @Alias("Storage-load-file")
   @DisplayName("[Storage] Load file")
   @Throws(StorageErrorTypeProvider.class)
-  public Result<InputStream, StorageResponseAttributes>
-  loadFile(@Config StorageConfiguration storageConfiguration,
-           @Connection BaseStorageConnection storageConnection,
-           @ParameterGroup(name = "File") FileParameters fileParameters) {
+  public Result<InputStream, StorageResponseAttributes> loadFile(@Config StorageConfiguration storageConfiguration,
+                                                                 @Connection BaseStorageConnection storageConnection,
+                                                                 @ParameterGroup(name = "File") FileParameters fileParameters) {
     try {
       StorageService storageService = StorageServiceFactory.getService(storageConfiguration, storageConnection);
       FileInfo file = storageService.getFile(fileParameters.getContextPath());
       return createFileResponse(
-          file.getContent(),
-          StoreOperationsHelper.getMetadataMap(file));
+                                file.getContent(),
+                                StoreOperationsHelper.getMetadataMap(file));
     } catch (ModuleException me) {
       throw me;
     } catch (Exception e) {
       throw new ModuleException(
-          String.format("Error while loading and/or segmenting document at '%s'.", fileParameters.getContextPath()),
-          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-          e);
+                                String.format("Error while loading and/or segmenting document at '%s'.",
+                                              fileParameters.getContextPath()),
+                                MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
+                                e);
     }
   }
 
@@ -87,17 +87,18 @@ public class StorageOperations {
   @Alias("Storage-load-file-list")
   @DisplayName("[Storage] Load file list")
   @Throws(StorageErrorTypeProvider.class)
-  public PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>>
-  loadFileList(@Config StorageConfiguration storageConfiguration,
-               @ParameterGroup(name = "Container") FileParameters fileParameters,
-               StreamingHelper streamingHelper) {
+  public PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> loadFileList(@Config StorageConfiguration storageConfiguration,
+                                                                                                               @ParameterGroup(
+                                                                                                                   name = "Container") FileParameters fileParameters,
+                                                                                                               StreamingHelper streamingHelper) {
     try {
       return new FilePagingProvider(storageConfiguration, fileParameters.getContextPath(), streamingHelper);
     } catch (Exception e) {
       throw new ModuleException(
-          String.format("Error while loading and/or segmenting documents for path '%s'.", fileParameters.getContextPath()),
-          MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-          e);
+                                String.format("Error while loading and/or segmenting documents for path '%s'.",
+                                              fileParameters.getContextPath()),
+                                MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
+                                e);
     }
   }
 }

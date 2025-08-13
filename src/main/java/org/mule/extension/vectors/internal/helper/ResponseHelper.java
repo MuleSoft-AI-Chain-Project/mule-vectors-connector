@@ -63,8 +63,8 @@ public final class ResponseHelper {
 
 
   public static Result<InputStream, StorageResponseAttributes> createFileResponse(
-      InputStream content,
-      Map<String, Object> storageAttributes) {
+                                                                                  InputStream content,
+                                                                                  Map<String, Object> storageAttributes) {
 
     return Result.<InputStream, StorageResponseAttributes>builder()
         .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
@@ -96,11 +96,11 @@ public final class ResponseHelper {
   }
 
   public static List<Result<CursorProvider, StorageResponseAttributes>> createPageFileResponse(
-      InputStream content,
-      Map<String, Object> storageAttributes,
-      StreamingHelper streamingHelper) {
+                                                                                               InputStream content,
+                                                                                               Map<String, Object> storageAttributes,
+                                                                                               StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, StorageResponseAttributes>> page =  new LinkedList<>();
+    List<Result<CursorProvider, StorageResponseAttributes>> page = new LinkedList<>();
 
     page.add(Result.<CursorProvider, StorageResponseAttributes>builder()
         .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
@@ -113,8 +113,8 @@ public final class ResponseHelper {
   }
 
   public static Result<InputStream, ParserResponseAttributes> createProcessedMediaResponse(
-      InputStream content,
-      Map<String, Object> transformAttributes) {
+                                                                                           InputStream content,
+                                                                                           Map<String, Object> transformAttributes) {
 
     return Result.<InputStream, ParserResponseAttributes>builder()
         .attributes(new ParserResponseAttributes((HashMap<String, Object>) transformAttributes))

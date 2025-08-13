@@ -16,7 +16,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 @Alias("azureBlob")
 @DisplayName("Azure Blob")
 @ExternalLib(name = "Azure Blob Storage",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "Azure Blob Storage",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "com.azure.storage.blob.BlobClient",
@@ -25,11 +25,11 @@ public class AzureBlobStorageConnectionProvider implements BaseStorageConnection
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AzureBlobStorageConnectionParameters azureBlobStorageConnectionParameters;
-  private   AzureBlobStorageConnection azureBlobStorageConnection;
+  private AzureBlobStorageConnection azureBlobStorageConnection;
 
   @Override
   public BaseStorageConnection connect() throws ConnectionException {
-      return azureBlobStorageConnection;
+    return azureBlobStorageConnection;
   }
 
   @Override

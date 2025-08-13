@@ -19,43 +19,42 @@ import java.io.IOException;
 @Alias("googleCloudStorage")
 @DisplayName("Google Cloud Storage")
 @ExternalLib(name = "Google Cloud Storage",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "Google Cloud Storage",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "com.google.cloud.storage.Storage",
     coordinates = "com.google.cloud:google-cloud-storage:2.43.0")
 public class GoogleCloudStorageConnectionProvider implements BaseStorageConnectionProvider {
 
-    @ParameterGroup(name = Placement.CONNECTION_TAB)
-    private GoogleCloudStorageConnectionParameters googleCloudStorageConnectionParameters;
-    private  GoogleCloudStorageConnection googleCloudStorageConnection;
+  @ParameterGroup(name = Placement.CONNECTION_TAB)
+  private GoogleCloudStorageConnectionParameters googleCloudStorageConnectionParameters;
+  private GoogleCloudStorageConnection googleCloudStorageConnection;
 
-    @Override
-    public BaseStorageConnection connect() throws ConnectionException {
+  @Override
+  public BaseStorageConnection connect() throws ConnectionException {
 
 
-            return googleCloudStorageConnection;
+    return googleCloudStorageConnection;
 
+  }
+
+  @Override
+  public void dispose() {
+    googleCloudStorageConnection.disconnect();
+  }
+
+  @Override
+  public void initialise() throws InitialisationException {
+    try {
+      googleCloudStorageConnection = new GoogleCloudStorageConnection(
+                                                                      googleCloudStorageConnectionParameters.getProjectId(),
+                                                                      googleCloudStorageConnectionParameters.getClientEmail(),
+                                                                      googleCloudStorageConnectionParameters.getClientId(),
+                                                                      googleCloudStorageConnectionParameters.getPrivateKeyId(),
+                                                                      googleCloudStorageConnectionParameters.getPrivateKey());
+      googleCloudStorageConnection.initialise();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-
-    @Override
-    public void dispose() {
-        googleCloudStorageConnection.disconnect();
-    }
-
-    @Override
-    public void initialise() throws InitialisationException {
-        try {
-         googleCloudStorageConnection = new GoogleCloudStorageConnection(
-            googleCloudStorageConnectionParameters.getProjectId(),
-            googleCloudStorageConnectionParameters.getClientEmail(),
-            googleCloudStorageConnectionParameters.getClientId(),
-            googleCloudStorageConnectionParameters.getPrivateKeyId(),
-            googleCloudStorageConnectionParameters.getPrivateKey()
-        );
-        googleCloudStorageConnection.initialise();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
+  }
 }

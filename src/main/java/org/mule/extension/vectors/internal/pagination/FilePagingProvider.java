@@ -20,7 +20,8 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
 import java.util.*;
 
-public class FilePagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
+public class FilePagingProvider
+    implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
 
   private final StorageConfiguration storageConfiguration;
   private final String contextPath;
@@ -38,26 +39,26 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
     try {
       if (fileIterator == null) {
         StorageService storageService = StorageServiceFactory.getService(
-            storageConfiguration, connection);
+                                                                         storageConfiguration, connection);
         fileIterator = storageService.getFileIterator(contextPath);
       }
       while (fileIterator.hasNext()) {
         FileInfo file = fileIterator.next();
-        if (file == null) continue;
+        if (file == null)
+          continue;
         return createPageFileResponse(
-            file.getContent(),
-            StoreOperationsHelper.getMetadataMap(file),
-            streamingHelper
-        );
+                                      file.getContent(),
+                                      StoreOperationsHelper.getMetadataMap(file),
+                                      streamingHelper);
       }
       return Collections.emptyList();
     } catch (ModuleException me) {
       throw me;
     } catch (Exception e) {
       throw new ModuleException(
-          String.format("Error while getting document from %s.", contextPath),
-          MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
-          e);
+                                String.format("Error while getting document from %s.", contextPath),
+                                MuleVectorsErrorType.STORAGE_SERVICES_FAILURE,
+                                e);
     }
   }
 
@@ -67,8 +68,7 @@ public class FilePagingProvider implements PagingProvider<BaseStorageConnection,
   }
 
   @Override
-  public void close(BaseStorageConnection connection) throws MuleException {
-  }
+  public void close(BaseStorageConnection connection) throws MuleException {}
 
   @Override
   public boolean useStickyConnections() {

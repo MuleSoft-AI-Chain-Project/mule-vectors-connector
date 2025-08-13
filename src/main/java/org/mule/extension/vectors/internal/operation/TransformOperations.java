@@ -86,8 +86,8 @@ public class TransformOperations {
   @Alias("Transform-process-media")
   @DisplayName("[Transform] Process media")
   @Throws(EmbeddingErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ParserResponseAttributes>
-  processMedia(@ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ParserResponseAttributes> processMedia(@ParameterGroup(
+      name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
     return transformService.processMedia(mediaBinaryParameters);
   }
 }

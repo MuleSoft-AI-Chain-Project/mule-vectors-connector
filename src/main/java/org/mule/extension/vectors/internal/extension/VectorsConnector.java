@@ -28,7 +28,8 @@ import org.mule.sdk.api.annotation.JavaVersionSupport;
  */
 @Xml(prefix = "ms-vectors")
 @Extension(name = "MuleSoft Vectors Connector", category = Category.SELECT)
-@Configurations({StorageConfiguration.class, TransformConfiguration.class, EmbeddingConfiguration.class, StoreConfiguration.class})
+@Configurations({StorageConfiguration.class, TransformConfiguration.class, EmbeddingConfiguration.class,
+    StoreConfiguration.class})
 @ErrorTypes(MuleVectorsErrorType.class)
 @JavaVersionSupport({JAVA_17})
 @SubTypeMapping(baseType = DocumentParserParameters.class,

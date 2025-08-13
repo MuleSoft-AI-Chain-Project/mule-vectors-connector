@@ -16,30 +16,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class LocalStorage {
-    private final LocalStorageConnection storageConnection;
 
-    public LocalStorage(StorageConfiguration storageConfiguration, LocalStorageConnection storageConnection) {
-        this.storageConnection = storageConnection;
+  private final LocalStorageConnection storageConnection;
 
+  public LocalStorage(StorageConfiguration storageConfiguration, LocalStorageConnection storageConnection) {
+    this.storageConnection = storageConnection;
+
+  }
+
+  public LocalStorageConnection getConnection() {
+    return this.storageConnection;
+  }
+
+  public InputStream loadFile(Path path) {
+
+    if (!Files.isRegularFile(path, new LinkOption[0])) {
+      throw new IllegalArgumentException(String.format("'%s' is not a file", new Object[] {path}));
+    } else {
+      try {
+        return Files.newInputStream(path);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
-public LocalStorageConnection getConnection(){
-        return  this.storageConnection;
-}
-    public InputStream loadFile(Path path) {
+  }
 
-        if (!Files.isRegularFile(path, new LinkOption[0])) {
-            throw new IllegalArgumentException(String.format("'%s' is not a file", new Object[]{path}));
-        } else {
-            try {
-                return  Files.newInputStream(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static String parseFileName(String path) {
-        int lastSlash = path.lastIndexOf("/");
-        return lastSlash == -1 ? path : path.substring(lastSlash + 1);
-    }
+  public static String parseFileName(String path) {
+    int lastSlash = path.lastIndexOf("/");
+    return lastSlash == -1 ? path : path.substring(lastSlash + 1);
+  }
 }

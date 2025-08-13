@@ -24,9 +24,7 @@ public class ImageProcessor implements MediaProcessor {
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
   public enum ScaleStrategy {
-    FIT,
-    FILL,
-    STRETCH
+    FIT, FILL, STRETCH
   }
 
   private int targetWidth;
@@ -172,17 +170,17 @@ public class ImageProcessor implements MediaProcessor {
 
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       ImageIO.write(image, format, baos); // Write the image in the specified format
-      return baos.toByteArray();         // Get the byte array
+      return baos.toByteArray(); // Get the byte array
     }
   }
 
-  private BufferedImage process(BufferedImage image) throws IOException  {
+  private BufferedImage process(BufferedImage image) throws IOException {
 
     BufferedImage processedImage = image;
 
-    if(targetHeight >0  && targetWidth > 0) {
+    if (targetHeight > 0 && targetWidth > 0) {
 
-      switch(scaleStrategy) {
+      switch (scaleStrategy) {
 
         case FIT:
           processedImage = fit(processedImage);
@@ -199,7 +197,7 @@ public class ImageProcessor implements MediaProcessor {
       }
     }
 
-    if(compressionQuality != 0f) {
+    if (compressionQuality != 0f) {
 
       processedImage = compress(processedImage);
     }

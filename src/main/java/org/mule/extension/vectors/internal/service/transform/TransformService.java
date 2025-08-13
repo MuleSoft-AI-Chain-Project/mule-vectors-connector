@@ -54,36 +54,38 @@ public class TransformService {
   }
 
   public Result<InputStream, ParserResponseAttributes> processMedia(
-            TransformMediaBinaryParameters mediaBinaryParameters) {
-        try {
-            byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
-            MediaProcessor mediaProcessor = null;
-            if (mediaBinaryParameters.getMediaProcessorParameters() != null) {
-                if (mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
-                    ImageProcessorParameters imageProcessorParameters =
-                            (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
-                    mediaProcessor = ImageProcessor.builder()
-                            .targetWidth(imageProcessorParameters.getTargetWidth())
-                            .targetHeight(imageProcessorParameters.getTargetHeight())
-                            .compressionQuality(imageProcessorParameters.getCompressionQuality())
-                            .scaleStrategy(imageProcessorParameters.getScaleStrategy())
-                            .build();
-                    mediaBytes = mediaProcessor.process(mediaBytes);
-                }
-            }
-            return createProcessedMediaResponse(
-                    new ByteArrayInputStream(mediaBytes),
-                    new HashMap<String, Object>() {{
-                        put("mediaType", mediaBinaryParameters.getMediaType());
-                    }}
-            );
-        } catch (ModuleException me) {
-            throw me;
-        } catch (Exception e) {
-            throw new ModuleException(
-                    "Error while processing media",
-                    MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
-                    e);
+                                                                    TransformMediaBinaryParameters mediaBinaryParameters) {
+    try {
+      byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
+      MediaProcessor mediaProcessor = null;
+      if (mediaBinaryParameters.getMediaProcessorParameters() != null) {
+        if (mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
+          ImageProcessorParameters imageProcessorParameters =
+              (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
+          mediaProcessor = ImageProcessor.builder()
+              .targetWidth(imageProcessorParameters.getTargetWidth())
+              .targetHeight(imageProcessorParameters.getTargetHeight())
+              .compressionQuality(imageProcessorParameters.getCompressionQuality())
+              .scaleStrategy(imageProcessorParameters.getScaleStrategy())
+              .build();
+          mediaBytes = mediaProcessor.process(mediaBytes);
         }
+      }
+      return createProcessedMediaResponse(
+                                          new ByteArrayInputStream(mediaBytes),
+                                          new HashMap<String, Object>() {
+
+                                            {
+                                              put("mediaType", mediaBinaryParameters.getMediaType());
+                                            }
+                                          });
+    } catch (ModuleException me) {
+      throw me;
+    } catch (Exception e) {
+      throw new ModuleException(
+                                "Error while processing media",
+                                MuleVectorsErrorType.TRANSFORM_OPERATIONS_FAILURE,
+                                e);
     }
+  }
 }

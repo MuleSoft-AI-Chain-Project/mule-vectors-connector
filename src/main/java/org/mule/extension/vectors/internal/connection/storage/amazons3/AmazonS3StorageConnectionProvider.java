@@ -17,7 +17,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 @Alias("amazonS3")
 @DisplayName("Amazon S3")
 @ExternalLib(name = "Amazon AWS SDK",
-    type=DEPENDENCY,
+    type = DEPENDENCY,
     description = "Amazon AWS SDK",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "software.amazon.awssdk.services.s3.S3Client",
@@ -30,7 +30,7 @@ public class AmazonS3StorageConnectionProvider implements BaseStorageConnectionP
 
   @Override
   public BaseStorageConnection connect() throws ConnectionException {
-      return amazonS3StorageConnection;
+    return amazonS3StorageConnection;
   }
 
   @Override
@@ -56,8 +56,8 @@ public class AmazonS3StorageConnectionProvider implements BaseStorageConnectionP
   @Override
   public void initialise() throws InitialisationException {
     amazonS3StorageConnection = new AmazonS3StorageConnection(amazonS3StorageConnectionParameters.getAwsRegion(),
-                                                                                        amazonS3StorageConnectionParameters.getAwsAccessKeyId(),
-                                                                                        amazonS3StorageConnectionParameters.getAwsSecretAccessKey());
+                                                              amazonS3StorageConnectionParameters.getAwsAccessKeyId(),
+                                                              amazonS3StorageConnectionParameters.getAwsSecretAccessKey());
     amazonS3StorageConnection.initialise();
   }
 }

@@ -49,7 +49,9 @@ public class TransformMediaBinaryParameters {
     return mediaType;
   }
 
-  public InputStream getBinaryInputStream() { return binaryInputStream;}
+  public InputStream getBinaryInputStream() {
+    return binaryInputStream;
+  }
 
   public MediaProcessorParameters getMediaProcessorParameters() {
     return mediaProcessorParameters;
