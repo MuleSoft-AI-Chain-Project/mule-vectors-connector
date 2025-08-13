@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.operation;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_OCTET_STREAM;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.TEXT_PLAIN;
 
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;

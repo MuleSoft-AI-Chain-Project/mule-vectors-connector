@@ -18,7 +18,9 @@ import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class FilePagingProvider
     implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {

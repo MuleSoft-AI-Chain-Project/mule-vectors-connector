@@ -8,12 +8,10 @@ import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.storage.amazons3.AmazonS3Storage;
 import org.mule.extension.vectors.internal.storage.amazons3.S3FileIterator;
 
-import java.io.InputStream;
 import java.util.HashMap;
 
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3StorageService implements StorageService {
 

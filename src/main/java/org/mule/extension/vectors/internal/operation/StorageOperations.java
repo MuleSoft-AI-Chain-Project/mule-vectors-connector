@@ -1,7 +1,8 @@
 package org.mule.extension.vectors.internal.operation;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createFileResponse;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_OCTET_STREAM;
 
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
@@ -28,7 +29,6 @@ import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
 import java.io.InputStream;
-import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

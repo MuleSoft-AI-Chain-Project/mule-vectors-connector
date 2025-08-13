@@ -3,20 +3,10 @@ package org.mule.extension.vectors.internal.storage.gcs;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
-import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.StreamSupport;
 
-import com.azure.storage.blob.BlobClient;
-import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import org.slf4j.Logger;

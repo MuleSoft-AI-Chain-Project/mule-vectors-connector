@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobProperties;
 
 public class AzureBlobStorageService implements StorageService {

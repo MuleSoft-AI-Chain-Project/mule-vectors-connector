@@ -3,13 +3,8 @@ package org.mule.extension.vectors.internal.connection.storage.azureblob;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
-import java.io.InputStream;
-
-import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.blob.specialized.BlobInputStream;
 import com.azure.storage.common.StorageSharedKeyCredential;
 
 public class AzureBlobStorageConnection implements BaseStorageConnection {

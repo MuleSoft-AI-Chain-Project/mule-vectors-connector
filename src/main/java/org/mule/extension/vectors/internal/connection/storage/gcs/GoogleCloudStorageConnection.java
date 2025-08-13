@@ -2,15 +2,11 @@ package org.mule.extension.vectors.internal.connection.storage.gcs;
 
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.runtime.api.connection.ConnectionException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
 
 import com.google.auth.oauth2.ServiceAccountCredentials;
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 

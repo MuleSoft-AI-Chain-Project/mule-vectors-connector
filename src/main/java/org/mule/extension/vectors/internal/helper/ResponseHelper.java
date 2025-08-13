@@ -2,7 +2,11 @@ package org.mule.extension.vectors.internal.helper;
 
 import static org.apache.commons.io.IOUtils.toInputStream;
 
-import org.mule.extension.vectors.api.metadata.*;
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
+import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
+import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;

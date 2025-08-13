@@ -4,15 +4,10 @@ import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.blob.models.ListBlobsOptions;
 import com.azure.storage.blob.specialized.BlobInputStream;
 
 public class AzureBlobStorage {
