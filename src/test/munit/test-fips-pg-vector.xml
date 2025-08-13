@@ -1,14 +1,128 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
-	<munit:config minMuleVersion="4.9.0" name="test-store-operations.xml">
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ms-vectors="http://www.mulesoft.org/schema/mule/ms-vectors" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd   http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd">
+	<munit:config minMuleVersion="4.9.0" name="test-fips-pg-vector.xml"  ignore="#[ p('mule.security.model') == null">
+
 
 	<ms-vectors:store-config name="storePGVectorConfigFIPS" doc:name="MuleSoft Vectors Connector Store config" doc:id="8a721354-89f1-4ea1-89f5-68ddb48cd678" >
 		<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
 	</ms-vectors:store-config>
 
-	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY" ignore="#[ p('mule.security.model') == null or p('mule.security.model') != 'fips140-2']">
-        <munit:execution>
+
+
+</munit:config>
+	<munit:config minMuleVersion="4.9.0" name="test-fips-pg-vector.xml"  ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2'">
+
+		<ms-vectors:store-config name="storePGVectorConfig" doc:name="MuleSoft Vectors Connector Store config" doc:id="8a721354-89f1-4ea1-89f5-68ddb48cd678" >
+			<ms-vectors:pg-vector-connection host="${pgvector.host}" port="${pgvector.port}" database="${pgvector.database}" user="${pgvector.user}" password="${pgvector.password}"/>
+		</ms-vectors:store-config>
+
+		<munit:parameterizations >
+
+			<munit:parameterization name="config-vector-pgvector" >
+				<munit:parameters >
+					<munit:parameter propertyName="config" value="storePGVectorConfig" />
+					<munit:parameter propertyName="storeName" value="munit" />
+					<munit:parameter propertyName="minScore" value="0.1" />
+					<munit:parameter propertyName="topK" value="5" />
+					<munit:parameter propertyName="supportFilterByMetadata" value="true" />
+					<munit:parameter propertyName="supportRemove" value="true" />
+				</munit:parameters>
+			</munit:parameterization>
+
+		</munit:parameterizations>
+	</munit:config>
+<munit:after-suite name="test-store-operationsAfter_Suite" doc:id="39e89b0b-c7d4-45ef-8eae-2b6d1d861669">
+	<choice doc:name="Choice" doc:id="69b9155e-c2f2-4c28-a7e4-a0d6d7e6c548" >
+		<when expression="${supportRemove}">
+			<try doc:name="Try" doc:id="077eb4b2-bfd7-4a74-9814-9820465d0d7c" >
+				<ms-vectors:store-remove doc:name="Remove all from 'munit' collection" doc:id="d3ff414a-4a3f-4c78-8bf7-ab1ca762900c" config-ref="${config}" storeName="${storeName}" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b9be2814-67ad-4c77-8682-70f82bb3cab9" >
+						<logger level="INFO" doc:name="Logger" doc:id="bea7297c-3e30-44fe-80c7-57cd70865cd1" message="#[payload]"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+			<try doc:name="Try" doc:id="735b75c6-4e34-48ee-a104-93fb74e1c8bb" >
+				<ms-vectors:store-remove doc:name="Remove all from 'munitremove' collection" doc:id="1fe37e30-3c22-4ee0-85a2-c8526e47b1e4" config-ref="${config}" storeName="${storeName}" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3d800f63-e581-4b1b-be8d-f22d692e2510" >
+						<logger level="INFO" doc:name="Logger" doc:id="c8726fc7-725a-44b7-b043-5d99615424a7" message="#[payload]"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</when>
+	</choice>
+</munit:after-suite>
+
+	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY"   ignore="#[ p('mule.security.model') ==null">
+		<munit:execution>
 			<mtf:test-connectivity config-ref="storePGVectorConfigFIPS"/>
-        </munit:execution>
-    </munit:test>
+		</munit:execution>
+	</munit:test>
+
+
+	<munit:test doc:id="25c072ca-50b7-4072-aefb-25924bbd0511" name="store-operations-add-to-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
+	<munit:execution>
+		<flow-ref doc:id="ae8eb0e5-96c8-420e-8a7b-64d9c408c7f0" doc:name="store-operations-ADD-to-store-exec" name="store-operations-add-to-store-exec"/>
+	</munit:execution>
+	<munit:validation>
+		<flow-ref doc:id="af61ece6-eb78-48fc-a539-cad8120997f7" doc:name="store-operations-validate-add-to-store" name="store-operations-validate-add-to-store"/>
+	</munit:validation>
+</munit:test>
+<sub-flow doc:id="4bdfd585-1485-43ef-9578-aad82e2eb13a" name="store-operations-validate-add-to-store">
+	<munit-tools:assert-that doc:id="818bd443-493c-4f33-a5e1-bde725de890b" doc:name="Assert that payload is not null" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Payload is null"/>
+	<munit-tools:assert-that doc:id="26cecb96-c7b8-461c-9056-0894591611f9" doc:name="Assert that sourceId is not null" expression="#[payload.sourceId]" is="#[MunitTools::notNullValue()]" message="Payload is null"/>
+	<munit-tools:assert-equals actual="#[payload.status]" doc:id="b72ace94-3695-4082-a982-23b8437aee86" doc:name="Assert status is updated" expected="updated" message="#[&quot;The returned status &quot; ++ payload.status ++ &quot; is not correct.&quot;]"/>
+	<munit-tools:assert-equals actual="#[sizeOf(payload.embeddingIds)]" doc:id="b3e08701-ffa0-48ef-9709-e6381eeea1c0" doc:name="Assert has 4 embedding ids" expected="#[4]" message="The operation did not return 4 embedding ids."/>
+</sub-flow>
+<munit:test doc:id="e4aba12a-2d12-442c-a83e-dbd14102b8d3" name="store-operations-query-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
+	<munit:execution>
+		<flow-ref doc:id="8e3c98b7-e562-4fff-9f18-d8991fae2484" doc:name="store-operations-QUERY-from-store-exec" name="store-operations-query-from-store-exec"/>
+	</munit:execution>
+	<munit:validation>
+		<flow-ref doc:id="9543b85e-419b-4e62-92e5-df281920b86b" doc:name="store-operations-validate-query-from-store" name="store-operations-validate-query-from-store"/>
+	</munit:validation>
+</munit:test>
+<sub-flow doc:id="f35cf72c-c8df-4dff-9f8c-c4c889f8f91d" name="store-operations-validate-query-from-store">
+	<logger level="INFO" doc:name="Log paylaod" doc:id="161ccbb2-f212-4604-bd57-3f9296bf3a4b" message='#[%dw 2.0
+output text/plain
+---
+
+"\n\n" ++ write(payload, "application/json") ++ "\n\n"]'/>
+	<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="7aa068ae-b2ea-4f83-a515-cff2e8efd272" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+	<munit-tools:assert-equals doc:name="Assert has 4 sources" doc:id="8fc841db-9f6f-4447-ab35-419d3ba048c2" actual="#[sizeOf(payload.sources)]" expected="#[4]" message="The operation did not return 4 embedding ids." />
+</sub-flow>
+<munit:test doc:id="729af2a6-d85a-46b9-9584-ee6104382803" name="store-operations-query-all-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
+	<munit:execution>
+		<flow-ref doc:id="7b27c052-2315-4751-a939-2d22a78edfb5" doc:name="store-operations-QUERY-all-store-exec" name="store-operations-query-all-from-store-exec"/>
+	</munit:execution>
+	<munit:validation>
+		<flow-ref doc:id="65d949e4-ee32-4b62-9e3b-70dae36adbfb" doc:name="store-operations-validate-query-all-from-store" name="store-operations-validate-query-all-from-store"/>
+	</munit:validation>
+</munit:test>
+<sub-flow doc:id="5fb6a98f-09cd-43bc-9009-b40260107195" name="store-operations-validate-query-all-from-store">
+	<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="09c96239-50dd-4ef1-85c6-e096c58f0179" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+	<munit-tools:assert-that doc:name="Assert that has &gt;= 4 records." doc:id="f87f41f5-b177-45b7-8415-9e9c47058286" is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
+</sub-flow>
+<munit:test doc:id="c6a835e8-a06f-471c-96e4-b4e062bd226b" name="store-operations-remove-from-store" ignore="#[ !p('supportRemove') or (p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig')]">
+	<munit:execution>
+		<flow-ref doc:name="store-operations-REMOVE-from-store" doc:id="a93ab829-dda3-4dab-9d17-8c3319b39d01" name="store-operations-remove-from-store-exec" />
+	</munit:execution>
+	<munit:validation>
+		<flow-ref doc:id="6b23ca37-9cdf-4e17-9be1-0d82aad43801" doc:name="store-operations-validate-remove-all-from-store" name="store-operations-validate-remove-from-store"/>
+	</munit:validation>
+</munit:test>
+<sub-flow doc:id="b9d7a69a-fa62-4d44-b1df-52a7b220e034" name="store-operations-validate-remove-from-store">
+	<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="c6a2522b-5bb1-4dfc-9b11-0a8efd8d6c2b" message="Payload is null" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+	<choice doc:name="Choice" doc:id="0354944b-caf9-4b74-8463-86857046e872" >
+		<when expression="#[!p('supportRemove')]">
+			<logger level="INFO" doc:name="Logger" doc:id="ac25914b-5672-41bb-b14f-d5d5fd1d5c3c" message="Skip validation due to unsupported operation"/>
+		</when>
+		<otherwise>
+			<munit-tools:assert-equals doc:name="Assert has no sources are returned" doc:id="90cb79fd-5b84-4521-b13d-90d9558ec4d0" actual="#[sizeOf(payload.sources)]" expected="#[0]" message="The operation returned at least one source" />
+		</otherwise>
+	</choice>
+</sub-flow>
 </mule>
+

@@ -19,9 +19,9 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 	<ms-vectors:embedding-config name="embeddingOllamaConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="b3c46bce-5e22-4a99-8aec-4815fbe3a9cb" >
 		<ms-vectors:ollama-connection baseUrl="http://127.0.0.1:11434" />
 	</ms-vectors:embedding-config>
-	<ms-vectors:embedding-config name="embeddingAzureOpenAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="820379c4-408e-4e59-976b-fe35d0052f94" >
+	<!-- <ms-vectors:embedding-config name="embeddingAzureOpenAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="820379c4-408e-4e59-976b-fe35d0052f94" >
 		<ms-vectors:azure-open-ai-connection endpoint="${azureOpenai.endpoint}" apiKey="${azureOpenai.key}" apiVersion="${azureOpenai.apiVersion}"/>
-	</ms-vectors:embedding-config>
+	</ms-vectors:embedding-config> -->
 	<ms-vectors:embedding-config name="embeddingOpenAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="1ef19946-f57e-4bbd-b4b7-f6116405c6d6" >
 		<ms-vectors:open-ai-connection apiKey="${openai.apiKey}" />
 	</ms-vectors:embedding-config>

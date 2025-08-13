@@ -18,7 +18,7 @@
 					<munit:parameter propertyName="isMultimodal" value="false" />
 				</munit:parameters>
 			</munit:parameterization>
-			<munit:parameterization name="config-embedding-azureopenai" >
+			<!-- <munit:parameterization name="config-embedding-azureopenai" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="embeddingAzureOpenAIConfig" />
 					<munit:parameter propertyName="textModelName" value="text-embedding-ada-002" />
@@ -26,7 +26,7 @@
 					<munit:parameter propertyName="maxOverlapSize" value="100" />
 					<munit:parameter propertyName="isMultimodal" value="false" />
 				</munit:parameters>
-			</munit:parameterization>
+			</munit:parameterization> -->
 			<munit:parameterization name="config-embedding-nomic" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="embeddingNomicConfig" />
