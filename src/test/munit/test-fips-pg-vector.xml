@@ -57,10 +57,6 @@
 
 	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY"   ignore="#[ p('mule.security.model') ==null">
 		<munit:execution>
-=======
-	<munit:test name="pgVectorFipsTest" expectedErrorType="MULE:SECURITY">
-        <munit:execution>
->>>>>>> e598f633e3c250113c4e456f694ba35a9b9ba402
 			<mtf:test-connectivity config-ref="storePGVectorConfigFIPS"/>
 		</munit:execution>
 	</munit:test>
