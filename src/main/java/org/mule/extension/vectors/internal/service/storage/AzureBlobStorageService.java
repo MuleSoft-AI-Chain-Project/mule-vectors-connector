@@ -1,17 +1,19 @@
 package org.mule.extension.vectors.internal.service.storage;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.models.BlobProperties;
+import static java.lang.String.format;
+
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
-import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
+import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobFileIterator;
-import com.azure.storage.blob.models.BlobItem;
+import org.mule.extension.vectors.internal.storage.azureblob.AzureBlobStorage;
+
 import java.io.InputStream;
 import java.util.HashMap;
 
-import static java.lang.String.format;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.models.BlobProperties;
 
 public class AzureBlobStorageService implements StorageService {
     private final AzureBlobStorage azureClient;

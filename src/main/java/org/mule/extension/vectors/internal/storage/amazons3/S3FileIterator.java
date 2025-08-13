@@ -1,18 +1,21 @@
 package org.mule.extension.vectors.internal.storage.amazons3;
 
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.storage.FileIterator;
-import org.mule.extension.vectors.internal.data.file.FileInfo;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.S3Object;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import static java.lang.String.format;
+
+import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
+import org.mule.extension.vectors.internal.storage.FileIterator;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Collections;
 import java.util.NoSuchElementException;
+
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3FileIterator implements FileIterator {
     private final AmazonS3Storage s3Client;

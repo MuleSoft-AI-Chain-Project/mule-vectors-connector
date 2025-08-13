@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.pagination;
 
+import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageFileResponse;
+
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
@@ -15,8 +17,8 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
+
 import java.util.*;
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPageFileResponse;
 
 public class FilePagingProvider implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
 

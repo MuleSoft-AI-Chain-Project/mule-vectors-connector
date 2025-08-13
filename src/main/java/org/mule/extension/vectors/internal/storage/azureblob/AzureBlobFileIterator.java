@@ -1,17 +1,20 @@
 package org.mule.extension.vectors.internal.storage.azureblob;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.models.BlobProperties;
+import static java.lang.String.format;
+
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
-import com.azure.storage.blob.models.BlobItem;
-import com.azure.storage.blob.models.ListBlobsOptions;
+import org.mule.extension.vectors.internal.storage.FileIterator;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import static java.lang.String.format;
+
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.models.BlobItem;
+import com.azure.storage.blob.models.BlobProperties;
+import com.azure.storage.blob.models.ListBlobsOptions;
 
 public class AzureBlobFileIterator implements FileIterator {
     private final AzureBlobStorage azureClient;

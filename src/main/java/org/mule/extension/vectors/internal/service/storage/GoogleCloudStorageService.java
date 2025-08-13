@@ -1,14 +1,16 @@
 package org.mule.extension.vectors.internal.service.storage;
 
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
-import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
+import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudFileIterator;
-import com.google.cloud.storage.Blob;
+import org.mule.extension.vectors.internal.storage.gcs.GoogleCloudStorage;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+
+import com.google.cloud.storage.Blob;
 
 public class GoogleCloudStorageService implements StorageService {
     private final GoogleCloudStorage gcsClient;

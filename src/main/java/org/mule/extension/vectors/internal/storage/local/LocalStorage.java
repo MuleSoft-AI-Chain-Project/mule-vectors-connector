@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.storage.local;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

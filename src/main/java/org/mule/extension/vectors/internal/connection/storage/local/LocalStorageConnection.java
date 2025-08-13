@@ -1,10 +1,12 @@
 package org.mule.extension.vectors.internal.connection.storage.local;
 
+import static java.lang.String.format;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.notExists;
+
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +15,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static java.lang.String.format;
-import static java.nio.file.Files.isDirectory;
-import static java.nio.file.Files.notExists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LocalStorageConnection implements BaseStorageConnection {
 

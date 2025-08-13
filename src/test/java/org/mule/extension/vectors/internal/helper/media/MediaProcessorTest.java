@@ -1,10 +1,10 @@
 package org.mule.extension.vectors.internal.helper.media;
 
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class MediaProcessorTest {
 

@@ -1,8 +1,8 @@
 package org.mule.extension.vectors.internal.helper;
 
-import org.mule.extension.vectors.api.metadata.*;
 import static org.apache.commons.io.IOUtils.toInputStream;
 
+import org.mule.extension.vectors.api.metadata.*;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;

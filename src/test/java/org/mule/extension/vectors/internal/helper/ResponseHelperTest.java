@@ -6,12 +6,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.mule.extension.vectors.api.metadata.*;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
-import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

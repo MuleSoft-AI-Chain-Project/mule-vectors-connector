@@ -1,9 +1,9 @@
 package org.mule.extension.vectors.internal.service.storage;
 
-import org.mule.extension.vectors.internal.storage.local.LocalStorage;
-import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
+import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.storage.local.LocalFileIterator;
+import org.mule.extension.vectors.internal.storage.local.LocalStorage;
 import org.mule.extension.vectors.internal.util.Utils;
 
 import java.io.IOException;

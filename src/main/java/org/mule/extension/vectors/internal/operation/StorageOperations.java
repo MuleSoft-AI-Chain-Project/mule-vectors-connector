@@ -1,5 +1,8 @@
 package org.mule.extension.vectors.internal.operation;
 
+import static org.mule.extension.vectors.internal.helper.ResponseHelper.createFileResponse;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
+
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
@@ -23,14 +26,12 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.PagingProvider;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.HashMap;
 
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.createFileResponse;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StorageOperations {
 

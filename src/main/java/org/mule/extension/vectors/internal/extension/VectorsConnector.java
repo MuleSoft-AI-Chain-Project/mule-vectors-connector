@@ -1,21 +1,21 @@
 package org.mule.extension.vectors.internal.extension;
 
-import org.mule.extension.vectors.internal.config.TransformConfiguration;
-import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import static org.mule.sdk.api.meta.JavaVersion.JAVA_17;
 
 import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.api.parameter.MultiformatDocumentParserParameters;
 import org.mule.extension.vectors.api.parameter.TextDocumentParserParameters;
+import org.mule.extension.vectors.api.request.proxy.HttpProxyConfig;
 import org.mule.extension.vectors.internal.config.EmbeddingConfiguration;
+import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
-import org.mule.extension.vectors.internal.helper.parameter.MediaProcessorParameters;
-import org.mule.extension.vectors.internal.helper.parameter.ImageProcessorParameters;
+import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.parameter.ImageProcessorParameters;
+import org.mule.extension.vectors.internal.helper.parameter.MediaProcessorParameters;
 import org.mule.runtime.api.meta.Category;
-import org.mule.runtime.extension.api.annotation.Export;
 import org.mule.runtime.extension.api.annotation.Configurations;
+import org.mule.runtime.extension.api.annotation.Export;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;

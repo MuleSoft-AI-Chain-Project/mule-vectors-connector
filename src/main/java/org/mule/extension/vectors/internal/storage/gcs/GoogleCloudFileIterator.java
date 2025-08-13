@@ -1,10 +1,9 @@
 package org.mule.extension.vectors.internal.storage.gcs;
 
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
-import com.google.api.gax.paging.Page;
-import com.google.cloud.storage.Blob;
+import org.mule.extension.vectors.internal.storage.FileIterator;
+
 import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.util.Collections;
@@ -12,6 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
+
+import com.google.api.gax.paging.Page;
+import com.google.cloud.storage.Blob;
 
 public class GoogleCloudFileIterator implements FileIterator {
     private final GoogleCloudStorage gcsClient;

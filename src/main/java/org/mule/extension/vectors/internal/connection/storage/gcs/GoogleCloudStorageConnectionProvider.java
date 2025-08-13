@@ -1,5 +1,7 @@
 package org.mule.extension.vectors.internal.connection.storage.gcs;
 
+import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
+
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnectionProvider;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
@@ -13,8 +15,6 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 import java.io.IOException;
-
-import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
 @Alias("googleCloudStorage")
 @DisplayName("Google Cloud Storage")

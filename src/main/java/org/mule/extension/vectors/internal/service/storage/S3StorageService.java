@@ -1,16 +1,19 @@
 package org.mule.extension.vectors.internal.service.storage;
 
+import static java.lang.String.format;
+
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.storage.amazons3.AmazonS3Storage;
-import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
+import org.mule.extension.vectors.internal.storage.FileIterator;
+import org.mule.extension.vectors.internal.storage.amazons3.AmazonS3Storage;
 import org.mule.extension.vectors.internal.storage.amazons3.S3FileIterator;
+
+import java.io.InputStream;
+import java.util.HashMap;
+
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
-import java.io.InputStream;
-import java.util.HashMap;
-import static java.lang.String.format;
 
 public class S3StorageService implements StorageService {
     private final AmazonS3Storage s3Client;

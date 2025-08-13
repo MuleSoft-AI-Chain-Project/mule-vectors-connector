@@ -3,13 +3,13 @@ package org.mule.extension.vectors.internal.connection.storage.amazons3;
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
+import java.io.InputStream;
+
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
-
-import java.io.InputStream;
 
 public class AmazonS3StorageConnection implements BaseStorageConnection {
 
