@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.service.transform;
 
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createChunkedTextResponse;
 import static org.mule.extension.vectors.internal.helper.ResponseHelper.createParsedDocumentResponse;
+import static org.mule.extension.vectors.internal.helper.ResponseHelper.createProcessedMediaResponse;
 import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
 
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;

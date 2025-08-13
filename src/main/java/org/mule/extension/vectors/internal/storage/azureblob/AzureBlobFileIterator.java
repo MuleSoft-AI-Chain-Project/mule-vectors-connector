@@ -4,7 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.models.BlobProperties;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.FileIterator;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.ListBlobsOptions;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public class AzureBlobFileIterator implements FileIterator {
     }
 
     @Override
-    public File next() {
+    public FileInfo next() {
         if (!hasNext()) throw new NoSuchElementException();
         BlobItem blobItem = getBlobIterator().next();
         InputStream content = azureClient.loadFile(container, blobItem.getName());
@@ -54,6 +54,6 @@ public class AzureBlobFileIterator implements FileIterator {
             put("azure_storage_blob_last_modified", String.valueOf(properties.getLastModified()));
             put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));
         }};
-        return new File(content, container + "/" + blobItem.getName(), blobItem.getName(), properties.getContentType(), metadata);
+        return new FileInfo(content, container + "/" + blobItem.getName(), blobItem.getName(), properties.getContentType(), metadata);
     }
 } 

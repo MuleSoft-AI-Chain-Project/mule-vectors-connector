@@ -2,7 +2,7 @@ package org.mule.extension.vectors.internal.storage.gcs;
 
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.storage.FileIterator;
-import org.mule.extension.vectors.internal.data.file.File;
+import org.mule.extension.vectors.internal.data.file.FileInfo;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import java.io.InputStream;
@@ -60,7 +60,7 @@ public class GoogleCloudFileIterator implements FileIterator {
     }
 
     @Override
-    public File next() {
+    public FileInfo next() {
         Blob blob = getBlobIterator().next();
         InputStream content = Channels.newInputStream(blob.reader());
         HashMap<String, Object> metadata = new HashMap(){{
@@ -72,6 +72,6 @@ public class GoogleCloudFileIterator implements FileIterator {
             put("createTime", blob.getCreateTimeOffsetDateTime().toString());
             put("updateTime", blob.getUpdateTimeOffsetDateTime().toString());
         }};
-        return new File(content, bucket + "/" + blob.getName(), blob.getName(), blob.getContentType(), metadata);
+        return new FileInfo(content, bucket + "/" + blob.getName(), blob.getName(), blob.getContentType(), metadata);
     }
 } 

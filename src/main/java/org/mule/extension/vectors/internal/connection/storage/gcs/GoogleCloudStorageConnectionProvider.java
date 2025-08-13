@@ -24,8 +24,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "com.google.cloud.storage.Storage",
     coordinates = "com.google.cloud:google-cloud-storage:2.43.0")
-public class GoogleCloudStorageConnectionProvider extends BaseStorageConnectionProvider implements
-    CachedConnectionProvider<BaseStorageConnection> {
+public class GoogleCloudStorageConnectionProvider implements BaseStorageConnectionProvider {
 
     @ParameterGroup(name = Placement.CONNECTION_TAB)
     private GoogleCloudStorageConnectionParameters googleCloudStorageConnectionParameters;
@@ -38,8 +37,6 @@ public class GoogleCloudStorageConnectionProvider extends BaseStorageConnectionP
             return googleCloudStorageConnection;
 
     }
-
-
 
     @Override
     public void dispose() {

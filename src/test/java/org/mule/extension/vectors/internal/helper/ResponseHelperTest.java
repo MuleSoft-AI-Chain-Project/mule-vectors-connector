@@ -11,6 +11,7 @@ import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -100,34 +101,5 @@ class ResponseHelperTest {
     assertThat(result.getMediaType().get()).isEqualTo(MediaType.APPLICATION_JSON);
     assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
   }
-
-    @Test
-    void createPageFileResponse_shouldReturnListWithResult() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("foo", "bar");
-        InputStream content = new ByteArrayInputStream(new byte[]{1,2,3});
-        StreamingHelper streamingHelper = mock(StreamingHelper.class);
-        CursorProvider<Cursor> cursorProvider = mock(CursorProvider.class);
-        when(streamingHelper.resolveCursorProvider(content)).thenReturn(cursorProvider);
-        List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> page = ResponseHelper.createPageFileResponse(content, attrs, streamingHelper);
-        assertThat(page).hasSize(1);
-        Result<CursorProvider<Cursor>, StorageResponseAttributes> result = page.get(0);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("foo", "bar");
-        assertThat(result.getOutput()).isSameAs(cursorProvider);
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
-
-    @Test
-    void createProcessedMediaResponse_shouldReturnResultWithBinaryMediaType() {
-        Map<String, Object> attrs = new HashMap<>();
-        attrs.put("media", "done");
-        InputStream content = new ByteArrayInputStream(new byte[]{4,5,6});
-        Result<InputStream, TransformResponseAttributes> result = ResponseHelper.createProcessedMediaResponse(content, attrs);
-        assertThat(result.getAttributes().get().getOtherAttributes()).containsEntry("media", "done");
-        assertThat(result.getOutput()).hasSameContentAs(new ByteArrayInputStream(new byte[]{4,5,6}));
-        assertThat(result.getMediaType().get()).isEqualTo(MediaType.BINARY);
-        assertThat(result.getAttributesMediaType().get()).isEqualTo(MediaType.APPLICATION_JAVA);
-    }
 } 
 

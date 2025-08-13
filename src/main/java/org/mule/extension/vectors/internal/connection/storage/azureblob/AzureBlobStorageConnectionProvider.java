@@ -21,7 +21,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "com.azure.storage.blob.BlobClient",
     coordinates = "com.azure:azure-storage-blob:12.30.0")
-public class AzureBlobStorageConnectionProvider extends BaseStorageConnectionProvider {
+public class AzureBlobStorageConnectionProvider implements BaseStorageConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AzureBlobStorageConnectionParameters azureBlobStorageConnectionParameters;

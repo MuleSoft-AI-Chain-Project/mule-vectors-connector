@@ -23,8 +23,7 @@ import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "software.amazon.awssdk.services.s3.S3Client",
     coordinates = "software.amazon.awssdk:s3:2.31.6")
-public class AmazonS3StorageConnectionProvider extends BaseStorageConnectionProvider implements
-    CachedConnectionProvider<BaseStorageConnection> {
+public class AmazonS3StorageConnectionProvider implements BaseStorageConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private AmazonS3StorageConnectionParameters amazonS3StorageConnectionParameters;
@@ -35,7 +34,20 @@ public class AmazonS3StorageConnectionProvider extends BaseStorageConnectionProv
       return amazonS3StorageConnection;
   }
 
+  @Override
+  public void disconnect(BaseStorageConnection connection) {
 
+  }
+
+  @Override
+  public ConnectionValidationResult validate(BaseStorageConnection connection) {
+    try {
+      connection.validate();
+      return ConnectionValidationResult.success();
+    } catch (Exception e) {
+      return ConnectionValidationResult.failure(e.getMessage(), e);
+    }
+  }
 
   @Override
   public void dispose() {

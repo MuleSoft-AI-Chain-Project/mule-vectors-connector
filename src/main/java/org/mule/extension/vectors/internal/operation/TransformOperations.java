@@ -8,6 +8,7 @@ import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.helper.parameter.TransformMediaBinaryParameters;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
+import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.service.transform.TransformService;
@@ -23,6 +24,7 @@ import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
 
 import java.io.InputStream;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 
 /**
  * Provides transformation operations for document parsing and text chunking within the Mule Vectors Connector.

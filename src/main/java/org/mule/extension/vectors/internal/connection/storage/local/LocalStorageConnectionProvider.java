@@ -13,8 +13,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 @Alias("local")
 @DisplayName("Local")
-public class LocalStorageConnectionProvider extends BaseStorageConnectionProvider implements
-    CachedConnectionProvider<BaseStorageConnection> {
+public class LocalStorageConnectionProvider implements BaseStorageConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
   private LocalStorageConnectionParameters localStorageConnectionParameters;
