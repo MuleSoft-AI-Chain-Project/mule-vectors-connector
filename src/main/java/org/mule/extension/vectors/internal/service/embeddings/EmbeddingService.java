@@ -9,4 +9,7 @@ public interface EmbeddingService {
 
   Response<List<Embedding>> embedTexts(List<String> inputs);
 
+  Response<Embedding> embedImage(byte[] imageBytes);
+
+  Response<Embedding> embedTextAndImage(String text, byte[] imageBytes);
 }

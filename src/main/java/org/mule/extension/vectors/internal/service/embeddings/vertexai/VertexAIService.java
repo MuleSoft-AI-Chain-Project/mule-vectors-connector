@@ -35,6 +35,8 @@ public class VertexAIService implements EmbeddingService {
       "https://%s-aiplatform.googleapis.com/v1/projects/%s/locations/%s/publishers/google/models/%s:predict";
 
   private static final String EMBEDDING_ERROR_MESSAGE = "Failed to generate embeddings";
+  private static final String TEXT_EMBEDDING_FIELD_NAME = "textEmbedding";
+  private static final String IMAGE_EMBEDDING_FIELD_NAME = "imageEmbedding";
 
   public VertexAIService(VertexAIModelConnection vertexAIModelConnection, EmbeddingModelParameters embeddingModelParameters) {
     this.vertexAIModelConnection = vertexAIModelConnection;
@@ -149,5 +151,58 @@ public class VertexAIService implements EmbeddingService {
     }
     return Response.from(allEmbeddings);
   }
+
+  @Override
+  public Response<Embedding> embedImage(byte[] imageBytes) {
+    try {
+      List<byte[]> inputs = List.of(imageBytes);
+      String result = (String) generateImageEmbeddings(inputs, embeddingModelParameters.getEmbeddingModelName());
+      return Response.from(parseEmbeddings(result).get(0));
+    } catch (Exception e) {
+      LOGGER.error("Error embedding image", e);
+      throw new RuntimeException("Error during image embedding generation", e);
+    }
+  }
+
+  @Override
+  public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
+    return null;
+  }
+
+  private List<Embedding> parseEmbeddings(String jsonResponse) {
+    try {
+      JSONObject response = new JSONObject(jsonResponse);
+      JSONArray predictions = response.getJSONArray("predictions");
+      List<Embedding> embeddings = new ArrayList<>();
+
+      for (int i = 0; i < predictions.length(); i++) {
+        JSONObject prediction = predictions.getJSONObject(i);
+        List<Float> vector = new ArrayList<>();
+
+        if (prediction.has(IMAGE_EMBEDDING_FIELD_NAME)) {
+
+          JSONArray imageEmbedding = prediction.getJSONArray(IMAGE_EMBEDDING_FIELD_NAME);
+          for (int j = 0; j < imageEmbedding.length(); j++) {
+            vector.add((float) imageEmbedding.getDouble(j));
+          }
+
+          // TODO: Change behavior, today text embedding is ignored if image embedding is present
+        } else if (prediction.has(TEXT_EMBEDDING_FIELD_NAME)) {
+
+          JSONArray textEmbedding = prediction.getJSONArray(TEXT_EMBEDDING_FIELD_NAME);
+          for (int j = 0; j < textEmbedding.length(); j++) {
+            vector.add((float) textEmbedding.getDouble(j));
+          }
+        }
+
+        embeddings.add(Embedding.from(vector));
+      }
+
+      return embeddings;
+    } catch (Exception e) {
+      throw new RuntimeException("Error parsing embeddings response", e);
+    }
+  }
+
 }
 

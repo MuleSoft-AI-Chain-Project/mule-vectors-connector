@@ -110,5 +110,15 @@ public class HuggingFaceService implements EmbeddingService {
       return Response.from(embeddings);
     }
   }
+
+  @Override
+  public Response<Embedding> embedImage(byte[] imageBytes) {
+    return null;
+  }
+
+  @Override
+  public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
+    return null;
+  }
 }
 

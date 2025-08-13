@@ -152,5 +152,15 @@ public class EinsteinService implements EmbeddingService {
       return Response.from(embeddings, new TokenUsage(tokenUsage));
     }
   }
+
+  @Override
+  public Response<Embedding> embedImage(byte[] imageBytes) {
+    return null;
+  }
+
+  @Override
+  public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
+    return null;
+  }
 }
 

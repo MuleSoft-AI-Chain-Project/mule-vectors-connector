@@ -4,6 +4,7 @@ import static org.apache.commons.io.IOUtils.toInputStream;
 
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.extension.vectors.api.metadata.EmbeddingResponseAttributes;
+import org.mule.extension.vectors.api.metadata.MultimodalEmbeddingResponseAttributes;
 import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
@@ -114,6 +115,18 @@ public final class ResponseHelper {
         .build());
 
     return page;
+  }
+
+  public static Result<InputStream, org.mule.extension.vectors.api.metadata.MultimodalEmbeddingResponseAttributes> createMultimodalEmbeddingResponse(
+                                                                                                                                                     String response,
+                                                                                                                                                     Map<String, Object> embeddingAttributes) {
+
+    return Result.<InputStream, MultimodalEmbeddingResponseAttributes>builder()
+        .attributes(new MultimodalEmbeddingResponseAttributes((HashMap<String, Object>) embeddingAttributes))
+        .attributesMediaType(MediaType.APPLICATION_JAVA)
+        .output(toInputStream(response, StandardCharsets.UTF_8))
+        .mediaType(MediaType.APPLICATION_JSON)
+        .build();
   }
 
   public static Result<InputStream, ParserResponseAttributes> createProcessedMediaResponse(
