@@ -10,9 +10,9 @@ http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mu
 		<ms-vectors:einstein-connection salesforceOrg="${einstein.sfdcOrg}" clientId="${einstein.clientId}" clientSecret="${einstein.clientSecret}">
 		</ms-vectors:einstein-connection>
 	</ms-vectors:embedding-config>
-<!--	<ms-vectors:embedding-config name="embeddingVertexAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="09d6aa29-b602-4723-8a37-6f7b04b96545" >-->
-<!--		<ms-vectors:google-vertex-ai-connection projectId="${vertexai.projectId}" clientId="${vertexai.clientId}" clientEmail="${vertexai.clientEmail}" privateKeyId="${vertexai.privateKeyId}" privateKey="${vertexai.privateKey}" location="${vertexai.location}"/>-->
-<!--	</ms-vectors:embedding-config>-->
+	<ms-vectors:embedding-config name="embeddingVertexAIConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="09d6aa29-b602-4723-8a37-6f7b04b96545" >
+		<ms-vectors:google-vertex-ai-connection projectId="${vertexai.projectId}" clientId="${vertexai.clientId}" clientEmail="${vertexai.clientEmail}" privateKeyId="${vertexai.privateKeyId}" privateKey="${vertexai.privateKey}" location="${vertexai.location}"/>
+	</ms-vectors:embedding-config>
 	<ms-vectors:embedding-config name="embeddingAzureAIVisionConfig" doc:name="MuleSoft Vectors Connector Embedding config" doc:id="c20d5378-6b6f-4f54-a8fe-b79dbf4c2619" >
 		<ms-vectors:azure-ai-vision-connection endpoint="${azureAIVision.endpoint}" apiKey="${azureAIVision.key}" apiVersion="${azureAIVision.apiVersion}"/>
 	</ms-vectors:embedding-config>
