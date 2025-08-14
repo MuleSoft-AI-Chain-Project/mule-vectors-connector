@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.internal.config;
 
 import org.mule.extension.vectors.internal.connection.provider.store.aisearch.AISearchStoreConnectionProvider;
+import org.mule.extension.vectors.internal.connection.provider.store.alloydb.AlloyDBStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.chroma.ChromaStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.elasticsearch.ElasticsearchStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.ephemeralfile.EphemeralFileStoreConnectionProvider;
@@ -10,6 +11,7 @@ import org.mule.extension.vectors.internal.connection.provider.store.opensearch.
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.pinecone.PineconeStoreConnectionProvider;
 import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnectionProvider;
+import org.mule.extension.vectors.internal.connection.provider.store.weaviate.WeaviateStoreConnectionProvider;
 import org.mule.extension.vectors.internal.operation.StoreOperations;
 import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
@@ -18,6 +20,8 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
 @ConnectionProviders({
     AISearchStoreConnectionProvider.class,
     ChromaStoreConnectionProvider.class,
+    AlloyDBStoreConnectionProvider.class,
+    WeaviateStoreConnectionProvider.class,
     ElasticsearchStoreConnectionProvider.class,
     MilvusStoreConnectionProvider.class,
     MongoDBAtlasStoreConnectionProvider.class,

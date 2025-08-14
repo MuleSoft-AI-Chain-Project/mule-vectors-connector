@@ -6,6 +6,13 @@
 http://www.mulesoft.org/schema/mule/ms-vectors http://www.mulesoft.org/schema/mule/ms-vectors/current/mule-ms-vectors.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="embedding-operations-generate-from-media-exec" doc:id="8815437d-dd5b-4858-8adb-2f970f92ea6e" >
+		<file:read doc:name="Read sample.jpg" doc:id="dcb7813c-4a0e-4712-8956-2287380c889a" config-ref="File_Config" path="${app.home}/munit-image-samples/sample.jpg" />
+		<ms-vectors:embedding-generate-from-media doc:name="[Embedding] Generate from media" doc:id="98f8788a-c730-4908-99a4-7e03a91d7e92" config-ref="${config}" embeddingModelName="${multimodalModelName}">
+			<ms-vectors:binary ><![CDATA[#[payload]]]></ms-vectors:binary>
+			<ms-vectors:label ><![CDATA[image of a car]]></ms-vectors:label>
+		</ms-vectors:embedding-generate-from-media>
+	</sub-flow>
 	<sub-flow name="embedding-operations-generate-from-text-exec" doc:id="79998209-f4f2-44e6-8b05-4dd787a9c0d6" >
 		<set-payload doc:name="Set Payload" doc:id="11b224fe-bd1a-42c5-8b1f-1b08cd791682" value="#[%dw 2.0
 output text/plain
