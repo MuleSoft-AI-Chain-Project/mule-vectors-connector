@@ -39,6 +39,17 @@ payload..attributes map ((item, index) -> {"attributes": item})]]></ee:set-paylo
 				<ms-vectors:multiformat-document-parser-parameters />
 			</ms-vectors:document-parser-parameters>
 				</ms-vectors:transform-parse-document>
+		<ee:transform doc:name="Transform Message" doc:id="e0d0e26c-fdb6-463d-9ece-5ad47db3ac54" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"payload": payload,
+	"attributes": attributes
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="chunk-operation" doc:id="4e12f92b-f477-425c-9248-7111bbab1b5d" >
 		<ms-vectors:transform-chunk-text doc:name="[Transform] Chunk text" doc:id="03fa98ce-319b-4aa2-b318-d953dfb17dd7" maxOverlapSizeInChars="#[attributes.queryParams.maxOverlapSize]" maxSegmentSizeInChar="#[attributes.queryParams.maxSegmentSize]">
