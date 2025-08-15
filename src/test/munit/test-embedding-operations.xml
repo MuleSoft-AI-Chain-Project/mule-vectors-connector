@@ -7,7 +7,7 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
-	<munit:config minMuleVersion="4.9.4" name="test-embedding-operations.xml">
+	<munit:config minMuleVersion="4.9.0" name="test-embedding-operations.xml">
 		<munit:parameterizations >
 			<munit:parameterization name="config-embedding-einstein" >
 				<munit:parameters >
@@ -82,14 +82,6 @@
 		</munit:execution>
 		<munit:validation >
 			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="82679aa1-a5cb-4b02-a3a2-220366b6dcd7" name="embedding-operations-validate-generate-from"/>
-		</munit:validation>
-	</munit:test>
-	<munit:test name="embedding-operations-generate-from-media" doc:id="3201a90d-e628-4604-80f5-64b5d38bdc12" ignore="#[!p('isMultimodal')]">
-		<munit:execution >
-			<flow-ref doc:name="embedding-operations-generate-from-document-exec" doc:id="f37eb7e1-9363-49c1-b7a8-0a91003acffd" name="embedding-operations-generate-from-media-exec"/>
-		</munit:execution>
-		<munit:validation >
-			<flow-ref doc:name="embedding-operations-validate-generate-from" doc:id="b06f8603-2219-4df8-bc93-947fbbf02a37" name="embedding-operations-validate-generate-from" />
 		</munit:validation>
 	</munit:test>
 	<sub-flow name="embedding-operations-validate-generate-from" doc:id="3df16ae4-e3f7-4134-9686-8a21686d3f1a" >

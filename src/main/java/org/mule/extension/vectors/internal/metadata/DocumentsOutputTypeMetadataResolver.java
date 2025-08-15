@@ -8,11 +8,11 @@ import org.mule.runtime.api.metadata.MetadataContext;
 import org.mule.runtime.api.metadata.MetadataResolvingException;
 import org.mule.runtime.api.metadata.resolving.OutputTypeResolver;
 import org.mule.runtime.core.api.util.IOUtils;
-import java.util.Optional;
 
 import java.io.InputStream;
+import java.util.Optional;
 
-public class DocumentsOutputTypeMetadataResolver  implements OutputTypeResolver<StorageConfiguration> {
+public class DocumentsOutputTypeMetadataResolver implements OutputTypeResolver<StorageConfiguration> {
 
   @Override
   public String getCategoryName() {

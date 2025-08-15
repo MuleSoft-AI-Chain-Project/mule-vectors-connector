@@ -1,37 +1,30 @@
 package org.mule.extension.vectors.internal.operation;
 
-import dev.langchain4j.data.segment.TextSegment;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.mule.extension.vectors.api.metadata.TransformResponseAttributes;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_OCTET_STREAM;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.TEXT_PLAIN;
 
+import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
+import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
+import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.EmbeddingErrorTypeProvider;
 import org.mule.extension.vectors.internal.error.provider.TransformErrorTypeProvider;
-import org.mule.extension.vectors.internal.helper.document.DocumentParser;
-import org.mule.extension.vectors.internal.helper.media.ImageProcessor;
-import org.mule.extension.vectors.internal.helper.media.MediaProcessor;
-import org.mule.extension.vectors.internal.helper.parameter.*;
-import org.mule.extension.vectors.internal.util.Utils;
+import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
+import org.mule.extension.vectors.internal.helper.parameter.TransformMediaBinaryParameters;
+import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.metadata.fixed.OutputJsonType;
-import org.mule.runtime.extension.api.annotation.param.*;
+import org.mule.runtime.extension.api.annotation.param.Config;
+import org.mule.runtime.extension.api.annotation.param.Content;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.*;
-
-import static org.mule.extension.vectors.internal.constant.Constants.MEDIA_TYPE_IMAGE;
-import static org.mule.extension.vectors.internal.helper.ResponseHelper.*;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
 
 /**
  * Provides transformation operations for document parsing and text chunking within the Mule Vectors Connector.
@@ -43,28 +36,26 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.*;
  */
 public class TransformOperations {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TransformOperations.class);
-  private final org.mule.extension.vectors.internal.service.TransformService transformService = new org.mule.extension.vectors.internal.service.TransformService();
+  private final TransformService transformService = new TransformService();
 
-/**
- * Parse document from a raw binary or base64-encoded content.
- *
- * @param transformConfiguration the configuration for the transformation.
- * @param documentStream the input stream containing the document to parse.
- * @param documentParser the parser to use for extracting text from the document.
- * @return a {@link Result} containing the document's content as an {@link InputStream} and
- *         additional metadata in {@link TransformResponseAttributes}.
- * @throws ModuleException if an error occurs while loading or processing the document.
- */
+  /**
+   * Parse document from a raw binary or base64-encoded content.
+   *
+   * @param transformConfiguration the configuration for the transformation.
+   * @param content the input stream containing the document to parse.
+   * @return a {@link Result} containing the document's content as an {@link InputStream} and
+   *         additional metadata in {@link ParserResponseAttributes}.
+   * @throws ModuleException if an error occurs while loading or processing the document.
+   */
   @MediaType(value = TEXT_PLAIN, strict = false)
   @Alias("Transform-parse-document")
   @DisplayName("[Transform] Parse document")
   @Throws(TransformErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  parseDocument(@Config TransformConfiguration transformConfiguration,
-                @Alias("documentBinary") @DisplayName("Document binary") @Content(primary = true) InputStream documentStream,
-                @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
-    return transformService.parseDocument(transformConfiguration, documentStream, documentParserParameters);
+  public Result<InputStream, ParserResponseAttributes> parseDocument(@Config TransformConfiguration transformConfiguration,
+                                                                     @Alias("documentBinary") @DisplayName("Document binary") @Content(
+                                                                         primary = true) InputStream content,
+                                                                     @Alias("documentParserParameters") @DisplayName("Document parser") DocumentParserParameters documentParserParameters) {
+    return transformService.parseDocument(content, documentParserParameters);
   }
 
   /**
@@ -75,9 +66,9 @@ public class TransformOperations {
    * segments and associated metadata.
    * </p>
    *
-   * @param text the input text to be chunked.
+   * @param content the InputStream to be chunked.
    * @param segmentationParameters parameters that define how the text should be segmented, including maximum segment size and overlap size.
-   * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link TransformResponseAttributes}.
+   * @return a {@link Result} containing the chunked text segments as an {@link InputStream} and response attributes in {@link ChunkResponseAttributes}.
    * @throws ModuleException if an error occurs during text chunking.
    */
   @MediaType(value = APPLICATION_JSON, strict = false)
@@ -85,18 +76,18 @@ public class TransformOperations {
   @DisplayName("[Transform] Chunk text")
   @Throws(TransformErrorTypeProvider.class)
   @OutputJsonType(schema = "api/metadata/TransformChunkTextResponse.json")
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  chunkText(@Alias("text") @DisplayName("Text") @Content String text,
-            @ParameterGroup(name = "Segmentation") SegmentationParameters segmentationParameters) {
-    return transformService.chunkText(text, segmentationParameters);
+  public Result<InputStream, ChunkResponseAttributes> chunkText(@Alias("text") @DisplayName("Text") @Content InputStream content,
+                                                                @ParameterGroup(
+                                                                    name = "Segmentation") SegmentationParameters segmentationParameters) {
+    return transformService.chunkText(content, segmentationParameters);
   }
 
   @MediaType(value = APPLICATION_OCTET_STREAM, strict = false)
   @Alias("Transform-process-media")
   @DisplayName("[Transform] Process media")
   @Throws(EmbeddingErrorTypeProvider.class)
-  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, TransformResponseAttributes>
-  processMedia(@ParameterGroup(name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
+  public org.mule.runtime.extension.api.runtime.operation.Result<InputStream, ParserResponseAttributes> processMedia(@ParameterGroup(
+      name = "Media") TransformMediaBinaryParameters mediaBinaryParameters) {
     return transformService.processMedia(mediaBinaryParameters);
   }
 }

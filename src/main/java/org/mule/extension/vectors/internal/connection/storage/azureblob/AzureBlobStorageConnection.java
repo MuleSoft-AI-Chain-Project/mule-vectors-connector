@@ -1,16 +1,11 @@
 package org.mule.extension.vectors.internal.connection.storage.azureblob;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.blob.specialized.BlobInputStream;
-import com.azure.storage.common.StorageSharedKeyCredential;
-
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
-import java.io.InputStream;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.common.StorageSharedKeyCredential;
 
 public class AzureBlobStorageConnection implements BaseStorageConnection {
 
@@ -36,7 +31,9 @@ public class AzureBlobStorageConnection implements BaseStorageConnection {
   }
 
   @Override
-  public String getStorageType() { return Constants.STORAGE_TYPE_AZURE_BLOB; }
+  public String getStorageType() {
+    return Constants.STORAGE_TYPE_AZURE_BLOB;
+  }
 
 
   public void initialise() {
@@ -47,13 +44,11 @@ public class AzureBlobStorageConnection implements BaseStorageConnection {
         .buildClient();
   }
 
-  @Override
   public void disconnect() {
 
     // Add logic to invalidate connection
   }
 
-  @Override
   public void validate() {
 
     this.blobServiceClient.listBlobContainers();

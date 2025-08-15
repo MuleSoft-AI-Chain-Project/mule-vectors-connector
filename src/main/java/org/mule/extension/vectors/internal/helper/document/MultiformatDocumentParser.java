@@ -1,15 +1,16 @@
 package org.mule.extension.vectors.internal.helper.document;
 
-import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
-
 import java.io.InputStream;
 
-public class MultiformatDocumentParser implements DocumentParser{
+import dev.langchain4j.data.document.parser.apache.tika.ApacheTikaDocumentParser;
+import org.apache.commons.io.IOUtils;
+
+public class MultiformatDocumentParser implements DocumentParser {
 
   private ApacheTikaDocumentParser documentParser;
 
   public MultiformatDocumentParser() {
-    this (false);
+    this(false);
   }
 
   public MultiformatDocumentParser(boolean includeMetadata) {
@@ -17,8 +18,8 @@ public class MultiformatDocumentParser implements DocumentParser{
   }
 
   @Override
-  public String parse(InputStream inputStream) {
+  public InputStream parse(InputStream inputStream) {
 
-    return documentParser.parse(inputStream).text();
+    return IOUtils.toInputStream(documentParser.parse(inputStream).text());
   }
 }

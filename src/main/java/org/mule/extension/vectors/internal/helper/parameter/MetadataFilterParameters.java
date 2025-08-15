@@ -1,13 +1,10 @@
 package org.mule.extension.vectors.internal.helper.parameter;
 
-import dev.langchain4j.store.embedding.filter.Filter;
 import org.mule.extension.vectors.internal.helper.metadata.MetadataFilterHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import dev.langchain4j.store.embedding.filter.Filter;
 
 public abstract class MetadataFilterParameters {
-
-  protected static final Logger LOGGER = LoggerFactory.getLogger(MetadataFilterParameters.class);
 
   public abstract String getCondition();
 
@@ -30,8 +27,6 @@ public abstract class MetadataFilterParameters {
       filter = MetadataFilterHelper.fromExpression(getCondition());
 
     } catch (Exception e) {
-
-      LOGGER.error("Error building metadata filter: {}", e.getMessage());
       throw new IllegalArgumentException("Error building metadata filter: " + e.getMessage());
     }
 

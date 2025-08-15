@@ -1,0 +1,25 @@
+package org.mule.extension.vectors.internal.connection.provider.embeddings.ollama;
+
+import org.mule.extension.vectors.internal.connection.provider.embeddings.BaseModelConnectionParameters;
+import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
+
+public class OllamaModelConnectionParameters extends BaseModelConnectionParameters {
+
+  @Parameter
+  @DisplayName("Base URL")
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
+  @Example("http://127.0.0.1:11434")
+  @Summary("This embedding model is supported as beta. Please refer to the product documentation.")
+  private String baseUrl;
+
+  public String getBaseUrl() {
+    return baseUrl;
+  }
+}

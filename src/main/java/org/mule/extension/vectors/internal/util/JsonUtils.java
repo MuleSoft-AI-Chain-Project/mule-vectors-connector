@@ -5,8 +5,13 @@
  */
 package org.mule.extension.vectors.internal.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mule.extension.vectors.internal.constant.Constants;
+import org.mule.extension.vectors.internal.service.store.VectorStoreRow;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
@@ -16,17 +21,6 @@ import dev.langchain4j.internal.ValidationUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.data.media.Media;
-import org.mule.extension.vectors.internal.store.BaseStoreService;
-import org.mule.extension.vectors.internal.store.VectorStoreRow;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
-
 /**
  * Utility class for JSON operations, providing methods to convert strings to JSON nodes,
  * convert collections of JSON objects to JSON arrays, and handle document segmentation.
@@ -34,18 +28,6 @@ import java.util.stream.IntStream;
 public final class JsonUtils {
 
   private JsonUtils() {}
-
-  /**
-   * Converts a string to a JsonNode object.
-   *
-   * @param content the string content to be converted.
-   * @return a JsonNode representation of the content.
-   * @throws IOException if an error occurs during parsing.
-   */
-  public static JsonNode stringToJsonNode(String content) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.readTree(content);
-  }
 
   /**
    * Converts a collection of JSONObject instances to a JSONArray.
@@ -147,24 +129,14 @@ public final class JsonUtils {
     return jsonObject;
   }
 
-  public static JSONObject mediaToJson(Media media) {
+  public static JSONObject rowToJson(VectorStoreRow<?> row) {
 
     JSONObject jsonObject = new JSONObject();
-    if(media.hasImage()) {
-
-      jsonObject.put(Constants.JSON_KEY_BASE64DATA, media.image().base64Data());
-      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(media.metadata().toMap()));
-    }
+    if (row.getEmbedding() != null)
+      jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
+    jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment) row.getEmbedded()).metadata().toMap()));
+    jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment) row.getEmbedded()).text());
+    jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());
     return jsonObject;
   }
-
-    public static JSONObject rowToJson( VectorStoreRow<?> row) {
-
-      JSONObject jsonObject = new JSONObject();
-      if(row.getEmbedding() != null) jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, new JSONArray(row.getEmbedding().vector()));
-      jsonObject.put(Constants.JSON_KEY_METADATA, new JSONObject(((TextSegment)row.getEmbedded()).metadata().toMap()));
-      jsonObject.put(Constants.JSON_KEY_TEXT, ((TextSegment)row.getEmbedded()).text());
-      jsonObject.put(Constants.JSON_KEY_EMBEDDING_ID, row.getId());
-      return jsonObject;
-    }
 }

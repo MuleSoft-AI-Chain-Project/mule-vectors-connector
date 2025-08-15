@@ -1,27 +1,28 @@
 package org.mule.extension.vectors.internal.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import dev.langchain4j.data.document.Document;
-import dev.langchain4j.data.document.Metadata;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.data.media.Media;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Optional;
+
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.Metadata;
 
 /**
  * Utility class for handling metadata-related operations.
  */
 public class MetadataUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MetadataUtils.class);
+  /**
+   * Private constructor to prevent instantiation of utility class.
+   */
+  private MetadataUtils() {
+    // Utility class - no instantiation allowed
+  }
 
   /**
    * Generates ingestion metadata for a document.
@@ -58,7 +59,7 @@ public class MetadataUtils {
       return absoluteDirectoryPath + "/" + Optional.ofNullable(fileName).orElse("");
     } else {
       return Optional.ofNullable(url).orElse(
-          Optional.ofNullable(source).orElse(title));
+                                             Optional.ofNullable(source).orElse(title));
     }
   }
 
@@ -70,7 +71,8 @@ public class MetadataUtils {
    */
   public static void addMetadataToDocument(Document document, String fileType) {
 
-    if(!fileType.isEmpty()) document.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileType);
+    if (!fileType.isEmpty())
+      document.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileType);
   }
 
   /**
@@ -83,7 +85,8 @@ public class MetadataUtils {
   public static void addMetadataToDocument(Document document, String fileType, String fileName) {
 
     addMetadataToDocument(document, fileType);
-    if(!fileName.isEmpty()) document.metadata().put(Constants.METADATA_KEY_FILE_NAME, fileName);
+    if (!fileName.isEmpty())
+      document.metadata().put(Constants.METADATA_KEY_FILE_NAME, fileName);
   }
 
   /**
@@ -101,12 +104,19 @@ public class MetadataUtils {
    *                  absolute directory path, filename, and file type from the file name.
    */
   public static void addImageMetadataToMedia(Media media, String mediaType) {
+    addMediaTypeMetadata(media, mediaType);
+    addMimeTypeAndFileTypeMetadata(media);
+    addImageUrlAndFilePathMetadata(media);
+  }
 
-    if (!mediaType.isEmpty())
+  private static void addMediaTypeMetadata(Media media, String mediaType) {
+    if (!mediaType.isEmpty()) {
       media.metadata().put(Constants.METADATA_KEY_MEDIA_TYPE, mediaType);
+    }
+  }
 
+  private static void addMimeTypeAndFileTypeMetadata(Media media) {
     if (media.hasImage() && media.image().mimeType() != null && !media.image().mimeType().toString().isEmpty()) {
-
       String mimeType = media.image().mimeType().toString();
       media.metadata().put(Constants.METADATA_KEY_MIME_TYPE, mimeType);
       // Extract file type from mime type
@@ -115,25 +125,22 @@ public class MetadataUtils {
         media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromMime);
       }
     }
+  }
 
+  private static void addImageUrlAndFilePathMetadata(Media media) {
     if (media.hasImage() && !media.image().url().toString().isEmpty()) {
-
       URI uri = media.image().url();
       media.metadata().put(Constants.METADATA_KEY_SOURCE, media.image().url().toString());
-      switch (uri.getScheme().toLowerCase()) {
-
-        case "file":
-          Path path = Paths.get(uri);
-          media.metadata().put(Constants.METADATA_KEY_ABSOLUTE_DIRECTORY_PATH, path.getParent().toString());
-          media.metadata().put(Constants.METADATA_KEY_FILE_NAME, path.getFileName().toString());
-
-          // Extract file type from file name
-          String fileName = path.getFileName().toString();
-          String fileTypeFromName = fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".") + 1) : null;
-          if (fileTypeFromName != null) {
-            media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromName);
-          }
-
+      if ("file".equalsIgnoreCase(uri.getScheme())) {
+        Path path = Paths.get(uri);
+        media.metadata().put(Constants.METADATA_KEY_ABSOLUTE_DIRECTORY_PATH, path.getParent().toString());
+        media.metadata().put(Constants.METADATA_KEY_FILE_NAME, path.getFileName().toString());
+        // Extract file type from file name
+        String fileName = path.getFileName().toString();
+        String fileTypeFromName = fileName.contains(".") ? fileName.substring(fileName.lastIndexOf(".") + 1) : null;
+        if (fileTypeFromName != null) {
+          media.metadata().put(Constants.METADATA_KEY_FILE_TYPE, fileTypeFromName);
+        }
       }
     }
   }
