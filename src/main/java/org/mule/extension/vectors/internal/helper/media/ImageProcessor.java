@@ -1,16 +1,7 @@
 package org.mule.extension.vectors.internal.helper.media;
 
-import org.imgscalr.Scalr;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,14 +9,23 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.Iterator;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+
+import org.imgscalr.Scalr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ImageProcessor implements MediaProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ImageProcessor.class);
 
   public enum ScaleStrategy {
-    FIT,
-    FILL,
-    STRETCH
+    FIT, FILL, STRETCH
   }
 
   private int targetWidth;
@@ -171,17 +171,17 @@ public class ImageProcessor implements MediaProcessor {
 
     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
       ImageIO.write(image, format, baos); // Write the image in the specified format
-      return baos.toByteArray();         // Get the byte array
+      return baos.toByteArray(); // Get the byte array
     }
   }
 
-  private BufferedImage process(BufferedImage image) throws IOException  {
+  private BufferedImage process(BufferedImage image) throws IOException {
 
     BufferedImage processedImage = image;
 
-    if(targetHeight >0  && targetWidth > 0) {
+    if (targetHeight > 0 && targetWidth > 0) {
 
-      switch(scaleStrategy) {
+      switch (scaleStrategy) {
 
         case FIT:
           processedImage = fit(processedImage);
@@ -198,7 +198,7 @@ public class ImageProcessor implements MediaProcessor {
       }
     }
 
-    if(compressionQuality != 0f) {
+    if (compressionQuality != 0f) {
 
       processedImage = compress(processedImage);
     }

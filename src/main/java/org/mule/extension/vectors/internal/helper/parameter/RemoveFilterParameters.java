@@ -4,6 +4,7 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;
+import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
@@ -21,8 +22,8 @@ public class RemoveFilterParameters extends MetadataFilterParameters {
   @Alias("ids")
   @DisplayName("Ids")
   @Summary("List of ids to be removed")
-  @Placement(order = 2)
   @Optional
+  @NullSafe
   List<String> ids;
 
   @Parameter
@@ -45,10 +46,10 @@ public class RemoveFilterParameters extends MetadataFilterParameters {
 
   public void validate() {
 
-    if(ids != null && !ids.isEmpty() && condition != null && condition.compareTo("") != 0) {
+    if (ids != null && !ids.isEmpty() && condition != null && condition.compareTo("") != 0) {
       throw new ModuleException(
-          String.format("Ids and Metadata condition are mutually exclusive"),
-          MuleVectorsErrorType.INVALID_PARAMETERS_ERROR);
+                                "Ids and Metadata condition are mutually exclusive",
+                                MuleVectorsErrorType.INVALID_PARAMETER);
     }
   }
 

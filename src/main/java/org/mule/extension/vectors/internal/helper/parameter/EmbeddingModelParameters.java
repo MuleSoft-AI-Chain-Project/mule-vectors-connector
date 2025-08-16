@@ -17,14 +17,16 @@ public class EmbeddingModelParameters {
   @Alias("embeddingModelName")
   @DisplayName("Model (Deployment) Name")
   @Summary("The embedding model (deployment) name.")
-  @Placement(order = 1)
   @Expression(ExpressionSupport.SUPPORTED)
   @OfValues(EmbeddingModelNameProvider.class)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
   private String embeddingModelName;
 
   public String getEmbeddingModelName() {
     return embeddingModelName;
   }
 
-  public EmbeddingModelHelper.EmbeddingModelType getEmbeddingModelType() { return EmbeddingModelHelper.getModelType(embeddingModelName); }
+  public EmbeddingModelHelper.EmbeddingModelType getEmbeddingModelType() {
+    return EmbeddingModelHelper.getModelType(embeddingModelName);
+  }
 }

@@ -1,0 +1,102 @@
+package org.mule.extension.vectors.internal.connection.provider.store.weaviate;
+
+import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnectionParameters;
+import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
+import org.mule.runtime.extension.api.annotation.param.display.Password;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
+
+public class WeaviateStoreConnectionParameters extends BaseStoreConnectionParameters {
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 1)
+  @Example("https")
+  @Summary("This vector store is supported as beta. Please refer to the product documentation.")
+  private String scheme;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 2)
+  @Example("localhost")
+  private String host;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Example("8181")
+  @Optional
+  private Integer port;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Optional(defaultValue = "false")
+  private boolean securedGrpc;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Optional
+  private Integer grpcPort;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Optional(defaultValue = "false")
+  private boolean useGrpcForInserts;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Placement(tab = Placement.DEFAULT_TAB, order = 3)
+  @Password
+  private String apiKey;
+
+  @Parameter
+  @DisplayName("Avoid duplicates")
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Optional(defaultValue = "true")
+  private boolean avoidDups;
+
+  @Parameter
+  @Expression(ExpressionSupport.NOT_SUPPORTED)
+  @Optional(defaultValue = "ALL")
+  private String consistencyLevel;
+
+  public String getScheme() {
+    return scheme;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public Integer getPort() {
+    return port;
+  }
+
+  public boolean isSecuredGrpc() {
+    return securedGrpc;
+  }
+
+  public Integer getGrpcPort() {
+    return grpcPort;
+  }
+
+  public boolean isUseGrpcForInserts() {
+    return useGrpcForInserts;
+  }
+
+  public String getApiKey() {
+    return apiKey;
+  }
+
+  public boolean isAvoidDups() {
+    return avoidDups;
+  }
+
+  public String getConsistencyLevel() {
+    return consistencyLevel;
+  }
+}

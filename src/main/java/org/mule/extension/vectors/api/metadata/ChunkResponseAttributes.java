@@ -1,0 +1,86 @@
+package org.mule.extension.vectors.api.metadata;
+
+import java.io.Serializable;
+import java.util.HashMap;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+/**
+ * Represents the attributes of a parser operation response.
+ * <p>
+ * This class contains metadata about a parser operation, such as segment size,
+ * overlap size, and any additional attributes.
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class ChunkResponseAttributes implements Serializable {
+
+  /**
+   * The maximum size of segments in characters.
+   */
+  private final Integer maxSegmentSizeInChars;
+
+  /**
+   * The maximum overlap size between segments in characters.
+   */
+  private final Integer maxOverlapSizeInChars;
+
+  /**
+   * Constructs a {@code ParserResponseAttributes} instance.
+   *
+   * @param requestAttributes a map containing parser operation attributes.
+   *                          Expected keys include "maxSegmentSizeInChars" and "maxOverlapSizeInChars",
+   *                          which are extracted and stored in their respective fields.
+   *                          Remaining entries are stored in {@code otherAttributes}.
+   */
+  public ChunkResponseAttributes(HashMap<String, Object> requestAttributes) {
+    this.maxSegmentSizeInChars = requestAttributes.containsKey("maxSegmentSizeInChars")
+        ? (Integer) requestAttributes.remove("maxSegmentSizeInChars") : null;
+    this.maxOverlapSizeInChars = requestAttributes.containsKey("maxOverlapSizeInChars")
+        ? (Integer) requestAttributes.remove("maxOverlapSizeInChars") : null;
+  }
+
+  /**
+   * Gets the maximum segment size in characters.
+   *
+   * @return the maximum segment size, or {@code null} if not available.
+   */
+  public Integer getMaxSegmentSizeInChars() {
+    return maxSegmentSizeInChars;
+  }
+
+  /**
+   * Gets the maximum overlap size in characters.
+   *
+   * @return the maximum overlap size, or {@code null} if not available.
+   */
+  public Integer getMaxOverlapSizeInChars() {
+    return maxOverlapSizeInChars;
+  }
+
+
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+
+    ChunkResponseAttributes that = (ChunkResponseAttributes) o;
+
+    if (maxSegmentSizeInChars != null ? !maxSegmentSizeInChars.equals(that.maxSegmentSizeInChars)
+        : that.maxSegmentSizeInChars != null)
+      return false;
+    if (maxOverlapSizeInChars != null ? !maxOverlapSizeInChars.equals(that.maxOverlapSizeInChars)
+        : that.maxOverlapSizeInChars != null)
+      return false;
+    return true;
+  }
+
+  public int hashCode() {
+    int result = maxSegmentSizeInChars != null ? maxSegmentSizeInChars.hashCode() : 0;
+    result = 31 * result + (maxOverlapSizeInChars != null ? maxOverlapSizeInChars.hashCode() : 0);
+    return result;
+  }
+}

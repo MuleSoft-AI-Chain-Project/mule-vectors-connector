@@ -1,17 +1,18 @@
 package org.mule.extension.vectors.internal.connection.storage.local;
 
+import static java.lang.String.format;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.notExists;
+
 import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static java.lang.String.format;
-import static java.nio.file.Files.isDirectory;
-import static java.nio.file.Files.notExists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LocalStorageConnection implements BaseStorageConnection {
 
@@ -32,9 +33,13 @@ public class LocalStorageConnection implements BaseStorageConnection {
     return Constants.STORAGE_TYPE_LOCAL;
   }
 
-  @Override
-  public void connect() throws ConnectionException {
-    validateWorkingDir();
+
+  public void initialise() {
+    try {
+      validateWorkingDir();
+    } catch (ConnectionException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -43,8 +48,12 @@ public class LocalStorageConnection implements BaseStorageConnection {
   }
 
   @Override
-  public boolean isValid() {
-    return true;
+  public void validate() {
+    try {
+      validateWorkingDir();
+    } catch (ConnectionException e) {
+      //      throw new RuntimeException(e);
+    }
   }
 
   private void validateWorkingDir() throws ConnectionException {
@@ -67,4 +76,6 @@ public class LocalStorageConnection implements BaseStorageConnection {
       throw new ConnectionException(format("Provided workingDir '%s' is not a directory", workingDirPath.toAbsolutePath()));
     }
   }
+
+
 }

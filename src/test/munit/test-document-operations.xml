@@ -57,16 +57,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<flow-ref doc:name="document-operations-load-list-exec" doc:id="5f1d0297-f436-4751-b390-a72e004a1ce4" name="document-operations-load-list-exec" />
 		</munit:execution>
 		<munit:validation>
-			<set-variable value="#[payload[0]]" doc:name="textSegments" doc:id="4c829f3f-a016-41fb-88d9-8ef350ae704e" variableName="textSegments" />
+			<set-variable value="#[payload]" doc:name="textSegments" doc:id="4c829f3f-a016-41fb-88d9-8ef350ae704e" variableName="textSegments" />
 			<flow-ref doc:name="document-operations-validate-textSegments" doc:id="e259097f-df78-49c1-a9c9-2af6ee2c0b76" name="document-operations-validate-textSegments" />
 		</munit:validation>
 	</munit:test>
 	<sub-flow name="document-operations-validate-textSegments" doc:id="f553eeb7-abe8-470d-9560-2a8ff7c58153" >
 		<munit-tools:assert-that doc:name="Assert that payload is not null" doc:id="5afc51b9-52b0-4bf9-a9fa-70829958c2b8" message="Payload is null" expression="#[vars.textSegments]" is="#[MunitTools::notNullValue()]" />
-		<munit-tools:assert-that doc:name="Assert that text-segments is not empty" doc:id="2262c660-2c7a-442b-8da8-fe31c49ffaaf" message="text-segments is empty" expression='#[vars.textSegments."text-segments"]' is="#[MunitTools::not(MunitTools::isEmpty())]" />
-		<munit-tools:assert-equals doc:name="Assert has 3 text segement" doc:id="887c741c-f9a6-4a7d-93e0-d84b98758926" actual='#[sizeOf(vars.textSegments."text-segments")]' expected="#[4]" message="The file has not been splitted into 4  segments" />
-		<munit-tools:assert-that doc:name="Assert that 1st text segment contains title" doc:id="ca520b88-8050-4be7-9a1b-16cd237edc1b" is='#[MunitTools::containsString("Sample PDF")]' expression='#[vars.textSegments."text-segments"[0].text]' message="The 1st text segment is not reflecting the file content"/>
-		<munit-tools:assert-that doc:name="Assert that metadata field contains valid index attribute" doc:id="5e9c6306-7b53-41aa-88f2-5097b45f940e" is='#[MunitTools::containsString("2")]' expression='#[vars.textSegments."text-segments"[2].metadata.index]' message=" Metadata field doesn't contain index attribute"/>
+		<munit-tools:assert-that doc:name="Assert that text-segments is not empty" doc:id="2262c660-2c7a-442b-8da8-fe31c49ffaaf" message="text-segments is empty" expression='#[vars.textSegments]' is="#[MunitTools::not(MunitTools::isEmpty())]" />
+		<munit-tools:assert-equals doc:name="Assert has 3 text segement" doc:id="887c741c-f9a6-4a7d-93e0-d84b98758926" actual='#[sizeOf(vars.textSegments)]' expected="#[4]" message="The file has not been splitted into 4  segments" />
+		<munit-tools:assert-that doc:name="Assert that 1st text segment contains title" doc:id="ca520b88-8050-4be7-9a1b-16cd237edc1b" is='#[MunitTools::containsString("Sample PDF")]' expression='#[vars.textSegments[0]]' message="The 1st text segment is not reflecting the file content"/>
 	</sub-flow>
 
 </mule>
