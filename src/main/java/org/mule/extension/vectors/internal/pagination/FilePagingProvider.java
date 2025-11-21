@@ -4,7 +4,7 @@ import static org.mule.extension.vectors.internal.helper.ResponseHelper.createPa
 
 import org.mule.extension.vectors.api.metadata.StorageResponseAttributes;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.data.file.FileInfo;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;

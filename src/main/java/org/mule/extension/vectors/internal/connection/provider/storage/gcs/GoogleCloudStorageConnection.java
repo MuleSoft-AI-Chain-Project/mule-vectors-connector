@@ -1,6 +1,6 @@
-package org.mule.extension.vectors.internal.connection.storage.gcs;
+package org.mule.extension.vectors.internal.connection.provider.storage.gcs;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 import java.io.ByteArrayInputStream;

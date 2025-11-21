@@ -1,6 +1,6 @@
-package org.mule.extension.vectors.internal.connection.storage.amazons3;
+package org.mule.extension.vectors.internal.connection.provider.storage.amazons3;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

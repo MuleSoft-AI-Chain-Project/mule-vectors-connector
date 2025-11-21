@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.storage.gcs;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.gcs.GoogleCloudStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 import java.io.InputStream;

@@ -1,11 +1,11 @@
 package org.mule.extension.vectors.internal.service;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.azureblob.AzureBlobStorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.gcs.GoogleCloudStorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.local.LocalStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.amazons3.AmazonS3StorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.azureblob.AzureBlobStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.gcs.GoogleCloudStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.local.LocalStorageConnection;
 import org.mule.extension.vectors.internal.service.storage.AzureBlobStorageService;
 import org.mule.extension.vectors.internal.service.storage.GoogleCloudStorageService;
 import org.mule.extension.vectors.internal.service.storage.LocalStorageService;

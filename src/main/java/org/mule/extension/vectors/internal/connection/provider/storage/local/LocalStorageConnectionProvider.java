@@ -1,7 +1,7 @@
-package org.mule.extension.vectors.internal.connection.storage.local;
+package org.mule.extension.vectors.internal.connection.provider.storage.local;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnectionProvider;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.extension.api.annotation.Alias;

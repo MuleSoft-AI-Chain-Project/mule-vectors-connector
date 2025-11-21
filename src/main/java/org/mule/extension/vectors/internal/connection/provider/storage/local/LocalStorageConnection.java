@@ -1,10 +1,10 @@
-package org.mule.extension.vectors.internal.connection.storage.local;
+package org.mule.extension.vectors.internal.connection.provider.storage.local;
 
 import static java.lang.String.format;
 import static java.nio.file.Files.isDirectory;
 import static java.nio.file.Files.notExists;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.runtime.api.connection.ConnectionException;
 

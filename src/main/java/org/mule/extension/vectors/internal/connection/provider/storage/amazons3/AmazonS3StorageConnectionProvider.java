@@ -1,9 +1,9 @@
-package org.mule.extension.vectors.internal.connection.storage.amazons3;
+package org.mule.extension.vectors.internal.connection.provider.storage.amazons3;
 
 import static org.mule.runtime.api.meta.ExternalLibraryType.DEPENDENCY;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnectionProvider;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.api.lifecycle.InitialisationException;

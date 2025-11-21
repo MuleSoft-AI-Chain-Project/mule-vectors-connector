@@ -1,6 +1,6 @@
-package org.mule.extension.vectors.internal.connection.storage.amazons3;
+package org.mule.extension.vectors.internal.connection.provider.storage.amazons3;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnectionParameters;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnectionParameters;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.param.Parameter;

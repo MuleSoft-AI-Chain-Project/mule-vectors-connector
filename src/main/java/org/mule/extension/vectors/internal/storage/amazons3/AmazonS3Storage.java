@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.storage.amazons3;
 
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
-import org.mule.extension.vectors.internal.connection.storage.amazons3.AmazonS3StorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.amazons3.AmazonS3StorageConnection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

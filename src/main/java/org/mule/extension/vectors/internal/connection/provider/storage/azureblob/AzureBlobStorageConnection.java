@@ -1,6 +1,6 @@
-package org.mule.extension.vectors.internal.connection.storage.azureblob;
+package org.mule.extension.vectors.internal.connection.provider.storage.azureblob;
 
-import org.mule.extension.vectors.internal.connection.storage.BaseStorageConnection;
+import org.mule.extension.vectors.internal.connection.provider.storage.BaseStorageConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 
 import com.azure.storage.blob.BlobServiceClient;
