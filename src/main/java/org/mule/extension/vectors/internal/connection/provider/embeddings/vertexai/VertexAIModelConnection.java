@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,7 +149,8 @@ public class VertexAIModelConnection implements BaseModelConnection {
         .thenApply(response -> {
           if (response.getStatusCode() == 200) {
             try {
-              Map<String, Object> tokenInfo = objectMapper.readValue(response.getEntity().getBytes(), Map.class);
+              Map<String, Object> tokenInfo =
+                  objectMapper.readValue(response.getEntity().getBytes(), new TypeReference<Map<String, Object>>() {});
               return tokenInfo.containsKey("expires_in") && ((Number) tokenInfo.get("expires_in")).intValue() > 0;
             } catch (IOException e) {
               LOGGER.error("Failed to parse token info response", e);
@@ -176,7 +178,8 @@ public class VertexAIModelConnection implements BaseModelConnection {
               return null; // Should be handled by handleErrorResponse throwing an exception
             }
             try {
-              Map<String, Object> tokenResponse = objectMapper.readValue(response.getEntity().getBytes(), Map.class);
+              Map<String, Object> tokenResponse =
+                  objectMapper.readValue(response.getEntity().getBytes(), new TypeReference<Map<String, Object>>() {});
               String newAccessToken = (String) tokenResponse.get("access_token");
               accessToken.set(newAccessToken);
               return newAccessToken;
