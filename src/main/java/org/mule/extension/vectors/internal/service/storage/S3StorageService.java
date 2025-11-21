@@ -26,7 +26,7 @@ public class S3StorageService implements StorageService {
     String bucket = AmazonS3Storage.parseBucket(path);
     String key = AmazonS3Storage.parseKey(path);
     ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.loadFile(bucket, key);
-    HashMap<String, Object> metadata = new HashMap() {
+    HashMap<String, Object> metadata = new HashMap<String, Object>() {
 
       {
         put(Constants.METADATA_KEY_SOURCE, format("s3://%s/%s", bucket, key));

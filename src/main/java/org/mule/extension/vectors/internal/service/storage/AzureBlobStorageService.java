@@ -31,8 +31,7 @@ public class AzureBlobStorageService implements StorageService {
     BlobClient blobClient = azureClient.getBlonbClient();
 
     BlobProperties properties = blobClient.getProperties();
-    InputStream contentSteam = blobClient.openInputStream();
-    HashMap<String, Object> metadata = new HashMap() {
+    HashMap<String, Object> metadata = new HashMap<String, Object>() {
 
       {
         put(Constants.METADATA_KEY_SOURCE,

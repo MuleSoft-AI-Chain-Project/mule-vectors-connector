@@ -27,7 +27,7 @@ public class GoogleCloudStorageService implements StorageService {
     InputStream content = gcsClient.loadFile(bucket, objectKey);
     Blob blob = gcsClient.getBlob();
     gcsClient.getStorageService();
-    HashMap<String, Object> metadata = new HashMap() {
+    HashMap<String, Object> metadata = new HashMap<String, Object>() {
 
       {
         put(Constants.METADATA_KEY_SOURCE, "gs://" + blob.getBucket() + "/" + blob.getName());
