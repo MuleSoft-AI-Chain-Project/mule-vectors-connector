@@ -10,8 +10,8 @@ import java.util.HashMap;
  */
 public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttributes {
 
-  private String mimeType;
-  private String mediaType;
+  private final String mimeType;
+  private final String mediaType;
 
   /**
    * Constructs an {@code EmbeddingResponseAttributes} instance.
