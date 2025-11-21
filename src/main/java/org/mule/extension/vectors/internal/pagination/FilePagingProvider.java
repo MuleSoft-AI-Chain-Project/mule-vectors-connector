@@ -12,6 +12,7 @@ import org.mule.extension.vectors.internal.service.StorageServiceFactory;
 import org.mule.extension.vectors.internal.service.storage.StorageService;
 import org.mule.extension.vectors.internal.storage.FileIterator;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.extension.api.runtime.operation.Result;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class FilePagingProvider
-    implements PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> {
+    implements PagingProvider<BaseStorageConnection, Result<CursorProvider<Cursor>, StorageResponseAttributes>> {
 
   private final StorageConfiguration storageConfiguration;
   private final String contextPath;
@@ -37,7 +38,7 @@ public class FilePagingProvider
   }
 
   @Override
-  public List<Result<CursorProvider, StorageResponseAttributes>> getPage(BaseStorageConnection connection) {
+  public List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> getPage(BaseStorageConnection connection) {
     try {
       if (fileIterator == null) {
         StorageService storageService = StorageServiceFactory.getService(

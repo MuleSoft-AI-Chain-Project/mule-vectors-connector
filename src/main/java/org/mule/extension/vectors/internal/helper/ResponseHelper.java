@@ -37,6 +37,7 @@ public final class ResponseHelper {
         .build();
   }
 
+  @SuppressWarnings("unchecked")
   public static List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> createPageStoreResponse(
                                                                                                       String response,
                                                                                                       Map<String, Object> storeAttributes,
@@ -100,16 +101,17 @@ public final class ResponseHelper {
         .build();
   }
 
-  public static List<Result<CursorProvider, StorageResponseAttributes>> createPageFileResponse(
-                                                                                               InputStream content,
-                                                                                               Map<String, Object> storageAttributes,
-                                                                                               StreamingHelper streamingHelper) {
+  @SuppressWarnings("unchecked")
+  public static List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> createPageFileResponse(
+                                                                                                       InputStream content,
+                                                                                                       Map<String, Object> storageAttributes,
+                                                                                                       StreamingHelper streamingHelper) {
 
-    List<Result<CursorProvider, StorageResponseAttributes>> page = new LinkedList<>();
+    List<Result<CursorProvider<Cursor>, StorageResponseAttributes>> page = new LinkedList<>();
 
-    page.add(Result.<CursorProvider, StorageResponseAttributes>builder()
+    page.add(Result.<CursorProvider<Cursor>, StorageResponseAttributes>builder()
         .attributes(new StorageResponseAttributes((HashMap<String, Object>) storageAttributes))
-        .output((CursorProvider) streamingHelper.resolveCursorProvider(content))
+        .output((CursorProvider<Cursor>) streamingHelper.resolveCursorProvider(content))
         .mediaType(MediaType.BINARY)
         .attributesMediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JAVA)
         .build());
