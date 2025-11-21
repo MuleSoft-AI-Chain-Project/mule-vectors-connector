@@ -14,10 +14,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LocalFileIterator implements FileIterator {
+public class LocalFileIterator implements FileIterator, AutoCloseable {
 
   private final LocalStorage localClient;
   private final String fullPath;
+  private DirectoryStream<Path> directoryStream;
   private Iterator<Path> pathIterator;
 
   public LocalFileIterator(LocalStorage localClient, String directory) {
@@ -28,8 +29,8 @@ public class LocalFileIterator implements FileIterator {
 
   private void fetchNextPathIterator() {
     try {
-      DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(fullPath), Files::isRegularFile);
-      pathIterator = stream.iterator();
+      directoryStream = Files.newDirectoryStream(Paths.get(fullPath), Files::isRegularFile);
+      pathIterator = directoryStream.iterator();
     } catch (IOException e) {
       pathIterator = Collections.emptyIterator();
     }
@@ -65,5 +66,12 @@ public class LocalFileIterator implements FileIterator {
       }
     }
     return new FileInfo(content, path.toString(), LocalStorage.parseFileName(path.toString()), mimeType);
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (directoryStream != null) {
+      directoryStream.close();
+    }
   }
 }

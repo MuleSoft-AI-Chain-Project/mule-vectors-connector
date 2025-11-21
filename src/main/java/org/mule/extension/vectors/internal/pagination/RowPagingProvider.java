@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -36,11 +37,11 @@ public class RowPagingProvider
   private static final Logger LOGGER = LoggerFactory.getLogger(RowPagingProvider.class);
 
   private VectoreStoreIterator<?> rowIterator;
-  private StoreConfiguration storeConfiguration;
-  private String storeName;
-  private QueryParameters queryParams;
-  private StreamingHelper streamingHelper;
-  private OperationValidator operationValidator;
+  private final StoreConfiguration storeConfiguration;
+  private final String storeName;
+  private final QueryParameters queryParams;
+  private final StreamingHelper streamingHelper;
+  private final OperationValidator operationValidator;
 
   public RowPagingProvider(StoreConfiguration storeConfiguration,
                            String storeName,
@@ -98,8 +99,7 @@ public class RowPagingProvider
                                 MuleVectorsErrorType.STORE_SERVICES_FAILURE,
                                 e);
 
-    } catch (Exception e) {
-
+    } catch (ExecutionException | RuntimeException e) {
       throw new ModuleException(
                                 String.format("Error while getting row from %s.", this.storeName),
                                 MuleVectorsErrorType.STORE_SERVICES_FAILURE,
@@ -112,7 +112,7 @@ public class RowPagingProvider
   private List<Result<CursorProvider<Cursor>, StoreResponseAttributes>> processNextRow() {
     try {
 
-      VectorStoreRow<Object> row = (VectorStoreRow<Object>) rowIterator.next();
+      VectorStoreRow<?> row = (VectorStoreRow<?>) rowIterator.next();
       if (row == null)
         return new LinkedList<>(); // Return empty collection instead of null
 

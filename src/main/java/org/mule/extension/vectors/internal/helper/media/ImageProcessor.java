@@ -167,19 +167,12 @@ public class ImageProcessor implements MediaProcessor {
     if (targetHeight > 0 && targetWidth > 0) {
 
       switch (scaleStrategy) {
-
-        case FIT:
+        case FIT -> {
           processedImage = fit(processedImage);
           processedImage = pad(processedImage);
-          break;
-
-        case FILL:
-          processedImage = fill(processedImage);
-          break;
-
-        case STRETCH:
-          processedImage = stretch(processedImage);
-          break;
+        }
+        case FILL -> processedImage = fill(processedImage);
+        case STRETCH -> processedImage = stretch(processedImage);
       }
     }
 

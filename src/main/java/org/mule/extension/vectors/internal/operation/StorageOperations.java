@@ -31,12 +31,7 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
 import java.io.InputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StorageOperations {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(StorageOperations.class);
 
   /**
    * Loads a single file from the storage specified by the {@code contextPath} and returns its content
