@@ -18,7 +18,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
     description = "LangChain4J AI Search",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.azure.search.AzureAiSearchEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-azure-ai-search:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-azure-ai-search:1.8.0-beta15")
 public class AISearchStoreConnectionProvider extends HttpBasedConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

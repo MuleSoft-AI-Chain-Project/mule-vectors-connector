@@ -19,7 +19,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
     description = "LangChain4J Pinecone",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-pinecone:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-pinecone:1.8.0-beta15")
 public class PineconeStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   private PineconeStoreConnection connection;

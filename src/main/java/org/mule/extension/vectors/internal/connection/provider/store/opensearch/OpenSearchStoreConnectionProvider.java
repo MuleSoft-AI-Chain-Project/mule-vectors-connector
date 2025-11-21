@@ -23,7 +23,7 @@ import java.net.URISyntaxException;
     description = "LangChain4J OpenSearch",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.opensearch.OpenSearchEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-opensearch:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-opensearch:1.8.0-beta15")
 public class OpenSearchStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

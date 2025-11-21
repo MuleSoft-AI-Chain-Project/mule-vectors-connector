@@ -18,7 +18,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
     description = "LangChain4J AlloyDB",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.community.store.embedding.alloydb.AlloyDBEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-community-alloydb-pg:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-community-alloydb-pg:1.8.0-beta15")
 public class AlloyDBStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

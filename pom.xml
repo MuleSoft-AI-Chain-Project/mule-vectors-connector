@@ -36,8 +36,8 @@
 		<formatterConfigPath>formatter.xml</formatterConfigPath>
 		<javaFormatter.plugin.version>2.0.1</javaFormatter.plugin.version>
 		<formatterGoal>validate</formatterGoal>
-		<langchain4jBomVersion>1.1.0</langchain4jBomVersion>
-		<langchain4jCommunityVersion>1.1.0-beta7</langchain4jCommunityVersion>
+		<langchain4jBomVersion>1.8.0</langchain4jBomVersion>
+		<langchain4jCommunityVersion>1.8.0-beta15</langchain4jCommunityVersion>
 		<mule.sdk.api.version>0.11.4</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
