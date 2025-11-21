@@ -8,6 +8,9 @@ import org.mule.extension.vectors.internal.helper.validation.ConnectionValidatio
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import io.qdrant.client.QdrantClient;
 import io.qdrant.client.QdrantGrpcClient;
@@ -94,10 +97,8 @@ public class QdrantStoreConnection implements BaseStoreConnection {
       ListenableFuture<QdrantOuterClass.HealthCheckReply> healthCheckFuture = this.client.healthCheckAsync();
       // Make it synchronous by calling get()
       healthCheckFuture.get();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException | ExecutionException e) {
       Thread.currentThread().interrupt();
-      throw new ModuleException("Failed during Qdrant health check", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
-    } catch (Exception e) {
       throw new ModuleException("Failed during Qdrant health check", MuleVectorsErrorType.STORE_CONNECTION_FAILURE, e);
     }
   }
@@ -115,18 +116,23 @@ public class QdrantStoreConnection implements BaseStoreConnection {
             .build())
         .build();
 
-    this.client.createCollectionAsync(
-                                      Collections.CreateCollection.newBuilder()
-                                          .setCollectionName(storeName)
-                                          .setVectorsConfig(vectorsConfig)
-                                          .setStrictModeConfig(strictModeConfig)
-                                          .build());
+    Collections.CreateCollection createCollection = Objects.requireNonNull(
+                                                                           Collections.CreateCollection.newBuilder()
+                                                                               .setCollectionName(storeName)
+                                                                               .setVectorsConfig(vectorsConfig)
+                                                                               .setStrictModeConfig(strictModeConfig)
+                                                                               .build());
+
+    this.client.createCollectionAsync(createCollection);
   }
 
   public void initialise() throws ConnectionException {
-    this.client = new QdrantClient(
-                                   QdrantGrpcClient.newBuilder(host, gprcPort, useTLS)
-                                       .withApiKey(apiKey)
-                                       .build());
+    String nonNullHost = Objects.requireNonNull(host);
+    String nonNullApiKey = Objects.requireNonNull(apiKey);
+    QdrantGrpcClient grpcClient = Objects.requireNonNull(
+                                                         QdrantGrpcClient.newBuilder(nonNullHost, gprcPort, useTLS)
+                                                             .withApiKey(nonNullApiKey)
+                                                             .build());
+    this.client = new QdrantClient(grpcClient);
   }
 }
