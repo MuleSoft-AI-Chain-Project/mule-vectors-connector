@@ -12,6 +12,7 @@ import org.mule.runtime.http.api.domain.entity.multipart.MultipartHttpEntity;
 import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,8 +34,8 @@ import org.slf4j.LoggerFactory;
 
 public class NomicService implements EmbeddingService {
 
-  private NomicModelConnection nomicModelConnection;
-  private EmbeddingModelParameters embeddingModelParameters;
+  private final NomicModelConnection nomicModelConnection;
+  private final EmbeddingModelParameters embeddingModelParameters;
   private final ObjectMapper objectMapper = new ObjectMapper();
   private static final String BASE_URL = "https://api-atlas.nomic.ai/v1/";
   private static final String TEXT_EMBEDDING_URL = BASE_URL + "embedding/text";
@@ -51,21 +53,7 @@ public class NomicService implements EmbeddingService {
         throw new IllegalArgumentException("No images provided for embedding.");
       }
 
-      List<HttpPart> parts = new ArrayList<>();
-
-      // Model part - use charset correctly
-      byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-      parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
-
-      // Image parts
-      int index = 0;
-      for (byte[] imageBytes : imageBytesList) {
-        // Create file-like HttpPart for each image
-        String partName = "images";
-        String fileName = "image_" + index + ".png"; // Make sure to provide a file name
-        parts.add(new HttpPart(partName, fileName, imageBytes, "image/png", imageBytes.length));
-        index++;
-      }
+      List<HttpPart> parts = buildImageMultipartPayload(imageBytesList, modelName);
 
       HttpRequest request = HttpRequest.builder()
           .uri(IMAGE_EMBEDDING_URL)
@@ -90,7 +78,7 @@ public class NomicService implements EmbeddingService {
       }
 
       return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-    } catch (Exception e) {
+    } catch (IOException | TimeoutException | RuntimeException e) {
       LOGGER.error("Exception while generating image embeddings", e);
       throw new RuntimeException("Failed to generate image embeddings", e);
     }
@@ -101,8 +89,8 @@ public class NomicService implements EmbeddingService {
       return generateTextEmbeddingsAsync(inputs, modelName).get();
     } catch (InterruptedException | ExecutionException e) {
       Thread.currentThread().interrupt();
-      if (e.getCause() instanceof ModuleException) {
-        throw (ModuleException) e.getCause();
+      if (e.getCause() instanceof ModuleException me) {
+        throw me;
       }
       throw new ModuleException("Failed to generate text embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
     }
@@ -197,9 +185,9 @@ public class NomicService implements EmbeddingService {
       } else {
         throw new RuntimeException("No embedding generated for the image");
       }
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       LOGGER.error("Failed to process image embedding response", e);
-      throw new RuntimeException("Failed to process image embedding response", e);
+      throw e;
     }
   }
 
@@ -222,9 +210,9 @@ public class NomicService implements EmbeddingService {
 
       TokenUsage tokenUsage = new TokenUsage(usage.getInt("total_tokens"), 0);
       return Response.from(embeddingsList, tokenUsage);
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       LOGGER.error("Failed to process images embedding response", e);
-      throw new RuntimeException("Failed to process images embedding response", e);
+      throw e;
     }
   }
 

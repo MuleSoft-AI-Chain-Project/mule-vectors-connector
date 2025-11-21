@@ -67,7 +67,7 @@ public class GoogleCloudFileIterator implements FileIterator {
   public FileInfo next() {
     Blob blob = getBlobIterator().next();
     InputStream content = Channels.newInputStream(blob.reader());
-    HashMap<String, Object> metadata = new HashMap() {
+    HashMap<String, Object> metadata = new HashMap<String, Object>() {
 
       {
         put(Constants.METADATA_KEY_SOURCE, "gs://" + blob.getBucket() + "/" + blob.getName());

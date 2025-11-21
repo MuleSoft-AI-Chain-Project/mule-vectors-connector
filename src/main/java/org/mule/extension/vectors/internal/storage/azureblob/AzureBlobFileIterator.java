@@ -53,7 +53,7 @@ public class AzureBlobFileIterator implements FileIterator {
     InputStream content = azureClient.loadFile(container, blobItem.getName());
     BlobClient blobClient = azureClient.getBlonbClient();
     BlobProperties properties = blobClient.getProperties();
-    HashMap<String, Object> metadata = new HashMap() {
+    HashMap<String, Object> metadata = new HashMap<String, Object>() {
 
       {
         put(Constants.METADATA_KEY_SOURCE,

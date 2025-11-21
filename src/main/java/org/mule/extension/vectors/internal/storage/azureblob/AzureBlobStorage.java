@@ -7,7 +7,6 @@ import java.io.InputStream;
 
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.specialized.BlobInputStream;
 
 public class AzureBlobStorage {
@@ -24,7 +23,6 @@ public class AzureBlobStorage {
 
   public InputStream loadFile(String containerName, String blobName) {
     blobClient = blobServiceClient.getBlobContainerClient(containerName).getBlobClient(blobName);
-    BlobProperties properties = blobClient.getProperties();
     BlobInputStream blobInputStream = blobClient.openInputStream();
     return blobInputStream;
   }
