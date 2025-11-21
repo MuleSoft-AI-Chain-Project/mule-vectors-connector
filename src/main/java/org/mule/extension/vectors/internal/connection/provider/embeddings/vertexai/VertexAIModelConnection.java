@@ -16,10 +16,14 @@ import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
+import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
 import java.util.Base64;
@@ -221,7 +225,7 @@ public class VertexAIModelConnection implements BaseModelConnection {
       byte[] pkcs8Bytes = Base64.getDecoder().decode(pem);
       KeyFactory kf = KeyFactory.getInstance(RSA_ALGORITHM);
       return (RSAPrivateKey) kf.generatePrivate(new PKCS8EncodedKeySpec(pkcs8Bytes));
-    } catch (Exception e) {
+    } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new ModuleException("Failed to parse private key: " + e.getMessage(), MuleVectorsErrorType.INVALID_CONNECTION, e);
     }
   }
@@ -232,7 +236,7 @@ public class VertexAIModelConnection implements BaseModelConnection {
       sig.initSign(rsaPrivateKey);
       sig.update(data);
       return sig.sign();
-    } catch (Exception e) {
+    } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
       throw new ModuleException("Failed to sign JWT with RSA", MuleVectorsErrorType.INVALID_CONNECTION, e);
     }
   }
