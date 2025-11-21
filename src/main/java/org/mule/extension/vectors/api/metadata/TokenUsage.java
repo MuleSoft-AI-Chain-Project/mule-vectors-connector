@@ -26,6 +26,7 @@ public class TokenUsage implements Serializable {
     return totalCount;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -41,6 +42,7 @@ public class TokenUsage implements Serializable {
     return totalCount == that.totalCount;
   }
 
+  @Override
   public int hashCode() {
     int result = inputCount;
     result = 31 * result + outputCount;

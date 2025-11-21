@@ -1,15 +1,14 @@
 package org.mule.extension.vectors.api.metadata;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
-
-import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
+import org.mule.runtime.extension.api.annotation.param.MediaType;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -114,6 +113,7 @@ public class StoreResponseAttributes implements Serializable {
     return otherAttributes;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -131,6 +131,7 @@ public class StoreResponseAttributes implements Serializable {
     return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
   }
 
+  @Override
   public int hashCode() {
     int result = storeName != null ? storeName.hashCode() : 0;
     result = 31 * result + (ids != null ? ids.hashCode() : 0);

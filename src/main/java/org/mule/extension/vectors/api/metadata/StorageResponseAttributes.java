@@ -39,6 +39,7 @@ public class StorageResponseAttributes implements Serializable {
    *                          which are extracted and stored in their respective fields.
    *                          Remaining entries are stored in {@code otherAttributes}.
    */
+  @SuppressWarnings("unchecked")
   public StorageResponseAttributes(Map<String, Object> requestAttributes) {
 
     this.path = requestAttributes.containsKey("path") ? (String) requestAttributes.remove("path") : null;
