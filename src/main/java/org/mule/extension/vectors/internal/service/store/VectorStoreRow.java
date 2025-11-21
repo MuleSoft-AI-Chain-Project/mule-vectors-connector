@@ -13,7 +13,7 @@ public class VectorStoreRow<Embedded> {
 
 
   public VectorStoreRow(String id, Embedding embedding) {
-    this(id, embedding, (Embedded) null);
+    this(id, embedding, null);
   }
 
   public VectorStoreRow(String id, Embedding embedding, Embedded embedded) {
@@ -22,6 +22,7 @@ public class VectorStoreRow<Embedded> {
     this.embedded = embedded;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -34,6 +35,7 @@ public class VectorStoreRow<Embedded> {
     }
   }
 
+  @Override
   public int hashCode() {
     return Objects.hash(new Object[] {this.id, this.embedding, this.embedded});
   }

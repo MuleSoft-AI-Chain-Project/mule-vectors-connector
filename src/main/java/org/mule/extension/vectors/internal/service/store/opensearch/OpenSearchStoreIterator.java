@@ -34,7 +34,6 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
   private final String storeName;
   private final QueryParameters queryParams;
   private final OpenSearchClient openSearchClient;
-  private final OpenSearchStoreConnection OpenSearchStoreConnection;
 
   private String scrollId;
   private List<Hit<Map<String, Object>>> currentBatch;
@@ -44,7 +43,6 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
                                  OpenSearchStoreConnection openSearchStoreConnection,
                                  String storeName,
                                  QueryParameters queryParams) {
-    this.OpenSearchStoreConnection = openSearchStoreConnection;
     this.openSearchClient = openSearchStoreConnection.getOpenSearchClient();
     this.storeName = storeName;
     this.queryParams = queryParams;
@@ -74,13 +72,18 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
     Hit<Map<String, Object>> hit = currentBatch.get(currentIndex++);
     String embeddingId = hit.id();
     Map<String, Object> sourceMap = hit.source();
+    if (sourceMap == null) {
+      throw new ModuleException("Source map is null for hit", MuleVectorsErrorType.STORE_SERVICES_FAILURE);
+    }
     String vectorDefaultFieldName = "vector";
     String textDefaultFieldName = "text";
     String metadataDefaultFieldName = "metadata";
     float[] vector = null;
     if (queryParams.retrieveEmbeddings()) {
-      List<Double> vectorList = (List<Double>) sourceMap.get(vectorDefaultFieldName);
-      if (vectorList != null) {
+      Object vectorObj = sourceMap.get(vectorDefaultFieldName);
+      if (vectorObj instanceof List) {
+        @SuppressWarnings("unchecked")
+        List<Double> vectorList = (List<Double>) vectorObj;
         vector = new float[vectorList.size()];
         for (int i = 0; i < vectorList.size(); i++) {
           vector[i] = vectorList.get(i).floatValue();
@@ -88,7 +91,10 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
       }
     }
     String text = (String) sourceMap.get(textDefaultFieldName);
-    JSONObject metadataObject = new JSONObject((Map) sourceMap.get(metadataDefaultFieldName));
+    Object metadataObj = sourceMap.get(metadataDefaultFieldName);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> metadataMap = metadataObj instanceof Map ? (Map<String, Object>) metadataObj : new java.util.HashMap<>();
+    JSONObject metadataObject = new JSONObject(metadataMap);
 
     // This is the only place you may want to adapt for Embedded type.
     // If you want to keep it generic, you can cast or use a factory.
@@ -122,6 +128,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
       }
 
       SearchRequest searchRequest = searchRequestBuilder.build();
+      @SuppressWarnings("unchecked")
       SearchResponse<Map<String, Object>> searchResponse =
           openSearchClient.search(searchRequest, (Class<Map<String, Object>>) (Class<?>) Map.class);
       currentBatch = searchResponse.hits().hits();
@@ -131,6 +138,7 @@ public class OpenSearchStoreIterator<Embedded> implements VectoreStoreIterator<V
           .scrollId(scrollId)
           .scroll(Time.of(t -> t.time("1m")))
           .build();
+      @SuppressWarnings("unchecked")
       ScrollResponse<Map<String, Object>> scrollResponse =
           openSearchClient.scroll(scrollRequest, (Class<Map<String, Object>>) (Class<?>) Map.class);
       currentBatch = scrollResponse.hits().hits();

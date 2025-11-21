@@ -7,6 +7,9 @@ import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
@@ -27,15 +30,16 @@ public class QdrantStore extends BaseStoreService {
     this.client = qdrantStoreConnection.getClient();
     this.queryParams = queryParams;
     try {
-      if (createStore && !this.client.collectionExistsAsync(this.storeName).get() && dimension > 0) {
+      String nonNullStoreName = Objects.requireNonNull(storeName, "Store name cannot be null");
+      if (createStore && !this.client.collectionExistsAsync(nonNullStoreName).get() && dimension > 0) {
 
-        qdrantStoreConnection.createCollection(storeName, dimension);
+        qdrantStoreConnection.createCollection(nonNullStoreName, dimension);
       }
       this.payloadTextKey = qdrantStoreConnection.getTextSegmentKey();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new ModuleException("Qdrant API request failed: ", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
-    } catch (Exception e) {
+    } catch (ExecutionException | RuntimeException e) {
       throw new ModuleException("Qdrant API request failed: ", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
     }
   }

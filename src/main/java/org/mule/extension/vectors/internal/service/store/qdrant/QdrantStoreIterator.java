@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -78,8 +79,8 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       // Convert BigDecimal values to a supported type
       Map<String, Object> metadataMap = metadataObject.toMap();
       metadataMap.replaceAll((key, value) -> {
-        if (value instanceof BigDecimal) {
-          return ((BigDecimal) value).longValue();
+        if (value instanceof BigDecimal bd) {
+          return bd.longValue();
         }
         return value;
       });
@@ -104,7 +105,7 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       return new VectorStoreRow<>(id,
                                   vector != null ? new Embedding(vector) : null,
                                   embedded);
-    } catch (Exception e) {
+    } catch (InvalidProtocolBufferException | RuntimeException e) {
       LOGGER.error("Error while fetching next row", e);
       throw new NoSuchElementException("Error processing next row");
     }
@@ -124,7 +125,7 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
         request.setOffset(nextOffset);
       }
 
-      Points.ScrollResponse response = client.scrollAsync(request.build()).get();
+      Points.ScrollResponse response = client.scrollAsync(Objects.requireNonNull(request.build())).get();
       List<Points.RetrievedPoint> points = response.getResultList();
 
       if (!points.isEmpty()) {
@@ -135,18 +136,14 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
         this.hasMorePages = false;
       }
     } catch (ExecutionException e) {
-      if (e.getCause() instanceof StatusRuntimeException) {
-        StatusRuntimeException sre = (StatusRuntimeException) e.getCause();
+      if (e.getCause() instanceof StatusRuntimeException sre) {
         switch (sre.getStatus().getCode()) {
-          case UNAUTHENTICATED:
-            throw new ModuleException("Authentication failed: " + sre.getStatus().getDescription(),
-                                      MuleVectorsErrorType.INVALID_CONNECTION, sre);
-          case INVALID_ARGUMENT:
-            throw new ModuleException("Invalid request to Qdrant: " + sre.getStatus().getDescription(),
-                                      MuleVectorsErrorType.INVALID_REQUEST, sre);
-          default:
-            throw new ModuleException("Qdrant service error: " + sre.getStatus().getDescription(),
-                                      MuleVectorsErrorType.SERVICE_ERROR, sre);
+          case UNAUTHENTICATED -> throw new ModuleException("Authentication failed: " + sre.getStatus().getDescription(),
+                                                              MuleVectorsErrorType.INVALID_CONNECTION, sre);
+          case INVALID_ARGUMENT -> throw new ModuleException("Invalid request to Qdrant: " + sre.getStatus().getDescription(),
+                                                              MuleVectorsErrorType.INVALID_REQUEST, sre);
+          default -> throw new ModuleException("Qdrant service error: " + sre.getStatus().getDescription(),
+                                               MuleVectorsErrorType.SERVICE_ERROR, sre);
         }
       } else {
         throw new ModuleException("Error fetching Qdrant points", MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
@@ -174,23 +171,13 @@ final class JsonFactory {
   }
 
   private static Value toProtobufValue(io.qdrant.client.grpc.JsonWithInt.Value value) {
-    switch (value.getKindCase()) {
-      case NULL_VALUE:
-        return Value.newBuilder().setNullValueValue(0).build();
-
-      case BOOL_VALUE:
-        return Value.newBuilder().setBoolValue(value.getBoolValue()).build();
-
-      case STRING_VALUE:
-        return Value.newBuilder().setStringValue(value.getStringValue()).build();
-
-      case INTEGER_VALUE:
-        return Value.newBuilder().setNumberValue(value.getIntegerValue()).build();
-
-      case DOUBLE_VALUE:
-        return Value.newBuilder().setNumberValue(value.getDoubleValue()).build();
-
-      case STRUCT_VALUE:
+    return switch (value.getKindCase()) {
+      case NULL_VALUE -> Value.newBuilder().setNullValueValue(0).build();
+      case BOOL_VALUE -> Value.newBuilder().setBoolValue(value.getBoolValue()).build();
+      case STRING_VALUE -> Value.newBuilder().setStringValue(value.getStringValue()).build();
+      case INTEGER_VALUE -> Value.newBuilder().setNumberValue(value.getIntegerValue()).build();
+      case DOUBLE_VALUE -> Value.newBuilder().setNumberValue(value.getDoubleValue()).build();
+      case STRUCT_VALUE -> {
         Struct.Builder structBuilder = Struct.newBuilder();
         value.getStructValue()
             .getFieldsMap()
@@ -198,17 +185,16 @@ final class JsonFactory {
                      (key, val) -> {
                        structBuilder.putFields(key, toProtobufValue(val));
                      });
-        return Value.newBuilder().setStructValue(structBuilder).build();
-
-      case LIST_VALUE:
+        yield Value.newBuilder().setStructValue(structBuilder).build();
+      }
+      case LIST_VALUE -> {
         Value.Builder listBuilder = Value.newBuilder();
         value.getListValue().getValuesList().stream()
             .map(JsonFactory::toProtobufValue)
             .forEach(listBuilder.getListValueBuilder()::addValues);
-        return listBuilder.build();
-
-      default:
-        throw new IllegalArgumentException("Unsupported payload value type: " + value.getKindCase());
-    }
+        yield listBuilder.build();
+      }
+      default -> throw new IllegalArgumentException("Unsupported payload value type: " + value.getKindCase());
+    };
   }
 }

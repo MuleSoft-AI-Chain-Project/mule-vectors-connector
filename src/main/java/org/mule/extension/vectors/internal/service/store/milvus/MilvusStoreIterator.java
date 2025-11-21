@@ -82,10 +82,14 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
     String embeddingId = (String) rowRecord.getFieldValues().get(idFieldName);
     float[] vector = null;
     if (queryParams.retrieveEmbeddings()) {
-      List<Float> vectorList = (List<Float>) rowRecord.getFieldValues().get(vectorFieldName);
-      vector = new float[vectorList.size()];
-      for (int i = 0; i < vectorList.size(); i++) {
-        vector[i] = vectorList.get(i);
+      Object vectorObj = rowRecord.getFieldValues().get(vectorFieldName);
+      if (vectorObj instanceof List) {
+        @SuppressWarnings("unchecked")
+        List<Float> vectorList = (List<Float>) vectorObj;
+        vector = new float[vectorList.size()];
+        for (int i = 0; i < vectorList.size(); i++) {
+          vector[i] = vectorList.get(i);
+        }
       }
     }
     String text = (String) rowRecord.getFieldValues().get(textFieldName);
@@ -118,15 +122,12 @@ public class MilvusStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       return true;
     } catch (StatusRuntimeException e) {
       switch (e.getStatus().getCode()) {
-        case UNAUTHENTICATED:
-          throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(),
-                                    MuleVectorsErrorType.INVALID_CONNECTION, e);
-        case INVALID_ARGUMENT:
-          throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(),
-                                    MuleVectorsErrorType.INVALID_REQUEST, e);
-        default:
-          throw new ModuleException("Milvus service error: " + e.getStatus().getDescription(), MuleVectorsErrorType.SERVICE_ERROR,
-                                    e);
+        case UNAUTHENTICATED -> throw new ModuleException("Authentication failed: " + e.getStatus().getDescription(),
+                                                           MuleVectorsErrorType.INVALID_CONNECTION, e);
+        case INVALID_ARGUMENT -> throw new ModuleException("Invalid request to Milvus: " + e.getStatus().getDescription(),
+                                                            MuleVectorsErrorType.INVALID_REQUEST, e);
+        default -> throw new ModuleException("Milvus service error: " + e.getStatus().getDescription(),
+                                              MuleVectorsErrorType.SERVICE_ERROR, e);
       }
     } catch (MilvusException e) {
       throw new ModuleException("Milvus error: " + e.getMessage(), MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);

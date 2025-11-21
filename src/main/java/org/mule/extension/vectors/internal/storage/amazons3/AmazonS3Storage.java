@@ -3,8 +3,6 @@ package org.mule.extension.vectors.internal.storage.amazons3;
 import org.mule.extension.vectors.internal.config.StorageConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.storage.amazons3.AmazonS3StorageConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -12,7 +10,6 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 public class AmazonS3Storage {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3Storage.class);
   public static final String S_3 = "s3://";
   public static final String S_4 = "S3://";
   public static final String BACK_SLASH = "/";
