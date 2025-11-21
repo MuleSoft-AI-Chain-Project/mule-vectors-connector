@@ -1,12 +1,11 @@
 package org.mule.extension.vectors.api.metadata;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
-
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.mule.runtime.extension.api.annotation.param.MediaType;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 /**
  * Represents the attributes of an embedding operation response.
@@ -84,6 +83,7 @@ public class EmbeddingResponseAttributes implements Serializable {
     return otherAttributes;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -101,6 +101,7 @@ public class EmbeddingResponseAttributes implements Serializable {
     return otherAttributes != null ? otherAttributes.equals(that.otherAttributes) : that.otherAttributes == null;
   }
 
+  @Override
   public int hashCode() {
     int result = embeddingModelName != null ? embeddingModelName.hashCode() : 0;
     result = 31 * result + embeddingModelDimension;

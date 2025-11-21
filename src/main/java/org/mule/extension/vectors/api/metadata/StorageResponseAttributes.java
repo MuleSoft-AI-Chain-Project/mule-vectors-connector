@@ -1,11 +1,10 @@
 package org.mule.extension.vectors.api.metadata;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
-
-import org.mule.runtime.extension.api.annotation.param.MediaType;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import org.mule.runtime.extension.api.annotation.param.MediaType;
+import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
