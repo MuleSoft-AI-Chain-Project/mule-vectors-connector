@@ -1,9 +1,13 @@
 package org.mule.extension.vectors.internal.connection.provider.store.pgvector;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnectionParameters;
+import org.mule.extension.vectors.internal.error.exception.VectorsException;
+import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.util.FipsUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.sql.Connection;
@@ -13,6 +17,7 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 class PGVectorStoreConnectionTest {
 
@@ -773,5 +778,43 @@ class PGVectorStoreConnectionTest {
   void initialise_setsDataSource() {
     assertDoesNotThrow(conn::initialise);
     assertNotNull(conn.getDataSource());
+  }
+
+  @Test
+  void constructor_throwsVectorsException_whenFipsEnabled() {
+    // Setup parameters
+    PGVectorStoreConnectionParameters testParams = new PGVectorStoreConnectionParameters();
+    try {
+      java.lang.reflect.Field hostF = PGVectorStoreConnectionParameters.class.getDeclaredField("host");
+      hostF.setAccessible(true);
+      hostF.set(testParams, "localhost");
+      java.lang.reflect.Field portF = PGVectorStoreConnectionParameters.class.getDeclaredField("port");
+      portF.setAccessible(true);
+      portF.set(testParams, 5432);
+      java.lang.reflect.Field dbF = PGVectorStoreConnectionParameters.class.getDeclaredField("database");
+      dbF.setAccessible(true);
+      dbF.set(testParams, "testdb");
+      java.lang.reflect.Field userF = PGVectorStoreConnectionParameters.class.getDeclaredField("user");
+      userF.setAccessible(true);
+      userF.set(testParams, "postgres");
+      java.lang.reflect.Field pwF = PGVectorStoreConnectionParameters.class.getDeclaredField("password");
+      pwF.setAccessible(true);
+      pwF.set(testParams, "password");
+    } catch (Exception e) {
+      fail("Failed to setup test parameters: " + e.getMessage());
+    }
+
+    // Mock FipsUtils to return true (FIPS enabled)
+    try (MockedStatic<FipsUtils> fipsUtilsMock = mockStatic(FipsUtils.class)) {
+      fipsUtilsMock.when(FipsUtils::isFipsEnabled).thenReturn(true);
+
+      // Assert that VectorsException is thrown with correct error type
+      VectorsException exception = assertThrows(VectorsException.class, 
+          () -> new PGVectorStoreConnection(testParams));
+      
+      assertEquals(MuleVectorsErrorType.SECURITY, exception.getType());
+      assertTrue(exception.getMessage().contains("not FIPS compliant"));
+      assertTrue(exception.getMessage().contains("FIPS configured environments"));
+    }
   }
 }
