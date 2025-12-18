@@ -5,8 +5,8 @@ import static org.mockito.Mockito.mockStatic;
 
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnection;
 import org.mule.extension.vectors.internal.connection.provider.store.pgvector.PGVectorStoreConnectionParameters;
-import org.mule.extension.vectors.internal.error.exception.VectorsException;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.error.exception.VectorsException;
 import org.mule.extension.vectors.internal.util.FipsUtils;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
@@ -809,9 +809,9 @@ class PGVectorStoreConnectionTest {
       fipsUtilsMock.when(FipsUtils::isFipsEnabled).thenReturn(true);
 
       // Assert that VectorsException is thrown with correct error type
-      VectorsException exception = assertThrows(VectorsException.class, 
-          () -> new PGVectorStoreConnection(testParams));
-      
+      VectorsException exception = assertThrows(VectorsException.class,
+                                                () -> new PGVectorStoreConnection(testParams));
+
       assertEquals(MuleVectorsErrorType.SECURITY, exception.getType());
       assertTrue(exception.getMessage().contains("not FIPS compliant"));
       assertTrue(exception.getMessage().contains("FIPS configured environments"));
