@@ -33,7 +33,7 @@ import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProvider
     description = "LangChain4J",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.data.document.DocumentSplitter",
-    coordinates = "dev.langchain4j:langchain4j:1.1.0")
+    coordinates = "dev.langchain4j:langchain4j:1.8.0")
 public class EmbeddingConfiguration {
 
 

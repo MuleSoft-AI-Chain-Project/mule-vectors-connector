@@ -18,7 +18,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
     description = "LangChain4J Chroma",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.chroma.ChromaEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-chroma:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-chroma:1.8.0-beta15")
 public class ChromaStoreConnectionProvider extends HttpBasedConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

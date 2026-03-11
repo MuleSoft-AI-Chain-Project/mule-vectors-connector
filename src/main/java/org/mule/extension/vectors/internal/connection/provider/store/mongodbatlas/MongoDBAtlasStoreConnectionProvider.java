@@ -19,7 +19,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
     description = "LangChain4J MongoDB Atlas",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.mongodb.MongoDbEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-mongodb-atlas:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-mongodb-atlas:1.8.0-beta15")
 public class MongoDBAtlasStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)
