@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import io.qdrant.client.QdrantClient;
+import io.qdrant.client.grpc.Common;
 import io.qdrant.client.grpc.Points;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class QdrantStoreIteratorTest {
   @Test
   void next_returnsVectorStoreRowWithCorrectFields() throws Exception {
     Points.RetrievedPoint point = mock(Points.RetrievedPoint.class);
-    Points.PointId pointId = Points.PointId.newBuilder().setUuid("id1").build();
+    Common.PointId pointId = Common.PointId.newBuilder().setUuid("id1").build();
     when(point.getId()).thenReturn(pointId);
     when(point.getPayloadOrDefault(eq("text"), any())).thenReturn(
                                                                   io.qdrant.client.grpc.JsonWithInt.Value.newBuilder()
@@ -61,7 +62,7 @@ class QdrantStoreIteratorTest {
 
     Points.ScrollResponse response = mock(Points.ScrollResponse.class);
     when(response.getResultList()).thenReturn(List.of(point));
-    when(response.getNextPageOffset()).thenReturn(Points.PointId.newBuilder().setUuid("id2").build());
+    when(response.getNextPageOffset()).thenReturn(Common.PointId.newBuilder().setUuid("id2").build());
 
     when(client.scrollAsync(any())).thenReturn(Futures.immediateFuture(response));
 

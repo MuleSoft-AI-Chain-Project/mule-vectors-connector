@@ -24,6 +24,7 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import io.grpc.StatusRuntimeException;
 import io.qdrant.client.QdrantClient;
+import io.qdrant.client.grpc.Common;
 import io.qdrant.client.grpc.JsonWithInt;
 import io.qdrant.client.grpc.Points;
 import org.json.JSONObject;
@@ -40,7 +41,7 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
   private final QueryParameters queryParams;
 
   private Iterator<Points.RetrievedPoint> pointIterator;
-  private Points.PointId nextOffset;
+  private Common.PointId nextOffset;
   private boolean hasMorePages = true;
 
   public QdrantStoreIterator(
@@ -88,9 +89,14 @@ public class QdrantStoreIterator<Embedded> implements VectoreStoreIterator<Vecto
       if (queryParams.retrieveEmbeddings()) {
         Points.VectorsOutput vectors = currentPoint.getVectors();
         if (vectors != null && vectors.getSerializedSize() > 0) {
-          vector = new float[vectors.getVector().getDataCount()];
-          for (int i = 0; i < vectors.getVector().getDataCount(); i++) {
-            vector[i] = (float) vectors.getVector().getData(i);
+          Points.VectorOutput vectorOutput = vectors.getVector();
+          List<Float> dataList = vectorOutput.getDense().getDataList();
+          if (dataList.isEmpty()) {
+            dataList = vectorOutput.getDataList();
+          }
+          vector = new float[dataList.size()];
+          for (int i = 0; i < dataList.size(); i++) {
+            vector[i] = dataList.get(i);
           }
         }
       }
