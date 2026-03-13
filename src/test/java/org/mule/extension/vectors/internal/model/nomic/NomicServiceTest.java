@@ -158,4 +158,185 @@ class NomicServiceTest {
     Map<String, String> headers = (Map<String, String>) m.invoke(service);
     assertEquals("Bearer key", headers.get("Authorization"));
   }
+
+  @Test
+  void generateImageEmbeddings_nullImages_throwsIllegalArgument() {
+    assertThrows(RuntimeException.class, () -> service.generateImageEmbeddings(null, "model"));
+  }
+
+  @Test
+  void generateImageEmbeddings_emptyImages_throwsIllegalArgument() {
+    assertThrows(RuntimeException.class, () -> service.generateImageEmbeddings(Collections.emptyList(), "model"));
+  }
+
+  @Test
+  void generateImageEmbeddings_success() throws Exception {
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    String embeddingJson = "{\"embeddings\": [[0.4, 0.5]], \"usage\": {\"total_tokens\": 10}}";
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(200);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(embeddingJson
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    Object result = service.generateImageEmbeddings(List.of(new byte[] {1, 2, 3}), "test-model");
+    assertNotNull(result);
+    assertTrue(((String) result).contains("embeddings"));
+  }
+
+  @Test
+  void generateImageEmbeddings_non200_throwsRuntimeException() throws Exception {
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(500);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("error"
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    assertThrows(RuntimeException.class,
+                 () -> service.generateImageEmbeddings(List.of(new byte[] {1, 2}), "model"));
+  }
+
+  @Test
+  void embedImage_success() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("img-model");
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    String embeddingJson = "{\"embeddings\": [[0.7, 0.8, 0.9]]}";
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(200);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(embeddingJson
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    Response<Embedding> resp = service.embedImage(new byte[] {1, 2, 3});
+    assertNotNull(resp);
+    assertNotNull(resp.content());
+    assertArrayEquals(new float[] {0.7f, 0.8f, 0.9f}, resp.content().vector(), 1e-6f);
+  }
+
+  @Test
+  void embedImage_emptyEmbeddings_throwsRuntimeException() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("img-model");
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    String embeddingJson = "{\"embeddings\": []}";
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(200);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(embeddingJson
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    assertThrows(RuntimeException.class, () -> service.embedImage(new byte[] {1, 2}));
+  }
+
+  @Test
+  void embedTextAndImage_delegatesToEmbedImage() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("img-model");
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    String embeddingJson = "{\"embeddings\": [[0.1, 0.2]]}";
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(200);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(embeddingJson
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    Response<Embedding> resp = service.embedTextAndImage("hello", new byte[] {1, 2});
+    assertNotNull(resp);
+    assertArrayEquals(new float[] {0.1f, 0.2f}, resp.content().vector(), 1e-6f);
+  }
+
+  @Test
+  void embedImages_success() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("img-model");
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    String embeddingJson = "{\"embeddings\": [[0.1], [0.2]], \"usage\": {\"total_tokens\": 5}}";
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(200);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(embeddingJson
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    Response<List<Embedding>> resp = service.embedImages(List.of(new byte[] {1}, new byte[] {2}));
+    assertNotNull(resp);
+    assertEquals(2, resp.content().size());
+  }
+
+  @Test
+  void embedImages_throwsOnApiFailure() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("img-model");
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+
+    org.mule.runtime.http.api.client.HttpClient httpClient = mock(org.mule.runtime.http.api.client.HttpClient.class);
+    when(modelConnection.getHttpClient()).thenReturn(httpClient);
+
+    HttpResponse mockResp = mock(HttpResponse.class);
+    when(mockResp.getStatusCode()).thenReturn(500);
+    when(mockResp.getEntity()).thenReturn(
+                                          new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("error"
+                                              .getBytes(StandardCharsets.UTF_8)));
+    when(httpClient.send(any(), any())).thenReturn(mockResp);
+
+    assertThrows(RuntimeException.class,
+                 () -> service.embedImages(List.of(new byte[] {1})));
+  }
+
+  @Test
+  void embedTexts_multipleTexts_returnsMultipleEmbeddings() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("test-model");
+    String embeddingJson = "{" +
+        "\"embeddings\": [[0.1, 0.2], [0.3, 0.4]]," +
+        "\"usage\": {\"total_tokens\": 42}" +
+        "}";
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      when(modelConnection.getHttpClient()).thenReturn(null);
+      when(modelConnection.getApiKey()).thenReturn("key");
+      when(modelConnection.getTimeout()).thenReturn(1000L);
+      HttpResponse mockResponse = mock(HttpResponse.class);
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(mockResponse));
+      helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+          .thenReturn(embeddingJson);
+      Response<List<Embedding>> resp = service.embedTexts(List.of("foo", "bar"));
+      assertNotNull(resp);
+      assertEquals(2, resp.content().size());
+      assertNotNull(resp.tokenUsage());
+      assertEquals(42, resp.tokenUsage().inputTokenCount());
+    }
+  }
 }
