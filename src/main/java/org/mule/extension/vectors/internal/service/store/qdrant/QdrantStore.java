@@ -9,18 +9,12 @@ import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import io.qdrant.client.QdrantClient;
-import io.qdrant.client.WithVectorsSelectorFactory;
-import io.qdrant.client.grpc.Points.ScoredPoint;
-import io.qdrant.client.grpc.Points.SearchPoints;
-import io.qdrant.client.grpc.Points.VectorOutput;
-import io.qdrant.client.grpc.Points.VectorsOutput;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,40 +76,9 @@ public class QdrantStore extends BaseStoreService {
     try {
       return super.query(textSegments, embeddings, maxResults, minScore, searchFilterParams);
     } catch (Exception e) {
-      logQdrantVectorDiagnostics(embeddings.get(0));
+      LOGGER.debug("Qdrant query failed on collection '{}' with embeddingDim={}: {}",
+                   storeName, embeddings.get(0).vector().length, e.getMessage());
       throw e;
-    }
-  }
-
-  private void logQdrantVectorDiagnostics(Embedding queryEmbedding) {
-    try {
-      SearchPoints searchRequest = SearchPoints.newBuilder()
-          .setCollectionName(storeName)
-          .addAllVector(queryEmbedding.vectorAsList())
-          .setLimit(1)
-          .setWithVectors(WithVectorsSelectorFactory.enable(true))
-          .build();
-      List<ScoredPoint> results = client.searchAsync(searchRequest).get();
-      if (!results.isEmpty()) {
-        ScoredPoint point = results.get(0);
-        VectorsOutput vectors = point.getVectors();
-        VectorOutput vectorOutput = vectors.getVector();
-        LOGGER.error("Qdrant vector diagnostics for collection '{}': "
-            + "vectorsOptionsCase={}, vectorOutputCase={}, "
-            + "legacyDataListSize={}, denseDataListSize={}",
-                     storeName,
-                     vectors.getVectorsOptionsCase(),
-                     vectorOutput.getVectorCase(),
-                     vectorOutput.getDataList().size(),
-                     vectorOutput.getDense().getDataList().size());
-      } else {
-        LOGGER.error("Qdrant vector diagnostics for collection '{}': no results returned from direct search", storeName);
-      }
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      LOGGER.error("Interrupted while collecting Qdrant vector diagnostics for collection '{}'", storeName, e);
-    } catch (ExecutionException e) {
-      LOGGER.error("Failed to collect Qdrant vector diagnostics for collection '{}'", storeName, e);
     }
   }
 

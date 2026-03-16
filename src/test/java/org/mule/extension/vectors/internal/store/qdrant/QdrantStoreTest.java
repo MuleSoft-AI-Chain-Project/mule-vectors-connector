@@ -7,13 +7,11 @@ import static org.mockito.Mockito.*;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.internal.service.store.qdrant.QdrantStore;
 import org.mule.extension.vectors.internal.service.store.qdrant.QdrantStoreIterator;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import com.google.common.util.concurrent.Futures;
 import dev.langchain4j.data.embedding.Embedding;
@@ -24,8 +22,6 @@ import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import io.qdrant.client.QdrantClient;
-import io.qdrant.client.WithVectorsSelectorFactory;
-import io.qdrant.client.grpc.Points;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -155,7 +151,7 @@ class QdrantStoreTest {
   }
 
   @Test
-  void query_callsDiagnosticsOnFailure() throws Exception {
+  void query_rethrowsExceptionWithoutExtraNetworkCall() throws Exception {
     try (var builderMocked = mockStatic(QdrantEmbeddingStore.class)) {
       builderMocked.when(QdrantEmbeddingStore::builder).thenReturn(embeddingStoreBuilder);
       when(embeddingStoreBuilder.client(any())).thenReturn(embeddingStoreBuilder);
@@ -164,13 +160,6 @@ class QdrantStoreTest {
       when(embeddingStoreBuilder.build()).thenReturn(embeddingStore);
       when(embeddingStore.search(any(EmbeddingSearchRequest.class)))
           .thenThrow(new RuntimeException("query failed"));
-
-      Points.VectorOutput vectorOutput = Points.VectorOutput.newBuilder().addData(0.1f).build();
-      Points.VectorsOutput vectorsOutput = Points.VectorsOutput.newBuilder().setVector(vectorOutput).build();
-      Points.ScoredPoint scoredPoint = Points.ScoredPoint.newBuilder()
-          .setVectors(vectorsOutput).build();
-      when(qdrantClient.searchAsync(any(Points.SearchPoints.class)))
-          .thenReturn(Futures.immediateFuture(List.of(scoredPoint)));
 
       QdrantStore store = createStore("testStore", 3, true);
       Embedding qEmb = new Embedding(new float[] {0.1f, 0.2f, 0.3f});
@@ -178,72 +167,7 @@ class QdrantStoreTest {
       assertThatThrownBy(() -> store.query(List.of(seg), List.of(qEmb), 5, 0.5, null))
           .isInstanceOf(RuntimeException.class)
           .hasMessageContaining("query failed");
-    }
-  }
-
-  @Test
-  void query_diagnosticsHandlesEmptyResults() throws Exception {
-    try (var builderMocked = mockStatic(QdrantEmbeddingStore.class)) {
-      builderMocked.when(QdrantEmbeddingStore::builder).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.client(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.payloadTextKey(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.collectionName(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.build()).thenReturn(embeddingStore);
-      when(embeddingStore.search(any(EmbeddingSearchRequest.class)))
-          .thenThrow(new RuntimeException("query failed"));
-
-      when(qdrantClient.searchAsync(any(Points.SearchPoints.class)))
-          .thenReturn(Futures.immediateFuture(List.of()));
-
-      QdrantStore store = createStore("testStore", 3, true);
-      Embedding qEmb = new Embedding(new float[] {0.1f, 0.2f, 0.3f});
-      TextSegment seg = new TextSegment("text", new dev.langchain4j.data.document.Metadata());
-      assertThatThrownBy(() -> store.query(List.of(seg), List.of(qEmb), 5, 0.5, null))
-          .isInstanceOf(RuntimeException.class);
-    }
-  }
-
-  @Test
-  void query_diagnosticsHandlesInterruptedException() throws Exception {
-    try (var builderMocked = mockStatic(QdrantEmbeddingStore.class)) {
-      builderMocked.when(QdrantEmbeddingStore::builder).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.client(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.payloadTextKey(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.collectionName(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.build()).thenReturn(embeddingStore);
-      when(embeddingStore.search(any(EmbeddingSearchRequest.class)))
-          .thenThrow(new RuntimeException("query failed"));
-
-      when(qdrantClient.searchAsync(any(Points.SearchPoints.class)))
-          .thenReturn(Futures.immediateFailedFuture(new InterruptedException("interrupted")));
-
-      QdrantStore store = createStore("testStore", 3, true);
-      Embedding qEmb = new Embedding(new float[] {0.1f, 0.2f, 0.3f});
-      TextSegment seg = new TextSegment("text", new dev.langchain4j.data.document.Metadata());
-      assertThatThrownBy(() -> store.query(List.of(seg), List.of(qEmb), 5, 0.5, null))
-          .isInstanceOf(RuntimeException.class);
-    }
-  }
-
-  @Test
-  void query_diagnosticsHandlesExecutionException() throws Exception {
-    try (var builderMocked = mockStatic(QdrantEmbeddingStore.class)) {
-      builderMocked.when(QdrantEmbeddingStore::builder).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.client(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.payloadTextKey(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.collectionName(any())).thenReturn(embeddingStoreBuilder);
-      when(embeddingStoreBuilder.build()).thenReturn(embeddingStore);
-      when(embeddingStore.search(any(EmbeddingSearchRequest.class)))
-          .thenThrow(new RuntimeException("query failed"));
-
-      when(qdrantClient.searchAsync(any(Points.SearchPoints.class)))
-          .thenReturn(Futures.immediateFailedFuture(new ExecutionException("exec fail", new RuntimeException())));
-
-      QdrantStore store = createStore("testStore", 3, true);
-      Embedding qEmb = new Embedding(new float[] {0.1f, 0.2f, 0.3f});
-      TextSegment seg = new TextSegment("text", new dev.langchain4j.data.document.Metadata());
-      assertThatThrownBy(() -> store.query(List.of(seg), List.of(qEmb), 5, 0.5, null))
-          .isInstanceOf(RuntimeException.class);
+      verifyNoMoreInteractions(qdrantClient);
     }
   }
 
