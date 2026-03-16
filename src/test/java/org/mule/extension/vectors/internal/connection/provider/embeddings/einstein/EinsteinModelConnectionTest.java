@@ -1,14 +1,16 @@
 package org.mule.extension.vectors.internal.connection.provider.embeddings.einstein;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import org.mule.extension.vectors.internal.connection.provider.embeddings.einstein.EinsteinModelConnection;
 import org.mule.extension.vectors.internal.constant.Constants;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
+import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.domain.entity.HttpEntity;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
 import java.util.concurrent.CompletableFuture;
@@ -93,6 +95,53 @@ class EinsteinModelConnectionTest {
       mocked.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt())).thenReturn(future);
       ModuleException ex = assertThrows(ModuleException.class, () -> conn.validate());
       assertEquals("Failed to validate connection to Einstein", ex.getMessage());
+    }
+  }
+
+  @Test
+  void getTimeout_returnsConfiguredValue() {
+    assertThat(conn.getTimeout()).isEqualTo(12345L);
+  }
+
+  @Test
+  void getAccessTokenAsync_success() throws Exception {
+    HttpResponse tokenResponse = mock(HttpResponse.class);
+    when(tokenResponse.getStatusCode()).thenReturn(200);
+    HttpEntity entity = mock(HttpEntity.class);
+    when(entity.getBytes()).thenReturn("{\"access_token\":\"my-token\"}".getBytes());
+    when(tokenResponse.getEntity()).thenReturn(entity);
+
+    try (MockedStatic<HttpRequestHelper> mocked = mockStatic(HttpRequestHelper.class)) {
+      mocked.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(byte[].class), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(tokenResponse));
+
+      EinsteinModelConnection realConn = new EinsteinModelConnection(
+                                                                     "mydomain.my.salesforce.com", "client-id", "client-secret",
+                                                                     httpClient, 12345L);
+
+      assertThat(realConn.getAccessToken()).isEqualTo("my-token");
+
+      CompletableFuture<String> future = realConn.getAccessTokenAsync();
+      assertThat(future.get()).isEqualTo("my-token");
+    }
+  }
+
+  @Test
+  void getAccessTokenAsync_non200_throwsConnectionException() throws Exception {
+    HttpResponse errorResponse = mock(HttpResponse.class);
+    when(errorResponse.getStatusCode()).thenReturn(400);
+    HttpEntity entity = mock(HttpEntity.class);
+    when(entity.getBytes()).thenReturn("Bad Request".getBytes());
+    when(errorResponse.getEntity()).thenReturn(entity);
+
+    try (MockedStatic<HttpRequestHelper> mocked = mockStatic(HttpRequestHelper.class)) {
+      mocked.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(byte[].class), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(errorResponse));
+
+      assertThatThrownBy(() -> new EinsteinModelConnection(
+                                                           "mydomain.my.salesforce.com", "client-id", "client-secret", httpClient,
+                                                           12345L))
+                                                               .isInstanceOf(ConnectionException.class);
     }
   }
 }
