@@ -46,6 +46,7 @@ public class AmazonS3StorageConnection implements BaseStorageConnection {
 
     this.s3Client = S3Client.builder()
         .region(Region.of(awsRegion))
+        .crossRegionAccessEnabled(true)
         .credentialsProvider(StaticCredentialsProvider.create(
                                                               AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey)))
         .build();

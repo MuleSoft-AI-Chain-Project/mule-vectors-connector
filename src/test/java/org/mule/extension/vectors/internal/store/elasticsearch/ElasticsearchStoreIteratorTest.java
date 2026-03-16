@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.*;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.ClearScrollRequest;
+import co.elastic.clients.elasticsearch.core.ScrollRequest;
+import co.elastic.clients.elasticsearch.core.ScrollResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -102,6 +105,114 @@ class ElasticsearchStoreIteratorTest {
       assertThatThrownBy(() -> new ElasticsearchStoreIterator<>(connection, "store", queryParameters))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Error");
+    }
+  }
+
+  @Test
+  void next_withoutEmbeddings_returnsRowWithNullEmbedding() throws Exception {
+    when(queryParameters.retrieveEmbeddings()).thenReturn(false);
+    try (MockedConstruction<ElasticsearchClient> clientConstruction =
+        Mockito.mockConstruction(ElasticsearchClient.class, (mock, context) -> {
+          when(mock.search(any(SearchRequest.class), eq(Map.class))).thenReturn(searchResponse);
+        })) {
+      Map<String, Object> sourceMap = new HashMap<>();
+      sourceMap.put("vector", Arrays.asList(0.1, 0.2, 0.3));
+      sourceMap.put("text", "doc1");
+      sourceMap.put("metadata", Map.of("foo", "bar"));
+      when(hit.id()).thenReturn("id1");
+      when(hit.source()).thenReturn(sourceMap);
+      when(hitsMetadata.hits()).thenReturn(List.of(hit)).thenReturn(Collections.emptyList());
+      when(searchResponse.hits()).thenReturn(hitsMetadata);
+      when(searchResponse.scrollId()).thenReturn(null);
+
+      ElasticsearchStoreIterator<?> iterator = new ElasticsearchStoreIterator<>(connection, "store", queryParameters);
+      var row = iterator.next();
+      assertThat(row.getEmbedding()).isNull();
+      assertThat(row.getEmbedded()).isNotNull();
+    }
+  }
+
+  @Test
+  void close_clearsScrollContext() throws Exception {
+    try (MockedConstruction<ElasticsearchClient> clientConstruction =
+        Mockito.mockConstruction(ElasticsearchClient.class, (mock, context) -> {
+          when(mock.search(any(SearchRequest.class), eq(Map.class))).thenReturn(searchResponse);
+          when(mock.clearScroll(any(ClearScrollRequest.class))).thenReturn(null);
+        })) {
+      when(hitsMetadata.hits()).thenReturn(List.of(hit));
+      when(searchResponse.hits()).thenReturn(hitsMetadata);
+      when(searchResponse.scrollId()).thenReturn("scroll-123");
+
+      ElasticsearchStoreIterator<?> iterator = new ElasticsearchStoreIterator<>(connection, "store", queryParameters);
+      iterator.close();
+
+      ElasticsearchClient constructedClient = clientConstruction.constructed().get(0);
+      verify(constructedClient).clearScroll(any(ClearScrollRequest.class));
+    }
+  }
+
+  @Test
+  void close_handlesIOExceptionGracefully() throws Exception {
+    try (MockedConstruction<ElasticsearchClient> clientConstruction =
+        Mockito.mockConstruction(ElasticsearchClient.class, (mock, context) -> {
+          when(mock.search(any(SearchRequest.class), eq(Map.class))).thenReturn(searchResponse);
+          when(mock.clearScroll(any(ClearScrollRequest.class))).thenThrow(new IOException("clear scroll failed"));
+        })) {
+      when(hitsMetadata.hits()).thenReturn(List.of(hit));
+      when(searchResponse.hits()).thenReturn(hitsMetadata);
+      when(searchResponse.scrollId()).thenReturn("scroll-123");
+
+      ElasticsearchStoreIterator<?> iterator = new ElasticsearchStoreIterator<>(connection, "store", queryParameters);
+      assertThatCode(iterator::close).doesNotThrowAnyException();
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  void fetchNextBatch_usesScrollWhenScrollIdPresent() throws Exception {
+    Hit<Map> hit2 = mock(Hit.class);
+    ScrollResponse<Map> scrollResponse = mock(ScrollResponse.class);
+    co.elastic.clients.elasticsearch.core.search.HitsMetadata<Map> scrollHits =
+        mock(co.elastic.clients.elasticsearch.core.search.HitsMetadata.class);
+
+    try (MockedConstruction<ElasticsearchClient> clientConstruction =
+        Mockito.mockConstruction(ElasticsearchClient.class, (mock, context) -> {
+          when(mock.search(any(SearchRequest.class), eq(Map.class))).thenReturn(searchResponse);
+          when(mock.scroll(any(ScrollRequest.class), eq(Map.class))).thenReturn(scrollResponse);
+        })) {
+      Map<String, Object> sourceMap1 = new HashMap<>();
+      sourceMap1.put("vector", Arrays.asList(0.1, 0.2));
+      sourceMap1.put("text", "doc1");
+      sourceMap1.put("metadata", Map.of());
+      when(hit.id()).thenReturn("id1");
+      when(hit.source()).thenReturn(sourceMap1);
+
+      Map<String, Object> sourceMap2 = new HashMap<>();
+      sourceMap2.put("vector", Arrays.asList(0.3, 0.4));
+      sourceMap2.put("text", "doc2");
+      sourceMap2.put("metadata", Map.of());
+      when(hit2.id()).thenReturn("id2");
+      when(hit2.source()).thenReturn(sourceMap2);
+
+      when(hitsMetadata.hits()).thenReturn(List.of(hit));
+      when(searchResponse.hits()).thenReturn(hitsMetadata);
+      when(searchResponse.scrollId()).thenReturn("scroll-123");
+
+      when(scrollHits.hits()).thenReturn(List.of(hit2));
+      when(scrollResponse.hits()).thenReturn(scrollHits);
+      when(scrollResponse.scrollId()).thenReturn(null);
+
+      ElasticsearchStoreIterator<?> iterator = new ElasticsearchStoreIterator<>(connection, "store", queryParameters);
+      assertThat(iterator.hasNext()).isTrue();
+      var row1 = iterator.next();
+      assertThat(row1.getId()).isEqualTo("id1");
+
+      assertThat(iterator.hasNext()).isTrue();
+      var row2 = iterator.next();
+      assertThat(row2.getId()).isEqualTo("id2");
+
+      ElasticsearchClient constructedClient = clientConstruction.constructed().get(0);
+      verify(constructedClient).scroll(any(ScrollRequest.class), eq(Map.class));
     }
   }
 }

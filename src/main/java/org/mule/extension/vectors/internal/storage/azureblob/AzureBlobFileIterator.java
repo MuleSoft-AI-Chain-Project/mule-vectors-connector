@@ -55,7 +55,7 @@ public class AzureBlobFileIterator implements FileIterator {
     BlobProperties properties = blobClient.getProperties();
     HashMap<String, Object> metadata = new HashMap<>();
     metadata.put(Constants.METADATA_KEY_SOURCE,
-        format("https://%s.blob.core.windows.net/%s/%s", azureClient.azureName, container, blobItem.getName()));
+                 format("https://%s.blob.core.windows.net/%s/%s", azureClient.azureName, container, blobItem.getName()));
     metadata.put("azure_storage_blob_creation_time", String.valueOf(properties.getCreationTime()));
     metadata.put("azure_storage_blob_last_modified", String.valueOf(properties.getLastModified()));
     metadata.put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));

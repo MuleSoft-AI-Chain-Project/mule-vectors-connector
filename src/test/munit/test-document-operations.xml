@@ -17,10 +17,10 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<munit:parameterization name="config-storage-amazon-s3" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="storageS3Config" />
-					<munit:parameter propertyName="contextDocumentPath" value="s3://munit-document-samples/sample.pdf" />
-					<munit:parameter propertyName="contextDocumentFolderPath" value="s3://munit-document-samples" />
-					<munit:parameter propertyName="contextMediaPath" value="s3://munit-image-samples/sample.jpg" />
-					<munit:parameter propertyName="contextMediaFolderPath" value="s3://munit-image-samples" />
+					<munit:parameter propertyName="contextDocumentPath" value="s3://munit-document-samples-201240241397/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="s3://munit-document-samples-201240241397" />
+					<munit:parameter propertyName="contextMediaPath" value="s3://munit-image-samples-201240241397/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="s3://munit-image-samples-201240241397" />
 				</munit:parameters>
 			</munit:parameterization>
 			<munit:parameterization name="config-storage-azure-blob" >
@@ -35,10 +35,10 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<munit:parameterization name="config-storage-google-storage" >
 				<munit:parameters >
 					<munit:parameter propertyName="config" value="storageGCSConfig" />
-					<munit:parameter propertyName="contextDocumentPath" value="gs://munit-document-samples/sample.pdf" />
-					<munit:parameter propertyName="contextDocumentFolderPath" value="gs://munit-document-samples" />
-					<munit:parameter propertyName="contextMediaPath" value="gs://munit-image-samples/sample.jpg" />
-					<munit:parameter propertyName="contextMediaFolderPath" value="gs://munit-image-samples" />
+					<munit:parameter propertyName="contextDocumentPath" value="gs://munit-document-samples-muleconn/sample.pdf" />
+					<munit:parameter propertyName="contextDocumentFolderPath" value="gs://munit-document-samples-muleconn" />
+					<munit:parameter propertyName="contextMediaPath" value="gs://munit-image-samples-muleconn/sample.jpg" />
+					<munit:parameter propertyName="contextMediaFolderPath" value="gs://munit-image-samples-muleconn" />
 				</munit:parameters>
 			</munit:parameterization>
 		</munit:parameterizations>

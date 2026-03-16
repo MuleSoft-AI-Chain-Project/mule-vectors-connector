@@ -29,12 +29,11 @@ public class AzureBlobStorageService implements StorageService {
     String blobName = AzureBlobStorage.parseBlobName(path, azureClient.azureName);
     InputStream content = azureClient.loadFile(container, blobName);
     BlobClient blobClient = azureClient.getBlonbClient();
-
     BlobProperties properties = blobClient.getProperties();
     InputStream contentSteam = blobClient.openInputStream();
     HashMap<String, Object> metadata = new HashMap<>();
     metadata.put(Constants.METADATA_KEY_SOURCE,
-        format("https://%s.blob.core.windows.net/%s/%s", azureClient.azureName, container, blobName));
+                 format("https://%s.blob.core.windows.net/%s/%s", azureClient.azureName, container, blobName));
     metadata.put("azure_storage_blob_creation_time", String.valueOf(properties.getCreationTime()));
     metadata.put("azure_storage_blob_last_modified", String.valueOf(properties.getLastModified()));
     metadata.put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));
