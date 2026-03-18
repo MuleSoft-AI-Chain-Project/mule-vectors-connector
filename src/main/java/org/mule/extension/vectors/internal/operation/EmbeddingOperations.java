@@ -189,15 +189,10 @@ public class EmbeddingOperations {
       jsonObject.put(Constants.JSON_KEY_EMBEDDINGS, jsonEmbeddings);
       jsonObject.put(Constants.JSON_KEY_DIMENSION, multimodalEmbeddingModelDimension);
 
-      int finalMultimodalEmbeddingModelDimension = multimodalEmbeddingModelDimension;
-      HashMap<String, Object> attributes = new HashMap<String, Object>() {
-
-        {
-          put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
-          put("embeddingModelDimension", finalMultimodalEmbeddingModelDimension);
-          put("mediaType", mediaBinaryParameters.getMediaType());
-        }
-      };
+      HashMap<String, Object> attributes = new HashMap<>();
+      attributes.put("embeddingModelName", embeddingModelParameters.getEmbeddingModelName());
+      attributes.put("embeddingModelDimension", multimodalEmbeddingModelDimension);
+      attributes.put("mediaType", mediaBinaryParameters.getMediaType());
       if (tokenUsage != null) {
 
         attributes.put("tokenUsage", tokenUsage);

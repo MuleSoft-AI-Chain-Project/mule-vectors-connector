@@ -71,14 +71,9 @@ public class TransformService {
           mediaBytes = mediaProcessor.process(mediaBytes);
         }
       }
-      return createProcessedMediaResponse(
-                                          new ByteArrayInputStream(mediaBytes),
-                                          new HashMap<String, Object>() {
-
-                                            {
-                                              put("mediaType", mediaBinaryParameters.getMediaType());
-                                            }
-                                          });
+      HashMap<String, Object> attributes = new HashMap<>();
+      attributes.put("mediaType", mediaBinaryParameters.getMediaType());
+      return createProcessedMediaResponse(new ByteArrayInputStream(mediaBytes), attributes);
     } catch (ModuleException me) {
       throw me;
     } catch (Exception e) {
