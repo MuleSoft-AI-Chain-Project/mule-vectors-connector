@@ -14,23 +14,31 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LocalFileIterator implements FileIterator {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class LocalFileIterator implements FileIterator, AutoCloseable {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileIterator.class);
 
   private final LocalStorage localClient;
   private final String fullPath;
   private Iterator<Path> pathIterator;
+  private DirectoryStream<Path> directoryStream;
 
   public LocalFileIterator(LocalStorage localClient, String directory) {
     this.localClient = localClient;
     this.fullPath = directory;
     this.pathIterator = null;
+    this.directoryStream = null;
   }
 
   private void fetchNextPathIterator() {
     try {
-      DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(fullPath), Files::isRegularFile);
-      pathIterator = stream.iterator();
+      directoryStream = Files.newDirectoryStream(Paths.get(fullPath), Files::isRegularFile);
+      pathIterator = directoryStream.iterator();
     } catch (IOException e) {
+      LOGGER.error("Failed to open directory stream for path: {}", fullPath, e);
       pathIterator = Collections.emptyIterator();
     }
   }
@@ -65,5 +73,16 @@ public class LocalFileIterator implements FileIterator {
       }
     }
     return new FileInfo(content, path.toString(), LocalStorage.parseFileName(path.toString()), mimeType);
+  }
+
+  @Override
+  public void close() {
+    if (directoryStream != null) {
+      try {
+        directoryStream.close();
+      } catch (IOException e) {
+        LOGGER.error("Failed to close directory stream for path: {}", fullPath, e);
+      }
+    }
   }
 }
