@@ -1,5 +1,6 @@
 package org.mule.extension.vectors.internal.service.store.qdrant;
 
+import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
@@ -7,12 +8,20 @@ import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
+import java.util.List;
+
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore;
 import io.qdrant.client.QdrantClient;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QdrantStore extends BaseStoreService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(QdrantStore.class);
 
   private final String payloadTextKey;
   private final QdrantClient client;
@@ -52,6 +61,24 @@ public class QdrantStore extends BaseStoreService {
     } catch (Exception e) {
       throw new ModuleException("Failed to build Qdrant embedding store: " + e.getMessage(),
                                 MuleVectorsErrorType.STORE_SERVICES_FAILURE, e);
+    }
+  }
+
+  @Override
+  public JSONObject query(List<TextSegment> textSegments,
+                          List<Embedding> embeddings,
+                          Number maxResults,
+                          Double minScore,
+                          SearchFilterParameters searchFilterParams) {
+
+    LOGGER.debug("Qdrant query on collection '{}': queryEmbeddingDim={}, maxResults={}, minScore={}",
+                 storeName, embeddings.get(0).vector().length, maxResults, minScore);
+    try {
+      return super.query(textSegments, embeddings, maxResults, minScore, searchFilterParams);
+    } catch (Exception e) {
+      LOGGER.debug("Qdrant query failed on collection '{}' with embeddingDim={}: {}",
+                   storeName, embeddings.get(0).vector().length, e.getMessage());
+      throw e;
     }
   }
 

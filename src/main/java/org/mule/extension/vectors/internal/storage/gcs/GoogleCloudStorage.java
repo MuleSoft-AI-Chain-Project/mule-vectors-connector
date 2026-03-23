@@ -9,12 +9,8 @@ import java.nio.channels.Channels;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GoogleCloudStorage {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(GoogleCloudStorage.class);
 
   private final Storage storageService;
   Blob blob;

@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -144,20 +143,6 @@ public class ImageProcessor implements MediaProcessor {
       writer.dispose();
 
       return ImageIO.read(new ByteArrayInputStream(baos.toByteArray()));
-    }
-  }
-
-  /**
-   * Decodes a Base64-encoded string into a {@link BufferedImage}.
-   *
-   * @param base64 The Base64-encoded string representing the image data.
-   * @return A decoded {@link BufferedImage}.
-   * @throws Exception If an error occurs during decoding or image processing.
-   */
-  private BufferedImage base64ToBufferedImage(String base64) throws IOException {
-    byte[] imageBytes = Base64.getDecoder().decode(base64);
-    try (ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes)) {
-      return ImageIO.read(bais);
     }
   }
 

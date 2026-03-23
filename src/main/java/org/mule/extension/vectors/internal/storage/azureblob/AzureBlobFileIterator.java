@@ -53,16 +53,12 @@ public class AzureBlobFileIterator implements FileIterator {
     InputStream content = azureClient.loadFile(container, blobItem.getName());
     BlobClient blobClient = azureClient.getBlonbClient();
     BlobProperties properties = blobClient.getProperties();
-    HashMap<String, Object> metadata = new HashMap() {
-
-      {
-        put(Constants.METADATA_KEY_SOURCE,
-            format("https://%s.blob.core.windows.net/%s/%s", azureClient.azureName, container, blobItem.getName()));
-        put("azure_storage_blob_creation_time", String.valueOf(properties.getCreationTime()));
-        put("azure_storage_blob_last_modified", String.valueOf(properties.getLastModified()));
-        put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));
-      }
-    };
+    HashMap<String, Object> metadata = new HashMap<>();
+    metadata.put(Constants.METADATA_KEY_SOURCE,
+                 format("https://%s.blob.core.windows.net/%s/%s", azureClient.azureName, container, blobItem.getName()));
+    metadata.put("azure_storage_blob_creation_time", String.valueOf(properties.getCreationTime()));
+    metadata.put("azure_storage_blob_last_modified", String.valueOf(properties.getLastModified()));
+    metadata.put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));
     return new FileInfo(content, container + "/" + blobItem.getName(), blobItem.getName(), properties.getContentType(), metadata);
   }
 }

@@ -58,27 +58,21 @@ public class TransformService {
     try {
       byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
       MediaProcessor mediaProcessor = null;
-      if (mediaBinaryParameters.getMediaProcessorParameters() != null) {
-        if (mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
-          ImageProcessorParameters imageProcessorParameters =
-              (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
-          mediaProcessor = ImageProcessor.builder()
-              .targetWidth(imageProcessorParameters.getTargetWidth())
-              .targetHeight(imageProcessorParameters.getTargetHeight())
-              .compressionQuality(imageProcessorParameters.getCompressionQuality())
-              .scaleStrategy(imageProcessorParameters.getScaleStrategy())
-              .build();
-          mediaBytes = mediaProcessor.process(mediaBytes);
-        }
+      if (mediaBinaryParameters.getMediaProcessorParameters() != null
+          && mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
+        ImageProcessorParameters imageProcessorParameters =
+            (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
+        mediaProcessor = ImageProcessor.builder()
+            .targetWidth(imageProcessorParameters.getTargetWidth())
+            .targetHeight(imageProcessorParameters.getTargetHeight())
+            .compressionQuality(imageProcessorParameters.getCompressionQuality())
+            .scaleStrategy(imageProcessorParameters.getScaleStrategy())
+            .build();
+        mediaBytes = mediaProcessor.process(mediaBytes);
       }
-      return createProcessedMediaResponse(
-                                          new ByteArrayInputStream(mediaBytes),
-                                          new HashMap<String, Object>() {
-
-                                            {
-                                              put("mediaType", mediaBinaryParameters.getMediaType());
-                                            }
-                                          });
+      HashMap<String, Object> attributes = new HashMap<>();
+      attributes.put("mediaType", mediaBinaryParameters.getMediaType());
+      return createProcessedMediaResponse(new ByteArrayInputStream(mediaBytes), attributes);
     } catch (ModuleException me) {
       throw me;
     } catch (Exception e) {

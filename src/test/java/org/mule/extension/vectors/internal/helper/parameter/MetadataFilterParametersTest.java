@@ -2,6 +2,8 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.mule.extension.vectors.api.helper.parameter.MetadataFilterParameters;
+
 import org.junit.jupiter.api.Test;
 
 class MetadataFilterParametersTest {

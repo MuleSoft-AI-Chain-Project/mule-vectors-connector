@@ -66,12 +66,8 @@ public class S3FileIterator implements FileIterator {
       throw new NoSuchElementException();
     S3Object object = getS3ObjectIterator().next();
     ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.loadFile(bucket, object.key());
-    HashMap<String, Object> metadata = new HashMap() {
-
-      {
-        put(Constants.METADATA_KEY_SOURCE, format("s3://%s/%s", bucket, object.key()));
-      }
-    };
+    HashMap<String, Object> metadata = new HashMap<>();
+    metadata.put(Constants.METADATA_KEY_SOURCE, format("s3://%s/%s", bucket, object.key()));
     return new FileInfo(responseInputStream, bucket + "/" + object.key(), object.key(),
                         responseInputStream.response().contentType(), metadata);
   }

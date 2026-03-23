@@ -34,7 +34,7 @@ public class AzureBlobStorageConnectionProvider implements BaseStorageConnection
 
   @Override
   public void disconnect(BaseStorageConnection connection) {
-
+    // No-op: connection lifecycle managed by initialise()/dispose() in CachedConnectionProvider
   }
 
   @Override
