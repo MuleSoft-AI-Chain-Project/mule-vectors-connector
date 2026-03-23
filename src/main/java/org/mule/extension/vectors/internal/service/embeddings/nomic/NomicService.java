@@ -38,6 +38,8 @@ public class NomicService implements EmbeddingService {
   private static final String BASE_URL = "https://api-atlas.nomic.ai/v1/";
   private static final String TEXT_EMBEDDING_URL = BASE_URL + "embedding/text";
   private static final String IMAGE_EMBEDDING_URL = BASE_URL + "embedding/image";
+  private static final String MODEL_KEY = "model";
+  private static final String EMBEDDINGS_KEY = "embeddings";
   private static final Logger LOGGER = LoggerFactory.getLogger(NomicService.class);
 
   public NomicService(NomicModelConnection nomicModelConnection, EmbeddingModelParameters embeddingModelParameters) {
@@ -55,7 +57,7 @@ public class NomicService implements EmbeddingService {
 
       // Model part - use charset correctly
       byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-      parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
+      parts.add(new HttpPart(MODEL_KEY, modelBytes, "text/plain", modelBytes.length));
 
       // Image parts
       int index = 0;
@@ -124,22 +126,9 @@ public class NomicService implements EmbeddingService {
     return HttpRequestHelper.handleEmbeddingResponse(response, "Nomic  Error");
   }
 
-  private List<HttpPart> buildImageMultipartPayload(List<byte[]> imageBytesList, String modelName) {
-    List<HttpPart> parts = new ArrayList<>();
-    byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-    parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
-
-    int index = 0;
-    for (byte[] imageBytes : imageBytesList) {
-      String fileName = "image_" + index++ + ".png";
-      parts.add(new HttpPart("images", fileName, imageBytes, "image/png", imageBytes.length));
-    }
-    return parts;
-  }
-
   private byte[] buildTextEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
     Map<String, Object> requestBody = new HashMap<>();
-    requestBody.put("model", modelName);
+    requestBody.put(MODEL_KEY, modelName);
     requestBody.put("texts", inputs);
     return objectMapper.writeValueAsBytes(requestBody);
   }
@@ -152,8 +141,8 @@ public class NomicService implements EmbeddingService {
 
   @Override
   public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
-    LOGGER.warn(String.format("Nomic %s model doesn't support generating embedding for a combination of image and text. " +
-        "The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName()));
+    LOGGER.warn("Nomic {} model doesn't support generating embedding for a combination of image and text. " +
+        "The text will not be sent to the model to generate the embeddings.", embeddingModelParameters.getEmbeddingModelName());
     return embedImage(imageBytes);
   }
 
@@ -162,7 +151,7 @@ public class NomicService implements EmbeddingService {
 
     String responseJson = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
     JSONObject response = new JSONObject(responseJson);
-    JSONArray embeddings = response.getJSONArray("embeddings");
+    JSONArray embeddings = response.getJSONArray(EMBEDDINGS_KEY);
     JSONObject usage = response.getJSONObject("usage");
 
     List<Embedding> embeddingsList = new ArrayList<>();
@@ -185,7 +174,7 @@ public class NomicService implements EmbeddingService {
       String responseJson =
           (String) generateImageEmbeddings(List.of(imageBytes), embeddingModelParameters.getEmbeddingModelName());
       JSONObject response = new JSONObject(responseJson);
-      JSONArray embeddings = response.getJSONArray("embeddings");
+      JSONArray embeddings = response.getJSONArray(EMBEDDINGS_KEY);
 
       if (embeddings.length() > 0) {
         JSONArray embeddingArray = embeddings.getJSONArray(0);
@@ -207,7 +196,7 @@ public class NomicService implements EmbeddingService {
     try {
       String responseJson = (String) generateImageEmbeddings(imageBytesList, embeddingModelParameters.getEmbeddingModelName());
       JSONObject response = new JSONObject(responseJson);
-      JSONArray embeddings = response.getJSONArray("embeddings");
+      JSONArray embeddings = response.getJSONArray(EMBEDDINGS_KEY);
       JSONObject usage = response.getJSONObject("usage");
 
       List<Embedding> embeddingsList = new ArrayList<>();

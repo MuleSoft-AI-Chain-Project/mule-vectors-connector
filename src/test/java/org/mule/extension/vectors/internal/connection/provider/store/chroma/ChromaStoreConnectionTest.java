@@ -47,6 +47,7 @@ class ChromaStoreConnectionTest {
     when(parameters.getUrl()).thenReturn("http://chroma:8000");
     ChromaStoreConnection conn = new ChromaStoreConnection(parameters, httpClient);
     conn.disconnect();
+    assertThat(conn.getHttpClient()).isSameAs(httpClient);
   }
 
   @Test

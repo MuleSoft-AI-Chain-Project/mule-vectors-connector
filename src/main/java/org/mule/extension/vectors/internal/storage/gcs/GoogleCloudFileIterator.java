@@ -37,7 +37,7 @@ public class GoogleCloudFileIterator implements FileIterator {
       if (Objects.equals(objectKey, "")) {
         this.blobPage = gcsClient.getStorageService().list(bucket);
       } else {
-        String prefix = objectKey + ((objectKey.endsWith("/") ? "" : "/"));
+        String prefix = objectKey + (objectKey.endsWith("/") ? "" : "/");
         this.blobPage =
             gcsClient.getStorageService().list(bucket, com.google.cloud.storage.Storage.BlobListOption.prefix(prefix));
       }

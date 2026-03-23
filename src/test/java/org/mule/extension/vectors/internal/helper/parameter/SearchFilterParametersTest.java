@@ -2,6 +2,8 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
+
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;

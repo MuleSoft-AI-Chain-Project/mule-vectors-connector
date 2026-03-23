@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.helper.parameter;
+package org.mule.extension.vectors.api.helper.parameter;
 
 import org.mule.extension.vectors.internal.helper.metadata.MetadataFilterHelper;
 

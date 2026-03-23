@@ -1,4 +1,4 @@
-package org.mule.extension.vectors.internal.helper.document;
+package org.mule.extension.vectors.api.helper.document;
 
 import java.io.InputStream;
 

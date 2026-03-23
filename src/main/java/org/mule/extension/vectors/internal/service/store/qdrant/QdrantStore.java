@@ -1,10 +1,10 @@
 package org.mule.extension.vectors.internal.service.store.qdrant;
 
+import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.store.qdrant.QdrantStoreConnection;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.internal.service.store.BaseStoreService;
 import org.mule.runtime.extension.api.exception.ModuleException;
 

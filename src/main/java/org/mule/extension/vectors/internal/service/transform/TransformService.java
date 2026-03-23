@@ -58,18 +58,17 @@ public class TransformService {
     try {
       byte[] mediaBytes = IOUtils.toByteArray(mediaBinaryParameters.getBinaryInputStream());
       MediaProcessor mediaProcessor = null;
-      if (mediaBinaryParameters.getMediaProcessorParameters() != null) {
-        if (mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
-          ImageProcessorParameters imageProcessorParameters =
-              (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
-          mediaProcessor = ImageProcessor.builder()
-              .targetWidth(imageProcessorParameters.getTargetWidth())
-              .targetHeight(imageProcessorParameters.getTargetHeight())
-              .compressionQuality(imageProcessorParameters.getCompressionQuality())
-              .scaleStrategy(imageProcessorParameters.getScaleStrategy())
-              .build();
-          mediaBytes = mediaProcessor.process(mediaBytes);
-        }
+      if (mediaBinaryParameters.getMediaProcessorParameters() != null
+          && mediaBinaryParameters.getMediaType().equals(MEDIA_TYPE_IMAGE)) {
+        ImageProcessorParameters imageProcessorParameters =
+            (ImageProcessorParameters) mediaBinaryParameters.getMediaProcessorParameters();
+        mediaProcessor = ImageProcessor.builder()
+            .targetWidth(imageProcessorParameters.getTargetWidth())
+            .targetHeight(imageProcessorParameters.getTargetHeight())
+            .compressionQuality(imageProcessorParameters.getCompressionQuality())
+            .scaleStrategy(imageProcessorParameters.getScaleStrategy())
+            .build();
+        mediaBytes = mediaProcessor.process(mediaBytes);
       }
       HashMap<String, Object> attributes = new HashMap<>();
       attributes.put("mediaType", mediaBinaryParameters.getMediaType());

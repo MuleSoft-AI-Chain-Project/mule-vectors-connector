@@ -2,6 +2,7 @@ package org.mule.extension.vectors.internal.helper.document;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.mule.extension.vectors.api.helper.document.TextDocumentParser;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.io.ByteArrayInputStream;

@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.internal.service.store;
 
-import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
-import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
+import org.mule.extension.vectors.api.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
 
 import java.util.List;
 

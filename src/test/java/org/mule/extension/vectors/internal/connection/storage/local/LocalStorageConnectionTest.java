@@ -65,5 +65,6 @@ class LocalStorageConnectionTest {
   void disconnect_isNoOp() {
     LocalStorageConnection conn = new LocalStorageConnection("/tmp");
     conn.disconnect();
+    assertThat(conn.getWorkingDir()).isEqualTo("/tmp");
   }
 }

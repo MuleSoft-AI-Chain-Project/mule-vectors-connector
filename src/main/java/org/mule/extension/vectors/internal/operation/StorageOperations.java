@@ -15,6 +15,7 @@ import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
 import org.mule.extension.vectors.internal.pagination.FilePagingProvider;
 import org.mule.extension.vectors.internal.service.StorageServiceFactory;
 import org.mule.extension.vectors.internal.service.storage.StorageService;
+import org.mule.runtime.api.streaming.Cursor;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.error.Throws;
@@ -30,12 +31,7 @@ import org.mule.runtime.extension.api.runtime.streaming.StreamingHelper;
 
 import java.io.InputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StorageOperations {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(StorageOperations.class);
 
   /**
    * Loads a single file from the storage specified by the {@code contextPath} and returns its content
@@ -87,10 +83,10 @@ public class StorageOperations {
   @Alias("Storage-load-file-list")
   @DisplayName("[Storage] Load file list")
   @Throws(StorageErrorTypeProvider.class)
-  public PagingProvider<BaseStorageConnection, Result<CursorProvider, StorageResponseAttributes>> loadFileList(@Config StorageConfiguration storageConfiguration,
-                                                                                                               @ParameterGroup(
-                                                                                                                   name = "Container") FileParameters fileParameters,
-                                                                                                               StreamingHelper streamingHelper) {
+  public PagingProvider<BaseStorageConnection, Result<CursorProvider<Cursor>, StorageResponseAttributes>> loadFileList(@Config StorageConfiguration storageConfiguration,
+                                                                                                                       @ParameterGroup(
+                                                                                                                           name = "Container") FileParameters fileParameters,
+                                                                                                                       StreamingHelper streamingHelper) {
     try {
       return new FilePagingProvider(storageConfiguration, fileParameters.getContextPath(), streamingHelper);
     } catch (Exception e) {

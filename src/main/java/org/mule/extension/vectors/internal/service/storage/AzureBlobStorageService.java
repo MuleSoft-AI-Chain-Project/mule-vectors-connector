@@ -27,7 +27,6 @@ public class AzureBlobStorageService implements StorageService {
     // Assume azureName is available from the client
     String container = AzureBlobStorage.parseContainer(path, azureClient.azureName);
     String blobName = AzureBlobStorage.parseBlobName(path, azureClient.azureName);
-    InputStream content = azureClient.loadFile(container, blobName);
     BlobClient blobClient = azureClient.getBlonbClient();
     BlobProperties properties = blobClient.getProperties();
     HashMap<String, Object> metadata = new HashMap<>();
@@ -37,6 +36,7 @@ public class AzureBlobStorageService implements StorageService {
     metadata.put("azure_storage_blob_last_modified", String.valueOf(properties.getLastModified()));
     metadata.put("azure_storage_blob_content_length", String.valueOf(properties.getBlobSize()));
 
+    InputStream content = azureClient.loadFile(container, blobName);
     return new FileInfo(content, container + "/" + blobName, blobName, properties.getContentType(), metadata);
   }
 

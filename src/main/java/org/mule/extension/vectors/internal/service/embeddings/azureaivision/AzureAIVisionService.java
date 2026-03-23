@@ -158,10 +158,9 @@ public class AzureAIVisionService implements EmbeddingService {
   @Override
   public Response<Embedding> embedTextAndImage(String text, byte[] imageBytes) {
 
-    LOGGER.warn(String
-        .format("Azure AI Vision %s model doesn't support generating embedding for a combination of image and text. " +
-            "The text will not be sent to the model to generate the embeddings.",
-                embeddingModelParameters.getEmbeddingModelName()));
+    LOGGER.warn("Azure AI Vision {} model doesn't support generating embedding for a combination of image and text. " +
+        "The text will not be sent to the model to generate the embeddings.",
+                embeddingModelParameters.getEmbeddingModelName());
     return embedImage(imageBytes);
   }
 }

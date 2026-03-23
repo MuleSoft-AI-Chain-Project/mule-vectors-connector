@@ -18,6 +18,8 @@ import org.mule.extension.vectors.internal.storage.local.LocalStorage;
 
 public class StorageServiceFactory {
 
+  private StorageServiceFactory() {}
+
   public static StorageService getService(StorageConfiguration config, BaseStorageConnection connection) {
     if (connection instanceof AmazonS3StorageConnection) {
       AmazonS3Storage s3Client = new AmazonS3Storage(config, (AmazonS3StorageConnection) connection);

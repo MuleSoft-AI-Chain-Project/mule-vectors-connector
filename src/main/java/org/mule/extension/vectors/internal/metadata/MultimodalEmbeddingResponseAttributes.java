@@ -1,6 +1,7 @@
 package org.mule.extension.vectors.api.metadata;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Represents the attributes of an embedding operation response.
@@ -45,5 +46,25 @@ public class MultimodalEmbeddingResponseAttributes extends EmbeddingResponseAttr
    */
   public String getMimeType() {
     return mimeType;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
+    MultimodalEmbeddingResponseAttributes that = (MultimodalEmbeddingResponseAttributes) o;
+    return Objects.equals(mimeType, that.mimeType) && Objects.equals(mediaType, that.mediaType);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + Objects.hashCode(mimeType);
+    result = 31 * result + Objects.hashCode(mediaType);
+    return result;
   }
 }
