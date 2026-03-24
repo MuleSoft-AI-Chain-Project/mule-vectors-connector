@@ -14,6 +14,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.util.List;
+import java.util.Objects;
 
 @ExclusiveOptionals
 public class RemoveFilterParameters extends MetadataFilterParameters {
@@ -55,5 +56,20 @@ public class RemoveFilterParameters extends MetadataFilterParameters {
 
   public boolean isIdsSet() {
     return ids != null && !ids.isEmpty();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    RemoveFilterParameters that = (RemoveFilterParameters) o;
+    return Objects.equals(ids, that.ids) && Objects.equals(condition, that.condition);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(ids, condition);
   }
 }

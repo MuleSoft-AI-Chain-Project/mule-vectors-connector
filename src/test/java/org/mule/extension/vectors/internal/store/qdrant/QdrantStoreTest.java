@@ -164,7 +164,9 @@ class QdrantStoreTest {
       QdrantStore store = createStore("testStore", 3, true);
       Embedding qEmb = new Embedding(new float[] {0.1f, 0.2f, 0.3f});
       TextSegment seg = new TextSegment("text", new dev.langchain4j.data.document.Metadata());
-      assertThatThrownBy(() -> store.query(List.of(seg), List.of(qEmb), 5, 0.5, null))
+      List<TextSegment> segments = List.of(seg);
+      List<Embedding> embeddings = List.of(qEmb);
+      assertThatThrownBy(() -> store.query(segments, embeddings, 5, 0.5, null))
           .isInstanceOf(RuntimeException.class)
           .hasMessageContaining("query failed");
       verifyNoMoreInteractions(qdrantClient);

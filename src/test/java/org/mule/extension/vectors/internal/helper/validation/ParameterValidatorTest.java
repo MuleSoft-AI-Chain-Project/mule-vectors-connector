@@ -214,8 +214,6 @@ public class ParameterValidatorTest {
     // When & Then
     ModuleException exception = assertThrows(ModuleException.class, () -> {
       ParameterValidator.requireNotBlank("TestConnection", "String Parameter", stringParam);
-      ParameterValidator.requireNotNull("TestConnection", "Object Parameter", objectParam);
-      ParameterValidator.requirePositive("TestConnection", "Port", intParam);
     });
 
     assertEquals("String Parameter is required for TestConnection connection", exception.getMessage());

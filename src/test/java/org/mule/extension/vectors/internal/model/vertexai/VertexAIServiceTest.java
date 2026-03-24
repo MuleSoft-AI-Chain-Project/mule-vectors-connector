@@ -117,7 +117,8 @@ class VertexAIServiceTest {
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(httpResponse));
-      assertThatThrownBy(() -> service.embedTexts(List.of("foo")))
+      List<String> texts = List.of("foo");
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class);
     }
   }
@@ -127,7 +128,8 @@ class VertexAIServiceTest {
     CompletableFuture<String> future = new CompletableFuture<>();
     future.completeExceptionally(new InterruptedException("interrupted"));
     when(modelConnection.getOrRefreshToken()).thenReturn(future);
-    assertThatThrownBy(() -> service.embedTexts(List.of("foo")))
+    List<String> texts = List.of("foo");
+    assertThatThrownBy(() -> service.embedTexts(texts))
         .isInstanceOf(ModuleException.class);
     Thread.interrupted();
   }
@@ -137,7 +139,8 @@ class VertexAIServiceTest {
     CompletableFuture<String> future = new CompletableFuture<>();
     future.completeExceptionally(new ModuleException("auth", MuleVectorsErrorType.AI_SERVICES_FAILURE));
     when(modelConnection.getOrRefreshToken()).thenReturn(future);
-    assertThatThrownBy(() -> service.embedTexts(List.of("foo")))
+    List<String> texts = List.of("foo");
+    assertThatThrownBy(() -> service.embedTexts(texts))
         .isInstanceOf(ModuleException.class)
         .hasMessageContaining("auth");
   }
@@ -187,7 +190,8 @@ class VertexAIServiceTest {
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(failResponse));
-      assertThatThrownBy(() -> service.embedTexts(List.of("foo")))
+      List<String> texts = List.of("foo");
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to read error response body");
     }
@@ -204,7 +208,8 @@ class VertexAIServiceTest {
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.completedFuture(okResponse));
-      assertThatThrownBy(() -> service.embedTexts(List.of("foo")))
+      List<String> texts = List.of("foo");
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to read embedding response");
     }

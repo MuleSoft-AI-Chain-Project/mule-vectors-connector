@@ -59,7 +59,8 @@ class StoreOperationsHelperTest {
         "{\"text\":\"b\",\"metadata\":{}}" +
         "],\"embeddings\":[[0.1]],\"dimension\":1}";
 
-    assertThatThrownBy(() -> StoreOperationsHelper.parseStoreInput(toStream(json), false, null))
+    InputStream is = toStream(json);
+    assertThatThrownBy(() -> StoreOperationsHelper.parseStoreInput(is, false, null))
         .isInstanceOf(ModuleException.class)
         .hasMessageContaining("one text segment only");
   }
@@ -69,14 +70,16 @@ class StoreOperationsHelperTest {
     String json = "{\"text-segments\":[{\"text\":\"a\",\"metadata\":{}}]," +
         "\"embeddings\":[[0.1],[0.2]],\"dimension\":1}";
 
-    assertThatThrownBy(() -> StoreOperationsHelper.parseStoreInput(toStream(json), false, null))
+    InputStream is = toStream(json);
+    assertThatThrownBy(() -> StoreOperationsHelper.parseStoreInput(is, false, null))
         .isInstanceOf(ModuleException.class)
         .hasMessageContaining("one embedding only");
   }
 
   @Test
   void parseStoreInput_invalidJson_throwsModuleException() {
-    assertThatThrownBy(() -> StoreOperationsHelper.parseStoreInput(toStream("not-json"), true, null))
+    InputStream is = toStream("not-json");
+    assertThatThrownBy(() -> StoreOperationsHelper.parseStoreInput(is, true, null))
         .isInstanceOf(ModuleException.class);
   }
 

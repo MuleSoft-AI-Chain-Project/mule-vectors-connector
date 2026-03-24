@@ -78,7 +78,8 @@ class HuggingFaceServiceTest {
           .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(mockResponse));
       helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
           .thenThrow(new ModuleException("Hugging Face API error (HTTP 500): error", MuleVectorsErrorType.AI_SERVICES_FAILURE));
-      assertThrows(ModuleException.class, () -> service.embedTexts(List.of("foo")));
+      List<String> texts = List.of("foo");
+      assertThrows(ModuleException.class, () -> service.embedTexts(texts));
     }
   }
 

@@ -132,10 +132,8 @@ class NomicServiceTest {
           .thenThrow(new ModuleException("fail",
                                          org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
       // Extract the method call to avoid multiple invocations in lambda
-      org.junit.jupiter.api.function.Executable methodCall =
-          () -> service.generateTextEmbeddings(List.of("foo"), "test-model");
-
-      assertThrows(ModuleException.class, methodCall);
+      List<String> texts = List.of("foo");
+      assertThrows(ModuleException.class, () -> service.generateTextEmbeddings(texts, "test-model"));
     }
   }
 
@@ -166,8 +164,9 @@ class NomicServiceTest {
 
   @Test
   void generateImageEmbeddings_emptyList_throwsIllegalArgument() {
+    List<byte[]> emptyImages = Collections.emptyList();
     assertThrows(IllegalArgumentException.class,
-                 () -> service.generateImageEmbeddings(Collections.emptyList(), "model"));
+                 () -> service.generateImageEmbeddings(emptyImages, "model"));
   }
 
   @Test

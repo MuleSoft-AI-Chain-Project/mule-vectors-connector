@@ -41,5 +41,4 @@ class MetadataFilterParametersTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Filter condition is not set");
   }
-  // Happy path is not tested here as it requires MetadataFilterHelper.fromExpression, which is already covered in its own test.
 }

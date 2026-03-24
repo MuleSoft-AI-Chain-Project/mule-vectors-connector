@@ -164,7 +164,8 @@ class AzureAIVisionServiceTest {
     try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
-      assertThatThrownBy(() -> service.embedTexts(List.of("hello")))
+      List<String> texts = List.of("hello");
+      assertThatThrownBy(() -> service.embedTexts(texts))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to process text embedding response");
     } finally {
@@ -178,7 +179,8 @@ class AzureAIVisionServiceTest {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(new CompletableFuture<>());
       Thread.currentThread().interrupt();
-      assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("hello"), "model"))
+      List<String> texts = List.of("hello");
+      assertThatThrownBy(() -> service.generateTextEmbeddings(texts, "model"))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to embed text");
     } finally {
@@ -192,7 +194,8 @@ class AzureAIVisionServiceTest {
       helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
           .thenReturn(new CompletableFuture<>());
       Thread.currentThread().interrupt();
-      assertThatThrownBy(() -> service.generateImageEmbeddings(List.of(new byte[] {1}), "model"))
+      List<byte[]> images = List.of(new byte[] {1});
+      assertThatThrownBy(() -> service.generateImageEmbeddings(images, "model"))
           .isInstanceOf(ModuleException.class)
           .hasMessageContaining("Failed to embed image");
     } finally {

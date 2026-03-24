@@ -94,7 +94,7 @@ public class NomicService implements EmbeddingService {
   private List<HttpPart> buildImageMultipartPayload(List<byte[]> imageBytesList, String modelName) {
     List<HttpPart> parts = new ArrayList<>();
     byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-    parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
+    parts.add(new HttpPart(MODEL_KEY, modelBytes, "text/plain", modelBytes.length));
 
     int index = 0;
     for (byte[] imageBytes : imageBytesList) {
