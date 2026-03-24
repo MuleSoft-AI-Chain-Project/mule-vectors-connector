@@ -246,9 +246,28 @@ public class ParameterValidatorTest {
         ParameterValidator.requireNotBlank("TestConnection", "Parameter" + i, validValue);
       }
     });
+  }
 
-    // This test verifies that no instances are created during validation
-    // If the old fluent API was used, this would create 1000 objects
-    // With static methods, no objects are created
+  @Test
+  public void testPrivateConstructor_ShouldExist() throws Exception {
+    java.lang.reflect.Constructor<ParameterValidator> constructor =
+        ParameterValidator.class.getDeclaredConstructor();
+    assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
+    constructor.setAccessible(true);
+    assertNotNull(constructor.newInstance());
+  }
+
+  @Test
+  public void testRequireEither_FirstParameterBlank_SecondValid_ShouldPass() {
+    assertDoesNotThrow(() -> {
+      ParameterValidator.requireEither("TestConnection", "Param1", "   ", "Param2", "validValue");
+    });
+  }
+
+  @Test
+  public void testRequireEither_FirstParameterEmpty_SecondValid_ShouldPass() {
+    assertDoesNotThrow(() -> {
+      ParameterValidator.requireEither("TestConnection", "Param1", "", "Param2", "validValue");
+    });
   }
 }

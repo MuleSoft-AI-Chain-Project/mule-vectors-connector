@@ -221,4 +221,43 @@ class EmbeddingOperationsTest {
                                                                                  .hasCauseInstanceOf(RuntimeException.class);
     }
   }
+
+  @Test
+  void buildTokenUsage_allNullCounts_returnsZeros() throws Exception {
+    java.lang.reflect.Method m = EmbeddingOperations.class.getDeclaredMethod(
+                                                                             "buildTokenUsage", Integer.class, Integer.class,
+                                                                             Integer.class);
+    m.setAccessible(true);
+    org.mule.extension.vectors.api.metadata.TokenUsage usage =
+        (org.mule.extension.vectors.api.metadata.TokenUsage) m.invoke(embeddingOperations, null, null, null);
+    assertThat(usage.getInputCount()).isZero();
+    assertThat(usage.getOutputCount()).isZero();
+    assertThat(usage.getTotalCount()).isZero();
+  }
+
+  @Test
+  void buildTokenUsage_allNonNullCounts_returnsValues() throws Exception {
+    java.lang.reflect.Method m = EmbeddingOperations.class.getDeclaredMethod(
+                                                                             "buildTokenUsage", Integer.class, Integer.class,
+                                                                             Integer.class);
+    m.setAccessible(true);
+    org.mule.extension.vectors.api.metadata.TokenUsage usage =
+        (org.mule.extension.vectors.api.metadata.TokenUsage) m.invoke(embeddingOperations, 10, 20, 30);
+    assertThat(usage.getInputCount()).isEqualTo(10);
+    assertThat(usage.getOutputCount()).isEqualTo(20);
+    assertThat(usage.getTotalCount()).isEqualTo(30);
+  }
+
+  @Test
+  void buildTokenUsage_mixedNullCounts_handlesCorrectly() throws Exception {
+    java.lang.reflect.Method m = EmbeddingOperations.class.getDeclaredMethod(
+                                                                             "buildTokenUsage", Integer.class, Integer.class,
+                                                                             Integer.class);
+    m.setAccessible(true);
+    org.mule.extension.vectors.api.metadata.TokenUsage usage =
+        (org.mule.extension.vectors.api.metadata.TokenUsage) m.invoke(embeddingOperations, 5, null, 10);
+    assertThat(usage.getInputCount()).isEqualTo(5);
+    assertThat(usage.getOutputCount()).isZero();
+    assertThat(usage.getTotalCount()).isEqualTo(10);
+  }
 }

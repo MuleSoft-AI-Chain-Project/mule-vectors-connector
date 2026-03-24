@@ -158,4 +158,79 @@ class NomicServiceTest {
     Map<String, String> headers = (Map<String, String>) m.invoke(service);
     assertEquals("Bearer key", headers.get("Authorization"));
   }
+
+  @Test
+  void generateImageEmbeddings_nullList_throwsIllegalArgument() {
+    assertThrows(IllegalArgumentException.class, () -> service.generateImageEmbeddings(null, "model"));
+  }
+
+  @Test
+  void generateImageEmbeddings_emptyList_throwsIllegalArgument() {
+    assertThrows(IllegalArgumentException.class,
+                 () -> service.generateImageEmbeddings(Collections.emptyList(), "model"));
+  }
+
+  @Test
+  void generateImageEmbeddings_normal() throws Exception {
+    when(modelConnection.getHttpClient()).thenReturn(null);
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    String responseJson = "{\"embeddings\": [[0.1, 0.2]]}";
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      HttpResponse mockResponse = mock(HttpResponse.class);
+      helper.when(() -> HttpRequestHelper.executeMultipartPostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(mockResponse));
+      helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+          .thenReturn(responseJson);
+
+      Object result = service.generateImageEmbeddings(
+                                                      List.of(new byte[] {1, 2, 3}), "nomic-embed-vision-v1.5");
+      assertNotNull(result);
+      assertTrue(result instanceof String);
+    }
+  }
+
+  @Test
+  void generateImageEmbeddings_propagatesModuleException() throws Exception {
+    when(modelConnection.getHttpClient()).thenReturn(null);
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      HttpResponse mockResponse = mock(HttpResponse.class);
+      helper.when(() -> HttpRequestHelper.executeMultipartPostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(mockResponse));
+      helper.when(() -> HttpRequestHelper.handleEmbeddingResponse(any(HttpResponse.class), anyString()))
+          .thenThrow(new ModuleException("Nomic API error",
+                                         org.mule.extension.vectors.internal.error.MuleVectorsErrorType.AI_SERVICES_FAILURE));
+
+      List<byte[]> images = List.of(new byte[] {1, 2, 3});
+      assertThrows(ModuleException.class,
+                   () -> service.generateImageEmbeddings(images, "nomic-embed-vision-v1.5"));
+    }
+  }
+
+  @Test
+  void generateImageEmbeddings_wrapsNonModuleException() throws Exception {
+    when(modelConnection.getHttpClient()).thenReturn(null);
+    when(modelConnection.getApiKey()).thenReturn("key");
+    when(modelConnection.getTimeout()).thenReturn(1000L);
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executeMultipartPostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.failedFuture(new RuntimeException("network error")));
+
+      List<byte[]> images = List.of(new byte[] {1, 2, 3});
+      ModuleException ex = assertThrows(ModuleException.class,
+                                        () -> service.generateImageEmbeddings(images, "nomic-embed-vision-v1.5"));
+      assertTrue(ex.getMessage().contains("Failed to generate image embeddings"));
+    }
+  }
+
+  @Test
+  void buildImageMultipartPayload_createsCorrectParts() throws Exception {
+    var m = NomicService.class.getDeclaredMethod("buildImageMultipartPayload", List.class, String.class);
+    m.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    List<?> parts = (List<?>) m.invoke(service, List.of(new byte[] {1, 2}, new byte[] {3, 4}), "test-model");
+    assertEquals(3, parts.size());
+  }
 }

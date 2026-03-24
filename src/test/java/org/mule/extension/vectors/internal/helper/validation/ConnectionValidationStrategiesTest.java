@@ -439,6 +439,171 @@ public class ConnectionValidationStrategiesTest {
     assertTrue(exception.getMessage().contains("Working Directory is required for Ephemeral File connection"));
   }
 
+  // ============ Private Constructor Tests ============
+
+  @Test
+  public void testPrivateConstructor_ShouldExist() throws Exception {
+    java.lang.reflect.Constructor<ConnectionValidationStrategies> constructor =
+        ConnectionValidationStrategies.class.getDeclaredConstructor();
+    assertTrue(java.lang.reflect.Modifier.isPrivate(constructor.getModifiers()));
+    constructor.setAccessible(true);
+    assertNotNull(constructor.newInstance());
+  }
+
+  // ============ Milvus Additional Tests ============
+
+  @Test
+  public void testValidateMilvus_MissingUri_ShouldThrowException() {
+    MilvusStoreConnectionParameters params = mock(MilvusStoreConnectionParameters.class);
+    when(params.getUri()).thenReturn(null);
+    when(params.getToken()).thenReturn("test-token");
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateMilvus(params);
+    });
+
+    assertTrue(exception.getMessage().contains("URI is required for Milvus connection"));
+  }
+
+  @Test
+  public void testValidateMilvus_BlankUri_ShouldThrowException() {
+    MilvusStoreConnectionParameters params = mock(MilvusStoreConnectionParameters.class);
+    when(params.getUri()).thenReturn("   ");
+    when(params.getToken()).thenReturn("test-token");
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateMilvus(params);
+    });
+
+    assertTrue(exception.getMessage().contains("URI is required for Milvus connection"));
+  }
+
+  // ============ Constants Coverage Tests ============
+
+  @Test
+  public void testValidateAlloyDB_MissingDatabase_ShouldThrowException() {
+    AlloyDBStoreConnectionParameters params = mock(AlloyDBStoreConnectionParameters.class);
+    when(params.getProjectId()).thenReturn("test-project");
+    when(params.getRegion()).thenReturn("us-central1");
+    when(params.getCluster()).thenReturn("test-cluster");
+    when(params.getInstance()).thenReturn("test-instance");
+    when(params.getIamAccountEmail()).thenReturn("test@example.com");
+    when(params.getHost()).thenReturn("localhost");
+    when(params.getPort()).thenReturn(5432);
+    when(params.getDatabase()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateAlloyDB(params);
+    });
+
+    assertTrue(exception.getMessage().contains("Database is required for AlloyDB connection"));
+  }
+
+  @Test
+  public void testValidateAlloyDB_MissingPassword_ShouldThrowException() {
+    AlloyDBStoreConnectionParameters params = mock(AlloyDBStoreConnectionParameters.class);
+    when(params.getProjectId()).thenReturn("test-project");
+    when(params.getRegion()).thenReturn("us-central1");
+    when(params.getCluster()).thenReturn("test-cluster");
+    when(params.getInstance()).thenReturn("test-instance");
+    when(params.getIamAccountEmail()).thenReturn("test@example.com");
+    when(params.getHost()).thenReturn("localhost");
+    when(params.getPort()).thenReturn(5432);
+    when(params.getDatabase()).thenReturn("testdb");
+    when(params.getUser()).thenReturn("testuser");
+    when(params.getPassword()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateAlloyDB(params);
+    });
+
+    assertTrue(exception.getMessage().contains("Password is required for AlloyDB connection"));
+  }
+
+  @Test
+  public void testValidatePGVector_MissingPassword_ShouldThrowException() {
+    PGVectorStoreConnectionParameters params = mock(PGVectorStoreConnectionParameters.class);
+    when(params.getHost()).thenReturn("localhost");
+    when(params.getPort()).thenReturn(5432);
+    when(params.getDatabase()).thenReturn("testdb");
+    when(params.getUser()).thenReturn("testuser");
+    when(params.getPassword()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validatePGVector(params);
+    });
+
+    assertTrue(exception.getMessage().contains("Password is required for PGVector connection"));
+  }
+
+  @Test
+  public void testValidateWeaviate_MissingApiKey_ShouldThrowException() {
+    WeaviateStoreConnectionParameters params = mock(WeaviateStoreConnectionParameters.class);
+    when(params.getScheme()).thenReturn("https");
+    when(params.getHost()).thenReturn("localhost");
+    when(params.getApiKey()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateWeaviate(params);
+    });
+
+    assertTrue(exception.getMessage().contains("API Key is required for Weaviate connection"));
+  }
+
+  @Test
+  public void testValidateMongoDBAtlas_MissingPassword_ShouldThrowException() {
+    MongoDBAtlasStoreConnectionParameters params = mock(MongoDBAtlasStoreConnectionParameters.class);
+    when(params.getHost()).thenReturn("localhost");
+    when(params.getUser()).thenReturn("testuser");
+    when(params.getPassword()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateMongoDBAtlas(params);
+    });
+
+    assertTrue(exception.getMessage().contains("Password is required for MongoDB Atlas connection"));
+  }
+
+  @Test
+  public void testValidateElasticsearch_MissingBothPasswordAndApiKey_ShouldThrowException() {
+    ElasticsearchStoreConnectionParameters params = mock(ElasticsearchStoreConnectionParameters.class);
+    when(params.getUrl()).thenReturn("https://localhost:9200");
+    when(params.getPassword()).thenReturn(null);
+    when(params.getApiKey()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateElasticsearch(params);
+    });
+
+    assertTrue(exception.getMessage().contains("Either password or API Key is required for Elasticsearch connection"));
+  }
+
+  @Test
+  public void testValidatePinecone_MissingApiKey_ShouldThrowException() {
+    PineconeStoreConnectionParameters params = mock(PineconeStoreConnectionParameters.class);
+    when(params.getApiKey()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validatePinecone(params);
+    });
+
+    assertTrue(exception.getMessage().contains("API Key is required for Pinecone connection"));
+  }
+
+  @Test
+  public void testValidateQdrant_MissingApiKey_ShouldThrowException() {
+    QdrantStoreConnectionParameters params = mock(QdrantStoreConnectionParameters.class);
+    when(params.getHost()).thenReturn("localhost");
+    when(params.getGprcPort()).thenReturn(6334);
+    when(params.getApiKey()).thenReturn(null);
+
+    ModuleException exception = assertThrows(ModuleException.class, () -> {
+      ConnectionValidationStrategies.validateQdrant(params);
+    });
+
+    assertTrue(exception.getMessage().contains("API Key is required for Qdrant connection"));
+  }
+
   // ============ Edge Cases Tests ============
 
   @Test
