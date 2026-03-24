@@ -35,4 +35,36 @@ class TextDocumentParserTest {
     InputStream result = parser.parse(null);
     assertThat(result).isNull();
   }
+
+  @Test
+  void equals_sameObject_shouldReturnTrue() {
+    TextDocumentParser parser = new TextDocumentParser();
+    assertThat(parser).isEqualTo(parser);
+  }
+
+  @Test
+  void equals_sameType_shouldReturnTrue() {
+    TextDocumentParser p1 = new TextDocumentParser();
+    TextDocumentParser p2 = new TextDocumentParser();
+    assertThat(p1).isEqualTo(p2);
+  }
+
+  @Test
+  void equals_null_shouldReturnFalse() {
+    TextDocumentParser parser = new TextDocumentParser();
+    assertThat(parser).isNotEqualTo(null);
+  }
+
+  @Test
+  void equals_differentClass_shouldReturnFalse() {
+    TextDocumentParser parser = new TextDocumentParser();
+    assertThat(parser).isNotEqualTo("string");
+  }
+
+  @Test
+  void hashCode_sameType_shouldBeEqual() {
+    TextDocumentParser p1 = new TextDocumentParser();
+    TextDocumentParser p2 = new TextDocumentParser();
+    assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
+  }
 }

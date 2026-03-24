@@ -33,4 +33,58 @@ class SearchFilterParametersTest {
     SearchFilterParameters params = new SearchFilterParameters();
     assertThat(params.isConditionSet()).isFalse();
   }
+
+  @Test
+  void equals_sameObject_shouldReturnTrue() throws Exception {
+    SearchFilterParameters params = createParams("foo = 'bar'");
+    assertThat(params).isEqualTo(params);
+  }
+
+  @Test
+  void equals_sameCondition_shouldReturnTrue() throws Exception {
+    SearchFilterParameters p1 = createParams("foo = 'bar'");
+    SearchFilterParameters p2 = createParams("foo = 'bar'");
+    assertThat(p1).isEqualTo(p2);
+  }
+
+  @Test
+  void equals_differentCondition_shouldReturnFalse() throws Exception {
+    SearchFilterParameters p1 = createParams("foo = 'bar'");
+    SearchFilterParameters p2 = createParams("baz = 'qux'");
+    assertThat(p1).isNotEqualTo(p2);
+  }
+
+  @Test
+  void equals_null_shouldReturnFalse() throws Exception {
+    SearchFilterParameters params = createParams("foo = 'bar'");
+    assertThat(params).isNotEqualTo(null);
+  }
+
+  @Test
+  void equals_differentClass_shouldReturnFalse() throws Exception {
+    SearchFilterParameters params = createParams("foo = 'bar'");
+    assertThat(params).isNotEqualTo("foo = 'bar'");
+  }
+
+  @Test
+  void hashCode_sameCondition_shouldBeEqual() throws Exception {
+    SearchFilterParameters p1 = createParams("foo = 'bar'");
+    SearchFilterParameters p2 = createParams("foo = 'bar'");
+    assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
+  }
+
+  @Test
+  void hashCode_differentCondition_shouldDiffer() throws Exception {
+    SearchFilterParameters p1 = createParams("foo = 'bar'");
+    SearchFilterParameters p2 = createParams("baz = 'qux'");
+    assertThat(p1.hashCode()).isNotEqualTo(p2.hashCode());
+  }
+
+  private SearchFilterParameters createParams(String condition) throws Exception {
+    SearchFilterParameters params = new SearchFilterParameters();
+    Field condField = params.getClass().getDeclaredField("condition");
+    condField.setAccessible(true);
+    condField.set(params, condition);
+    return params;
+  }
 }
