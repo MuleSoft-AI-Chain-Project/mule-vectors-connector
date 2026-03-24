@@ -2,8 +2,8 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.mule.extension.vectors.api.helper.document.DocumentParser;
 import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
-import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

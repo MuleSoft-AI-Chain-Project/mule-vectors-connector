@@ -19,6 +19,12 @@ import org.mule.extension.vectors.internal.connection.provider.store.weaviate.We
  */
 public class ConnectionValidationStrategies {
 
+  private ConnectionValidationStrategies() {}
+
+  private static final String DATABASE = "Database";
+  private static final String PASSWORD = "Password";
+  private static final String API_KEY = "API Key";
+
   /**
   * Validates AlloyDB connection parameters.
   */
@@ -31,9 +37,9 @@ public class ConnectionValidationStrategies {
     ParameterValidator.requireNotBlank(connectionType, "IAM Account Email", params.getIamAccountEmail());
     ParameterValidator.requireNotBlank(connectionType, "Host", params.getHost());
     ParameterValidator.requirePositive(connectionType, "Port", params.getPort());
-    ParameterValidator.requireNotBlank(connectionType, "Database", params.getDatabase());
+    ParameterValidator.requireNotBlank(connectionType, DATABASE, params.getDatabase());
     ParameterValidator.requireNotBlank(connectionType, "User", params.getUser());
-    ParameterValidator.requireNotBlank(connectionType, "Password", params.getPassword());
+    ParameterValidator.requireNotBlank(connectionType, PASSWORD, params.getPassword());
   }
 
   /**
@@ -43,9 +49,9 @@ public class ConnectionValidationStrategies {
     String connectionType = "PGVector";
     ParameterValidator.requireNotBlank(connectionType, "Host", params.getHost());
     ParameterValidator.requirePositive(connectionType, "Port", params.getPort());
-    ParameterValidator.requireNotBlank(connectionType, "Database", params.getDatabase());
+    ParameterValidator.requireNotBlank(connectionType, DATABASE, params.getDatabase());
     ParameterValidator.requireNotBlank(connectionType, "User", params.getUser());
-    ParameterValidator.requireNotBlank(connectionType, "Password", params.getPassword());
+    ParameterValidator.requireNotBlank(connectionType, PASSWORD, params.getPassword());
   }
 
   /**
@@ -55,7 +61,7 @@ public class ConnectionValidationStrategies {
     String connectionType = "Weaviate";
     ParameterValidator.requireNotBlank(connectionType, "Scheme", params.getScheme());
     ParameterValidator.requireNotBlank(connectionType, "Host", params.getHost());
-    ParameterValidator.requireNotBlank(connectionType, "API Key", params.getApiKey());
+    ParameterValidator.requireNotBlank(connectionType, API_KEY, params.getApiKey());
   }
 
   /**
@@ -65,8 +71,8 @@ public class ConnectionValidationStrategies {
     String connectionType = "MongoDB Atlas";
     ParameterValidator.requireNotBlank(connectionType, "Host", params.getHost());
     ParameterValidator.requireNotBlank(connectionType, "User", params.getUser());
-    ParameterValidator.requireNotBlank(connectionType, "Password", params.getPassword());
-    ParameterValidator.requireNotBlank(connectionType, "Database", params.getDatabase());
+    ParameterValidator.requireNotBlank(connectionType, PASSWORD, params.getPassword());
+    ParameterValidator.requireNotBlank(connectionType, DATABASE, params.getDatabase());
   }
 
   /**
@@ -75,7 +81,7 @@ public class ConnectionValidationStrategies {
   public static void validateOpenSearch(OpenSearchStoreConnectionParameters params) {
     String connectionType = "OpenSearch";
     ParameterValidator.requireNotBlank(connectionType, "URL", params.getUrl());
-    ParameterValidator.requireEither(connectionType, "password", params.getPassword(), "API Key", params.getApiKey());
+    ParameterValidator.requireEither(connectionType, "password", params.getPassword(), API_KEY, params.getApiKey());
   }
 
   /**
@@ -84,7 +90,7 @@ public class ConnectionValidationStrategies {
   public static void validateElasticsearch(ElasticsearchStoreConnectionParameters params) {
     String connectionType = "Elasticsearch";
     ParameterValidator.requireNotBlank(connectionType, "URL", params.getUrl());
-    ParameterValidator.requireEither(connectionType, "password", params.getPassword(), "API Key", params.getApiKey());
+    ParameterValidator.requireEither(connectionType, "password", params.getPassword(), API_KEY, params.getApiKey());
   }
 
   /**
@@ -100,7 +106,7 @@ public class ConnectionValidationStrategies {
    */
   public static void validatePinecone(PineconeStoreConnectionParameters params) {
     String connectionType = "Pinecone";
-    ParameterValidator.requireNotBlank(connectionType, "API Key", params.getApiKey());
+    ParameterValidator.requireNotBlank(connectionType, API_KEY, params.getApiKey());
     ParameterValidator.requireNotBlank(connectionType, "Cloud", params.getCloud());
     ParameterValidator.requireNotBlank(connectionType, "Region", params.getRegion());
   }
@@ -112,7 +118,7 @@ public class ConnectionValidationStrategies {
     String connectionType = "Qdrant";
     ParameterValidator.requireNotBlank(connectionType, "Host", params.getHost());
     ParameterValidator.requirePositive(connectionType, "gprcPort", params.getGprcPort());
-    ParameterValidator.requireNotBlank(connectionType, "API Key", params.getApiKey());
+    ParameterValidator.requireNotBlank(connectionType, API_KEY, params.getApiKey());
     ParameterValidator.requireNotBlank(connectionType, "TextSegmentKey", params.getTextSegmentKey());
   }
 
@@ -131,7 +137,7 @@ public class ConnectionValidationStrategies {
   public static void validateAISearch(AISearchStoreConnectionParameters params) {
     String connectionType = "AI Search";
     ParameterValidator.requireNotBlank(connectionType, "URL", params.getUrl());
-    ParameterValidator.requireNotBlank(connectionType, "API Key", params.getApiKey());
+    ParameterValidator.requireNotBlank(connectionType, API_KEY, params.getApiKey());
   }
 
   /**

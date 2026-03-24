@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -217,10 +216,10 @@ public class Utils {
   public static InputStream splitTextIntoTextSegments(InputStream content, int maxSegmentSizeInChars, int maxOverlapSizeInChars)
       throws IOException {
 
-    List<TextSegment> textSegments = new LinkedList<>();
     if (maxSegmentSizeInChars > 0) {
       DocumentSplitter documentSplitter = DocumentSplitters.recursive(maxSegmentSizeInChars, maxOverlapSizeInChars);
-      textSegments = documentSplitter.split(new DefaultDocument(IOUtils.toString(content, StandardCharsets.UTF_8)));
+      List<TextSegment> textSegments =
+          documentSplitter.split(new DefaultDocument(IOUtils.toString(content, StandardCharsets.UTF_8)));
       JSONArray responseJsonArray = new JSONArray();
       textSegments.forEach(textSegment -> responseJsonArray.put(textSegment.text()));
       InputStream responseStream = IOUtils.toInputStream(responseJsonArray.toString(), StandardCharsets.UTF_8);

@@ -19,7 +19,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
     description = "LangChain4J Qdrant",
     nameRegexpMatcher = "(.*)\\.jar",
     requiredClassName = "dev.langchain4j.store.embedding.qdrant.QdrantEmbeddingStore",
-    coordinates = "dev.langchain4j:langchain4j-qdrant:1.1.0-beta7")
+    coordinates = "dev.langchain4j:langchain4j-qdrant:1.12.1-beta21")
 public class QdrantStoreConnectionProvider implements BaseStoreConnectionProvider {
 
   @ParameterGroup(name = Placement.CONNECTION_TAB)

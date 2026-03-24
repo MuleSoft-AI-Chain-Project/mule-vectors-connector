@@ -158,4 +158,45 @@ class AzureAIVisionServiceTest {
       assertThat(result.get(1).vector()).containsExactly(0.1f, 0.2f);
     }
   }
+
+  @Test
+  void embedTexts_failure_throwsModuleException() {
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.failedFuture(new RuntimeException("fail")));
+      assertThatThrownBy(() -> service.embedTexts(List.of("hello")))
+          .isInstanceOf(ModuleException.class)
+          .hasMessageContaining("Failed to process text embedding response");
+    } finally {
+      Thread.interrupted();
+    }
+  }
+
+  @Test
+  void generateTextEmbeddings_interruptedException() {
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(new CompletableFuture<>());
+      Thread.currentThread().interrupt();
+      assertThatThrownBy(() -> service.generateTextEmbeddings(List.of("hello"), "model"))
+          .isInstanceOf(ModuleException.class)
+          .hasMessageContaining("Failed to embed text");
+    } finally {
+      Thread.interrupted();
+    }
+  }
+
+  @Test
+  void generateImageEmbeddings_interruptedException() {
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(new CompletableFuture<>());
+      Thread.currentThread().interrupt();
+      assertThatThrownBy(() -> service.generateImageEmbeddings(List.of(new byte[] {1}), "model"))
+          .isInstanceOf(ModuleException.class)
+          .hasMessageContaining("Failed to embed image");
+    } finally {
+      Thread.interrupted();
+    }
+  }
 }

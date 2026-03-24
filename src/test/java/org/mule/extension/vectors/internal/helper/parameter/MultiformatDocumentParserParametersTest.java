@@ -2,9 +2,9 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.mule.extension.vectors.api.helper.document.DocumentParser;
+import org.mule.extension.vectors.api.helper.document.MultiformatDocumentParser;
 import org.mule.extension.vectors.api.parameter.MultiformatDocumentParserParameters;
-import org.mule.extension.vectors.internal.helper.document.DocumentParser;
-import org.mule.extension.vectors.internal.helper.document.MultiformatDocumentParser;
 
 import org.junit.jupiter.api.Test;
 

@@ -4,6 +4,8 @@ import static java.lang.System.getProperty;
 
 public class FipsUtils {
 
+  private FipsUtils() {}
+
   /**
    * 
    * Set of constants pertaining to the FIPS

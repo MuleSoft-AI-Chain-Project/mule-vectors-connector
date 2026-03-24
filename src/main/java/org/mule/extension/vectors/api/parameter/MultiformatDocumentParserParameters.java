@@ -1,8 +1,8 @@
 package org.mule.extension.vectors.api.parameter;
 
+import org.mule.extension.vectors.api.helper.document.DocumentParser;
+import org.mule.extension.vectors.api.helper.document.MultiformatDocumentParser;
 import org.mule.extension.vectors.internal.constant.Constants;
-import org.mule.extension.vectors.internal.helper.document.DocumentParser;
-import org.mule.extension.vectors.internal.helper.document.MultiformatDocumentParser;
 import org.mule.runtime.api.meta.ExpressionSupport;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.Expression;
@@ -35,5 +35,20 @@ public class MultiformatDocumentParserParameters implements DocumentParserParame
 
   public boolean isIncludeMetadata() {
     return includeMetadata;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    MultiformatDocumentParserParameters that = (MultiformatDocumentParserParameters) o;
+    return includeMetadata == that.includeMetadata;
+  }
+
+  @Override
+  public int hashCode() {
+    return Boolean.hashCode(includeMetadata);
   }
 }
