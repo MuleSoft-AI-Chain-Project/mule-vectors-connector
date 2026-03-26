@@ -44,7 +44,7 @@
 		</choice>
 	</munit:after-suite>
 
-	<munit:test name="store-operations-add-to-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model').contains('fips')]">
+	<munit:test name="store-operations-add-to-store" ignore="#[p('mule.security.model') != null and p('mule.security.model') contains 'fips']">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-ADD-to-store-exec" name="store-operations-add-to-store-exec"/>
 		</munit:execution>
@@ -60,7 +60,7 @@
 		<munit-tools:assert-equals actual="#[sizeOf(payload.embeddingIds)]" doc:name="Assert has 4 embedding ids" expected="#[4]" message="The operation did not return 4 embedding ids."/>
 	</sub-flow>
 
-	<munit:test name="store-operations-query-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model').contains('fips')]">
+	<munit:test name="store-operations-query-from-store" ignore="#[p('mule.security.model') != null and p('mule.security.model') contains 'fips']">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-QUERY-from-store-exec" name="store-operations-query-from-store-exec"/>
 		</munit:execution>
@@ -79,7 +79,7 @@ output text/plain
 		<munit-tools:assert-equals doc:name="Assert has 4 sources" actual="#[sizeOf(payload.sources)]" expected="#[4]" message="The operation did not return 4 embedding ids." />
 	</sub-flow>
 
-	<munit:test name="store-operations-query-all-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model').contains('fips')]">
+	<munit:test name="store-operations-query-all-from-store" ignore="#[p('mule.security.model') != null and p('mule.security.model') contains 'fips']">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-QUERY-all-store-exec" name="store-operations-query-all-from-store-exec"/>
 		</munit:execution>
@@ -93,7 +93,7 @@ output text/plain
 		<munit-tools:assert-that doc:name="Assert that has &gt;= 4 records." is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
 	</sub-flow>
 
-	<munit:test name="store-operations-remove-from-store" ignore="#[ !p('supportRemove') or (p('mule.security.model') != null and p('mule.security.model').contains('fips'))]">
+	<munit:test name="store-operations-remove-from-store" ignore="#[!p('supportRemove') or (p('mule.security.model') != null and p('mule.security.model') contains 'fips')]">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-REMOVE-from-store" name="store-operations-remove-from-store-exec" />
 		</munit:execution>
