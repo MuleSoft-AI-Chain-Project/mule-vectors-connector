@@ -35,12 +35,10 @@ public class PGVectorStoreConnectionProvider implements BaseStoreConnectionProvi
 
   @Override
   public void dispose() {
-    if (pgVectorStoreConnection != null) {
-      try {
-        pgVectorStoreConnection.dispose();
-      } catch (SQLException ignored) {
-        // Exception is already logged in the connection class; do not throw from dispose()
-      }
+    try {
+      pgVectorStoreConnection.dispose();
+    } catch (SQLException ignored) {
+      // Exception is already logged in the connection class; do not throw from dispose()
     }
   }
 

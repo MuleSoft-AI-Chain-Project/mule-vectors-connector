@@ -102,9 +102,7 @@ public class PGVectorStoreConnection implements BaseStoreConnection {
 
 
   public void dispose() throws SQLException {
-    if (this.dataSource != null && this.dataSource.getConnection() != null) {
-      this.dataSource.getConnection().close();
-    }
+    this.dataSource.getConnection().close();
   }
 
   public void initialise() {
