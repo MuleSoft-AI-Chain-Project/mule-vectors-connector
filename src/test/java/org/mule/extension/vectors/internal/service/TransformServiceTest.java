@@ -3,12 +3,12 @@ package org.mule.extension.vectors.internal.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.mule.extension.vectors.api.helper.document.DocumentParser;
 import org.mule.extension.vectors.api.metadata.ChunkResponseAttributes;
 import org.mule.extension.vectors.api.metadata.ParserResponseAttributes;
 import org.mule.extension.vectors.api.parameter.DocumentParserParameters;
 import org.mule.extension.vectors.internal.config.TransformConfiguration;
 import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
+import org.mule.extension.vectors.internal.helper.document.DocumentParser;
 import org.mule.extension.vectors.internal.helper.parameter.SegmentationParameters;
 import org.mule.extension.vectors.internal.service.transform.TransformService;
 import org.mule.extension.vectors.internal.util.Utils;

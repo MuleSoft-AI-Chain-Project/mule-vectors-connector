@@ -2,8 +2,8 @@ package org.mule.extension.vectors.api.metadata;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 
-import org.mule.extension.vectors.api.helper.parameter.RemoveFilterParameters;
-import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 
 import java.io.Serializable;

@@ -1,7 +1,7 @@
 package org.mule.extension.vectors.api.parameter;
 
-import org.mule.extension.vectors.api.helper.document.DocumentParser;
-import org.mule.extension.vectors.api.helper.document.TextDocumentParser;
+import org.mule.extension.vectors.internal.helper.document.DocumentParser;
+import org.mule.extension.vectors.internal.helper.document.TextDocumentParser;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 

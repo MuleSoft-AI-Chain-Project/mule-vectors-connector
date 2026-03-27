@@ -2,7 +2,7 @@ package org.mule.extension.vectors.internal.helper.parameter;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.mule.extension.vectors.api.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
 import org.mule.runtime.extension.api.exception.ModuleException;
 
 import java.lang.reflect.Field;

@@ -5,8 +5,6 @@ import static org.mule.extension.vectors.internal.helper.store.StoreOperationsHe
 import static org.mule.runtime.extension.api.annotation.param.MediaType.APPLICATION_JSON;
 import static org.mule.sdk.api.annotation.param.MediaType.ANY;
 
-import org.mule.extension.vectors.api.helper.parameter.RemoveFilterParameters;
-import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.api.metadata.StoreResponseAttributes;
 import org.mule.extension.vectors.internal.config.StoreConfiguration;
 import org.mule.extension.vectors.internal.connection.provider.store.BaseStoreConnection;
@@ -15,6 +13,8 @@ import org.mule.extension.vectors.internal.error.MuleVectorsErrorType;
 import org.mule.extension.vectors.internal.error.provider.StoreErrorTypeProvider;
 import org.mule.extension.vectors.internal.helper.parameter.CustomMetadata;
 import org.mule.extension.vectors.internal.helper.parameter.QueryParameters;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 import org.mule.extension.vectors.internal.helper.store.StoreOperationsHelper;
 import org.mule.extension.vectors.internal.metadata.RowsOutputTypeMetadataResolver;
 import org.mule.extension.vectors.internal.pagination.RowPagingProvider;

@@ -1,5 +1,6 @@
-package org.mule.extension.vectors.api.helper.parameter;
+package org.mule.extension.vectors.internal.helper.parameter;
 
+import org.mule.extension.vectors.api.helper.parameter.MetadataFilterParameters;
 import org.mule.runtime.extension.api.annotation.Alias;
 import org.mule.runtime.extension.api.annotation.param.Content;
 import org.mule.runtime.extension.api.annotation.param.Optional;

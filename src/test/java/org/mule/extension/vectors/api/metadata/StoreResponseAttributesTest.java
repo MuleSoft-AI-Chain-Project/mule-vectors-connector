@@ -2,8 +2,8 @@ package org.mule.extension.vectors.api.metadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.mule.extension.vectors.api.helper.parameter.RemoveFilterParameters;
-import org.mule.extension.vectors.api.helper.parameter.SearchFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.RemoveFilterParameters;
+import org.mule.extension.vectors.internal.helper.parameter.SearchFilterParameters;
 
 import java.util.Arrays;
 import java.util.HashMap;
