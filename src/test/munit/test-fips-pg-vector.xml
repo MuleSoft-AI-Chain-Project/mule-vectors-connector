@@ -93,7 +93,7 @@ output text/plain
 		<munit-tools:assert-that doc:name="Assert that has &gt;= 4 records." is="#[MunitTools::greaterThanOrEqualTo(4)]" expression="#[sizeOf(payload)]"/>
 	</sub-flow>
 
-	<munit:test name="store-operations-remove-from-store" ignore="#[p('supportRemove') != 'true' or (p('mule.security.model') default '') contains 'fips']">
+	<munit:test name="store-operations-remove-from-store" ignore="#[p('supportRemove') != 'true' or ((p('mule.security.model') default '') contains 'fips')]">
 		<munit:execution>
 			<flow-ref doc:name="store-operations-REMOVE-from-store" name="store-operations-remove-from-store-exec" />
 		</munit:execution>

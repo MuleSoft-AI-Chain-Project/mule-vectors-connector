@@ -38,7 +38,7 @@
 		<formatterGoal>validate</formatterGoal>
 		<langchain4jBomVersion>1.12.1</langchain4jBomVersion>
 		<langchain4jCommunityVersion>1.12.1-beta21</langchain4jCommunityVersion>
-		<mule.sdk.api.version>0.12.0</mule.sdk.api.version>
+		<mule.sdk.api.version>1.0.0</mule.sdk.api.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
 		<munit.extensions.maven.plugin.version>1.7.0</munit.extensions.maven.plugin.version>
