@@ -106,4 +106,112 @@ class VertexAIServiceTest {
           .hasMessageContaining("Failed to generate embeddings");
     }
   }
+
+  @Test
+  void embedTexts_handlesNon200Response() throws Exception {
+    when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
+    when(httpResponse.getStatusCode()).thenReturn(401);
+    when(httpResponse.getEntity())
+        .thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("Unauthorized"
+            .getBytes(StandardCharsets.UTF_8)));
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(httpResponse));
+      List<String> texts = List.of("foo");
+      assertThatThrownBy(() -> service.embedTexts(texts))
+          .isInstanceOf(ModuleException.class);
+    }
+  }
+
+  @Test
+  void embedTexts_handlesInterruptedException() throws Exception {
+    CompletableFuture<String> future = new CompletableFuture<>();
+    future.completeExceptionally(new InterruptedException("interrupted"));
+    when(modelConnection.getOrRefreshToken()).thenReturn(future);
+    List<String> texts = List.of("foo");
+    assertThatThrownBy(() -> service.embedTexts(texts))
+        .isInstanceOf(ModuleException.class);
+    Thread.interrupted();
+  }
+
+  @Test
+  void embedTexts_propagatesModuleException() throws Exception {
+    CompletableFuture<String> future = new CompletableFuture<>();
+    future.completeExceptionally(new ModuleException("auth", MuleVectorsErrorType.AI_SERVICES_FAILURE));
+    when(modelConnection.getOrRefreshToken()).thenReturn(future);
+    List<String> texts = List.of("foo");
+    assertThatThrownBy(() -> service.embedTexts(texts))
+        .isInstanceOf(ModuleException.class)
+        .hasMessageContaining("auth");
+  }
+
+  @Test
+  void embedTexts_batchProcessing() throws Exception {
+    when(modelConnection.getBatchSize()).thenReturn(1);
+    when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
+    when(httpResponse.getStatusCode()).thenReturn(200);
+    when(httpResponse.getEntity())
+        .thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(
+                                                                                    "{\"predictions\": [{\"embeddings\": {\"values\": [0.1]}}]}"
+                                                                                        .getBytes(StandardCharsets.UTF_8)));
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(httpResponse));
+      Response<List<Embedding>> response = service.embedTexts(List.of("foo", "bar"));
+      assertThat(response.content()).hasSize(2);
+    }
+  }
+
+  @Test
+  void buildTextPayload_usesContentKey_forTextModels() throws Exception {
+    when(modelParameters.getEmbeddingModelName()).thenReturn("text-embedding");
+    when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
+    when(httpResponse.getStatusCode()).thenReturn(200);
+    when(httpResponse.getEntity())
+        .thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity(
+                                                                                    "{\"predictions\": [{\"embeddings\": {\"values\": [0.1]}}]}"
+                                                                                        .getBytes(StandardCharsets.UTF_8)));
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(httpResponse));
+      Response<List<Embedding>> response = service.embedTexts(List.of("foo"));
+      assertThat(response.content()).hasSize(1);
+    }
+  }
+
+  @Test
+  void handleErrorResponse_IOExceptionReadingBody() throws Exception {
+    when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
+    HttpResponse failResponse = mock(HttpResponse.class);
+    when(failResponse.getStatusCode()).thenReturn(500);
+    org.mule.runtime.http.api.domain.entity.HttpEntity entity = mock(org.mule.runtime.http.api.domain.entity.HttpEntity.class);
+    when(entity.getBytes()).thenThrow(new java.io.IOException("read fail"));
+    when(failResponse.getEntity()).thenReturn(entity);
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(failResponse));
+      List<String> texts = List.of("foo");
+      assertThatThrownBy(() -> service.embedTexts(texts))
+          .isInstanceOf(ModuleException.class)
+          .hasMessageContaining("Failed to read error response body");
+    }
+  }
+
+  @Test
+  void handleEmbeddingResponse_IOExceptionReadingBody() throws Exception {
+    when(modelConnection.getOrRefreshToken()).thenReturn(CompletableFuture.completedFuture("token"));
+    HttpResponse okResponse = mock(HttpResponse.class);
+    when(okResponse.getStatusCode()).thenReturn(200);
+    org.mule.runtime.http.api.domain.entity.HttpEntity entity = mock(org.mule.runtime.http.api.domain.entity.HttpEntity.class);
+    when(entity.getBytes()).thenThrow(new java.io.IOException("read fail"));
+    when(okResponse.getEntity()).thenReturn(entity);
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(okResponse));
+      List<String> texts = List.of("foo");
+      assertThatThrownBy(() -> service.embedTexts(texts))
+          .isInstanceOf(ModuleException.class)
+          .hasMessageContaining("Failed to read embedding response");
+    }
+  }
 }

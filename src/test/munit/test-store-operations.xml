@@ -118,6 +118,7 @@ output text/plain
 	</sub-flow>
 	<munit:test doc:id="729af2a6-d85a-46b9-9584-ee6104382803" name="store-operations-query-all-from-store" ignore="#[ p('mule.security.model') != null and p('mule.security.model')=='fips140-2' and p('config') != null and p('config') == 'storePGVectorConfig']">
 		<munit:execution>
+			<munit-tools:sleep time="10000"/>
 			<flow-ref doc:id="7b27c052-2315-4751-a939-2d22a78edfb5" doc:name="store-operations-QUERY-all-store-exec" name="store-operations-query-all-from-store-exec"/>
 		</munit:execution>
 		<munit:validation>

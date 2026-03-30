@@ -2,6 +2,8 @@ package org.mule.extension.vectors.internal.helper.document;
 
 import static org.assertj.core.api.Assertions.*;
 
+import org.mule.extension.vectors.internal.helper.document.DocumentParser;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 

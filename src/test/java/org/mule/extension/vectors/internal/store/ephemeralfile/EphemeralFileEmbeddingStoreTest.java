@@ -118,4 +118,68 @@ class EphemeralFileEmbeddingStoreTest {
       assertThat(json).isEqualTo("{}\n");
     }
   }
+
+  @Test
+  void add_withIdAndEmbedding_delegates() {
+    Embedding embedding = mock(Embedding.class);
+    try (MockedConstruction<InMemoryEmbeddingStore> construction =
+        Mockito.mockConstruction(InMemoryEmbeddingStore.class)) {
+      EphemeralFileEmbeddingStore store = new EphemeralFileEmbeddingStore(path);
+      store.add("myId", embedding);
+      verify(construction.constructed().get(0)).add("myId", embedding);
+      verify(construction.constructed().get(0)).serializeToFile(path);
+    }
+  }
+
+  @Test
+  void add_withEmbeddingAndTextSegment_delegates() {
+    Embedding embedding = mock(Embedding.class);
+    TextSegment segment = mock(TextSegment.class);
+    try (MockedConstruction<InMemoryEmbeddingStore> construction =
+        Mockito.mockConstruction(InMemoryEmbeddingStore.class,
+                                 (mock, context) -> when(mock.add(embedding, segment)).thenReturn("id2"))) {
+      EphemeralFileEmbeddingStore store = new EphemeralFileEmbeddingStore(path);
+      String id = store.add(embedding, segment);
+      assertThat(id).isEqualTo("id2");
+      verify(construction.constructed().get(0)).serializeToFile(path);
+    }
+  }
+
+  @Test
+  void add_withIdEmbeddingAndTextSegment_delegates() {
+    Embedding embedding = mock(Embedding.class);
+    TextSegment segment = mock(TextSegment.class);
+    try (MockedConstruction<InMemoryEmbeddingStore> construction =
+        Mockito.mockConstruction(InMemoryEmbeddingStore.class)) {
+      EphemeralFileEmbeddingStore store = new EphemeralFileEmbeddingStore(path);
+      store.add("myId", embedding, segment);
+      verify(construction.constructed().get(0)).add("myId", embedding, segment);
+      verify(construction.constructed().get(0)).serializeToFile(path);
+    }
+  }
+
+  @Test
+  void addAll_withIdsEmbeddingsAndSegments_delegates() {
+    List<String> ids = List.of("id1");
+    List<Embedding> embeddings = List.of(mock(Embedding.class));
+    List<TextSegment> segments = List.of(mock(TextSegment.class));
+    try (MockedConstruction<InMemoryEmbeddingStore> construction =
+        Mockito.mockConstruction(InMemoryEmbeddingStore.class)) {
+      EphemeralFileEmbeddingStore store = new EphemeralFileEmbeddingStore(path);
+      store.addAll(ids, embeddings, segments);
+      verify(construction.constructed().get(0)).addAll(ids, embeddings, segments);
+      verify(construction.constructed().get(0)).serializeToFile(path);
+    }
+  }
+
+  @Test
+  void removeAll_throwsModuleExceptionOnIOException() {
+    try (var files = mockStatic(Files.class)) {
+      files.when(() -> Files.deleteIfExists(Paths.get(path))).thenThrow(new IOException("delete failed"));
+      EphemeralFileEmbeddingStore store = new EphemeralFileEmbeddingStore(path);
+      assertThatThrownBy(store::removeAll)
+          .isInstanceOf(org.mule.runtime.extension.api.exception.ModuleException.class)
+          .hasMessageContaining("delete failed");
+    }
+  }
 }

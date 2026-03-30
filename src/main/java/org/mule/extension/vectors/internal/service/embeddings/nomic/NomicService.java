@@ -6,10 +6,7 @@ import org.mule.extension.vectors.internal.helper.parameter.EmbeddingModelParame
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.extension.vectors.internal.service.embeddings.EmbeddingService;
 import org.mule.runtime.extension.api.exception.ModuleException;
-import org.mule.runtime.http.api.client.HttpRequestOptions;
 import org.mule.runtime.http.api.domain.entity.multipart.HttpPart;
-import org.mule.runtime.http.api.domain.entity.multipart.MultipartHttpEntity;
-import org.mule.runtime.http.api.domain.message.request.HttpRequest;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
 import java.nio.charset.StandardCharsets;
@@ -39,6 +36,8 @@ public class NomicService implements EmbeddingService {
   private static final String TEXT_EMBEDDING_URL = BASE_URL + "embedding/text";
   private static final String IMAGE_EMBEDDING_URL = BASE_URL + "embedding/image";
   private static final Logger LOGGER = LoggerFactory.getLogger(NomicService.class);
+  private static final String MODEL_KEY = "model";
+  private static final String EMBEDDINGS_KEY = "embeddings";
 
   public NomicService(NomicModelConnection nomicModelConnection, EmbeddingModelParameters embeddingModelParameters) {
     this.nomicModelConnection = nomicModelConnection;
@@ -46,54 +45,25 @@ public class NomicService implements EmbeddingService {
   }
 
   public Object generateImageEmbeddings(List<byte[]> imageBytesList, String modelName) {
-    try {
-      if (imageBytesList == null || imageBytesList.isEmpty()) {
-        throw new IllegalArgumentException("No images provided for embedding.");
-      }
-
-      List<HttpPart> parts = new ArrayList<>();
-
-      // Model part - use charset correctly
-      byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-      parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
-
-      // Image parts
-      int index = 0;
-      for (byte[] imageBytes : imageBytesList) {
-        // Create file-like HttpPart for each image
-        String partName = "images";
-        String fileName = "image_" + index + ".png"; // Make sure to provide a file name
-        parts.add(new HttpPart(partName, fileName, imageBytes, "image/png", imageBytes.length));
-        index++;
-      }
-
-      HttpRequest request = HttpRequest.builder()
-          .uri(IMAGE_EMBEDDING_URL)
-          .method("POST")
-          .addHeader("Content-Type", "multipart/form-data") // Ensure this is correct
-          .addHeader("Authorization", "Bearer " + nomicModelConnection.getApiKey())
-          .entity(new MultipartHttpEntity(parts))
-          .build();
-
-      HttpRequestOptions requestOptions = HttpRequestOptions.builder()
-          .responseTimeout((int) nomicModelConnection.getTimeout())
-          .build();
-
-      HttpResponse response = nomicModelConnection.getHttpClient().send(request, requestOptions);
-
-      if (response.getStatusCode() != 200) {
-        // Log the error response for debugging
-        String errorResponse = new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-        LOGGER.error("Failed to generate image embeddings: HTTP {}. Error: {}", response.getStatusCode(), errorResponse);
-        throw new RuntimeException("Failed to generate image embeddings: HTTP " + response.getStatusCode() + ". Response: "
-            + errorResponse);
-      }
-
-      return new String(response.getEntity().getBytes(), StandardCharsets.UTF_8);
-    } catch (Exception e) {
-      LOGGER.error("Exception while generating image embeddings", e);
-      throw new RuntimeException("Failed to generate image embeddings", e);
+    if (imageBytesList == null || imageBytesList.isEmpty()) {
+      throw new IllegalArgumentException("No images provided for embedding.");
     }
+    try {
+      return generateImageEmbeddingsAsync(imageBytesList, modelName).get();
+    } catch (InterruptedException | ExecutionException e) {
+      Thread.currentThread().interrupt();
+      if (e.getCause() instanceof ModuleException) {
+        throw (ModuleException) e.getCause();
+      }
+      throw new ModuleException("Failed to generate image embeddings", MuleVectorsErrorType.AI_SERVICES_FAILURE, e);
+    }
+  }
+
+  private CompletableFuture<String> generateImageEmbeddingsAsync(List<byte[]> imageBytesList, String modelName) {
+    List<HttpPart> parts = buildImageMultipartPayload(imageBytesList, modelName);
+    return HttpRequestHelper.executeMultipartPostRequest(this.nomicModelConnection.getHttpClient(), IMAGE_EMBEDDING_URL,
+                                                         buildAuthHeaders(), parts, (int) this.nomicModelConnection.getTimeout())
+        .thenApply(this::handleEmbeddingResponse);
   }
 
   public Object generateTextEmbeddings(List<String> inputs, String modelName) {
@@ -127,7 +97,7 @@ public class NomicService implements EmbeddingService {
   private List<HttpPart> buildImageMultipartPayload(List<byte[]> imageBytesList, String modelName) {
     List<HttpPart> parts = new ArrayList<>();
     byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-    parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
+    parts.add(new HttpPart(MODEL_KEY, modelBytes, "text/plain", modelBytes.length));
 
     int index = 0;
     for (byte[] imageBytes : imageBytesList) {
@@ -139,7 +109,7 @@ public class NomicService implements EmbeddingService {
 
   private byte[] buildTextEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
     Map<String, Object> requestBody = new HashMap<>();
-    requestBody.put("model", modelName);
+    requestBody.put(MODEL_KEY, modelName);
     requestBody.put("texts", inputs);
     return objectMapper.writeValueAsBytes(requestBody);
   }
@@ -162,7 +132,7 @@ public class NomicService implements EmbeddingService {
 
     String responseJson = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
     JSONObject response = new JSONObject(responseJson);
-    JSONArray embeddings = response.getJSONArray("embeddings");
+    JSONArray embeddings = response.getJSONArray(EMBEDDINGS_KEY);
     JSONObject usage = response.getJSONObject("usage");
 
     List<Embedding> embeddingsList = new ArrayList<>();

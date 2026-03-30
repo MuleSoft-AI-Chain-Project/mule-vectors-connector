@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 
 public class MultiformatDocumentParser implements DocumentParser {
 
+  private final boolean includeMetadata;
   private ApacheTikaDocumentParser documentParser;
 
   public MultiformatDocumentParser() {
@@ -14,6 +15,7 @@ public class MultiformatDocumentParser implements DocumentParser {
   }
 
   public MultiformatDocumentParser(boolean includeMetadata) {
+    this.includeMetadata = includeMetadata;
     this.documentParser = includeMetadata ? new ApacheTikaDocumentParser(includeMetadata) : new ApacheTikaDocumentParser();
   }
 
@@ -21,5 +23,20 @@ public class MultiformatDocumentParser implements DocumentParser {
   public InputStream parse(InputStream inputStream) {
 
     return IOUtils.toInputStream(documentParser.parse(inputStream).text());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    MultiformatDocumentParser that = (MultiformatDocumentParser) o;
+    return includeMetadata == that.includeMetadata;
+  }
+
+  @Override
+  public int hashCode() {
+    return Boolean.hashCode(includeMetadata);
   }
 }
