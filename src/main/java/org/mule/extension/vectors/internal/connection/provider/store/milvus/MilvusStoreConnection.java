@@ -118,6 +118,8 @@ public class MilvusStoreConnection implements BaseStoreConnection {
 
   public void initialise() {
 
+    ConnectionValidationStrategies.validateMilvus(milvusStoreConnectionParameters);
+
     ConnectParam.Builder connectBuilder = ConnectParam.newBuilder();
 
     connectBuilder

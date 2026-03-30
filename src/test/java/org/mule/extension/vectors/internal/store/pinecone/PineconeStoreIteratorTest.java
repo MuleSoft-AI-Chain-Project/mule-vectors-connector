@@ -14,6 +14,7 @@ import java.util.*;
 import com.google.protobuf.ListValue;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
+import dev.langchain4j.data.segment.TextSegment;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.pinecone.clients.Index;
@@ -238,5 +239,154 @@ class PineconeStoreIteratorTest {
     Exception ex = org.junit.jupiter.api.Assertions
         .assertThrows(ModuleException.class, () -> new PineconeStoreIterator<>(failingConn, "store", queryParameters));
     assertThat(ex.getMessage()).contains("Failed to initialize Pinecone connection");
+  }
+
+  @Test
+  void next_withoutEmbeddings_returnsRowWithNullEmbedding() {
+    Map<String, Value> fieldsMap = new HashMap<>();
+    fieldsMap.put("text_segment", Value.newBuilder().setStringValue("hello").build());
+    Vector vec = createMockVector("id1", fieldsMap, List.of(1.0f, 2.0f));
+
+    PineconeStoreIterator<?> iterator = createIterator(
+                                                       List.of("id1"), Map.of("id1", vec), "", false);
+
+    VectorStoreRow<?> row = iterator.next();
+    assertThat(row.getId()).isEqualTo("id1");
+    assertThat(row.getEmbedding()).isNull();
+  }
+
+  @Test
+  void next_withoutTextSegmentKey_throwsModuleException() {
+    Map<String, Value> fieldsMap = new HashMap<>();
+    fieldsMap.put("other_key", Value.newBuilder().setStringValue("some value").build());
+    Vector vec = createMockVector("id1", fieldsMap, List.of(1.0f));
+
+    PineconeStoreIterator<?> iterator = createIterator(
+                                                       List.of("id1"), Map.of("id1", vec), "", true);
+
+    assertThatThrownBy(iterator::next)
+        .isInstanceOf(ModuleException.class)
+        .hasMessageContaining("Error processing next row");
+  }
+
+  @Test
+  void next_throwsNoSuchElementOnExhaustedIterator() {
+    PineconeStoreIterator<?> iterator = createIterator(
+                                                       Collections.emptyList(), Collections.emptyMap(), "", false);
+
+    assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class);
+  }
+
+  @Test
+  void protobufConverter_fractionalNumberReturnsDouble() {
+    Value val = Value.newBuilder().setNumberValue(3.14).build();
+    assertThat(PineconeStoreIterator.ProtobufValueConverter.convertProtobufValue(val)).isEqualTo(3.14);
+  }
+
+  @Test
+  void pagination_usesTokenForSubsequentPage() {
+    ListItem item1 = mock(ListItem.class, withSettings().lenient());
+    lenient().when(item1.getId()).thenReturn("id1");
+    ListResponse firstListResponse = mock(ListResponse.class, withSettings().lenient());
+    io.pinecone.proto.Pagination firstPagination = mock(io.pinecone.proto.Pagination.class, withSettings().lenient());
+    lenient().when(firstListResponse.getVectorsList()).thenReturn(List.of(item1));
+    lenient().when(firstListResponse.getPagination()).thenReturn(firstPagination);
+    lenient().when(firstPagination.getNext()).thenReturn("nextToken");
+
+    ListItem item2 = mock(ListItem.class, withSettings().lenient());
+    lenient().when(item2.getId()).thenReturn("id2");
+    ListResponse secondListResponse = mock(ListResponse.class, withSettings().lenient());
+    io.pinecone.proto.Pagination secondPagination = mock(io.pinecone.proto.Pagination.class, withSettings().lenient());
+    lenient().when(secondListResponse.getVectorsList()).thenReturn(List.of(item2));
+    lenient().when(secondListResponse.getPagination()).thenReturn(secondPagination);
+    lenient().when(secondPagination.getNext()).thenReturn("");
+
+    Map<String, Value> fields1 = new HashMap<>();
+    fields1.put("text_segment", Value.newBuilder().setStringValue("text1").build());
+    Vector vec1 = createMockVector("id1", fields1, List.of(1.0f));
+    Map<String, Value> fields2 = new HashMap<>();
+    fields2.put("text_segment", Value.newBuilder().setStringValue("text2").build());
+    Vector vec2 = createMockVector("id2", fields2, List.of(2.0f));
+
+    FetchResponse fetchResponse1 = mock(FetchResponse.class, withSettings().lenient());
+    lenient().when(fetchResponse1.getVectorsCount()).thenReturn(1);
+    lenient().when(fetchResponse1.getVectorsMap()).thenReturn(Map.of("id1", vec1));
+    FetchResponse fetchResponse2 = mock(FetchResponse.class, withSettings().lenient());
+    lenient().when(fetchResponse2.getVectorsCount()).thenReturn(1);
+    lenient().when(fetchResponse2.getVectorsMap()).thenReturn(Map.of("id2", vec2));
+
+    Index index = mock(Index.class, withSettings().lenient());
+    lenient().when(index.list(anyString(), anyInt()))
+        .thenReturn(firstListResponse)
+        .thenReturn(secondListResponse);
+    lenient().when(index.fetch(anyList(), anyString()))
+        .thenReturn(fetchResponse1)
+        .thenReturn(fetchResponse2);
+
+    Pinecone pinecone = mock(Pinecone.class, withSettings().lenient());
+    lenient().when(pinecone.getIndexConnection(anyString())).thenReturn(index);
+    PineconeStoreConnection conn = mock(PineconeStoreConnection.class, withSettings().lenient());
+    lenient().when(conn.getClient()).thenReturn(pinecone);
+    lenient().when(queryParameters.retrieveEmbeddings()).thenReturn(true);
+    lenient().when(queryParameters.pageSize()).thenReturn(10);
+
+    PineconeStoreIterator<?> iterator = new PineconeStoreIterator<>(conn, "store", queryParameters);
+
+    assertThat(iterator.hasNext()).isTrue();
+    VectorStoreRow<?> row1 = iterator.next();
+    assertThat(row1.getId()).isEqualTo("id1");
+
+    assertThat(iterator.hasNext()).isTrue();
+    VectorStoreRow<?> row2 = iterator.next();
+    assertThat(row2.getId()).isEqualTo("id2");
+
+    assertThat(iterator.hasNext()).isFalse();
+    verify(index).list("nextToken", 10);
+  }
+
+  private PineconeStoreIterator<?> createIterator(
+                                                  List<String> vectorIds, Map<String, Vector> vectorsMap,
+                                                  String paginationNext, boolean retrieveEmbeddings) {
+
+    List<ListItem> listItems = vectorIds.stream().map(id -> {
+      ListItem item = mock(ListItem.class, withSettings().lenient());
+      lenient().when(item.getId()).thenReturn(id);
+      return item;
+    }).toList();
+
+    ListResponse lr = mock(ListResponse.class, withSettings().lenient());
+    FetchResponse fr = mock(FetchResponse.class, withSettings().lenient());
+    io.pinecone.proto.Pagination pagination = mock(io.pinecone.proto.Pagination.class, withSettings().lenient());
+
+    lenient().when(lr.getVectorsList()).thenReturn(listItems);
+    lenient().when(lr.getPagination()).thenReturn(pagination);
+    lenient().when(pagination.getNext()).thenReturn(paginationNext);
+    lenient().when(fr.getVectorsCount()).thenReturn(vectorsMap.size());
+    lenient().when(fr.getVectorsMap()).thenReturn(vectorsMap);
+
+    Index idx = mock(Index.class, withSettings().lenient());
+    lenient().when(idx.list(anyString(), anyInt())).thenReturn(lr);
+    lenient().when(idx.fetch(anyList(), anyString())).thenReturn(fr);
+
+    Pinecone pinecone = mock(Pinecone.class, withSettings().lenient());
+    lenient().when(pinecone.getIndexConnection(anyString())).thenReturn(idx);
+
+    PineconeStoreConnection conn = mock(PineconeStoreConnection.class, withSettings().lenient());
+    lenient().when(conn.getClient()).thenReturn(pinecone);
+
+    lenient().when(queryParameters.retrieveEmbeddings()).thenReturn(retrieveEmbeddings);
+    lenient().when(queryParameters.pageSize()).thenReturn(10);
+
+    return new PineconeStoreIterator<>(conn, "store", queryParameters);
+  }
+
+  private Vector createMockVector(String id, Map<String, Value> fieldsMap, List<Float> values) {
+    Vector vec = mock(Vector.class, withSettings().lenient());
+    Struct struct = mock(Struct.class, withSettings().lenient());
+    lenient().when(struct.getFieldsMap()).thenReturn(fieldsMap);
+    lenient().when(vec.getId()).thenReturn(id);
+    lenient().when(vec.getMetadata()).thenReturn(struct);
+    lenient().when(vec.getValuesList()).thenReturn(values);
+    return vec;
   }
 }

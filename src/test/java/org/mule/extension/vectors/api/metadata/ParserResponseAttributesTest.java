@@ -102,8 +102,7 @@ class ParserResponseAttributesTest {
 
     ParserResponseAttributes response = new ParserResponseAttributes(attributes);
 
-
-
+    assertThat(response.getDocumentParserName()).isEqualTo("defensive-parser");
   }
 
   @Test

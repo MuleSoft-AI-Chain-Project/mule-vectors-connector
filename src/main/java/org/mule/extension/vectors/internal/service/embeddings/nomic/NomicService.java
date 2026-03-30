@@ -33,6 +33,8 @@ public class NomicService implements EmbeddingService {
   private static final String BASE_URL = "https://api-atlas.nomic.ai/v1/";
   private static final String TEXT_EMBEDDING_URL = BASE_URL + "embedding/text";
   private static final String IMAGE_EMBEDDING_URL = BASE_URL + "embedding/image";
+  private static final String MODEL_KEY = "model";
+  private static final String EMBEDDINGS_KEY = "embeddings";
 
   public NomicService(NomicModelConnection nomicModelConnection, EmbeddingModelParameters embeddingModelParameters) {
     this.nomicModelConnection = nomicModelConnection;
@@ -92,7 +94,7 @@ public class NomicService implements EmbeddingService {
   private List<HttpPart> buildImageMultipartPayload(List<byte[]> imageBytesList, String modelName) {
     List<HttpPart> parts = new ArrayList<>();
     byte[] modelBytes = modelName.getBytes(StandardCharsets.UTF_8);
-    parts.add(new HttpPart("model", modelBytes, "text/plain", modelBytes.length));
+    parts.add(new HttpPart(MODEL_KEY, modelBytes, "text/plain", modelBytes.length));
 
     int index = 0;
     for (byte[] imageBytes : imageBytesList) {
@@ -104,7 +106,7 @@ public class NomicService implements EmbeddingService {
 
   private byte[] buildTextEmbeddingsPayload(List<String> inputs, String modelName) throws JsonProcessingException {
     Map<String, Object> requestBody = new HashMap<>();
-    requestBody.put("model", modelName);
+    requestBody.put(MODEL_KEY, modelName);
     requestBody.put("texts", inputs);
     return objectMapper.writeValueAsBytes(requestBody);
   }
@@ -120,7 +122,7 @@ public class NomicService implements EmbeddingService {
 
     String responseJson = (String) generateTextEmbeddings(texts, embeddingModelParameters.getEmbeddingModelName());
     JSONObject response = new JSONObject(responseJson);
-    JSONArray embeddings = response.getJSONArray("embeddings");
+    JSONArray embeddings = response.getJSONArray(EMBEDDINGS_KEY);
     JSONObject usage = response.getJSONObject("usage");
 
     List<Embedding> embeddingsList = new ArrayList<>();
