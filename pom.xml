@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mulesoft.connectors</groupId>
 	<artifactId>mule4-vectors-connector</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
 	<packaging>mule-extension</packaging>
 	<name>MuleSoft Vectors Connector - Mule 4</name>
 	<description>MuleSoft Vectors Connector provides access to a broad number of external Vector Stores.</description>
@@ -589,5 +589,43 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>default-config</id>
+			<activation>
+				<property>
+					<name>!mule.security.model</name> <!-- if mule.security.model does not exist -->
+				</property>
+			</activation>
+			<properties>
+				<skip.munit>true</skip.munit>
+			</properties>
+		</profile>
+		<profile>
+			<id>fips140-2-config</id>
+			<activation>
+				<property>
+					<name>mule.security.model</name>
+					<value>fips140-2</value> <!-- if mule.security.model == fips140-2 -->
+				</property>
+			</activation>
+			<properties>
+				<skip.munit>true</skip.munit>
+			</properties>
+		</profile>
+		<profile>
+			<id>fips140-3-config</id>
+			<activation>
+				<property>
+					<name>mule.security.model</name>
+					<value>fips140-3</value> <!-- if mule.security.model == fips140-2 -->
+				</property>
+			</activation>
+			<properties>
+				<skip.munit>true</skip.munit>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
