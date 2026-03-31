@@ -555,4 +555,42 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<profiles>
+		<profile>
+			<id>default-config</id>
+			<activation>
+				<property>
+					<name>!mule.security.model</name> <!-- if mule.security.model does not exist -->
+				</property>
+			</activation>
+			<properties>
+				<skip.munit>true</skip.munit>
+			</properties>
+		</profile>
+		<profile>
+			<id>fips140-2-config</id>
+			<activation>
+				<property>
+					<name>mule.security.model</name>
+					<value>fips140-2</value> <!-- if mule.security.model == fips140-2 -->
+				</property>
+			</activation>
+			<properties>
+				<skip.munit>true</skip.munit>
+			</properties>
+		</profile>
+		<profile>
+			<id>fips140-3-config</id>
+			<activation>
+				<property>
+					<name>mule.security.model</name>
+					<value>fips140-3</value> <!-- if mule.security.model == fips140-2 -->
+				</property>
+			</activation>
+			<properties>
+				<skip.munit>true</skip.munit>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
