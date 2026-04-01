@@ -1,306 +1,229 @@
 package org.mule.extension.vectors.internal.connection.provider.embeddings.vertexai;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import org.mule.extension.vectors.internal.connection.provider.embeddings.vertexai.VertexAIModelConnection;
 import org.mule.extension.vectors.internal.helper.request.HttpRequestHelper;
 import org.mule.runtime.extension.api.exception.ModuleException;
 import org.mule.runtime.http.api.client.HttpClient;
+import org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity;
 import org.mule.runtime.http.api.domain.message.response.HttpResponse;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyPairGenerator;
+import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class VertexAIModelConnectionTest {
 
-  VertexAIModelConnection conn;
+  private static String TEST_PEM;
+
+  @Mock
   HttpClient httpClient;
-  ObjectMapper objectMapper;
-  private static final String TEST_PRIVATE_KEY =
-      "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC...\n-----END PRIVATE KEY-----";
+
+  VertexAIModelConnection connection;
+
+  @BeforeAll
+  static void generateKey() throws Exception {
+    var kpg = KeyPairGenerator.getInstance("RSA");
+    kpg.initialize(2048);
+    var kp = kpg.generateKeyPair();
+    String encoded = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
+    TEST_PEM = "-----BEGIN PRIVATE KEY-----\n" + encoded + "\n-----END PRIVATE KEY-----";
+  }
 
   @BeforeEach
   void setUp() {
-    httpClient = mock(HttpClient.class);
-    conn = new VertexAIModelConnection(
-                                       "projectId", "location", "clientEmail", "clientId", "privateKeyId", TEST_PRIVATE_KEY,
-                                       1000L, 10, httpClient);
-    objectMapper = conn.getObjectMapper();
+    connection = new VertexAIModelConnection(
+                                             "project-id", "us-central1", "test@test.iam.gserviceaccount.com",
+                                             "client-id", "private-key-id", TEST_PEM, 5000L, 16, httpClient);
   }
 
   @Test
-  void testGetters() {
-    assertEquals("projectId", conn.getProjectId());
-    assertEquals("location", conn.getLocation());
-    assertEquals("clientId", conn.getClientId());
-    assertEquals("privateKeyId", conn.getPrivateKeyId());
-    assertEquals(TEST_PRIVATE_KEY, conn.getPrivateKey());
-    assertEquals(1000L, conn.getTotalTimeout());
-    assertEquals(10, conn.getBatchSize());
-    assertEquals(httpClient, conn.getHttpClient());
-    assertNotNull(conn.getObjectMapper());
+  void constructor_setsAllFields() {
+    assertThat(connection.getProjectId()).isEqualTo("project-id");
+    assertThat(connection.getLocation()).isEqualTo("us-central1");
+    assertThat(connection.getClientId()).isEqualTo("client-id");
+    assertThat(connection.getPrivateKeyId()).isEqualTo("private-key-id");
+    assertThat(connection.getPrivateKey()).isEqualTo(TEST_PEM);
+    assertThat(connection.getHttpClient()).isSameAs(httpClient);
+    assertThat(connection.getTotalTimeout()).isEqualTo(5000L);
+    assertThat(connection.getBatchSize()).isEqualTo(16);
+    assertThat(connection.getObjectMapper()).isNotNull();
+    assertThat(connection.getEmbeddingModelService()).isEqualTo("VERTEX_AI");
   }
 
   @Test
-  void testDisconnectIsNoOp() {
-    assertDoesNotThrow(() -> conn.disconnect());
+  void disconnect_doesNotThrow() {
+    assertThatCode(() -> connection.disconnect()).doesNotThrowAnyException();
   }
 
   @Test
-  void validateSuccess() {
-    // Skipping actual validation as it requires a real JWT and private key
-    // Instead, assert that the method throws the expected exception
-    ModuleException ex = assertThrows(ModuleException.class, () -> conn.validate());
-    assertEquals("Failed to validate connection to VertexAI.", ex.getMessage());
+  void createJwt_returnsValidJwtFormat() {
+    String jwt = connection.createJwt();
+    assertThat(jwt).isNotNull();
+    String[] parts = jwt.split("\\.");
+    assertThat(parts).hasSize(3);
   }
 
   @Test
-  void validateFailsOnTokenError() {
-    // Simulate token fetch failure
-    try (MockedStatic<HttpRequestHelper> mocked = mockStatic(HttpRequestHelper.class)) {
-      CompletableFuture<HttpResponse> failedFuture = new CompletableFuture<>();
-      failedFuture.completeExceptionally(new RuntimeException("fail"));
-      mocked.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt())).thenReturn(failedFuture);
-      ModuleException ex = assertThrows(ModuleException.class, () -> conn.validate());
-      assertTrue(ex.getMessage().contains("Failed to validate connection to VertexAI"));
-    }
-  }
-
-  @Test
-  void createJwt_throwsOnInvalidKey() throws Exception {
+  void createJwt_throwsOnInvalidKey() {
     VertexAIModelConnection badConn = new VertexAIModelConnection(
-                                                                  "projectId", "location", "clientEmail", "clientId",
-                                                                  "privateKeyId", "badkey", 1000L, 10, httpClient);
-    java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("createJwt");
-    m.setAccessible(true);
-    Exception ex = assertThrows(Exception.class, () -> m.invoke(badConn));
-    // Print actual message for debug
-    System.out.println("[DEBUG] createJwt exception: " + ex.getCause().getMessage());
-    assertNotNull(ex.getCause().getMessage());
-  }
-
-  // @Test
-  // void parsePrivateKey_throwsOnMalformedPem() throws Exception {
-  //     VertexAIModelConnection c = conn;
-  //     Exception ex = assertThrows(Exception.class, () -> {
-  //         java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("parsePrivateKey", String.class);
-  //         m.setAccessible(true);
-  //         m.invoke(c, "not-a-key");
-  //     });
-  //     assertTrue(ex.getCause().getMessage().toLowerCase().contains("illegal base64"));
-  // }
-
-  // @Test
-  // void signWithRSA_throwsOnBadKey() throws Exception {
-  //     VertexAIModelConnection c = conn;
-  //     Exception ex = assertThrows(Exception.class, () -> {
-  //         java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("signWithRSA", byte[].class, java.security.PrivateKey.class);
-  //         m.setAccessible(true);
-  //         m.invoke(c, "foo".getBytes(), null);
-  //     });
-  //     assertNotNull(ex.getCause());
-  // }
-
-  @Test
-  void base64UrlEncode_encodesCorrectly() throws Exception {
-    VertexAIModelConnection c = conn;
-    java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("base64UrlEncode", byte[].class);
-    m.setAccessible(true);
-    String encoded = (String) m.invoke(c, "abc".getBytes());
-    assertEquals(java.util.Base64.getUrlEncoder().withoutPadding().encodeToString("abc".getBytes()), encoded);
-  }
-
-  // Minimal concrete HttpResponse for testing
-  @SuppressWarnings("rawtypes")
-  static class TestHttpResponse implements HttpResponse {
-
-    private final int statusCode;
-    private final boolean throwOnGetEntity;
-
-    TestHttpResponse(int statusCode, boolean throwOnGetEntity) {
-      this.statusCode = statusCode;
-      this.throwOnGetEntity = throwOnGetEntity;
-    }
-
-    public int getStatusCode() {
-      return statusCode;
-    }
-
-    public org.mule.runtime.http.api.domain.entity.HttpEntity getEntity() {
-      if (throwOnGetEntity)
-        throw new RuntimeException("fail");
-      return null;
-    }
-
-    public String getReasonPhrase() {
-      return null;
-    }
-
-    public String getHeaderValue(String s) {
-      return null;
-    }
-
-    public List<String> getHeaderValues(String s) {
-      return null;
-    }
-
-    @Override
-    public org.mule.runtime.api.util.MultiMap<String, String> getHeaders() {
-      return new org.mule.runtime.api.util.MultiMap<>();
-    }
-
-    public List<String> getHeaderNames() {
-      return java.util.Collections.emptyList();
-    }
-
-    public String getHeaderValueIgnoreCase(String s) {
-      return null;
-    }
-
-    public List<String> getHeaderValuesIgnoreCase(String s) {
-      return null;
-    }
-  }
-
-  // Helper to find ModuleException in cause chain
-  private static ModuleException findModuleException(Throwable ex) {
-    while (ex != null) {
-      if (ex instanceof ModuleException)
-        return (ModuleException) ex;
-      ex = ex.getCause();
-    }
-    return null;
+                                                                  "p", "l", "e", "c", "k", "not-a-key", 1000L, 1, httpClient);
+    assertThatThrownBy(badConn::createJwt)
+        .isInstanceOf(ModuleException.class)
+        .hasMessageContaining("Failed to create JWT");
   }
 
   @Test
-  void handleErrorResponse_throwsModuleExceptionOnIOException() throws Exception {
-    VertexAIModelConnection c = conn;
-    HttpResponse response = mock(HttpResponse.class);
-    when(response.getEntity()).thenThrow(new RuntimeException("fail"));
-    when(response.getStatusCode()).thenReturn(500);
-    java.lang.reflect.Method m =
-        VertexAIModelConnection.class.getDeclaredMethod("handleErrorResponse", HttpResponse.class, String.class);
-    m.setAccessible(true);
-    Exception ex = assertThrows(Exception.class, () -> m.invoke(c, response, "msg"));
-    Throwable root = ex;
-    while (root.getCause() != null)
-      root = root.getCause();
-    assertTrue(root.getMessage().contains("fail"),
-               "Actual: " + root.getClass() + ": " + root.getMessage());
-  }
+  void getOrRefreshToken_noExistingToken_refreshes() throws Exception {
+    String tokenJson = "{\"access_token\":\"new-token\"}";
+    HttpResponse resp = mock(HttpResponse.class);
+    when(resp.getStatusCode()).thenReturn(200);
+    when(resp.getEntity()).thenReturn(new ByteArrayHttpEntity(tokenJson.getBytes(StandardCharsets.UTF_8)));
 
-  @Test
-  void refreshAccessTokenAsync_handlesNon200Response() throws Exception {
-    VertexAIModelConnection c = spy(conn);
-    java.lang.reflect.Method createJwt = VertexAIModelConnection.class.getDeclaredMethod("createJwt");
-    createJwt.setAccessible(true);
-    doReturn("dummy.jwt").when(c).createJwt();
-    HttpResponse response = mock(HttpResponse.class);
-    when(response.getStatusCode()).thenReturn(401);
-    when(response.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("fail".getBytes()));
-    try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
-      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
-          .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(response));
-      java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("refreshAccessTokenAsync");
-      m.setAccessible(true);
-      CompletableFuture<String> fut = (CompletableFuture<String>) m.invoke(c);
-      Exception ex = assertThrows(Exception.class, fut::join);
-      Throwable root = ex;
-      while (root.getCause() != null)
-        root = root.getCause();
-      assertTrue(root.getMessage().contains("Error getting access token"),
-                 "Actual: " + root.getClass() + ": " + root.getMessage());
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(resp));
+      String token = connection.getOrRefreshToken().get();
+      assertThat(token).isEqualTo("new-token");
     }
   }
 
   @Test
-  void refreshAccessTokenAsync_handlesJsonParseError() throws Exception {
-    VertexAIModelConnection c = spy(conn);
-    java.lang.reflect.Method createJwt = VertexAIModelConnection.class.getDeclaredMethod("createJwt");
-    createJwt.setAccessible(true);
-    doReturn("dummy.jwt").when(c).createJwt();
-    HttpResponse response = mock(HttpResponse.class);
-    when(response.getStatusCode()).thenReturn(200);
-    when(response.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("notjson".getBytes()));
-    try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
-      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), anyMap(), any(), anyInt()))
-          .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(response));
-      java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("refreshAccessTokenAsync");
-      m.setAccessible(true);
-      CompletableFuture<String> fut = (CompletableFuture<String>) m.invoke(c);
-      Exception ex = assertThrows(Exception.class, fut::join);
-      Throwable root = ex;
-      while (root.getCause() != null)
-        root = root.getCause();
-      assertTrue(root instanceof com.fasterxml.jackson.core.JsonParseException,
-                 "Actual: " + root.getClass() + ": " + root.getMessage());
-      assertTrue(root.getMessage().contains("notjson") || root.getMessage().contains("Unrecognized token"),
-                 "Actual: " + root.getClass() + ": " + root.getMessage());
-    }
-  }
+  void getOrRefreshToken_existingValidToken_reuses() throws Exception {
+    String tokenJson = "{\"access_token\":\"first-token\"}";
+    HttpResponse tokenResp = mock(HttpResponse.class);
+    when(tokenResp.getStatusCode()).thenReturn(200);
+    when(tokenResp.getEntity()).thenReturn(new ByteArrayHttpEntity(tokenJson.getBytes(StandardCharsets.UTF_8)));
 
-  @Test
-  void validateAccessTokenAsync_handlesNon200AndJsonError() throws Exception {
-    VertexAIModelConnection c = conn;
-    HttpResponse response = mock(HttpResponse.class);
-    when(response.getStatusCode()).thenReturn(401);
-    when(response.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("fail".getBytes()));
-    try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
+    HttpResponse validationResp = mock(HttpResponse.class);
+    when(validationResp.getStatusCode()).thenReturn(200);
+    when(validationResp.getEntity()).thenReturn(
+                                                new ByteArrayHttpEntity("{\"expires_in\":3600}"
+                                                    .getBytes(StandardCharsets.UTF_8)));
+
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(tokenResp));
       helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt()))
-          .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(response));
-      java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("validateAccessTokenAsync", String.class);
-      m.setAccessible(true);
-      CompletableFuture<Boolean> fut = (CompletableFuture<Boolean>) m.invoke(c, "token");
-      boolean valid = fut.get();
-      assertFalse(valid);
-    }
-    // JSON parse error
-    response = mock(HttpResponse.class);
-    when(response.getStatusCode()).thenReturn(200);
-    when(response.getEntity()).thenReturn(new org.mule.runtime.http.api.domain.entity.ByteArrayHttpEntity("notjson".getBytes()));
-    try (MockedStatic<HttpRequestHelper> helper = mockStatic(HttpRequestHelper.class)) {
-      helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt()))
-          .thenReturn(java.util.concurrent.CompletableFuture.completedFuture(response));
-      java.lang.reflect.Method m = VertexAIModelConnection.class.getDeclaredMethod("validateAccessTokenAsync", String.class);
-      m.setAccessible(true);
-      CompletableFuture<Boolean> fut = (CompletableFuture<Boolean>) m.invoke(c, "token");
-      boolean valid = fut.get();
-      assertFalse(valid);
+          .thenReturn(CompletableFuture.completedFuture(validationResp));
+
+      connection.getOrRefreshToken().get();
+      String token2 = connection.getOrRefreshToken().get();
+      assertThat(token2).isEqualTo("first-token");
     }
   }
 
   @Test
-  void getOrRefreshToken_usesCachedTokenIfValidElseRefreshes() throws Exception {
-    VertexAIModelConnection c = spy(conn);
-    // Simulate valid cached token
-    java.lang.reflect.Field tokenField = VertexAIModelConnection.class.getDeclaredField("accessToken");
-    tokenField.setAccessible(true);
-    java.util.concurrent.atomic.AtomicReference<String> tokenRef =
-        (java.util.concurrent.atomic.AtomicReference<String>) tokenField.get(c);
-    tokenRef.set("cached-token");
-    java.lang.reflect.Method validateM =
-        VertexAIModelConnection.class.getDeclaredMethod("validateAccessTokenAsync", String.class);
-    validateM.setAccessible(true);
-    java.lang.reflect.Method refreshM = VertexAIModelConnection.class.getDeclaredMethod("refreshAccessTokenAsync");
-    refreshM.setAccessible(true);
-    // For valid token
-    doAnswer(invocation -> java.util.concurrent.CompletableFuture.completedFuture(true))
-        .when(c).validateAccessTokenAsync(anyString());
-    String token = c.getOrRefreshToken().get();
-    assertEquals("cached-token", token);
-    // For invalid token, triggers refresh
-    doAnswer(invocation -> java.util.concurrent.CompletableFuture.completedFuture(false))
-        .when(c).validateAccessTokenAsync(anyString());
-    doAnswer(invocation -> java.util.concurrent.CompletableFuture.completedFuture("new-token"))
-        .when(c).refreshAccessTokenAsync();
-    token = c.getOrRefreshToken().get();
-    assertEquals("new-token", token);
+  void getOrRefreshToken_expiredToken_refreshes() throws Exception {
+    String tokenJson1 = "{\"access_token\":\"old-token\"}";
+    String tokenJson2 = "{\"access_token\":\"new-token\"}";
+
+    HttpResponse tokenResp1 = mock(HttpResponse.class);
+    when(tokenResp1.getStatusCode()).thenReturn(200);
+    when(tokenResp1.getEntity()).thenReturn(new ByteArrayHttpEntity(tokenJson1.getBytes(StandardCharsets.UTF_8)));
+
+    HttpResponse tokenResp2 = mock(HttpResponse.class);
+    when(tokenResp2.getStatusCode()).thenReturn(200);
+    when(tokenResp2.getEntity()).thenReturn(new ByteArrayHttpEntity(tokenJson2.getBytes(StandardCharsets.UTF_8)));
+
+    HttpResponse validationResp = mock(HttpResponse.class);
+    when(validationResp.getStatusCode()).thenReturn(401);
+
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(tokenResp1))
+          .thenReturn(CompletableFuture.completedFuture(tokenResp2));
+      helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(validationResp));
+
+      connection.getOrRefreshToken().get();
+      String token2 = connection.getOrRefreshToken().get();
+      assertThat(token2).isEqualTo("new-token");
+    }
+  }
+
+  @Test
+  void validate_successfulToken() throws Exception {
+    String tokenJson = "{\"access_token\":\"valid-token\"}";
+    HttpResponse resp = mock(HttpResponse.class);
+    when(resp.getStatusCode()).thenReturn(200);
+    when(resp.getEntity()).thenReturn(new ByteArrayHttpEntity(tokenJson.getBytes(StandardCharsets.UTF_8)));
+
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(resp));
+      assertThatCode(() -> connection.validate()).doesNotThrowAnyException();
+    }
+  }
+
+  @Test
+  void validate_failedToken_throwsModuleException() throws Exception {
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      CompletableFuture<HttpResponse> failedFuture = new CompletableFuture<>();
+      failedFuture.completeExceptionally(new RuntimeException("connection refused"));
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(failedFuture);
+      assertThatThrownBy(() -> connection.validate())
+          .isInstanceOf(ModuleException.class)
+          .hasMessageContaining("Failed to validate connection");
+      Thread.interrupted();
+    }
+  }
+
+  @Test
+  void refreshAccessTokenAsync_non200Response_throwsModuleException() throws Exception {
+    HttpResponse errorResp = mock(HttpResponse.class);
+    when(errorResp.getStatusCode()).thenReturn(401);
+    when(errorResp.getEntity()).thenReturn(
+                                           new ByteArrayHttpEntity("unauthorized".getBytes(StandardCharsets.UTF_8)));
+
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executePostRequest(any(), anyString(), any(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(errorResp));
+      assertThatThrownBy(() -> connection.getOrRefreshToken().get())
+          .isInstanceOf(ExecutionException.class)
+          .hasCauseInstanceOf(ModuleException.class);
+    }
+  }
+
+  @Test
+  void validateAccessTokenAsync_parseError_returnsFalse() throws Exception {
+    HttpResponse badResp = mock(HttpResponse.class);
+    when(badResp.getStatusCode()).thenReturn(200);
+    when(badResp.getEntity()).thenReturn(
+                                         new ByteArrayHttpEntity("not-json".getBytes(StandardCharsets.UTF_8)));
+
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt()))
+          .thenReturn(CompletableFuture.completedFuture(badResp));
+      Boolean result = connection.validateAccessTokenAsync("test-token").get();
+      assertThat(result).isFalse();
+    }
+  }
+
+  @Test
+  void validateAccessTokenAsync_exception_returnsFalse() throws Exception {
+    try (MockedStatic<HttpRequestHelper> helper = Mockito.mockStatic(HttpRequestHelper.class)) {
+      CompletableFuture<HttpResponse> failedFuture = new CompletableFuture<>();
+      failedFuture.completeExceptionally(new RuntimeException("network error"));
+      helper.when(() -> HttpRequestHelper.executeGetRequest(any(), anyString(), any(), anyInt()))
+          .thenReturn(failedFuture);
+      Boolean result = connection.validateAccessTokenAsync("test-token").get();
+      assertThat(result).isFalse();
+    }
   }
 }

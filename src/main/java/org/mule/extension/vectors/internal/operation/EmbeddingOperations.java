@@ -76,11 +76,9 @@ public class EmbeddingOperations {
           .getBuilder(modelConnection, embeddingModelParameters).build().embedTexts(inputs);
       embeddings = embeddingsResponse.content();
       if (embeddingsResponse.tokenUsage() != null) {
-        var usage = embeddingsResponse.tokenUsage();
-        tokenUsage = new TokenUsage(
-                                    usage.inputTokenCount() != null ? usage.inputTokenCount() : 0,
-                                    usage.outputTokenCount() != null ? usage.outputTokenCount() : 0,
-                                    usage.totalTokenCount() != null ? usage.totalTokenCount() : 0);
+        tokenUsage = buildTokenUsage(embeddingsResponse.tokenUsage().inputTokenCount(),
+                                     embeddingsResponse.tokenUsage().outputTokenCount(),
+                                     embeddingsResponse.tokenUsage().totalTokenCount());
       }
       JSONObject jsonObject = new JSONObject();
       JSONArray jsonTextSegments = IntStream.range(0, inputs.size())
@@ -159,9 +157,9 @@ public class EmbeddingOperations {
                 .embedImage(mediaBytes);
         Embedding embedding = response.content();
         tokenUsage = response.tokenUsage() != null
-            ? new TokenUsage(response.tokenUsage().inputTokenCount() != null ? response.tokenUsage().inputTokenCount() : 0,
-                             response.tokenUsage().outputTokenCount() != null ? response.tokenUsage().outputTokenCount() : 0,
-                             response.tokenUsage().totalTokenCount() != null ? response.tokenUsage().totalTokenCount() : 0)
+            ? buildTokenUsage(response.tokenUsage().inputTokenCount(),
+                              response.tokenUsage().outputTokenCount(),
+                              response.tokenUsage().totalTokenCount())
             : null;
         jsonEmbeddings.put(embedding.vector());
         multimodalEmbeddingModelDimension = embedding.dimension();
@@ -215,4 +213,12 @@ public class EmbeddingOperations {
                                 e);
     }
   }
+
+  private TokenUsage buildTokenUsage(Integer inputCount, Integer outputCount, Integer totalCount) {
+    int inputTokens = inputCount != null ? inputCount : 0;
+    int outputTokens = outputCount != null ? outputCount : 0;
+    int totalTokens = totalCount != null ? totalCount : 0;
+    return new TokenUsage(inputTokens, outputTokens, totalTokens);
+  }
+
 }

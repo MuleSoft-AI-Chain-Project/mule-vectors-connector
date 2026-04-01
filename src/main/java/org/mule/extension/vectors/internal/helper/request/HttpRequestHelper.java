@@ -47,7 +47,7 @@ public class HttpRequestHelper {
     MultiMap<String, String> finalHeaders = new MultiMap<>();
     finalHeaders.putAll(getDefaultHeaders());
     if (headers != null) {
-      finalHeaders.putAll(new MultiMap<>(headers));
+      finalHeaders.putAll(headers);
     }
 
     return HttpRequest.builder()
@@ -61,7 +61,7 @@ public class HttpRequestHelper {
     MultiMap<String, String> finalHeaders = new MultiMap<>();
     finalHeaders.putAll(getDefaultHeaders());
     if (headers != null) {
-      finalHeaders.putAll(new MultiMap<>(headers));
+      finalHeaders.putAll(headers);
     }
 
     return HttpRequest.builder()
@@ -75,7 +75,7 @@ public class HttpRequestHelper {
   private static HttpRequest buildMultipartPostRequest(String url, Map<String, String> headers, List<HttpPart> parts) {
     MultiMap<String, String> finalHeaders = new MultiMap<>();
     if (headers != null) {
-      finalHeaders.putAll(new MultiMap<>(headers));
+      finalHeaders.putAll(headers);
     }
 
     return HttpRequest.builder()
@@ -86,8 +86,8 @@ public class HttpRequestHelper {
         .build();
   }
 
-  private static MultiMap<String, String> getDefaultHeaders() {
-    return new MultiMap<>(Map.of("Content-Type", "application/json", "Accept", "application/json"));
+  private static Map<String, String> getDefaultHeaders() {
+    return Map.of("Content-Type", "application/json", "Accept", "application/json");
   }
 
   private static HttpRequestOptions getRequestOptions(int timeout) {
